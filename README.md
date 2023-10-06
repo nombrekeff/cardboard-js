@@ -9,6 +9,8 @@ Welcome to Carboard. A very simple, yet powerful "framework"/library to create w
 
 NOTE: There's also a server-side companion to **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
 
+> **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
+
 ### Who's this for?
 
 If you don't like writing HTML, or need a very basic framework for simple apps, Cardboard might be for you!
