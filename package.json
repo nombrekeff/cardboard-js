@@ -7,8 +7,12 @@
   "types": "./dist/hobo-rt.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --watch",
-    "build:example": "tsc --watch --p example/tsconfig.json "
+    "build": "tsc && npm run build:example && npm run build:docs",
+    "build:watch": "tsc --watch",
+    "build:example": "tsc --p example/tsconfig.json",
+    "build:example:watch": "tsc --watch --p example/tsconfig.json",
+    "build:docs": "typedoc --out docs src/*.ts"
+
   },
   "author": "nombrekeff",
   "repository": {
@@ -17,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "ts-loader": "^9.4.4",
+    "typedoc": "^0.25.1",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2"
   }
