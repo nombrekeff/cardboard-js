@@ -1,7 +1,7 @@
 {
-  "name": "lets-make-a-framework",
+  "name": "cardboard",
   "version": "1.0.0",
-  "description": "",
+  "description": "A very simple, yet powerful framework/library to create web applications without the need to write any HTML.",
   "type": "module",
   "main": "./dist/hobo-rt.js",
   "types": "./dist/hobo-rt.d.ts",
@@ -10,7 +10,10 @@
     "build": "tsc --watch",
     "build:example": "tsc --watch --p example/tsconfig.json "
   },
-  "author": "",
+  "author": "nombrekeff",
+  "repository": {
+    "git": "https://github.com/nombrekeff/cardboard"
+  },
   "license": "ISC",
   "dependencies": {
     "ts-loader": "^9.4.4",

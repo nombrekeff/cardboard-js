@@ -22,14 +22,13 @@ It's lightweight, and very simple.
 Install package: 
 
 ```
-npm install https://github.com/nombrekeff/cardboard-js
-npm install cardboard-js
+npm install https://github.com/nombrekeff/cardboard
 ```
 
 Then you  can import the package. 
 
 ```ts
-import { tag, init, allTags, state, attached, hinput, hstyle } from '../dist/hobo-rt.js';
+import { tag, init, allTags, state, attached, hinput, hstyle } from 'cardboard';
 const { div, button, input, a, ul, li, hr, style } = allTags;
 
 init({ root: 'body' }); // By calling init, any new tag added will be added to the "body" (passing root selector is optional, 'body' by default)
