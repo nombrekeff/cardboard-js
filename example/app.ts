@@ -45,7 +45,7 @@ const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => add
 const addItem = () => {
   if (itemInput.value) {
     list.add(li.silent(itemInput.value).clicked((self) => self.remove()));
-    itemInput.value = '';
+    itemInput.clear();
   }
 };
 
