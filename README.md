@@ -24,7 +24,7 @@ It's lightweight, and very simple.
 Install package: 
 
 ```
-npm install https://github.com/nombrekeff/cardboard
+npm install https://github.com/nombrekeff/cardboard-js
 ```
 
 Then you  can import the package. 
