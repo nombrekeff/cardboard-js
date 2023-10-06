@@ -58,7 +58,7 @@ Let me explain:
 let counterState = state({ count: 0 });
 ```
 > Creates a "reactive" state, or more so a state that can be listened to, globaly or per property.
-> `counterState.changed((newState) => handleStateChange())`
+> `counterState.changed((newState) => handleStateChange())`  
 > `counterState.count.changed((newValue) => handleValueChange())`
 
 ```ts
