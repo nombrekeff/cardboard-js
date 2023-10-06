@@ -1,5 +1,5 @@
 {
-  "name": "cardboard",
+  "name": "cardboard-js",
   "version": "1.0.0",
   "description": "A very simple, yet powerful framework/library to create web applications without the need to write any HTML.",
   "type": "module",
@@ -16,7 +16,7 @@
   },
   "author": "nombrekeff",
   "repository": {
-    "git": "https://github.com/nombrekeff/cardboard"
+    "git": "https://github.com/nombrekeff/cardboard-js"
   },
   "license": "ISC",
   "dependencies": {
