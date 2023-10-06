@@ -20,7 +20,7 @@ tag('br');
 link('Link', 'https://www.google.com');
 tag('br');
 hr();
-let counterState = state({ count: 0, data: { name: 'test' } });
+let counterState = state({ count: 0 });
 button()
     .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
     .clicked((_) => counterState.count++);
