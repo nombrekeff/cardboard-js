@@ -44,7 +44,7 @@ const { div, p, span, b, script, button, style, a, hr } = allTags;
 
 Check out the [`examples`](/examples) folder for a variety of examples on how to use Cardboard.
 
-#### Clicker Example
+#### Clicker Example
 TODO
 #### Todo Example
 TODO
