@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "./",
+        "module": "ES2015",
+        "target": "ES6",
+        "sourceMap": true,
+        "allowJs": true,
+        "lib": [
+            "dom",
+            "es5",
+            "es2015"
+        ],
+        "types": [
+            "../dist/hobo-rt.d.ts"
+        ]
+    },
+    "include": [
+        "./**/*.ts"
+    ],
+    "exclude": [
+        "./dist/"
+    ]
+}
