@@ -4,7 +4,7 @@ const { style } = allTags;
 const flexCenterCenter = { display: 'flex', alignItems: 'center', justifyContent: 'center' };
 
 export default function styles() {
-  style({
+ return style.attach({
     '*': {
       fontFamily: "'Montserrat', sans-serif !important;",
       scrollbarGutter: 'stable',
@@ -17,7 +17,7 @@ export default function styles() {
       backgroundColor: 'rgba(179, 55, 113, 0.2)',
     },
     '.todo-app': {
-      width: '550px',
+      width: '650px',
       height: '80%',
       backgroundColor: '#6D214F',
       borderRadius: '12px',
@@ -30,7 +30,7 @@ export default function styles() {
       background: '#efd7e166',
       borderRadius: '6px',
       position: 'relative',
-      margin: '0 16px',
+      margin: '0 32px',
       color: '#efd7e1',
     },
     input: {
@@ -73,7 +73,7 @@ export default function styles() {
       flex: '1 1 auto',
       overflowY: 'auto',
       overflowX: 'hidden',
-      padding: '16px',
+      padding: '16px 32px',
     },
     '.list-empty': {
       textAlign: 'center',

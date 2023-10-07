@@ -48,8 +48,8 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   element: T;
   parent: CTag = null;
 
-  /** If set to true, it will not be appended to it's parent */
-  private silent: boolean = false;
+  /** If set to true, it be appended to the attached tag */
+  private attachable: boolean = false;
 
   get children() {
     return getElementChildren(this.element);
@@ -64,24 +64,24 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return;
   }
 
-  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], silent: boolean = false) {
-    this.silent = silent;
+  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
+    this.attachable = attachable;
 
     if (typeof arg0 == 'string' && isSelector(arg0)) {
-      this.silent = true;
+      this.attachable = false;
       this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
     } else if (typeof arg0 == 'string') {
       this.element = document.createElement(arg0) as T;
     } else if (arg0 instanceof HTMLElement) {
+      this.attachable = false;
       this.element = arg0 as T;
-      this.silent = true;
     }
 
     children.map((cl) => {
       this.add(cl);
     });
 
-    if (context.attachedTag && !this.silent) {
+    if (context.attachedTag && this.attachable) {
       context.attachedTag.add(this);
     }
   }
@@ -172,6 +172,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
     this.element.style[property as string] = value;
+    return this;
   }
 
   addStyle(styles: StyleMap) {
@@ -197,6 +198,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   setAttr(key: string, value: string) {
     this.element.setAttribute(key, value);
+    return this;
   }
 
   rmAttr(...attrs: string[]) {
@@ -281,8 +283,8 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 }
 
-export function tag(arg0: string | HTMLElement, children: TagChildren = [], silent: boolean = false) {
-  return new CTag(arg0, children, silent);
+export function tag(arg0: string | HTMLElement, children: TagChildren = [], attach: boolean = false) {
+  return new CTag(arg0, children, attach);
 }
 
 export function attach(tag: CTag) {
@@ -305,16 +307,16 @@ export function init(options: { root: string } = { root: 'body' }) {
 }
 
 const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) } = {
-  ul: (children: TagChildren, silent: boolean = false) => {
+  ul: (children: TagChildren, attach: boolean = false) => {
     return tag(
       'ul',
       children.map((cl) => {
-        return tag('li', [cl], silent);
+        return tag('li', [cl], attach);
       }),
     );
   },
-  style: (styles: StyleSet[]) => {
-    return tag('style', [context.css.generateCss(styles)]);
+  style: (styles: StyleSet[], attach: boolean = false) => {
+    return tag('style', [context.css.generateCss(styles)], attach);
   },
 };
 
@@ -322,7 +324,7 @@ type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 
 export const allTags: {
   [key in ValidTagName]?: ((...children: PickArgType<key>) => CTag) & {
-    silent: (...children: PickArgType<key>) => CTag;
+    attach: (...children: PickArgType<key>) => CTag;
   };
 } = new Proxy(
   {},
@@ -336,7 +338,7 @@ export const allTags: {
         return tag(tagName, children);
       };
 
-      Object.defineProperty(fn, 'silent', {
+      Object.defineProperty(fn, 'attach', {
         get: () => {
           return (...children: any[]) => {
             if (interceptors[tagName]) {

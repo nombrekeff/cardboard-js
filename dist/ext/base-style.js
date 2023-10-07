@@ -30,7 +30,7 @@ const baseStyles = {
         },
     },
 };
-export function hstyle(silent = false) {
-    return silent ? style.silent(baseStyles) : style(baseStyles);
+export function hstyle(attach = true) {
+    return attach ? style.attach(baseStyles) : style(baseStyles);
 }
 //# sourceMappingURL=base-style.js.map

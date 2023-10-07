@@ -4,7 +4,7 @@ export type HInputOptions = {
     value?: string;
     placeholder?: string;
     tooltip?: string;
-    silent?: boolean;
+    attach?: boolean;
     input?: EventCallback<'input'>;
     submit?: (tag: CTag, evt: Event) => void;
 };

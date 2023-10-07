@@ -9,12 +9,10 @@ export default function todoItem(content: string, opts: { remove: (self: CTag, c
     self.remove();
   };
 
-  return div
-    .silent(
-      content,
-      button('-')
-        .addClass('btn-remove')
-        .clicked((self) => removeItem(self.parent)), // self.parent will be div
-    )
-    .addClass('todo-item');
+  return div(
+    content,
+    button('-')
+      .addClass('btn-remove')
+      .clicked((self) => removeItem(self.parent)), // self.parent will be div
+  ).addClass('todo-item');
 }

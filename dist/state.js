@@ -10,47 +10,43 @@ export function state(content) {
             content[prop] = state(content[prop]);
         }
     }
-    const proxy = new Proxy(content, {
-        deleteProperty: function (target, prop) {
-            if (_propListeners[prop]) {
-                for (const listener of _propListeners[prop]) {
-                    listener(target[prop]);
-                }
-            }
-            for (const listener of _stateListeners) {
+    const addListener = (prop, callback) => {
+        if (!_propListeners[prop])
+            _propListeners[prop] = [];
+        _propListeners[prop].push(callback);
+    };
+    const emitChange = (target, prop) => {
+        if (_propListeners[prop]) {
+            for (const listener of _propListeners[prop]) {
                 listener(target[prop]);
             }
+        }
+        for (const listener of _stateListeners) {
+            listener(target);
+        }
+    };
+    const addChangedMethod = (target, prop) => {
+        const value = target[prop];
+        if (isObject(content[prop])) {
+            value.changed = (callback) => addListener(prop, callback);
+        }
+        else if (value.__proto__) {
+            value.__proto__.changed = (callback) => addListener(prop, callback);
+        }
+        return value;
+    };
+    const proxy = new Proxy(content, {
+        deleteProperty: function (target, prop) {
+            emitChange(target, prop);
             delete target[prop];
             return true;
         },
         get: (target, prop) => {
-            const value = target[prop];
-            if (isObject(content[prop])) {
-                value.changed = (callback) => {
-                    if (!_propListeners[prop])
-                        _propListeners[prop] = [];
-                    _propListeners[prop].push(callback);
-                };
-            }
-            else if (value.__proto__) {
-                value.__proto__.changed = (callback) => {
-                    if (!_propListeners[prop])
-                        _propListeners[prop] = [];
-                    _propListeners[prop].push(callback);
-                };
-            }
-            return target[prop];
+            return addChangedMethod(target, prop);
         },
         set: (target, prop, value) => {
             target[prop] = value;
-            if (_propListeners[prop]) {
-                for (const listener of _propListeners[prop]) {
-                    listener(target[prop]);
-                }
-            }
-            for (const listener of _stateListeners) {
-                listener(target);
-            }
+            emitChange(target, prop);
             return true;
         },
     });

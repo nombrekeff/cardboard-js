@@ -2,7 +2,7 @@ import { allTags } from '../cardboard.js';
 const { input } = allTags;
 export function hinput(options = {}) {
     var _a;
-    const el = options.silent == true ? input.silent() : input();
+    const el = options.attach == true ? input.attach() : input();
     el.config({
         attr: { tooltip: options.tooltip, placeholder: options.placeholder },
         on: {

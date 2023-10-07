@@ -6,13 +6,13 @@ export type HInputOptions = {
   value?: string;
   placeholder?: string;
   tooltip?: string;
-  silent?: boolean;
+  attach?: boolean;
   input?: EventCallback<'input'>;
   submit?: (tag: CTag, evt: Event) => void;
 };
 
 export function hinput(options: HInputOptions = {}) {
-  const el = options.silent == true ? input.silent() : input();
+  const el = options.attach == true ? input.attach() : input();
 
   el.config({
     attr: { tooltip: options.tooltip, placeholder: options.placeholder },

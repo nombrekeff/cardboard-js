@@ -42,26 +42,26 @@ export class CTag {
             this.element.value = newValue;
         return;
     }
-    constructor(arg0, children = [], silent = false) {
+    constructor(arg0, children = [], attachable = false) {
         this.parent = null;
-        /** If set to true, it will not be appended to it's parent */
-        this.silent = false;
-        this.silent = silent;
+        /** If set to true, it be appended to the attached tag */
+        this.attachable = false;
+        this.attachable = attachable;
         if (typeof arg0 == 'string' && isSelector(arg0)) {
-            this.silent = true;
+            this.attachable = false;
             this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
         }
         else if (typeof arg0 == 'string') {
             this.element = document.createElement(arg0);
         }
         else if (arg0 instanceof HTMLElement) {
+            this.attachable = false;
             this.element = arg0;
-            this.silent = true;
         }
         children.map((cl) => {
             this.add(cl);
         });
-        if (context.attachedTag && !this.silent) {
+        if (context.attachedTag && this.attachable) {
             context.attachedTag.add(this);
         }
     }
@@ -135,6 +135,7 @@ export class CTag {
     }
     setStyle(property, value) {
         this.element.style[property] = value;
+        return this;
     }
     addStyle(styles) {
         for (let key in styles) {
@@ -156,6 +157,7 @@ export class CTag {
     }
     setAttr(key, value) {
         this.element.setAttribute(key, value);
+        return this;
     }
     rmAttr(...attrs) {
         for (let key of attrs) {
@@ -225,8 +227,8 @@ export class CTag {
         return new CTag(document.querySelector(selector));
     }
 }
-export function tag(arg0, children = [], silent = false) {
-    return new CTag(arg0, children, silent);
+export function tag(arg0, children = [], attach = false) {
+    return new CTag(arg0, children, attach);
 }
 export function attach(tag) {
     if (context.attachedTag) {
@@ -246,13 +248,13 @@ export function init(options = { root: 'body' }) {
     attach(new CTag(`(${options.root})`));
 }
 const interceptors = {
-    ul: (children, silent = false) => {
+    ul: (children, attach = false) => {
         return tag('ul', children.map((cl) => {
-            return tag('li', [cl], silent);
+            return tag('li', [cl], attach);
         }));
     },
-    style: (styles) => {
-        return tag('style', [context.css.generateCss(styles)]);
+    style: (styles, attach = false) => {
+        return tag('style', [context.css.generateCss(styles)], attach);
     },
 };
 export const allTags = new Proxy({}, {
@@ -264,7 +266,7 @@ export const allTags = new Proxy({}, {
             }
             return tag(tagName, children);
         };
-        Object.defineProperty(fn, 'silent', {
+        Object.defineProperty(fn, 'attach', {
             get: () => {
                 return (...children) => {
                     if (interceptors[tagName]) {
