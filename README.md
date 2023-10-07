@@ -86,25 +86,25 @@ button()
 
 #### Todo Example
 ```ts
-const list = ul.silent().addAttrs({ id: 'list' });
+const list = ul.addAttrs({ id: 'list' });
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
 
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li.silent(itemInput.value).clicked((self) => self.remove()));
+    list.add(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };
 
-button('Add item').clicked(addItem);
+button.attach('Add item').clicked(addItem);
 attached().add(list);
 ```
 
 Let me explain:
 ```ts
-const list = ul.silent().addAttrs({ id: 'list' });
+const list = ul().addAttrs({ id: 'list' });
 ```
-> Create a **ul** list, with an id "list". But, it will not be automatically added to the DOM as we've called `.silent()`. We must handle adding it later.
+> Create a **ul** list, with an id "list".
 
 ```ts
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
@@ -115,7 +115,7 @@ const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => add
 ```ts
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li.silent(itemInput.value).clicked((self) => self.remove()));
+    list.add(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };
@@ -125,9 +125,9 @@ const addItem = () => {
 > A `li` in this case, with the value of the input as it's text.
 
 ```ts
-button('Add item').clicked(addItem);
+button.attach('Add item').clicked(addItem);
 ```
-> Creates a button, which will add an item when it's clicked.
+> Creates a button, which will add an item when it's clicked. calling `.attach` will add button to the attached tag.
 
 ```ts
 attached().add(list);
@@ -143,13 +143,13 @@ export type HInputOptions = {
   value?: string;
   placeholder?: string;
   tooltip?: string;
-  silent?: boolean;
+  attach?: boolean;
   change?: EventCallback<'change'>;
   submit?: (tag: HoboTag, evt: Event) => void;
 };
 
 export function hinput(options: HInputOptions = {}) {
-  const el = options.silent == true ? input.silent() : input();
+  const el = options.attach == true ? input.attach() : input();
 
   el.config({
     attr: { tooltip: options.tooltip, placeholder: options.placeholder },
@@ -175,7 +175,7 @@ export function hinput(options: HInputOptions = {}) {
 
 ### Attaching
 
-Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to automatically add items to some parent element, you must first initialize Carboard by calling the `init()` function.
+Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the `init()` function.
 
 If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
 
@@ -190,22 +190,23 @@ init();
 const wrapper = div();
 attach(wrapper);
 
-p();
-span();
+p.attach();
+span.attach();
 ```
 > `p()` and `span()` will be added as children of wrapper.
 
 It's also possible to attach multiple times:
 ```ts
 init();
-const wrapper = div();
+const wrapper = div.attach();
+
 attach(wrapper);
-const childDiv = div("I'm inside wrapper");
+const childDiv = div.attach("I'm inside wrapper");
 
 attach(childDiv);
-p("I'm inside child div!");
+p.attach("I'm inside child div!");
 detach();
 
-p("I'm now inside wrapper!");
+p.attach("I'm now inside wrapper!");
 ```
 
