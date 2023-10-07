@@ -1,2 +1,4 @@
 /node_modules/
 /_*
+/example/**/*.js
+/example/**/*.js.map
