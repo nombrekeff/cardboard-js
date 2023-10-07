@@ -1,4 +1,4 @@
-export * from './hobo-tag.js';
+export * from './tag.js';
 export * from './state.js';
 export * from './css-generator.js';
 export * from './util.js';

@@ -1,4 +1,4 @@
-import { allTags, HoboTag } from '../hobo-rt.js';
+import { allTags, CTag } from '../cardboard.js';
 import { EventCallback } from '../types.js';
 const { input } = allTags;
 
@@ -7,8 +7,8 @@ export type HInputOptions = {
   placeholder?: string;
   tooltip?: string;
   silent?: boolean;
-  change?: EventCallback<'change'>;
-  submit?: (tag: HoboTag, evt: Event) => void;
+  input?: EventCallback<'input'>;
+  submit?: (tag: CTag, evt: Event) => void;
 };
 
 export function hinput(options: HInputOptions = {}) {
@@ -17,11 +17,11 @@ export function hinput(options: HInputOptions = {}) {
   el.config({
     attr: { tooltip: options.tooltip, placeholder: options.placeholder },
     on: {
-      change: options.change,
+      input: options.input,
       submit: options.submit,
       keypress: (tag, evt) => {
         if (evt.key == 'Enter') {
-          options.submit(tag, evt);
+          options.submit(el, evt);
         }
       },
     },

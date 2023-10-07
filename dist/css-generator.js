@@ -14,12 +14,17 @@ export class CssGenerator {
         let blocks = this.generateBlockContent(selector, style);
         return blocks.join('\n');
     }
+    joinSelectors(left, right) {
+        if (right.startsWith(':'))
+            return left + right;
+        return left + ' ' + right;
+    }
     generateBlockContent(selector, style) {
         let inside = '';
         let blocks = [];
         for (const key in style) {
             if (isObject(style[key])) {
-                blocks.push(this.generateBlockContent(selector + key, style[key]));
+                blocks.push(this.generateBlockContent(this.joinSelectors(selector, key), style[key]));
             }
             else if (style[key]) {
                 inside += this.generateStyle(key, style[key]);

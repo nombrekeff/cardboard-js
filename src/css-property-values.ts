@@ -48,17 +48,17 @@ export type PickPropertyValues<T> = T extends 'color'
   : T extends 'flexDirection'
   ? FlexDirectionOptions
   : T extends 'zIndex'
-  ? Number
+  ? string
   : T extends 'top'
-  ? Number
+  ? string
   : T extends 'display'
   ? DisplayOptions
   : T extends 'bottom'
-  ? Number
+  ? string
   : T extends 'left'
-  ? Number
+  ? string
   : T extends 'right'
-  ? Number
+  ? string
   : string & {};
 
 export type CommonOptions = 'initial' | 'inherit' | (string & {});

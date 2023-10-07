@@ -13,7 +13,7 @@ function isSelector(str) {
 function getElementForChild(cl) {
     if (typeof cl === 'string')
         return document.createTextNode(cl);
-    if (cl instanceof HoboTag)
+    if (cl instanceof CTag)
         return cl.element;
     if (cl instanceof HTMLElement)
         return cl;
@@ -28,7 +28,7 @@ function getElementChildren(element) {
     }
     return children;
 }
-export class HoboTag {
+export class CTag {
     get children() {
         return getElementChildren(this.element);
     }
@@ -48,6 +48,7 @@ export class HoboTag {
         this.silent = false;
         this.silent = silent;
         if (typeof arg0 == 'string' && isSelector(arg0)) {
+            this.silent = true;
             this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
         }
         else if (typeof arg0 == 'string') {
@@ -55,6 +56,7 @@ export class HoboTag {
         }
         else if (arg0 instanceof HTMLElement) {
             this.element = arg0;
+            this.silent = true;
         }
         children.map((cl) => {
             this.add(cl);
@@ -67,12 +69,20 @@ export class HoboTag {
         this.element.replaceChildren(...children.map((cl) => getElementForChild(cl)));
     }
     add(...children) {
-        this.element.append(...children.map((cl) => getElementForChild(cl)));
+        this.element.append(...children.map((cl) => {
+            if (cl instanceof CTag)
+                cl.parent = this;
+            return getElementForChild(cl);
+        }));
         return this;
     }
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
         consumer(this, consumable);
+        return this;
+    }
+    listen(tag, evt, consumer) {
+        tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;
     }
     text(text) {
@@ -123,14 +133,17 @@ export class HoboTag {
         this.element.classList.replace(targetClass, replaceClass);
         return this;
     }
+    setStyle(property, value) {
+        this.element.style[property] = value;
+    }
     addStyle(styles) {
         for (let key in styles) {
-            this.element.style.setProperty(key, styles[key]);
+            this.element.style[key] = styles[key];
         }
         return this;
     }
     rmStyle(...styleNames) {
-        for (let key in styleNames) {
+        for (let key of styleNames) {
             this.element.style.removeProperty(key);
         }
         return this;
@@ -141,8 +154,11 @@ export class HoboTag {
         }
         return this;
     }
+    setAttr(key, value) {
+        this.element.setAttribute(key, value);
+    }
     rmAttr(...attrs) {
-        for (let key in attrs) {
+        for (let key of attrs) {
             this.element.removeAttribute(key);
         }
         return this;
@@ -176,13 +192,26 @@ export class HoboTag {
     }
     remove() {
         this.element.remove();
+        return this;
     }
     clear() {
-        if (this.element instanceof HTMLInputElement)
+        if (this.element instanceof HTMLInputElement || this.element instanceof HTMLTextAreaElement) {
             this.element.value = '';
+            // Trigger input event, so clearing is treated as input!
+            this.element.dispatchEvent(new InputEvent('input'));
+        }
+        return this;
+    }
+    disable() {
+        this.setAttr('disabled', 'disabled');
+        return this;
+    }
+    enable() {
+        this.rmAttr('disabled');
+        return this;
     }
     q(selector) {
-        return new HoboTag(this.element.querySelector(selector));
+        return new CTag(this.element.querySelector(selector));
     }
     find(test) {
         const actualChildren = [...this.children];
@@ -193,11 +222,11 @@ export class HoboTag {
         return null;
     }
     static find(selector) {
-        return new HoboTag(document.querySelector(selector));
+        return new CTag(document.querySelector(selector));
     }
 }
 export function tag(arg0, children = [], silent = false) {
-    return new HoboTag(arg0, children, silent);
+    return new CTag(arg0, children, silent);
 }
 export function attach(tag) {
     if (context.attachedTag) {
@@ -214,7 +243,7 @@ export function detach() {
     }
 }
 export function init(options = { root: 'body' }) {
-    attach(new HoboTag(`(${options.root})`));
+    attach(new CTag(`(${options.root})`));
 }
 const interceptors = {
     ul: (children, silent = false) => {
@@ -248,4 +277,4 @@ export const allTags = new Proxy({}, {
         return fn;
     },
 });
-//# sourceMappingURL=hobo-tag.js.map
+//# sourceMappingURL=tag.js.map

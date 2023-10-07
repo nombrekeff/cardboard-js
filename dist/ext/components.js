@@ -1,4 +1,4 @@
-import { allTags } from '../hobo-rt.js';
+import { allTags } from '../cardboard.js';
 const { input } = allTags;
 export function hinput(options = {}) {
     var _a;
@@ -6,11 +6,11 @@ export function hinput(options = {}) {
     el.config({
         attr: { tooltip: options.tooltip, placeholder: options.placeholder },
         on: {
-            change: options.change,
+            input: options.input,
             submit: options.submit,
             keypress: (tag, evt) => {
                 if (evt.key == 'Enter') {
-                    options.submit(tag, evt);
+                    options.submit(el, evt);
                 }
             },
         },

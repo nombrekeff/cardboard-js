@@ -6,7 +6,6 @@ export type State<T extends Record<string, any>> = {
   [K in keyof T]: Consumable<T[K]>;
 };
 
-
 export function state<T extends {}>(content: T): State<T> {
   let _propListeners = {};
   let _stateListeners = [];
@@ -14,10 +13,27 @@ export function state<T extends {}>(content: T): State<T> {
   for (let prop of Object.getOwnPropertyNames(content)) {
     if (isObject(content[prop])) {
       content[prop] = state(content[prop]);
+    } else if (content[prop] instanceof Array) {
+      content[prop] = state(content[prop]);
     }
   }
 
-  return new Proxy(content, {
+  const proxy = new Proxy(content, {
+    deleteProperty: function (target, prop) {
+      if (_propListeners[prop]) {
+        for (const listener of _propListeners[prop]) {
+          listener(target[prop]);
+        }
+      }
+
+      for (const listener of _stateListeners) {
+        listener(target[prop]);
+      }
+
+      delete target[prop];
+
+      return true;
+    },
     get: (target, prop) => {
       const value: any = target[prop];
 
@@ -26,9 +42,7 @@ export function state<T extends {}>(content: T): State<T> {
           if (!_propListeners[prop]) _propListeners[prop] = [];
           _propListeners[prop].push(callback);
         };
-      } 
-      
-      else if (value.__proto__) {
+      } else if (value.__proto__) {
         value.__proto__.changed = (callback) => {
           if (!_propListeners[prop]) _propListeners[prop] = [];
           _propListeners[prop].push(callback);
@@ -46,10 +60,17 @@ export function state<T extends {}>(content: T): State<T> {
       }
 
       for (const listener of _stateListeners) {
-        listener(target[prop]);
+        listener(target);
       }
 
       return true;
     },
-  }) as State<T>;
+  }) as any;
+
+  // Whole state changed
+  proxy.changed = (callback) => {
+    _stateListeners.push(callback);
+  };
+
+  return proxy as State<T>;
 }

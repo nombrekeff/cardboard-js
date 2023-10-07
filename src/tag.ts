@@ -1,11 +1,13 @@
 import { CssGenerator } from './css-generator.js';
+import { CssProperty } from './css-properties.js';
+import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
 import { StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
 
 export let context: {
-  attachedTag: HoboTag;
-  attachedTagStack: HoboTag[];
+  attachedTag: CTag;
+  attachedTagStack: CTag[];
   css: CssGenerator;
 } = {
   attachedTag: null,
@@ -23,7 +25,7 @@ function isSelector(str: string) {
 
 function getElementForChild(cl: TagChild): Node {
   if (typeof cl === 'string') return document.createTextNode(cl);
-  if (cl instanceof HoboTag) return cl.element;
+  if (cl instanceof CTag) return cl.element;
   if (cl instanceof HTMLElement) return cl;
   return null;
 }
@@ -42,9 +44,9 @@ function getElementChildren(element: HTMLElement): Node[] {
   return children;
 }
 
-export class HoboTag<T extends HTMLElement = HTMLElement> {
+export class CTag<T extends HTMLElement = HTMLElement> {
   element: T;
-  parent: HoboTag = null;
+  parent: CTag = null;
 
   /** If set to true, it will not be appended to it's parent */
   private silent: boolean = false;
@@ -66,11 +68,13 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
     this.silent = silent;
 
     if (typeof arg0 == 'string' && isSelector(arg0)) {
+      this.silent = true;
       this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
     } else if (typeof arg0 == 'string') {
       this.element = document.createElement(arg0) as T;
     } else if (arg0 instanceof HTMLElement) {
       this.element = arg0 as T;
+      this.silent = true;
     }
 
     children.map((cl) => {
@@ -87,13 +91,27 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
   }
 
   add(...children: TagChildren) {
-    this.element.append(...children.map((cl) => getElementForChild(cl)));
+    this.element.append(
+      ...children.map((cl) => {
+        if (cl instanceof CTag) cl.parent = this;
+        return getElementForChild(cl);
+      }),
+    );
     return this;
   }
 
-  consume<T>(consumable: Consumable<T>, consumer: (self: HoboTag, newValue: T) => void) {
+  consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void) {
     consumable.changed((newValue) => consumer(this, newValue));
     consumer(this, consumable);
+    return this;
+  }
+
+  listen<K extends keyof HTMLElementEventMap>(
+    tag: CTag,
+    evt: K,
+    consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void,
+  ) {
+    tag.on(evt, (other, evt) => consumer(this, other, evt));
     return this;
   }
 
@@ -152,15 +170,19 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
+    this.element.style[property as string] = value;
+  }
+
   addStyle(styles: StyleMap) {
     for (let key in styles) {
-      this.element.style.setProperty(key, styles[key]);
+      this.element.style[key] = styles[key];
     }
     return this;
   }
 
   rmStyle(...styleNames: string[]) {
-    for (let key in styleNames) {
+    for (let key of styleNames) {
       this.element.style.removeProperty(key);
     }
     return this;
@@ -173,17 +195,18 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  setAttr(key: string, value: string) {
+    this.element.setAttribute(key, value);
+  }
+
   rmAttr(...attrs: string[]) {
-    for (let key in attrs) {
+    for (let key of attrs) {
       this.element.removeAttribute(key);
     }
     return this;
   }
 
-  on<K extends keyof HTMLElementEventMap>(
-    evtName: K | string,
-    fn: (tag: HoboTag, evt: HTMLElementEventMap[K]) => void,
-  ) {
+  on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     if (fn) {
       this.element.addEventListener(evtName, (evt: HTMLElementEventMap[K]) => {
         return fn(this, evt);
@@ -192,11 +215,11 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  clicked(fn: (tag: HoboTag, evt: MouseEvent) => void) {
+  clicked(fn: (tag: CTag, evt: MouseEvent) => void) {
     return this.on('click', fn);
   }
 
-  keyPressed(fn: (tag: HoboTag, evt: KeyboardEvent) => void, key?: string) {
+  keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string) {
     if (key) {
       return this.on('keypress', (_, evt) => {
         if (evt.code == key || evt.key == key) {
@@ -208,24 +231,40 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
     return this.on('keypress', fn);
   }
 
-  changed(fn: (tag: HoboTag, evt: Event) => void) {
+  changed(fn: (tag: CTag, evt: Event) => void) {
     return this.on('change', fn);
   }
 
-  submited(fn: (tag: HoboTag, evt: SubmitEvent) => void) {
+  submited(fn: (tag: CTag, evt: SubmitEvent) => void) {
     return this.on('submit', fn);
   }
 
   remove() {
     this.element.remove();
+    return this;
   }
 
   clear() {
-    if (this.element instanceof HTMLInputElement) this.element.value = '';
+    if (this.element instanceof HTMLInputElement || this.element instanceof HTMLTextAreaElement) {
+      this.element.value = '';
+      // Trigger input event, so clearing is treated as input!
+      this.element.dispatchEvent(new InputEvent('input'));
+    }
+    return this;
+  }
+
+  disable() {
+    this.setAttr('disabled', 'disabled');
+    return this;
+  }
+
+  enable() {
+    this.rmAttr('disabled');
+    return this;
   }
 
   q(selector) {
-    return new HoboTag(this.element.querySelector(selector));
+    return new CTag(this.element.querySelector(selector));
   }
 
   find(test: (el: HTMLElement) => boolean) {
@@ -238,15 +277,15 @@ export class HoboTag<T extends HTMLElement = HTMLElement> {
   }
 
   static find(selector: string) {
-    return new HoboTag(document.querySelector(selector) as HTMLElement);
+    return new CTag(document.querySelector(selector) as HTMLElement);
   }
 }
 
 export function tag(arg0: string | HTMLElement, children: TagChildren = [], silent: boolean = false) {
-  return new HoboTag(arg0, children, silent);
+  return new CTag(arg0, children, silent);
 }
 
-export function attach(tag: HoboTag) {
+export function attach(tag: CTag) {
   if (context.attachedTag) {
     context.attachedTagStack.push(context.attachedTag);
   }
@@ -262,10 +301,10 @@ export function detach() {
 }
 
 export function init(options: { root: string } = { root: 'body' }) {
-  attach(new HoboTag(`(${options.root})`));
+  attach(new CTag(`(${options.root})`));
 }
 
-const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => HoboTag) } = {
+const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) } = {
   ul: (children: TagChildren, silent: boolean = false) => {
     return tag(
       'ul',
@@ -282,8 +321,8 @@ const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => HoboTag
 type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 
 export const allTags: {
-  [key in ValidTagName]?: ((...children: PickArgType<key>) => HoboTag) & {
-    silent: (...children: PickArgType<key>) => HoboTag;
+  [key in ValidTagName]?: ((...children: PickArgType<key>) => CTag) & {
+    silent: (...children: PickArgType<key>) => CTag;
   };
 } = new Proxy(
   {},

@@ -1,4 +1,4 @@
-import { tag, init, allTags, state, attached, hinput, hstyle } from '../dist/hobo-rt.js';
+import { tag, init, allTags, state, attached, hinput, hstyle } from '../dist/cardboard.js';
 const { div, button, input, a, ul, li, hr, style } = allTags;
 init();
 hstyle();

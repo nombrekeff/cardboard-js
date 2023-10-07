@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>cardboard</title><meta name="description" content="Documentation for cardboard"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>cardboard-js</title><meta name="description" content="Documentation for cardboard-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base=".">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -6,20 +6,23 @@
 <div id="tsd-toolbar-links"></div></div>
 <ul class="results">
 <li class="state loading">Preparing search index...</li>
-<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">cardboard</a></div>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">cardboard-js</a></div>
 <div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-menu"></use></svg></a></div></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
-<h2>cardboard</h2></div>
+<h2>cardboard-js</h2></div>
 <div class="tsd-panel tsd-typography"><a id="md:carboardjs" class="tsd-anchor"></a><h2><a href="#md:carboardjs">Carboard.js</a></h2><p><img src="./header.png" alt=""></p>
 <p>Welcome to Carboard. A very simple, yet powerful &quot;framework&quot;/library to create web applications without the need to write any HTML.</p>
 <p>NOTE: There&#39;s also a server-side companion to <strong>Cardboard</strong> I&#39;ve written, called <a href="https://github.com/nombrekeff/hobo-js"><strong>Hobo</strong></a> in case you need to generate HTML as string in the server.</p>
+<blockquote>
+<p><strong>!NOTE!</strong>: Cardboard is in early development, so use with caution! Any help is apreciated!</p>
+</blockquote>
 <a id="md:who39s-this-for" class="tsd-anchor"></a><h3><a href="#md:who39s-this-for">Who&#39;s this for?</a></h3><p>If you don&#39;t like writing HTML, or need a very basic framework for simple apps, Cardboard might be for you!</p>
 <a id="md:what-does-it-do" class="tsd-anchor"></a><h3><a href="#md:what-does-it-do">What does it do?</a></h3><p>It let&#39;s you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...
 It&#39;s lightweight, and very simple.</p>
 <a id="md:getting-started" class="tsd-anchor"></a><h3><a href="#md:getting-started">Getting Started</a></h3><p>Install package: </p>
-<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> </span><span class="hl-2">https</span><span class="hl-1">:</span><span class="hl-3">//github.com/nombrekeff/cardboard</span>
+<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> </span><span class="hl-2">https</span><span class="hl-1">:</span><span class="hl-3">//github.com/nombrekeff/cardboard-js</span>
 </code><button>Copy</button></pre>
 <p>Then you  can import the package. </p>
 <pre><code class="language-ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-0">tag</span><span class="hl-1">, </span><span class="hl-0">init</span><span class="hl-1">, </span><span class="hl-0">allTags</span><span class="hl-1">, </span><span class="hl-0">state</span><span class="hl-1">, </span><span class="hl-0">attached</span><span class="hl-1">, </span><span class="hl-0">hinput</span><span class="hl-1">, </span><span class="hl-0">hstyle</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-5">&#39;cardboard&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> { </span><span class="hl-7">div</span><span class="hl-1">, </span><span class="hl-7">button</span><span class="hl-1">, </span><span class="hl-7">input</span><span class="hl-1">, </span><span class="hl-7">a</span><span class="hl-1">, </span><span class="hl-7">ul</span><span class="hl-1">, </span><span class="hl-7">li</span><span class="hl-1">, </span><span class="hl-7">hr</span><span class="hl-1">, </span><span class="hl-7">style</span><span class="hl-1"> } = </span><span class="hl-0">allTags</span><span class="hl-1">;</span><br/><br/><span class="hl-8">init</span><span class="hl-1">({ </span><span class="hl-0">root:</span><span class="hl-1"> </span><span class="hl-5">&#39;body&#39;</span><span class="hl-1"> }); </span><span class="hl-3">// By calling init, any new tag added will be added to the &quot;body&quot; (passing root selector is optional, &#39;body&#39; by default)</span>
@@ -35,8 +38,7 @@ It&#39;s lightweight, and very simple.</p>
 </code><button>Copy</button></pre>
 <blockquote>
 <p>Creates a &quot;reactive&quot; state, or more so a state that can be listened to, globaly or per property.
-<code>counterState.changed((newState) =&gt; handleStateChange())</code>
-<code>counterState.count.changed((newValue) =&gt; handleValueChange())</code></p>
+<code>counterState.changed((newState) =&gt; handleStateChange())</code><br><code>counterState.count.changed((newValue) =&gt; handleValueChange())</code></p>
 </blockquote>
 <pre><code class="language-ts"><span class="hl-8">button</span><span class="hl-1">()</span>
 </code><button>Copy</button></pre>
@@ -149,15 +151,15 @@ It can then be used as any other cardboard tag method.
 <li><a href="#md:component-example"><span>Component <wbr/>Example</span></a></li></ul></li>
 <li><a href="#md:attaching"><span>Attaching</span></a></li></ul></li></ul></li></ul></li></ul></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>cardboard</span></a>
+<nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>cardboard-js</span></a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".">
+<li><a href="modules/cardboard.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>cardboard</a></li>
 <li><a href="modules/colors.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>colors</a></li>
 <li><a href="modules/css_generator.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-generator</a></li>
 <li><a href="modules/css_properties.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-properties</a></li>
 <li><a href="modules/css_property_values.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-property-values</a></li>
-<li><a href="modules/hobo_rt.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>hobo-rt</a></li>
-<li><a href="modules/hobo_tag.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>hobo-tag</a></li>
 <li><a href="modules/state.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>state</a></li>
+<li><a href="modules/tag.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>tag</a></li>
 <li><a href="modules/tag_names.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>tag-names</a></li>
 <li><a href="modules/types.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>types</a></li>
 <li><a href="modules/util.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>util</a></li></ul></nav></div></div></div>

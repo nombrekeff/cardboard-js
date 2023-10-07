@@ -11,7 +11,7 @@
             "es2015"
         ],
         "types": [
-            "../dist/hobo-rt.d.ts"
+            "../dist/cardboard.d.ts"
         ]
     },
     "include": [

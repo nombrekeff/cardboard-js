@@ -1,4 +1,4 @@
-import { allTags } from '../hobo-rt.js';
+import { allTags } from '../cardboard.js';
 const { style } = allTags;
 const baseStyles = {
     ':root': {

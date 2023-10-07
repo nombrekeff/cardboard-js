@@ -19,15 +19,19 @@ export class CssGenerator {
     return blocks.join('\n');
   }
 
+  joinSelectors(left: string, right: string) {
+    if (right.startsWith(':')) return left + right;
+    return left + ' ' + right;
+  }
+
   generateBlockContent(selector: string, style: NestedStyleMap): string[] {
     let inside = '';
     let blocks = [];
 
     for (const key in style) {
       if (isObject(style[key])) {
-        blocks.push(this.generateBlockContent(selector + key, style[key]));
-      }
-      else if (style[key]) {
+        blocks.push(this.generateBlockContent(this.joinSelectors(selector, key), style[key]));
+      } else if (style[key]) {
         inside += this.generateStyle(key, style[key] as string);
       }
     }

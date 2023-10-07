@@ -6,8 +6,23 @@ export function state(content) {
         if (isObject(content[prop])) {
             content[prop] = state(content[prop]);
         }
+        else if (content[prop] instanceof Array) {
+            content[prop] = state(content[prop]);
+        }
     }
-    return new Proxy(content, {
+    const proxy = new Proxy(content, {
+        deleteProperty: function (target, prop) {
+            if (_propListeners[prop]) {
+                for (const listener of _propListeners[prop]) {
+                    listener(target[prop]);
+                }
+            }
+            for (const listener of _stateListeners) {
+                listener(target[prop]);
+            }
+            delete target[prop];
+            return true;
+        },
         get: (target, prop) => {
             const value = target[prop];
             if (isObject(content[prop])) {
@@ -34,10 +49,15 @@ export function state(content) {
                 }
             }
             for (const listener of _stateListeners) {
-                listener(target[prop]);
+                listener(target);
             }
             return true;
         },
     });
+    // Whole state changed
+    proxy.changed = (callback) => {
+        _stateListeners.push(callback);
+    };
+    return proxy;
 }
 //# sourceMappingURL=state.js.map
