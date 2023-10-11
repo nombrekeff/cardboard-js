@@ -1,11 +1,17 @@
 // Sync object
-const config= {
+export default {
   verbose: true,
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
   },
-  setupFiles: [
-    "./tests/__mocks__/client.ts"
-  ],
+  // setupFiles: ['./tests/__mocks__/client.ts'],
+  extensionsToTreatAsEsm: ['.ts'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  }
 };
-module.exports= config;

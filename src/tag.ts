@@ -56,12 +56,10 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   get value() {
-    if (this.element instanceof HTMLInputElement) return this.element.value;
-    return;
+    return (this.element as any).value;
   }
-  set value(newValue) {
-    if (this.element instanceof HTMLInputElement) this.element.value = newValue;
-    return;
+  set value(newValue: string) {
+    (this.element as any).value = newValue;
   }
 
   constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
@@ -77,9 +75,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
       this.element = arg0 as T;
     }
 
-    children.map((cl) => {
-      this.add(cl);
-    });
+    this.set(children);
 
     if (context.attachedTag && this.attachable) {
       context.attachedTag.add(this);
@@ -116,13 +112,13 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   text(text) {
-    this.element.innerText = text;
+    this.element.textContent = text;
     return this;
   }
 
   config(config: TagConfig) {
     if (config.attr) {
-      this.addAttrs(config.attr);
+      this.setAttrs(config.attr);
     }
     if (config.classList) {
       this.addClass(...config.classList);
@@ -159,14 +155,14 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   rmClass(...classNames: string[]) {
-    for (let key in classNames) {
+    for (let key of classNames) {
       this.element.classList.remove(key);
     }
     return this;
   }
 
   hasClass(...classNames: string[]) {
-    for (let key in classNames) {
+    for (let key of classNames) {
       if (!this.element.classList.contains(key)) {
         return false;
       }
@@ -186,7 +182,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   addStyle(styles: StyleMap) {
     for (let key in styles) {
-      this.element.style[key] = styles[key];
+      this.setStyle(key, styles[key]);
     }
     return this;
   }
@@ -198,15 +194,24 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  addAttrs(attrs: { [k: string]: string }) {
+  hasStyle(...styles: string[]) {
+    for (let key of styles) {
+      if (!this.element.style.getPropertyValue(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  setAttrs(attrs: { [k: string]: string }) {
     for (let key in attrs) {
-      this.element.setAttribute(key, attrs[key]);
+      this.addAttr(key, attrs[key]);
     }
     return this;
   }
 
-  setAttr(key: string, value: string) {
-    this.element.setAttribute(key, value);
+  addAttr(key: string, value: string) {
+    this.element.attributes[key] = value;
     return this;
   }
 
@@ -215,6 +220,19 @@ export class CTag<T extends HTMLElement = HTMLElement> {
       this.element.removeAttribute(key);
     }
     return this;
+  }
+
+  hasAttr(...attr: string[]) {
+    for (let key of attr) {
+      if (!(key in this.element.attributes)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  getAttr(attr: string) {
+    return this.element.attributes[attr];
   }
 
   on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
@@ -265,7 +283,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   disable() {
-    this.setAttr('disabled', 'disabled');
+    this.addAttr('disabled', 'disabled');
     return this;
   }
 

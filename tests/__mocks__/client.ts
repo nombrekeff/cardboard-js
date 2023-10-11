@@ -1,6 +1,11 @@
-// import { JSDOM } from 'jsdom';
+import { JSDOM } from 'jsdom';
 
-// const dom = new JSDOM() as any;
+export function createDomMock(content = '') {
+  const dom = new JSDOM(content);
+  global.document = dom.window.document;
+  global.window = dom.window as any;
+  global.HTMLElement = dom.window.HTMLElement;
+  global.HTMLInputElement = dom.window.HTMLInputElement;
 
-// global.document = dom.window.document;
-// global.window = dom.window;
+  return dom;
+}

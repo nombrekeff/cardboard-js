@@ -33,11 +33,14 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
     addStyle(styles: StyleMap): this;
     rmStyle(...styleNames: string[]): this;
-    addAttrs(attrs: {
+    hasStyle(...styles: string[]): boolean;
+    setAttrs(attrs: {
         [k: string]: string;
     }): this;
-    setAttr(key: string, value: string): this;
+    addAttr(key: string, value: string): this;
     rmAttr(...attrs: string[]): this;
+    hasAttr(...attr: string[]): boolean;
+    getAttr(attr: string): any;
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
     keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): this;

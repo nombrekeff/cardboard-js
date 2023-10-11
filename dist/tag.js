@@ -33,14 +33,10 @@ export class CTag {
         return getElementChildren(this.element);
     }
     get value() {
-        if (this.element instanceof HTMLInputElement)
-            return this.element.value;
-        return;
+        return this.element.value;
     }
     set value(newValue) {
-        if (this.element instanceof HTMLInputElement)
-            this.element.value = newValue;
-        return;
+        this.element.value = newValue;
     }
     constructor(arg0, children = [], attachable = false) {
         this.parent = null;
@@ -58,9 +54,7 @@ export class CTag {
             this.attachable = false;
             this.element = arg0;
         }
-        children.map((cl) => {
-            this.add(cl);
-        });
+        this.set(children);
         if (context.attachedTag && this.attachable) {
             context.attachedTag.add(this);
         }
@@ -86,12 +80,12 @@ export class CTag {
         return this;
     }
     text(text) {
-        this.element.innerText = text;
+        this.element.textContent = text;
         return this;
     }
     config(config) {
         if (config.attr) {
-            this.addAttrs(config.attr);
+            this.setAttrs(config.attr);
         }
         if (config.classList) {
             this.addClass(...config.classList);
@@ -124,13 +118,13 @@ export class CTag {
         return this;
     }
     rmClass(...classNames) {
-        for (let key in classNames) {
+        for (let key of classNames) {
             this.element.classList.remove(key);
         }
         return this;
     }
     hasClass(...classNames) {
-        for (let key in classNames) {
+        for (let key of classNames) {
             if (!this.element.classList.contains(key)) {
                 return false;
             }
@@ -147,7 +141,7 @@ export class CTag {
     }
     addStyle(styles) {
         for (let key in styles) {
-            this.element.style[key] = styles[key];
+            this.setStyle(key, styles[key]);
         }
         return this;
     }
@@ -157,14 +151,22 @@ export class CTag {
         }
         return this;
     }
-    addAttrs(attrs) {
+    hasStyle(...styles) {
+        for (let key of styles) {
+            if (!this.element.style.getPropertyValue(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    setAttrs(attrs) {
         for (let key in attrs) {
-            this.element.setAttribute(key, attrs[key]);
+            this.addAttr(key, attrs[key]);
         }
         return this;
     }
-    setAttr(key, value) {
-        this.element.setAttribute(key, value);
+    addAttr(key, value) {
+        this.element.attributes[key] = value;
         return this;
     }
     rmAttr(...attrs) {
@@ -172,6 +174,17 @@ export class CTag {
             this.element.removeAttribute(key);
         }
         return this;
+    }
+    hasAttr(...attr) {
+        for (let key of attr) {
+            if (!(key in this.element.attributes)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    getAttr(attr) {
+        return this.element.attributes[attr];
     }
     on(evtName, fn) {
         if (fn) {
@@ -213,7 +226,7 @@ export class CTag {
         return this;
     }
     disable() {
-        this.setAttr('disabled', 'disabled');
+        this.addAttr('disabled', 'disabled');
         return this;
     }
     enable() {
