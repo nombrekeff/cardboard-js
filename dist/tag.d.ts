@@ -28,6 +28,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     addClass(...classNames: string[]): this;
     className(className: string): this;
     rmClass(...classNames: string[]): this;
+    hasClass(...classNames: string[]): boolean;
     replaceClass(targetClass: string, replaceClass: string): this;
     setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
     addStyle(styles: StyleMap): this;

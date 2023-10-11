@@ -129,6 +129,14 @@ export class CTag {
         }
         return this;
     }
+    hasClass(...classNames) {
+        for (let key in classNames) {
+            if (!this.element.classList.contains(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
     replaceClass(targetClass, replaceClass) {
         this.element.classList.replace(targetClass, replaceClass);
         return this;

@@ -165,6 +165,15 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  hasClass(...classNames: string[]) {
+    for (let key in classNames) {
+      if (!this.element.classList.contains(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   replaceClass(targetClass: string, replaceClass: string) {
     this.element.classList.replace(targetClass, replaceClass);
     return this;
