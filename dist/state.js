@@ -2,14 +2,6 @@ import { isObject } from './util.js';
 export function state(content) {
     let _propListeners = {};
     let _stateListeners = [];
-    for (let prop of Object.getOwnPropertyNames(content)) {
-        if (isObject(content[prop])) {
-            content[prop] = state(content[prop]);
-        }
-        else if (content[prop] instanceof Array) {
-            content[prop] = state(content[prop]);
-        }
-    }
     const addListener = (prop, callback) => {
         if (!_propListeners[prop])
             _propListeners[prop] = [];
@@ -27,14 +19,27 @@ export function state(content) {
     };
     const addChangedMethod = (target, prop) => {
         const value = target[prop];
-        if (isObject(content[prop])) {
-            value.changed = (callback) => addListener(prop, callback);
+        try {
+            if (isObject(content[prop])) {
+                value.changed = (callback) => addListener(prop, callback);
+            }
+            else if (value.__proto__) {
+                value.__proto__.changed = (callback) => addListener(prop, callback);
+            }
         }
-        else if (value.__proto__) {
-            value.__proto__.changed = (callback) => addListener(prop, callback);
-        }
+        catch (error) { }
         return value;
     };
+    for (let prop of Object.getOwnPropertyNames(content)) {
+        if (isObject(content[prop])) {
+            content[prop] = state(content[prop]);
+            content[prop].changed(() => emitChange(content, prop));
+        }
+        else if (content[prop] instanceof Array) {
+            content[prop] = state(content[prop]);
+            content[prop].changed(() => emitChange(content, prop));
+        }
+    }
     const proxy = new Proxy(content, {
         deleteProperty: function (target, prop) {
             emitChange(target, prop);

@@ -58,8 +58,19 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   get value() {
     return (this.element as any).value;
   }
-  set value(newValue: string) {
+
+  get id() {
+    return this.element.id;
+  }
+
+  setId(id: string) {
+    this.element.id = id;
+    return this;
+  }
+
+  setValue(newValue: string) {
     (this.element as any).value = newValue;
+    return this;
   }
 
   constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
@@ -123,14 +134,17 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     if (config.classList) {
       this.addClass(...config.classList);
     }
+    if (config.className) {
+      this.className(config.className);
+    }
     if (config.style) {
-      this.addStyle(config.style);
+      this.setStyle(config.style);
     }
     if (config.text) {
       this.text(config.text);
     }
     if (config.value) {
-      this.value = config.value;
+      this.setValue(config.value);
     }
     if (config.children) {
       this.add(...config.children);
@@ -175,14 +189,14 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
+  addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
     this.element.style[property as string] = value;
     return this;
   }
 
-  addStyle(styles: StyleMap) {
+  setStyle(styles: StyleMap) {
     for (let key in styles) {
-      this.setStyle(key, styles[key]);
+      this.addStyle(key, styles[key]);
     }
     return this;
   }
@@ -218,6 +232,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   rmAttr(...attrs: string[]) {
     for (let key of attrs) {
       this.element.removeAttribute(key);
+      delete this.element.attributes[key];
     }
     return this;
   }
@@ -274,11 +289,9 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   clear() {
-    if (this.element instanceof HTMLInputElement || this.element instanceof HTMLTextAreaElement) {
-      this.element.value = '';
-      // Trigger input event, so clearing is treated as input!
-      this.element.dispatchEvent(new InputEvent('input'));
-    }
+    (this.element as any).value = '';
+    // Trigger input event, so clearing is treated as input!
+    this.element.dispatchEvent(new InputEvent('input'));
     return this;
   }
 
@@ -299,14 +312,10 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   find(test: (el: HTMLElement) => boolean) {
     const actualChildren = [...this.children];
     for (const child of actualChildren) {
-      if (test(child as HTMLElement)) return child;
+      if (test(child as HTMLElement)) return tag(child as HTMLElement);
     }
 
     return null;
-  }
-
-  static find(selector: string) {
-    return new CTag(document.querySelector(selector) as HTMLElement);
   }
 }
 

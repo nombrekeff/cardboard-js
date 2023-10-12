@@ -17,7 +17,7 @@ style.attach({
 div.attach('Hey!!');
 div.attach('Heyy 2');
 
-const link = (text, link?) => a.attach(text).addAttrs({ href: link });
+const link = (text, link?) => a.attach(text).setAttrs({ href: link });
 
 div.attach('Hello world 2!').config({ style: { color: 'red' } });
 tag('br');
@@ -32,13 +32,13 @@ button.attach()
 
 hr();
 input.attach()
-  .addAttrs({ placeholder: 'Enter number', type: 'number' })
+  .setAttrs({ placeholder: 'Enter number', type: 'number' })
   .changed((t, evt) => {
     console.log(evt);
   });
 hr();
 
-const list = ul.attach().addAttrs({ id: 'list' });
+const list = ul.attach().setAttrs({ id: 'list' });
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
 
 const addItem = () => {

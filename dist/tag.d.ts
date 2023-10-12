@@ -16,8 +16,10 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     /** If set to true, it be appended to the attached tag */
     private attachable;
     get children(): Node[];
-    get value(): string;
-    set value(newValue: string);
+    get value(): any;
+    get id(): string;
+    setId(id: string): this;
+    setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
     set(children: TagChildren): void;
     add(...children: TagChildren): this;
@@ -30,8 +32,8 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     rmClass(...classNames: string[]): this;
     hasClass(...classNames: string[]): boolean;
     replaceClass(targetClass: string, replaceClass: string): this;
-    setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
-    addStyle(styles: StyleMap): this;
+    addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
+    setStyle(styles: StyleMap): this;
     rmStyle(...styleNames: string[]): this;
     hasStyle(...styles: string[]): boolean;
     setAttrs(attrs: {
@@ -51,8 +53,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     disable(): this;
     enable(): this;
     q(selector: any): CTag<HTMLElement>;
-    find(test: (el: HTMLElement) => boolean): Node;
-    static find(selector: string): CTag<HTMLElement>;
+    find(test: (el: HTMLElement) => boolean): CTag<HTMLElement>;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
 export declare function attach(tag: CTag): void;
