@@ -5,6 +5,5 @@ export type State<T extends Record<string, any>> = {
     [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
 } & {
     changed: (callback: (newValue: T) => void) => void;
-    not: Omit<State<T>, 'changed'>;
 };
 export declare function state<T extends object>(content: T, callback?: (newValue: T) => void): State<T>;
