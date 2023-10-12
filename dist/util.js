@@ -1,3 +1,4 @@
+import { CTag } from './tag';
 /** Receives a function, and returns just the body of the function as a string */
 export function justFnBody(fn) {
     let fnStr = fn.toString();
@@ -12,6 +13,27 @@ export function getElementIndex(node) {
         index++;
     }
     return index;
+}
+export function isSelector(str) {
+    return str.match(/\(.+\)/);
+}
+export function getElementForChild(cl) {
+    if (typeof cl === 'string')
+        return document.createTextNode(cl);
+    if (cl instanceof CTag)
+        return cl.element;
+    if (cl instanceof HTMLElement)
+        return cl;
+    return null;
+}
+export function getElementChildren(element) {
+    var childNodes = element.childNodes, children = [], i = childNodes.length;
+    while (i--) {
+        if (childNodes[i].nodeType == 1) {
+            children.unshift(childNodes[i]);
+        }
+    }
+    return children;
 }
 export const replaceDoubleQuotes = (str) => str.replace(/"/g, "'");
 export const generateId = () => `_hb${s4() + s4()}`;

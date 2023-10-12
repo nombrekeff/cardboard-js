@@ -1,5 +1,5 @@
 import { CssGenerator } from './css-generator.js';
-import { getElementIndex } from './util.js';
+import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
 export let context = {
     attachedTag: null,
     attachedTagStack: [],
@@ -7,27 +7,6 @@ export let context = {
 };
 export function attached() {
     return context.attachedTag;
-}
-function isSelector(str) {
-    return str.match(/\(.+\)/);
-}
-function getElementForChild(cl) {
-    if (typeof cl === 'string')
-        return document.createTextNode(cl);
-    if (cl instanceof CTag)
-        return cl.element;
-    if (cl instanceof HTMLElement)
-        return cl;
-    return null;
-}
-function getElementChildren(element) {
-    var childNodes = element.childNodes, children = [], i = childNodes.length;
-    while (i--) {
-        if (childNodes[i].nodeType == 1) {
-            children.unshift(childNodes[i]);
-        }
-    }
-    return children;
 }
 export class CTag {
     get children() {

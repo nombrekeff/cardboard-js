@@ -3,8 +3,8 @@ import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
-import { StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
-import { getElementIndex } from './util.js';
+import { StyleMap, StyleSet, TagBuilder, TagChildren, TagConfig } from './types.js';
+import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
 
 export let context: {
   attachedTag: CTag;
@@ -18,31 +18,6 @@ export let context: {
 
 export function attached() {
   return context.attachedTag;
-}
-
-function isSelector(str: string) {
-  return str.match(/\(.+\)/);
-}
-
-function getElementForChild(cl: TagChild): Node {
-  if (typeof cl === 'string') return document.createTextNode(cl);
-  if (cl instanceof CTag) return cl.element;
-  if (cl instanceof HTMLElement) return cl;
-  return null;
-}
-
-function getElementChildren(element: HTMLElement): Node[] {
-  var childNodes = element.childNodes,
-    children = [],
-    i = childNodes.length;
-
-  while (i--) {
-    if (childNodes[i].nodeType == 1) {
-      children.unshift(childNodes[i]);
-    }
-  }
-
-  return children;
 }
 
 export class CTag<T extends HTMLElement = HTMLElement> {
