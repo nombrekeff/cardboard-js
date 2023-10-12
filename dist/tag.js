@@ -68,7 +68,11 @@ export class CTag {
         }
     }
     set(children) {
-        this.element.replaceChildren(...children.map((cl) => getElementForChild(cl)));
+        this.element.replaceChildren(...children.map((cl) => {
+            if (cl instanceof CTag)
+                cl.parent = this;
+            return getElementForChild(cl);
+        }));
     }
     add(...children) {
         this.element.append(...children.map((cl) => {
@@ -178,6 +182,7 @@ export class CTag {
     }
     addAttr(key, value) {
         this.element.attributes[key] = value;
+        this.element.setAttribute(key, value);
         return this;
     }
     rmAttr(...attrs) {

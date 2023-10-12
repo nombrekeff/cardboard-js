@@ -94,7 +94,12 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   set(children: TagChildren) {
-    this.element.replaceChildren(...children.map((cl) => getElementForChild(cl)));
+    this.element.replaceChildren(
+      ...children.map((cl) => {
+        if (cl instanceof CTag) cl.parent = this;
+        return getElementForChild(cl);
+      }),
+    );
   }
 
   add(...children: TagChildren) {
@@ -226,6 +231,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   addAttr(key: string, value: string) {
     this.element.attributes[key] = value;
+    this.element.setAttribute(key, value);
     return this;
   }
 
