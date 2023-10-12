@@ -5,11 +5,14 @@
         "outDir": "dist",
         "sourceMap": true,
         "declaration": true,
+        "allowJs": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "lib": [
-            "dom",
-            "ES2016"
+            "ES2016",
+            "DOM"
         ],
-        "types": []
+        "types": ["jest"]
     },
     "include": [
         "./src/**/*.ts"

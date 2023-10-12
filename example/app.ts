@@ -3,7 +3,7 @@ const { div, button, input, a, ul, li, hr, style } = allTags;
 
 init();
 hstyle();
-style({
+style.attach({
   '#list:after': {
     content: '"No items in list!"',
     position: 'absolute',
@@ -14,36 +14,36 @@ style({
   },
 });
 
-div('Hey!!');
-div('Heyy 2');
+div.attach('Hey!!');
+div.attach('Heyy 2');
 
-const link = (text, link?) => a(text).addAttrs({ href: link });
+const link = (text, link?) => a.attach(text).setAttrs({ href: link });
 
-div('Hello world 2!').config({ style: { color: 'red' } });
+div.attach('Hello world 2!').config({ style: { color: 'red' } });
 tag('br');
 link('Link', 'https://www.google.com');
 tag('br');
 hr();
 
 let counterState = state({ count: 0 });
-button()
+button.attach()
   .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
   .clicked((_) => counterState.count++);
 
 hr();
-input()
-  .addAttrs({ placeholder: 'Enter number', type: 'number' })
+input.attach()
+  .setAttrs({ placeholder: 'Enter number', type: 'number' })
   .changed((t, evt) => {
     console.log(evt);
   });
 hr();
 
-const list = ul.silent().addAttrs({ id: 'list' });
+const list = ul.attach().setAttrs({ id: 'list' });
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
 
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li.silent(itemInput.value).clicked((self) => self.remove()));
+    list.add(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };

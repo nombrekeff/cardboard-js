@@ -8,7 +8,7 @@ const pageLinks = [
   'https://fonts.gstatic.com',
   'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,600;0,700;1,100;1,300&display=swap',
 ];
-const makeLinks = () => pageLinks.map((url) => link().setAttr('href', url));
+const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
 init();
 hstyle();
@@ -37,7 +37,7 @@ const addItemBtn = button('+')
 
 const todoCount = span('0').consume(todoState.items.length, (self, count) => self.text(` (count: ${count}) `));
 
-h3.attach('Cardboard TODO'.toUpperCase(), todoCount).addStyle({ textAlign: 'center', margin: '40px 0' });
+h3.attach('Cardboard TODO'.toUpperCase(), todoCount).setStyle({ textAlign: 'center', margin: '40px 0' });
 div.attach(itemInput, addItemBtn).addClass('header');
 
 const todoList = div
@@ -45,7 +45,7 @@ const todoList = div
     p('There are no items')
       .addClass('list-empty')
       .consume(todoState.items.length, (t, v) => {
-        t.setStyle('display', v ? 'none' : 'block');
+        t.addStyle('display', v ? 'none' : 'block');
       }),
   )
   .addClass('todo-list');

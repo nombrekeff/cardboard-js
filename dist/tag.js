@@ -33,14 +33,18 @@ export class CTag {
         return getElementChildren(this.element);
     }
     get value() {
-        if (this.element instanceof HTMLInputElement)
-            return this.element.value;
-        return;
+        return this.element.value;
     }
-    set value(newValue) {
-        if (this.element instanceof HTMLInputElement)
-            this.element.value = newValue;
-        return;
+    get id() {
+        return this.element.id;
+    }
+    setId(id) {
+        this.element.id = id;
+        return this;
+    }
+    setValue(newValue) {
+        this.element.value = newValue;
+        return this;
     }
     constructor(arg0, children = [], attachable = false) {
         this.parent = null;
@@ -58,15 +62,17 @@ export class CTag {
             this.attachable = false;
             this.element = arg0;
         }
-        children.map((cl) => {
-            this.add(cl);
-        });
+        this.set(children);
         if (context.attachedTag && this.attachable) {
             context.attachedTag.add(this);
         }
     }
     set(children) {
-        this.element.replaceChildren(...children.map((cl) => getElementForChild(cl)));
+        this.element.replaceChildren(...children.map((cl) => {
+            if (cl instanceof CTag)
+                cl.parent = this;
+            return getElementForChild(cl);
+        }));
     }
     add(...children) {
         this.element.append(...children.map((cl) => {
@@ -86,24 +92,27 @@ export class CTag {
         return this;
     }
     text(text) {
-        this.element.innerText = text;
+        this.element.textContent = text;
         return this;
     }
     config(config) {
         if (config.attr) {
-            this.addAttrs(config.attr);
+            this.setAttrs(config.attr);
         }
         if (config.classList) {
             this.addClass(...config.classList);
         }
+        if (config.className) {
+            this.className(config.className);
+        }
         if (config.style) {
-            this.addStyle(config.style);
+            this.setStyle(config.style);
         }
         if (config.text) {
             this.text(config.text);
         }
         if (config.value) {
-            this.value = config.value;
+            this.setValue(config.value);
         }
         if (config.children) {
             this.add(...config.children);
@@ -124,22 +133,30 @@ export class CTag {
         return this;
     }
     rmClass(...classNames) {
-        for (let key in classNames) {
+        for (let key of classNames) {
             this.element.classList.remove(key);
         }
         return this;
+    }
+    hasClass(...classNames) {
+        for (let key of classNames) {
+            if (!this.element.classList.contains(key)) {
+                return false;
+            }
+        }
+        return true;
     }
     replaceClass(targetClass, replaceClass) {
         this.element.classList.replace(targetClass, replaceClass);
         return this;
     }
-    setStyle(property, value) {
+    addStyle(property, value) {
         this.element.style[property] = value;
         return this;
     }
-    addStyle(styles) {
+    setStyle(styles) {
         for (let key in styles) {
-            this.element.style[key] = styles[key];
+            this.addStyle(key, styles[key]);
         }
         return this;
     }
@@ -149,21 +166,42 @@ export class CTag {
         }
         return this;
     }
-    addAttrs(attrs) {
+    hasStyle(...styles) {
+        for (let key of styles) {
+            if (!this.element.style.getPropertyValue(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    setAttrs(attrs) {
         for (let key in attrs) {
-            this.element.setAttribute(key, attrs[key]);
+            this.addAttr(key, attrs[key]);
         }
         return this;
     }
-    setAttr(key, value) {
+    addAttr(key, value) {
+        this.element.attributes[key] = value;
         this.element.setAttribute(key, value);
         return this;
     }
     rmAttr(...attrs) {
         for (let key of attrs) {
             this.element.removeAttribute(key);
+            delete this.element.attributes[key];
         }
         return this;
+    }
+    hasAttr(...attr) {
+        for (let key of attr) {
+            if (!(key in this.element.attributes)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    getAttr(attr) {
+        return this.element.attributes[attr];
     }
     on(evtName, fn) {
         if (fn) {
@@ -197,15 +235,13 @@ export class CTag {
         return this;
     }
     clear() {
-        if (this.element instanceof HTMLInputElement || this.element instanceof HTMLTextAreaElement) {
-            this.element.value = '';
-            // Trigger input event, so clearing is treated as input!
-            this.element.dispatchEvent(new InputEvent('input'));
-        }
+        this.element.value = '';
+        // Trigger input event, so clearing is treated as input!
+        this.element.dispatchEvent(new InputEvent('input'));
         return this;
     }
     disable() {
-        this.setAttr('disabled', 'disabled');
+        this.addAttr('disabled', 'disabled');
         return this;
     }
     enable() {
@@ -219,12 +255,9 @@ export class CTag {
         const actualChildren = [...this.children];
         for (const child of actualChildren) {
             if (test(child))
-                return child;
+                return tag(child);
         }
         return null;
-    }
-    static find(selector) {
-        return new CTag(document.querySelector(selector));
     }
 }
 export function tag(arg0, children = [], attach = false) {
@@ -244,8 +277,14 @@ export function detach() {
         context.attachedTag = null;
     }
 }
+export function detachAll() {
+    context.attachedTag = null;
+    context.attachedTagStack = [];
+}
 export function init(options = { root: 'body' }) {
-    attach(new CTag(`(${options.root})`));
+    const root = new CTag(`(${options.root})`);
+    attach(root);
+    return root;
 }
 const interceptors = {
     ul: (children, attach = false) => {

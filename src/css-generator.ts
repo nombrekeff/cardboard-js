@@ -1,4 +1,4 @@
-import { NestedStyleMap } from './types.js';
+import { NestedStyleMap, StyleMap } from './types.js';
 import { camelToDash, isObject } from './util.js';
 
 export class CssGenerator {
@@ -16,12 +16,7 @@ export class CssGenerator {
 
   generateBlock(selector: string, style: NestedStyleMap) {
     let blocks = this.generateBlockContent(selector, style);
-    return blocks.join('\n');
-  }
-
-  joinSelectors(left: string, right: string) {
-    if (right.startsWith(':')) return left + right;
-    return left + ' ' + right;
+    return blocks.join('');
   }
 
   generateBlockContent(selector: string, style: NestedStyleMap): string[] {
@@ -30,13 +25,14 @@ export class CssGenerator {
 
     for (const key in style) {
       if (isObject(style[key])) {
-        blocks.push(this.generateBlockContent(this.joinSelectors(selector, key), style[key]));
-      } else if (style[key]) {
+        blocks.push(this.generateBlockContent(selector + key, style[key]));
+      } 
+      else if (style[key]) {
         inside += this.generateStyle(key, style[key] as string);
       }
     }
 
-    blocks.push(`${selector}{${inside}}`);
+    blocks.unshift(`${selector}{${inside}}`);
 
     return blocks;
   }

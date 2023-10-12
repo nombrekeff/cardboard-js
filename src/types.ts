@@ -24,4 +24,5 @@ export type TagConfig = {
   children?: TagChildren;
   on?: EventMap;
   value?: string;
+  className?: string;
 };

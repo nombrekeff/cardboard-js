@@ -16,8 +16,10 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     /** If set to true, it be appended to the attached tag */
     private attachable;
     get children(): Node[];
-    get value(): string;
-    set value(newValue: string);
+    get value(): any;
+    get id(): string;
+    setId(id: string): this;
+    setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
     set(children: TagChildren): void;
     add(...children: TagChildren): this;
@@ -28,15 +30,19 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     addClass(...classNames: string[]): this;
     className(className: string): this;
     rmClass(...classNames: string[]): this;
+    hasClass(...classNames: string[]): boolean;
     replaceClass(targetClass: string, replaceClass: string): this;
-    setStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
-    addStyle(styles: StyleMap): this;
+    addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
+    setStyle(styles: StyleMap): this;
     rmStyle(...styleNames: string[]): this;
-    addAttrs(attrs: {
+    hasStyle(...styles: string[]): boolean;
+    setAttrs(attrs: {
         [k: string]: string;
     }): this;
-    setAttr(key: string, value: string): this;
+    addAttr(key: string, value: string): this;
     rmAttr(...attrs: string[]): this;
+    hasAttr(...attr: string[]): boolean;
+    getAttr(attr: string): any;
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
     keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): this;
@@ -47,19 +53,20 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     disable(): this;
     enable(): this;
     q(selector: any): CTag<HTMLElement>;
-    find(test: (el: HTMLElement) => boolean): Node;
-    static find(selector: string): CTag<HTMLElement>;
+    find(test: (el: HTMLElement) => boolean): CTag<HTMLElement>;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
 export declare function attach(tag: CTag): void;
 export declare function detach(): void;
+export declare function detachAll(): void;
 export declare function init(options?: {
     root: string;
-}): void;
+}): CTag<HTMLElement>;
 type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
-export declare const allTags: {
-    [key in ValidTagName]?: ((...children: PickArgType<key>) => CTag) & {
+type AllTags = {
+    [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
         attach: (...children: PickArgType<key>) => CTag;
     };
 };
+export declare const allTags: AllTags;
 export {};
