@@ -49,7 +49,8 @@ export class CTag {
         else {
             throw new Error('Invalid argument 0');
         }
-        this.set(children);
+        if (children.length > 0)
+            this.set(children);
         if (context.attachedTag && this.attachable) {
             context.attachedTag.add(this);
         }

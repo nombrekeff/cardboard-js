@@ -1,7 +1,7 @@
 import { CTag, allTags } from '../../dist/cardboard.js';
 const { div, button } = allTags;
 
-export default function todoItem(content: string, opts: { remove: (self: CTag, content: string) => void }) {
+export default function todoItem(content: string, opts: { remove: (self: typeof CTag, content: string) => void }) {
   const removeItem = (self) => {
     if (opts.remove) {
       opts.remove(self, content);

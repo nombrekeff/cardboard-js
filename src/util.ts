@@ -1,5 +1,5 @@
-import { CTag } from './tag';
-import { TagChild } from './types';
+import { CTag } from './tag.js';
+import { TagChild } from './types.js';
 
 /** Receives a function, and returns just the body of the function as a string */
 export function justFnBody(fn: Function) {

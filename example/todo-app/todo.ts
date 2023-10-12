@@ -1,5 +1,5 @@
+import { hstyle, hinput, init, tag, state, allTags, attach } from '../../dist/cardboard.js';
 import styles from './style.js';
-import { init, allTags, hinput, hstyle, attach, tag, state, CTag } from '../../dist/cardboard.js';
 import todoItem from './todo-item.js';
 
 const { div, button, h3, link, p, span } = allTags;
@@ -16,7 +16,7 @@ hstyle();
 tag('(head)').add(...makeLinks());
 styles();
 
-const todoState = state([...JSON.parse(localStorage.getItem('TODOS'))], (newState) => {
+const todoState = state([...(JSON.parse(localStorage.getItem('TODOS')) || [])], (newState) => {
   localStorage.setItem('TODOS', JSON.stringify([...newState]));
 });
 

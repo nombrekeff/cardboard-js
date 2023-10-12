@@ -1,4 +1,4 @@
-import { CTag } from './tag';
+import { CTag } from './tag.js';
 /** Receives a function, and returns just the body of the function as a string */
 export function justFnBody(fn) {
     let fnStr = fn.toString();

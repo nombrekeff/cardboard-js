@@ -1,4 +1,4 @@
-import { TagChild } from './types';
+import { TagChild } from './types.js';
 /** Receives a function, and returns just the body of the function as a string */
 export declare function justFnBody(fn: Function): string;
 export declare function getElementIndex(node: Element): number;
