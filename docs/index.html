@@ -42,8 +42,8 @@
 <pre><code class="language-ts"><span class="hl-8">button</span><span class="hl-1">()</span>
 </code><button>Copy</button></pre>
 <blockquote>
-<p><code>button()</code> or any other tag method for that matter, generates an HTMLElement in the page. To the body by default, but this can be changed. Check <a href="#attaching">Attaching</a> further down.
-If you don&#39;t want the tag to be automatically added, you can call <code>button.silent()</code> instead. This will just return the tag and let you handle it.</p>
+<p><code>button()</code> or any other tag method for that matter, generate an HTMLElement. But it&#39;s not added directly to the DOM. 
+You can manually add children <code>div().add(p())</code>, or if there&#39;s a tag attached, you can simply do: <code>p.attach()</code>. Check the <a href="#attaching">Attaching</a> section for more information.</p>
 </blockquote>
 <pre><code class="language-ts"><span class="hl-1">.</span><span class="hl-8">consume</span><span class="hl-1">(</span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">, (</span><span class="hl-0">self</span><span class="hl-1">, </span><span class="hl-0">count</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">self</span><span class="hl-1">.</span><span class="hl-8">text</span><span class="hl-1">(</span><span class="hl-5">`Clicked </span><span class="hl-6">${</span><span class="hl-0">count</span><span class="hl-6">}</span><span class="hl-5"> times`</span><span class="hl-1">))</span>
 </code><button>Copy</button></pre>

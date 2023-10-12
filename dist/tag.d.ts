@@ -1,15 +1,15 @@
-import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
-import { StyleMap, StyleSet, TagChildren, TagConfig } from './types.js';
-export declare let context: {
-    attachedTag: CTag;
-    attachedTagStack: CTag[];
-    css: CssGenerator;
-};
+import { StyleMap, StyleSet, TagChild, TagChildren, TagConfig } from './types.js';
+/** Returns the currently attached {CTag}*/
 export declare function attached(): CTag<HTMLElement>;
+/**
+ * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
+ *
+ * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
+ */
 export declare class CTag<T extends HTMLElement = HTMLElement> {
     element: T;
     parent: CTag;
@@ -22,8 +22,9 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     setId(id: string): this;
     setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
-    set(children: TagChildren): void;
-    add(...children: TagChildren): this;
+    /** Sets the children, removes previous children  */
+    setChildren(children: TagChildren): void;
+    append(...children: TagChildren): this;
     /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
     doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
@@ -87,6 +88,10 @@ export declare function detachAll(): void;
 export declare function init(options?: {
     root: string;
 }): CTag<HTMLElement>;
+export declare function getElementIndex(node: Element): number;
+export declare function isSelector(str: string): RegExpMatchArray;
+export declare function getElementForChild(cl: TagChild): Node;
+export declare function getElementChildren(element: HTMLElement): Node[];
 type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 type AllTags = {
     [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {

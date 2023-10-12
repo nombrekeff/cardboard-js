@@ -13,7 +13,7 @@ const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
 init();
 hstyle();
-tag('(head)').add(...makeLinks());
+tag('(head)').append(...makeLinks());
 styles();
 
 const todoState = state([...(JSON.parse(localStorage.getItem('TODOS')) || [])], (newState) => {
@@ -46,7 +46,7 @@ const todoList = div
 
 function addItem(value: string) {
   if (value) {
-    todoList.add(
+    todoList.append(
       todoItem(value, {
         remove: (s, c) => {
           const index = todoState.indexOf(c);

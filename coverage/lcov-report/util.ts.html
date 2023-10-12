@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">65.51% </span>
+                <span class="strong">58.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/29</span>
+                <span class='fraction'>14/24</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/10</span>
+                <span class='fraction'>3/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.22% </span>
+                <span class="strong">61.53% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/18</span>
+                <span class='fraction'>8/13</span>
             </div>
         
             
@@ -83,13 +83,8 @@
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L21'></a><a href='#L21'>21</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
@@ -99,12 +94,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
@@ -113,9 +102,9 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">80x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Consumable } from './state';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// import { CTag } from './tag.js';
+// import { TagChild } from './types.js';
 &nbsp;
 /** Receives a function, and returns just the body of the function as a string */
 export function <span class="fstat-no" title="function not covered" >justFnBody(</span>fn: Function) {
@@ -125,13 +114,7 @@ export function <span class="fstat-no" title="function not covered" >justFnBody(
 <span class="cstat-no" title="statement not covered" >  fnStr = fnStr.replace(/^\(.*\)\s?=&gt;\s?{/, '');</span>
 <span class="cstat-no" title="statement not covered" >  return fnStr.trim();</span>
 }
-export function getElementIndex(node: Element) {
-  var index = 0;
-  while ((node = node.previousElementSibling)) {
-    index++;
-  }
-  return index;
-}
+&nbsp;
 export const replaceDoubleQuotes = <span class="fstat-no" title="function not covered" >(s</span>tr: string) =&gt; <span class="cstat-no" title="statement not covered" >str.replace(/"/g, "'");</span>
 export const generateId = <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >`_hb${s4() + s4()}`;</span>
 export const camelToDash = (str) =&gt; str.replace(/([A-Z])/g, (val) =&gt; `-${val.toLowerCase()}`);
@@ -139,7 +122,6 @@ export const dashToCamel = <span class="fstat-no" title="function not covered" >
 export function isObject(obj: any): boolean {
   return typeof obj === 'object' &amp;&amp; !(obj instanceof Array);
 }
-&nbsp;
 const s4 = <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >(((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);</span>
 &nbsp;</pre></td></tr></table></pre>
 
@@ -148,7 +130,7 @@ const s4 = <span class="fstat-no" title="function not covered" >() =</span>&gt; 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-10-12T19:48:02.563Z
+                at 2023-10-12T20:51:25.245Z
             </div>
         <script src="prettify.js"></script>
         <script>

@@ -64,7 +64,7 @@ let counterState = state({ count: 0 });
 button()
 ```
 > `button()` or any other tag method for that matter, generate an HTMLElement. But it's not added directly to the DOM. 
-> You can manually add children `div().add(p())`, or if there's a tag attached, you can simply do: `p.attach()`. Check the [Attaching](#attaching) section for more information.
+> You can manually add children `div().append(p())`, or if there's a tag attached, you can simply do: `p.attach()`. Check the [Attaching](#attaching) section for more information.
 
 ```ts
 .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
@@ -91,13 +91,13 @@ const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => add
 
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li(itemInput.value).clicked((self) => self.remove()));
+    list.append(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };
 
 button.attach('Add item').clicked(addItem);
-attached().add(list);
+attached().append(list);
 ```
 
 Let me explain:
@@ -118,13 +118,13 @@ const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => add
 ```ts
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li(itemInput.value).clicked((self) => self.remove()));
+    list.append(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };
 ```
 > Little method to handle adding items to the list. It will also clear the input.
-> To add an iten to the list, it's possible by calling `.add()` with the element we want.
+> To add an iten to the list, it's possible by calling `.append()` with the element we want.
 > A `li` in this case, with the value of the input as it's text.
 
 ```ts
@@ -133,10 +133,10 @@ button.attach('Add item').clicked(addItem);
 > Creates a button, which will add an item when it's clicked. calling `.attach` will add button to the attached tag.
 
 ```ts
-attached().add(list);
+attached().append(list);
 ```
 > `attached()` returns the currently attached element (body by default), read more about it i nthe [Attaching](#attaching) section below.
-> `.add(list)` will add the list element created above to the attached element.
+> `.append(list)` will add the list element created above to the attached element.
 
 #### Component Example
 You can also create reusable components, quite simply. Check this example out:

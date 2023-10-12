@@ -8,7 +8,7 @@ describe('Tag conditionals', () => {
     const st = state({ show: true });
     const pp = tag('p', ["I'm here"]);
 
-    const body = tag('(body)').add(
+    const body = tag('(body)').append(
       pp.hideIfNot(st.show), //
     );
 
@@ -17,14 +17,14 @@ describe('Tag conditionals', () => {
     expect(body.q('p')).toBeFalsy();
   });
 
-  it('tag.showIf adds item at correct position', async () => {
+  it('tag.showIf appends item at correct position', async () => {
     createDomMock();
     const st = state({ show: true });
     const pp1 = tag('p', ["I'm here"]);
     const pp = tag('p', ["I'm here"]);
     const pp2 = tag('p', ["I'm here"]);
 
-    tag('(body)').add(
+    tag('(body)').append(
       pp1,
       pp.hideIfNot(st.show), //
       pp2,
@@ -41,7 +41,7 @@ describe('Tag conditionals', () => {
     const st = state({ hide: true });
     const pp = tag('p', ["I'm here"]);
 
-    const body = tag('(body)').add(
+    const body = tag('(body)').append(
       pp.hideIf(st.hide), //
     );
 
@@ -55,7 +55,7 @@ describe('Tag conditionals', () => {
     const st = state({ disable: true });
     const pp = tag('p', ["I'm here"]);
 
-    tag('(body)').add(
+    tag('(body)').append(
       pp.disableIf(st.disable), //
     );
 
@@ -69,7 +69,7 @@ describe('Tag conditionals', () => {
     const st = state({ enable: true });
     const pp = tag('p', ["I'm here"]);
 
-    tag('(body)').add(
+    tag('(body)').append(
       pp.disableIfNot(st.enable), //
     );
 

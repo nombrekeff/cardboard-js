@@ -43,10 +43,10 @@ const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => add
 
 const addItem = () => {
   if (itemInput.value) {
-    list.add(li(itemInput.value).clicked((self) => self.remove()));
+    list.append(li(itemInput.value).clicked((self) => self.remove()));
     itemInput.clear();
   }
 };
 
 button('Add item').clicked(addItem);
-attached().add(list);
+attached().append(list);

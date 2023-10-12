@@ -1,13 +1,19 @@
 import { CssGenerator } from './css-generator.js';
-import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
-export let context = {
+// import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
+let context = {
     attachedTag: null,
     attachedTagStack: [],
     css: new CssGenerator(),
 };
+/** Returns the currently attached {CTag}*/
 export function attached() {
     return context.attachedTag;
 }
+/**
+ * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
+ *
+ * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
+ */
 export class CTag {
     get children() {
         return getElementChildren(this.element);
@@ -50,15 +56,16 @@ export class CTag {
             throw new Error('Invalid argument 0');
         }
         if (children.length > 0)
-            this.set(children);
+            this.setChildren(children);
         if (context.attachedTag && this.attachable) {
-            context.attachedTag.add(this);
+            context.attachedTag.append(this);
         }
     }
-    set(children) {
+    /** Sets the children, removes previous children  */
+    setChildren(children) {
         this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
     }
-    add(...children) {
+    append(...children) {
         this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
         return this;
     }
@@ -174,7 +181,7 @@ export class CTag {
             this.setValue(config.value);
         }
         if (config.children) {
-            this.add(...config.children);
+            this.append(...config.children);
         }
         if (config.on) {
             for (const key in config.on) {
@@ -375,6 +382,34 @@ export function init(options = { root: 'body' }) {
     const root = new CTag(`(${options.root})`);
     attach(root);
     return root;
+}
+export function getElementIndex(node) {
+    var index = 0;
+    while ((node = node.previousElementSibling)) {
+        index++;
+    }
+    return index;
+}
+export function isSelector(str) {
+    return str.match(/\(.+\)/);
+}
+export function getElementForChild(cl) {
+    if (typeof cl === 'string')
+        return document.createTextNode(cl);
+    if (cl instanceof CTag)
+        return cl.element;
+    if (cl instanceof HTMLElement)
+        return cl;
+    return null;
+}
+export function getElementChildren(element) {
+    var childNodes = element.childNodes, children = [], i = childNodes.length;
+    while (i--) {
+        if (childNodes[i].nodeType == 1) {
+            children.unshift(childNodes[i]);
+        }
+    }
+    return children;
 }
 const interceptors = {
     ul: (children, attach = false) => {

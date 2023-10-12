@@ -179,7 +179,7 @@ describe('Tags', () => {
 
   it('tag.q', async () => {
     createDomMock();
-    const t = tag('custom').add(tag('p').setId('test'));
+    const t = tag('custom').append(tag('p').setId('test'));
     const q = t.q('#test');
 
     expect(q).toBeInstanceOf(CTag);
@@ -188,7 +188,7 @@ describe('Tags', () => {
 
   it('tag.find', async () => {
     createDomMock();
-    const t = tag('custom').add(tag('p').setId('test'));
+    const t = tag('custom').append(tag('p').setId('test'));
     const q = t.find((t) => t.id == 'test');
 
     expect(q).toBeInstanceOf(CTag);
@@ -197,7 +197,7 @@ describe('Tags', () => {
 
   it('tag.find no item', async () => {
     createDomMock();
-    const t = tag('custom').add(tag('p').setId('test'));
+    const t = tag('custom').append(tag('p').setId('test'));
     const q = t.find((t) => t.id == 'not-exists');
 
     expect(q).toBe(null);
@@ -206,7 +206,7 @@ describe('Tags', () => {
   it('tag.remove', async () => {
     createDomMock();
     const c = tag('div');
-    const t = tag('test').add(c);
+    const t = tag('test').append(c);
 
     c.remove();
 
@@ -226,7 +226,7 @@ describe('Tags', () => {
   it('tag.hide & tag.show', async () => {
     createDomMock();
     const test = tag('div').setId('test');
-    tag('(body)').add(test);
+    tag('(body)').append(test);
 
     expect(document.querySelector('#test')).toBeTruthy();
     test.hide();

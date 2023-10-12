@@ -3,10 +3,10 @@ import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
-import { StyleMap, StyleSet, TagBuilder, TagChildren, TagConfig } from './types.js';
-import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
+import { StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
+// import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
 
-export let context: {
+let context: {
   attachedTag: CTag;
   attachedTagStack: CTag[];
   css: CssGenerator;
@@ -16,10 +16,16 @@ export let context: {
   css: new CssGenerator(),
 };
 
+/** Returns the currently attached {CTag}*/
 export function attached() {
   return context.attachedTag;
 }
 
+/**
+ * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
+ *
+ * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
+ */
 export class CTag<T extends HTMLElement = HTMLElement> {
   element: T;
   parent: CTag = null;
@@ -68,20 +74,21 @@ export class CTag<T extends HTMLElement = HTMLElement> {
       throw new Error('Invalid argument 0');
     }
 
-    if (children.length > 0) this.set(children);
+    if (children.length > 0) this.setChildren(children);
 
     if (context.attachedTag && this.attachable) {
-      context.attachedTag.add(this);
+      context.attachedTag.append(this);
     }
   }
 
-  set(children: TagChildren) {
+  /** Sets the children, removes previous children  */
+  setChildren(children: TagChildren) {
     this.element.replaceChildren(
       ...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild), //
     );
   }
 
-  add(...children: TagChildren) {
+  append(...children: TagChildren) {
     this.element.append(
       ...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild), //
     );
@@ -228,7 +235,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
       this.setValue(config.value);
     }
     if (config.children) {
-      this.add(...config.children);
+      this.append(...config.children);
     }
     if (config.on) {
       for (const key in config.on) {
@@ -462,6 +469,36 @@ export function init(options: { root: string } = { root: 'body' }) {
   const root = new CTag(`(${options.root})`);
   attach(root);
   return root;
+}
+
+export function getElementIndex(node: Element) {
+  var index = 0;
+  while ((node = node.previousElementSibling)) {
+    index++;
+  }
+  return index;
+}
+export function isSelector(str: string) {
+  return str.match(/\(.+\)/);
+}
+export function getElementForChild(cl: TagChild): Node {
+  if (typeof cl === 'string') return document.createTextNode(cl);
+  if (cl instanceof CTag) return cl.element;
+  if (cl instanceof HTMLElement) return cl;
+  return null;
+}
+export function getElementChildren(element: HTMLElement): Node[] {
+  var childNodes = element.childNodes,
+    children = [],
+    i = childNodes.length;
+
+  while (i--) {
+    if (childNodes[i].nodeType == 1) {
+      children.unshift(childNodes[i]);
+    }
+  }
+
+  return children;
 }
 
 const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) } = {
