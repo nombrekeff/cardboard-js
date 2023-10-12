@@ -4,6 +4,7 @@ import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
 import { StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
+import { getElementIndex } from './util.js';
 
 export let context: {
   attachedTag: CTag;
@@ -50,6 +51,10 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   /** If set to true, it be appended to the attached tag */
   private attachable: boolean = false;
+  private meta = {
+    ignoreRender: false,
+    childIndex: 0,
+  };
 
   get children() {
     return getElementChildren(this.element);
@@ -84,6 +89,8 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     } else if (arg0 instanceof HTMLElement) {
       this.attachable = false;
       this.element = arg0 as T;
+    } else {
+      throw new Error('Invalid argument 0');
     }
 
     this.set(children);
@@ -95,26 +102,80 @@ export class CTag<T extends HTMLElement = HTMLElement> {
 
   set(children: TagChildren) {
     this.element.replaceChildren(
-      ...children.map((cl) => {
-        if (cl instanceof CTag) cl.parent = this;
-        return getElementForChild(cl);
-      }),
+      ...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild), //
     );
   }
 
   add(...children: TagChildren) {
     this.element.append(
-      ...children.map((cl) => {
-        if (cl instanceof CTag) cl.parent = this;
-        return getElementForChild(cl);
-      }),
+      ...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild), //
     );
     return this;
   }
 
+  /** Whenever the consumable changes, it will call the consumer */
   consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void) {
     consumable.changed((newValue) => consumer(this, newValue));
     consumer(this, consumable);
+    return this;
+  }
+
+  /** Show this element if the consumer is truthy */
+  showIf(consumable: Consumable<boolean | number>) {
+    const handleShow = (value: any) => {
+      this.meta.ignoreRender = !value;
+      if (!this.parent) return;
+
+      if (value) {
+        this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+      } else {
+        this.meta.childIndex = getElementIndex(this.element);
+        this.remove();
+      }
+    };
+
+    consumable.changed(handleShow);
+    this.meta.ignoreRender = !consumable;
+    return this;
+  }
+
+  /** Hide this element if the consumer is truthy */
+  hideIf(consumable: Consumable<boolean | number>) {
+    const handleHide = (value: any) => {
+      this.meta.ignoreRender = !value;
+      if (!this.parent) return;
+
+      if (!value) {
+        this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+      } 
+      else {
+        this.meta.childIndex = getElementIndex(this.element);
+        this.remove();
+      }
+    };
+
+    consumable.changed(handleHide);
+    this.meta.ignoreRender = !!consumable;
+    return this;
+  }
+
+  /** Disable this element if the consumer is truthy */
+  disableIf(consumable: Consumable<any>) {
+    consumable.changed((value) => this.setDisabled(value));
+    this.setDisabled(consumable);
+    return this;
+  }
+
+  doIf(consumable: Consumable<any>, callback: (value: any) => void) {
+    consumable.changed(callback);
+    callback(consumable);
+    return this;
+  }
+
+  /** Enable this element if the consumer is truthy */
+  enableIf(consumable: Consumable<any>) {
+    consumable.changed((value) => this.setDisabled(!value));
+    this.setDisabled(!consumable);
     return this;
   }
 
@@ -265,6 +326,18 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
+    if (fn) {
+      const listener = (evt: HTMLElementEventMap[K]) => {
+        fn(this, evt);
+        this.element.removeEventListener(evtName, listener);
+      };
+
+      this.element.addEventListener(evtName, listener);
+    }
+    return this;
+  }
+
   clicked(fn: (tag: CTag, evt: MouseEvent) => void) {
     return this.on('click', fn);
   }
@@ -302,17 +375,29 @@ export class CTag<T extends HTMLElement = HTMLElement> {
   }
 
   disable() {
+    this.setDisabled(true);
     this.addAttr('disabled', 'disabled');
     return this;
   }
 
   enable() {
-    this.rmAttr('disabled');
+    this.setDisabled(false);
     return this;
   }
 
-  q(selector) {
-    return new CTag(this.element.querySelector(selector));
+  setDisabled(disabled: boolean) {
+    if (disabled) {
+      this.addAttr('disabled', 'disabled');
+    } else {
+      this.rmAttr('disabled');
+    }
+  }
+
+  q(selector): CTag | undefined {
+    const element = this.element.querySelector(selector);
+    if (element) {
+      return new CTag(element);
+    }
   }
 
   find(test: (el: HTMLElement) => boolean) {
@@ -322,6 +407,15 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     }
 
     return null;
+  }
+
+  private _childrenFilterPredicate(item, index) {
+    if (item instanceof CTag) item.parent = this;
+    if (item instanceof CTag && item.meta.ignoreRender) {
+      item.meta.childIndex = index;
+      return false;
+    }
+    return true;
   }
 }
 

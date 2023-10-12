@@ -15,6 +15,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     parent: CTag;
     /** If set to true, it be appended to the attached tag */
     private attachable;
+    private meta;
     get children(): Node[];
     get value(): any;
     get id(): string;
@@ -23,7 +24,17 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
     set(children: TagChildren): void;
     add(...children: TagChildren): this;
+    /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
+    /** Show this element if the consumer is truthy */
+    showIf(consumable: Consumable<boolean | number>): this;
+    /** Hide this element if the consumer is truthy */
+    hideIf(consumable: Consumable<boolean | number>): this;
+    /** Disable this element if the consumer is truthy */
+    disableIf(consumable: Consumable<any>): this;
+    doIf(consumable: Consumable<any>, callback: (value: any) => void): this;
+    /** Enable this element if the consumer is truthy */
+    enableIf(consumable: Consumable<any>): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
     text(text: any): this;
     config(config: TagConfig): this;
@@ -44,6 +55,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     hasAttr(...attr: string[]): boolean;
     getAttr(attr: string): any;
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
     keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): this;
     changed(fn: (tag: CTag, evt: Event) => void): this;
@@ -52,8 +64,10 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     clear(): this;
     disable(): this;
     enable(): this;
-    q(selector: any): CTag<HTMLElement>;
+    setDisabled(disabled: boolean): void;
+    q(selector: any): CTag | undefined;
     find(test: (el: HTMLElement) => boolean): CTag<HTMLElement>;
+    private _childrenFilterPredicate;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
 export declare function attach(tag: CTag): void;

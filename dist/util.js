@@ -6,6 +6,13 @@ export function justFnBody(fn) {
     fnStr = fnStr.replace(/^\(.*\)\s?=>\s?{/, '');
     return fnStr.trim();
 }
+export function getElementIndex(node) {
+    var index = 0;
+    while ((node = node.previousElementSibling)) {
+        index++;
+    }
+    return index;
+}
 export const replaceDoubleQuotes = (str) => str.replace(/"/g, "'");
 export const generateId = () => `_hb${s4() + s4()}`;
 export const camelToDash = (str) => str.replace(/([A-Z])/g, (val) => `-${val.toLowerCase()}`);

@@ -1,4 +1,5 @@
 import { CssGenerator } from './css-generator.js';
+import { getElementIndex } from './util.js';
 export let context = {
     attachedTag: null,
     attachedTagStack: [],
@@ -50,6 +51,10 @@ export class CTag {
         this.parent = null;
         /** If set to true, it be appended to the attached tag */
         this.attachable = false;
+        this.meta = {
+            ignoreRender: false,
+            childIndex: 0,
+        };
         this.attachable = attachable;
         if (typeof arg0 == 'string' && isSelector(arg0)) {
             this.attachable = false;
@@ -62,29 +67,78 @@ export class CTag {
             this.attachable = false;
             this.element = arg0;
         }
+        else {
+            throw new Error('Invalid argument 0');
+        }
         this.set(children);
         if (context.attachedTag && this.attachable) {
             context.attachedTag.add(this);
         }
     }
     set(children) {
-        this.element.replaceChildren(...children.map((cl) => {
-            if (cl instanceof CTag)
-                cl.parent = this;
-            return getElementForChild(cl);
-        }));
+        this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
     }
     add(...children) {
-        this.element.append(...children.map((cl) => {
-            if (cl instanceof CTag)
-                cl.parent = this;
-            return getElementForChild(cl);
-        }));
+        this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
         return this;
     }
+    /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
         consumer(this, consumable);
+        return this;
+    }
+    /** Show this element if the consumer is truthy */
+    showIf(consumable) {
+        const handleShow = (value) => {
+            this.meta.ignoreRender = !value;
+            if (!this.parent)
+                return;
+            if (value) {
+                this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+            }
+            else {
+                this.meta.childIndex = getElementIndex(this.element);
+                this.remove();
+            }
+        };
+        consumable.changed(handleShow);
+        this.meta.ignoreRender = !consumable;
+        return this;
+    }
+    /** Hide this element if the consumer is truthy */
+    hideIf(consumable) {
+        const handleHide = (value) => {
+            this.meta.ignoreRender = !value;
+            if (!this.parent)
+                return;
+            if (!value) {
+                this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+            }
+            else {
+                this.meta.childIndex = getElementIndex(this.element);
+                this.remove();
+            }
+        };
+        consumable.changed(handleHide);
+        this.meta.ignoreRender = !!consumable;
+        return this;
+    }
+    /** Disable this element if the consumer is truthy */
+    disableIf(consumable) {
+        consumable.changed((value) => this.setDisabled(value));
+        this.setDisabled(consumable);
+        return this;
+    }
+    doIf(consumable, callback) {
+        consumable.changed(callback);
+        callback(consumable);
+        return this;
+    }
+    /** Enable this element if the consumer is truthy */
+    enableIf(consumable) {
+        consumable.changed((value) => this.setDisabled(!value));
+        this.setDisabled(!consumable);
         return this;
     }
     listen(tag, evt, consumer) {
@@ -211,6 +265,16 @@ export class CTag {
         }
         return this;
     }
+    once(evtName, fn) {
+        if (fn) {
+            const listener = (evt) => {
+                fn(this, evt);
+                this.element.removeEventListener(evtName, listener);
+            };
+            this.element.addEventListener(evtName, listener);
+        }
+        return this;
+    }
     clicked(fn) {
         return this.on('click', fn);
     }
@@ -241,15 +305,27 @@ export class CTag {
         return this;
     }
     disable() {
+        this.setDisabled(true);
         this.addAttr('disabled', 'disabled');
         return this;
     }
     enable() {
-        this.rmAttr('disabled');
+        this.setDisabled(false);
         return this;
     }
+    setDisabled(disabled) {
+        if (disabled) {
+            this.addAttr('disabled', 'disabled');
+        }
+        else {
+            this.rmAttr('disabled');
+        }
+    }
     q(selector) {
-        return new CTag(this.element.querySelector(selector));
+        const element = this.element.querySelector(selector);
+        if (element) {
+            return new CTag(element);
+        }
     }
     find(test) {
         const actualChildren = [...this.children];
@@ -258,6 +334,15 @@ export class CTag {
                 return tag(child);
         }
         return null;
+    }
+    _childrenFilterPredicate(item, index) {
+        if (item instanceof CTag)
+            item.parent = this;
+        if (item instanceof CTag && item.meta.ignoreRender) {
+            item.meta.childIndex = index;
+            return false;
+        }
+        return true;
     }
 }
 export function tag(arg0, children = [], attach = false) {
