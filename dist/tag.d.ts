@@ -27,9 +27,20 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     append(...children: TagChildren): this;
     /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
+    /**
+     * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+     */
     doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    /**
+     * The oposite of {this.doIf}
+     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+     */
     doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    /**
+     * If the element is currently hidden it will add this element to the page
+     */
     show(): boolean;
+    /** Hide this element (removed from DOM) */
     hide(): void;
     /** Hide this element if the consumer is truthy */
     hideIf(consumable: Consumable<boolean | number>): this;
@@ -48,16 +59,32 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     /** Disable this element if the consumer is truthy */
     disableIfNot(consumable: Consumable<any>): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    /** Set the `textContent` of the element */
     text(text: any): this;
+    /**
+     * Configure the element in a single call by passing @param {TagConfig} config
+     * instead of having to call a method for each property you want to changes
+     */
     config(config: TagConfig): this;
+    /** Add classes to the elements class list */
     addClass(...classNames: string[]): this;
+    /** Set the elements class name */
     className(className: string): this;
+    /** Remove classes from class list */
     rmClass(...classNames: string[]): this;
+    /** Check if classes are present in this element */
     hasClass(...classNames: string[]): boolean;
+    /** Replace a class with another */
     replaceClass(targetClass: string, replaceClass: string): this;
+    /** Toggle a class. If it's present it's removed, if it's not present its added. */
+    toggleClass(targetClass: string): this;
+    /** Add a single style */
     addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
+    /** Set multiple styles at once */
     setStyle(styles: StyleMap): this;
+    /** Remove styles */
     rmStyle(...styleNames: string[]): this;
+    /** Check if this element has styles */
     hasStyle(...styles: string[]): boolean;
     setAttrs(attrs: {
         [k: string]: string;
@@ -66,19 +93,30 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     rmAttr(...attrs: string[]): this;
     hasAttr(...attr: string[]): boolean;
     getAttr(attr: string): any;
+    /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    /** Add an event listener for a particular event that will only fire once */
     once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    /** Add a **click** event listener */
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
+    /** Add a **keypress** event listener */
     keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): this;
+    /** Add a **change** event listener */
     changed(fn: (tag: CTag, evt: Event) => void): this;
+    /** Add a **submit** event listener */
     submited(fn: (tag: CTag, evt: SubmitEvent) => void): this;
+    /** Remove element from the DOM */
     remove(): this;
+    /** Clear the `value` */
     clear(): this;
+    /** Disable the element */
     disable(): this;
+    /** Enable the element */
     enable(): this;
+    /** Set whether the element should be disabled or not */
     setDisabled(disabled: boolean): void;
+    /** Query a child in this element */
     q(selector: any): CTag | undefined;
-    find(test: (el: HTMLElement) => boolean): CTag<HTMLElement>;
     private _childrenFilterPredicate;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;

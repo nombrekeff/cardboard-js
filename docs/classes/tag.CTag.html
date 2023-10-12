@@ -15,7 +15,12 @@
 <li><a href="../index.html">cardboard-js</a></li>
 <li><a href="../modules/tag.html">tag</a></li>
 <li><a href="tag.CTag.html">CTag</a></li></ul>
-<h1>Class CTag&lt;T&gt;</h1></div> 
+<h1>Class CTag&lt;T&gt;</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.</p>
+<p>CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></section> 
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
@@ -26,7 +31,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">CTag</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L24">tag.ts:24</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L29">tag.ts:29</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -52,10 +57,10 @@
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
 <div class="tsd-index-list"><a href="tag.CTag.html#_childrenFilterPredicate" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_children<wbr/>Filter<wbr/>Predicate</span></a>
-<a href="tag.CTag.html#add" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add</span></a>
 <a href="tag.CTag.html#addAttr" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Attr</span></a>
 <a href="tag.CTag.html#addClass" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Class</span></a>
 <a href="tag.CTag.html#addStyle" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Style</span></a>
+<a href="tag.CTag.html#append" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>append</span></a>
 <a href="tag.CTag.html#attrIf" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>attr<wbr/>If</span></a>
 <a href="tag.CTag.html#attrIfNot" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>attr<wbr/>If<wbr/>Not</span></a>
 <a href="tag.CTag.html#changed" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>changed</span></a>
@@ -90,8 +95,8 @@
 <a href="tag.CTag.html#rmAttr" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Attr</span></a>
 <a href="tag.CTag.html#rmClass" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Class</span></a>
 <a href="tag.CTag.html#rmStyle" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Style</span></a>
-<a href="tag.CTag.html#set" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set</span></a>
 <a href="tag.CTag.html#setAttrs" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Attrs</span></a>
+<a href="tag.CTag.html#setChildren" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Children</span></a>
 <a href="tag.CTag.html#setDisabled" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Disabled</span></a>
 <a href="tag.CTag.html#setId" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Id</span></a>
 <a href="tag.CTag.html#setStyle" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Style</span></a>
@@ -123,7 +128,7 @@
 <h5><span class="tsd-kind-parameter">attachable</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L57">tag.ts:57</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L62">tag.ts:62</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="attachable" class="tsd-anchor"></a>
@@ -133,12 +138,12 @@
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L29">tag.ts:29</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L34">tag.ts:34</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="element" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>element</span><a href="#element" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">element</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type tsd-kind-type-parameter">T</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L25">tag.ts:25</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L30">tag.ts:30</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="meta" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>meta</span><a href="#meta" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">meta</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">childIndex</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">ignoreRender</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
@@ -150,12 +155,12 @@
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">ignore<wbr/>Render</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L30">tag.ts:30</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L35">tag.ts:35</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="parent" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>parent</span><a href="#parent" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">parent</span><span class="tsd-signature-symbol">:</span> <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">HTMLElement</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L26">tag.ts:26</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L31">tag.ts:31</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member"><a id="children" class="tsd-anchor"></a>
@@ -165,7 +170,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Node</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L35">tag.ts:35</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L40">tag.ts:40</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="id" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>id</span><a href="#id" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -173,7 +178,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L43">tag.ts:43</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L48">tag.ts:48</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="value" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>value</span><a href="#value" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -181,7 +186,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L39">tag.ts:39</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L44">tag.ts:44</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_childrenFilterPredicate" class="tsd-anchor"></a>
@@ -198,20 +203,7 @@
 <h5><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L428">tag.ts:428</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member"><a id="add" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>add</span><a href="#add" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="add.add-1"><span class="tsd-kind-call-signature">add</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">children</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#add.add-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">children</span>: <a href="../types/types.TagChildren.html" class="tsd-signature-type tsd-kind-type-alias">TagChildren</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L85">tag.ts:85</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L445">tag.ts:445</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="addAttr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Attr</span><a href="#addAttr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -226,7 +218,7 @@
 <h5><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L309">tag.ts:309</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L326">tag.ts:326</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="addClass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Class</span><a href="#addClass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -239,7 +231,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">classNames</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L243">tag.ts:243</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L260">tag.ts:260</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="addStyle" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Style</span><a href="#addStyle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -259,7 +251,20 @@
 <h5><span class="tsd-kind-parameter">value</span>: <a href="../types/css_property_values.PickPropertyValues.html" class="tsd-signature-type tsd-kind-type-alias">PickPropertyValues</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L274">tag.ts:274</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L291">tag.ts:291</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="append" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>append</span><a href="#append" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="append.append-1"><span class="tsd-kind-call-signature">append</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">children</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#append.append-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">children</span>: <a href="../types/types.TagChildren.html" class="tsd-signature-type tsd-kind-type-alias">TagChildren</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L91">tag.ts:91</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="attrIf" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>attr<wbr/>If</span><a href="#attrIf" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -279,7 +284,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L171">tag.ts:171</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L188">tag.ts:188</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="attrIfNot" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>attr<wbr/>If<wbr/>Not</span><a href="#attrIfNot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -299,7 +304,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L180">tag.ts:180</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L197">tag.ts:197</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="changed" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>changed</span><a href="#changed" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -325,7 +330,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L373">tag.ts:373</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L390">tag.ts:390</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="classIf" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>class<wbr/>If</span><a href="#classIf" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -343,7 +348,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L153">tag.ts:153</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L170">tag.ts:170</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="classIfNot" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>class<wbr/>If<wbr/>Not</span><a href="#classIfNot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -361,7 +366,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L162">tag.ts:162</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L179">tag.ts:179</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="className" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>class<wbr/>Name</span><a href="#className" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -374,7 +379,7 @@
 <h5><span class="tsd-kind-parameter">className</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L248">tag.ts:248</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L265">tag.ts:265</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="clear" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>clear</span><a href="#clear" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -382,7 +387,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L386">tag.ts:386</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L403">tag.ts:403</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="clicked" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>clicked</span><a href="#clicked" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -408,7 +413,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L357">tag.ts:357</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L374">tag.ts:374</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="config" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>config</span><a href="#config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -421,7 +426,7 @@
 <h5><span class="tsd-kind-parameter">config</span>: <a href="../types/types.TagConfig.html" class="tsd-signature-type tsd-kind-type-alias">TagConfig</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L212">tag.ts:212</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L229">tag.ts:229</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="consume" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>consume</span><a href="#consume" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -457,7 +462,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L93">tag.ts:93</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L99">tag.ts:99</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="disable" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>disable</span><a href="#disable" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -465,7 +470,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L393">tag.ts:393</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L410">tag.ts:410</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="disableIf" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>disable<wbr/>If</span><a href="#disableIf" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -481,7 +486,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L189">tag.ts:189</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L206">tag.ts:206</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="disableIfNot" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>disable<wbr/>If<wbr/>Not</span><a href="#disableIfNot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -497,12 +502,14 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L194">tag.ts:194</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L211">tag.ts:211</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="doIf" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>do<wbr/>If</span><a href="#doIf" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="doIf.doIf-1"><span class="tsd-kind-call-signature">do<wbr/>If</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">consumable</span>, <span class="tsd-kind-parameter">ifTrue</span>, <span class="tsd-kind-parameter">ifFalse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#doIf.doIf-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -534,14 +541,18 @@
 <li>
 <h5><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L99">tag.ts:99</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L108">tag.ts:108</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="doIfNot" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>do<wbr/>If<wbr/>Not</span><a href="#doIfNot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="doIfNot.doIfNot-1"><span class="tsd-kind-call-signature">do<wbr/>If<wbr/>Not</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">consumable</span>, <span class="tsd-kind-parameter">ifTrue</span>, <span class="tsd-kind-parameter">ifFalse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#doIfNot.doIfNot-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>The oposite of {this.doIf}
+When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -573,9 +584,10 @@
 <li>
 <h5><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L109">tag.ts:109</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L122">tag.ts:122</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="enable" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>enable</span><a href="#enable" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -583,7 +595,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L399">tag.ts:399</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L416">tag.ts:416</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="find" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>find</span><a href="#find" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -607,7 +619,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">HTMLElement</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L419">tag.ts:419</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L436">tag.ts:436</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getAttr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Attr</span><a href="#getAttr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -620,7 +632,7 @@
 <h5><span class="tsd-kind-parameter">attr</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L332">tag.ts:332</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L349">tag.ts:349</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hasAttr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>has<wbr/>Attr</span><a href="#hasAttr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -633,7 +645,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">attr</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L323">tag.ts:323</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L340">tag.ts:340</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hasClass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>has<wbr/>Class</span><a href="#hasClass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -646,7 +658,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">classNames</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L260">tag.ts:260</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L277">tag.ts:277</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hasStyle" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>has<wbr/>Style</span><a href="#hasStyle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -659,15 +671,18 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">styles</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L293">tag.ts:293</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L310">tag.ts:310</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hide" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>hide</span><a href="#hide" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="hide.hide-1"><span class="tsd-kind-call-signature">hide</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#hide.hide-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>Hide this element (removed from DOM)</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L119">tag.ts:119</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L136">tag.ts:136</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hideIf" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>hide<wbr/>If</span><a href="#hideIf" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -683,7 +698,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L125">tag.ts:125</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L142">tag.ts:142</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="hideIfNot" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>hide<wbr/>If<wbr/>Not</span><a href="#hideIfNot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -699,7 +714,7 @@
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L139">tag.ts:139</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L156">tag.ts:156</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="keyPressed" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>key<wbr/>Pressed</span><a href="#keyPressed" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -727,7 +742,7 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">key</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L361">tag.ts:361</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L378">tag.ts:378</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="listen" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>listen</span><a href="#listen" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -764,7 +779,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L198">tag.ts:198</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L215">tag.ts:215</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="on" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -797,7 +812,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L336">tag.ts:336</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L353">tag.ts:353</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="once" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>once</span><a href="#once" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -830,7 +845,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L345">tag.ts:345</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L362">tag.ts:362</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="q" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>q</span><a href="#q" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -843,7 +858,7 @@
 <h5><span class="tsd-kind-parameter">selector</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">HTMLElement</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L412">tag.ts:412</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L429">tag.ts:429</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="remove" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>remove</span><a href="#remove" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -851,7 +866,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L381">tag.ts:381</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L398">tag.ts:398</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="replaceClass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>replace<wbr/>Class</span><a href="#replaceClass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -866,7 +881,7 @@
 <h5><span class="tsd-kind-parameter">replaceClass</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L269">tag.ts:269</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L286">tag.ts:286</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="rmAttr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>rm<wbr/>Attr</span><a href="#rmAttr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -879,7 +894,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">attrs</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L315">tag.ts:315</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L332">tag.ts:332</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="rmClass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>rm<wbr/>Class</span><a href="#rmClass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -892,7 +907,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">classNames</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L253">tag.ts:253</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L270">tag.ts:270</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="rmStyle" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>rm<wbr/>Style</span><a href="#rmStyle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -905,20 +920,7 @@
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">styleNames</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L286">tag.ts:286</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member"><a id="set" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>set</span><a href="#set" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="set.set-1"><span class="tsd-kind-call-signature">set</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">children</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#set.set-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">children</span>: <a href="../types/types.TagChildren.html" class="tsd-signature-type tsd-kind-type-alias">TagChildren</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L79">tag.ts:79</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L303">tag.ts:303</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setAttrs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Attrs</span><a href="#setAttrs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -934,7 +936,23 @@
 <h5><span class="tsd-signature-symbol">[</span><span class="tsd-kind-parameter">k</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L302">tag.ts:302</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L319">tag.ts:319</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="setChildren" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>set<wbr/>Children</span><a href="#setChildren" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="setChildren.setChildren-1"><span class="tsd-kind-call-signature">set<wbr/>Children</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">children</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#setChildren.setChildren-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Sets the children, removes previous children</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">children</span>: <a href="../types/types.TagChildren.html" class="tsd-signature-type tsd-kind-type-alias">TagChildren</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L85">tag.ts:85</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setDisabled" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Disabled</span><a href="#setDisabled" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -947,7 +965,7 @@
 <h5><span class="tsd-kind-parameter">disabled</span>: <span class="tsd-signature-type">boolean</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L404">tag.ts:404</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L421">tag.ts:421</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setId" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Id</span><a href="#setId" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -960,7 +978,7 @@
 <h5><span class="tsd-kind-parameter">id</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L47">tag.ts:47</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L52">tag.ts:52</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setStyle" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Style</span><a href="#setStyle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -973,7 +991,7 @@
 <h5><span class="tsd-kind-parameter">styles</span>: <a href="../types/types.StyleMap.html" class="tsd-signature-type tsd-kind-type-alias">StyleMap</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L279">tag.ts:279</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L296">tag.ts:296</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setValue" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Value</span><a href="#setValue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -986,15 +1004,18 @@
 <h5><span class="tsd-kind-parameter">newValue</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L52">tag.ts:52</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L57">tag.ts:57</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="show" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>show</span><a href="#show" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="show.show-1"><span class="tsd-kind-call-signature">show</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#show.show-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>If the element is currently hidden it will add this element to the page</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L113">tag.ts:113</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L129">tag.ts:129</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="submited" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>submited</span><a href="#submited" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1020,7 +1041,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L377">tag.ts:377</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L394">tag.ts:394</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="text" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>text</span><a href="#text" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1033,7 +1054,7 @@
 <h5><span class="tsd-kind-parameter">text</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/1ad9738/src/tag.ts#L207">tag.ts:207</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/83eee60/src/tag.ts#L224">tag.ts:224</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -1062,10 +1083,10 @@
 <li><a href="#id" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>id</span></a></li>
 <li><a href="#value" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>value</span></a></li>
 <li><a href="#_childrenFilterPredicate" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_children<wbr/>Filter<wbr/>Predicate</span></a></li>
-<li><a href="#add" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add</span></a></li>
 <li><a href="#addAttr" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Attr</span></a></li>
 <li><a href="#addClass" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Class</span></a></li>
 <li><a href="#addStyle" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Style</span></a></li>
+<li><a href="#append" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>append</span></a></li>
 <li><a href="#attrIf" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>attr<wbr/>If</span></a></li>
 <li><a href="#attrIfNot" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>attr<wbr/>If<wbr/>Not</span></a></li>
 <li><a href="#changed" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>changed</span></a></li>
@@ -1100,8 +1121,8 @@
 <li><a href="#rmAttr" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Attr</span></a></li>
 <li><a href="#rmClass" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Class</span></a></li>
 <li><a href="#rmStyle" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>rm<wbr/>Style</span></a></li>
-<li><a href="#set" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set</span></a></li>
 <li><a href="#setAttrs" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Attrs</span></a></li>
+<li><a href="#setChildren" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Children</span></a></li>
 <li><a href="#setDisabled" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Disabled</span></a></li>
 <li><a href="#setId" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Id</span></a></li>
 <li><a href="#setStyle" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Style</span></a></li>

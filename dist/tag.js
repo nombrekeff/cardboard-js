@@ -75,6 +75,9 @@ export class CTag {
         consumer(this, consumable);
         return this;
     }
+    /**
+     * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+     */
     doIf(consumable, ifTrue, ifFalse) {
         const callback = (value) => {
             if (value)
@@ -86,15 +89,23 @@ export class CTag {
         callback(consumable);
         return this;
     }
+    /**
+     * The oposite of {this.doIf}
+     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+     */
     doIfNot(consumable, ifTrue, ifFalse) {
         return this.doIf(consumable, ifFalse, ifTrue);
     }
+    /**
+     * If the element is currently hidden it will add this element to the page
+     */
     show() {
         if (!this.parent)
             return false;
         this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
         return true;
     }
+    /** Hide this element (removed from DOM) */
     hide() {
         this.meta.childIndex = getElementIndex(this.element);
         this.remove();
@@ -157,10 +168,15 @@ export class CTag {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;
     }
+    /** Set the `textContent` of the element */
     text(text) {
         this.element.textContent = text;
         return this;
     }
+    /**
+     * Configure the element in a single call by passing @param {TagConfig} config
+     * instead of having to call a method for each property you want to changes
+     */
     config(config) {
         if (config.attr) {
             this.setAttrs(config.attr);
@@ -190,20 +206,24 @@ export class CTag {
         }
         return this;
     }
+    /** Add classes to the elements class list */
     addClass(...classNames) {
         this.element.classList.add(...classNames);
         return this;
     }
+    /** Set the elements class name */
     className(className) {
         this.element.className = className;
         return this;
     }
+    /** Remove classes from class list */
     rmClass(...classNames) {
         for (let key of classNames) {
             this.element.classList.remove(key);
         }
         return this;
     }
+    /** Check if classes are present in this element */
     hasClass(...classNames) {
         for (let key of classNames) {
             if (!this.element.classList.contains(key)) {
@@ -212,26 +232,41 @@ export class CTag {
         }
         return true;
     }
+    /** Replace a class with another */
     replaceClass(targetClass, replaceClass) {
         this.element.classList.replace(targetClass, replaceClass);
         return this;
     }
+    /** Toggle a class. If it's present it's removed, if it's not present its added. */
+    toggleClass(targetClass) {
+        if (this.hasClass(targetClass)) {
+            this.rmClass(targetClass);
+        }
+        else {
+            this.addClass(targetClass);
+        }
+        return this;
+    }
+    /** Add a single style */
     addStyle(property, value) {
         this.element.style[property] = value;
         return this;
     }
+    /** Set multiple styles at once */
     setStyle(styles) {
         for (let key in styles) {
             this.addStyle(key, styles[key]);
         }
         return this;
     }
+    /** Remove styles */
     rmStyle(...styleNames) {
         for (let key of styleNames) {
             this.element.style.removeProperty(key);
         }
         return this;
     }
+    /** Check if this element has styles */
     hasStyle(...styles) {
         for (let key of styles) {
             if (!this.element.style.getPropertyValue(key)) {
@@ -269,6 +304,7 @@ export class CTag {
     getAttr(attr) {
         return this.element.attributes[attr];
     }
+    /** Add an event listener for a particular event */
     on(evtName, fn) {
         if (fn) {
             this.element.addEventListener(evtName, (evt) => {
@@ -277,6 +313,7 @@ export class CTag {
         }
         return this;
     }
+    /** Add an event listener for a particular event that will only fire once */
     once(evtName, fn) {
         if (fn) {
             const listener = (evt) => {
@@ -287,9 +324,11 @@ export class CTag {
         }
         return this;
     }
+    /** Add a **click** event listener */
     clicked(fn) {
         return this.on('click', fn);
     }
+    /** Add a **keypress** event listener */
     keyPressed(fn, key) {
         if (key) {
             return this.on('keypress', (_, evt) => {
@@ -300,31 +339,38 @@ export class CTag {
         }
         return this.on('keypress', fn);
     }
+    /** Add a **change** event listener */
     changed(fn) {
         return this.on('change', fn);
     }
+    /** Add a **submit** event listener */
     submited(fn) {
         return this.on('submit', fn);
     }
+    /** Remove element from the DOM */
     remove() {
         this.element.remove();
         return this;
     }
+    /** Clear the `value` */
     clear() {
         this.element.value = '';
         // Trigger input event, so clearing is treated as input!
         this.element.dispatchEvent(new InputEvent('input'));
         return this;
     }
+    /** Disable the element */
     disable() {
         this.setDisabled(true);
         this.addAttr('disabled', 'disabled');
         return this;
     }
+    /** Enable the element */
     enable() {
         this.setDisabled(false);
         return this;
     }
+    /** Set whether the element should be disabled or not */
     setDisabled(disabled) {
         if (disabled) {
             this.addAttr('disabled', 'disabled');
@@ -333,19 +379,12 @@ export class CTag {
             this.rmAttr('disabled');
         }
     }
+    /** Query a child in this element */
     q(selector) {
         const element = this.element.querySelector(selector);
         if (element) {
             return new CTag(element);
         }
-    }
-    find(test) {
-        const actualChildren = [...this.children];
-        for (const child of actualChildren) {
-            if (test(child))
-                return tag(child);
-        }
-        return null;
     }
     _childrenFilterPredicate(item, index) {
         if (item instanceof CTag)

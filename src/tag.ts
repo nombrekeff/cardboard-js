@@ -102,6 +102,9 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+   */
   doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
     const callback = (value) => {
       if (value) ifTrue(value);
@@ -112,16 +115,24 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * The oposite of {this.doIf}
+   * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+   */
   doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
     return this.doIf(consumable, ifFalse, ifTrue);
   }
 
+  /**
+   * If the element is currently hidden it will add this element to the page
+   */
   show() {
     if (!this.parent) return false;
     this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
     return true;
   }
 
+  /** Hide this element (removed from DOM) */
   hide() {
     this.meta.childIndex = getElementIndex(this.element);
     this.remove();
@@ -210,11 +221,16 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Set the `textContent` of the element */
   text(text) {
     this.element.textContent = text;
     return this;
   }
 
+  /**
+   * Configure the element in a single call by passing @param {TagConfig} config
+   * instead of having to call a method for each property you want to changes
+   */
   config(config: TagConfig) {
     if (config.attr) {
       this.setAttrs(config.attr);
@@ -246,16 +262,19 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Add classes to the elements class list */
   addClass(...classNames: string[]) {
     this.element.classList.add(...classNames);
     return this;
   }
 
+  /** Set the elements class name */
   className(className: string) {
     this.element.className = className;
     return this;
   }
 
+  /** Remove classes from class list */
   rmClass(...classNames: string[]) {
     for (let key of classNames) {
       this.element.classList.remove(key);
@@ -263,6 +282,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Check if classes are present in this element */
   hasClass(...classNames: string[]) {
     for (let key of classNames) {
       if (!this.element.classList.contains(key)) {
@@ -272,16 +292,29 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return true;
   }
 
+  /** Replace a class with another */
   replaceClass(targetClass: string, replaceClass: string) {
     this.element.classList.replace(targetClass, replaceClass);
     return this;
   }
 
+  /** Toggle a class. If it's present it's removed, if it's not present its added. */
+  toggleClass(targetClass: string) {
+    if (this.hasClass(targetClass)) {
+      this.rmClass(targetClass);
+    } else {
+      this.addClass(targetClass);
+    }
+    return this;
+  }
+
+  /** Add a single style */
   addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
     this.element.style[property as string] = value;
     return this;
   }
 
+  /** Set multiple styles at once */
   setStyle(styles: StyleMap) {
     for (let key in styles) {
       this.addStyle(key, styles[key]);
@@ -289,6 +322,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Remove styles */
   rmStyle(...styleNames: string[]) {
     for (let key of styleNames) {
       this.element.style.removeProperty(key);
@@ -296,6 +330,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Check if this element has styles */
   hasStyle(...styles: string[]) {
     for (let key of styles) {
       if (!this.element.style.getPropertyValue(key)) {
@@ -339,6 +374,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this.element.attributes[attr];
   }
 
+  /** Add an event listener for a particular event */
   on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     if (fn) {
       this.element.addEventListener(evtName, (evt: HTMLElementEventMap[K]) => {
@@ -348,6 +384,7 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Add an event listener for a particular event that will only fire once */
   once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     if (fn) {
       const listener = (evt: HTMLElementEventMap[K]) => {
@@ -360,10 +397,12 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Add a **click** event listener */
   clicked(fn: (tag: CTag, evt: MouseEvent) => void) {
     return this.on('click', fn);
   }
 
+  /** Add a **keypress** event listener */
   keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string) {
     if (key) {
       return this.on('keypress', (_, evt) => {
@@ -376,19 +415,23 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this.on('keypress', fn);
   }
 
+  /** Add a **change** event listener */
   changed(fn: (tag: CTag, evt: Event) => void) {
     return this.on('change', fn);
   }
 
+  /** Add a **submit** event listener */
   submited(fn: (tag: CTag, evt: SubmitEvent) => void) {
     return this.on('submit', fn);
   }
 
+  /** Remove element from the DOM */
   remove() {
     this.element.remove();
     return this;
   }
 
+  /** Clear the `value` */
   clear() {
     (this.element as any).value = '';
     // Trigger input event, so clearing is treated as input!
@@ -396,17 +439,20 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Disable the element */
   disable() {
     this.setDisabled(true);
     this.addAttr('disabled', 'disabled');
     return this;
   }
 
+  /** Enable the element */
   enable() {
     this.setDisabled(false);
     return this;
   }
 
+  /** Set whether the element should be disabled or not */
   setDisabled(disabled: boolean) {
     if (disabled) {
       this.addAttr('disabled', 'disabled');
@@ -415,20 +461,12 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     }
   }
 
+  /** Query a child in this element */
   q(selector): CTag | undefined {
     const element = this.element.querySelector(selector);
     if (element) {
       return new CTag(element);
     }
-  }
-
-  find(test: (el: HTMLElement) => boolean) {
-    const actualChildren = [...this.children];
-    for (const child of actualChildren) {
-      if (test(child as HTMLElement)) return tag(child as HTMLElement);
-    }
-
-    return null;
   }
 
   private _childrenFilterPredicate(item, index) {
