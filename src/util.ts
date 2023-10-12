@@ -1,3 +1,5 @@
+import { Consumable } from './state';
+
 /** Receives a function, and returns just the body of the function as a string */
 export function justFnBody(fn: Function) {
   let fnStr = fn.toString();
@@ -20,4 +22,5 @@ export const dashToCamel = (str) => str.replace(/(\-[a-z])/g, (val) => val.toUpp
 export function isObject(obj: any): boolean {
   return typeof obj === 'object' && !(obj instanceof Array);
 }
+
 const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);

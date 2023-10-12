@@ -6,17 +6,20 @@ export type State<T extends Record<string, any>> = {
   [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
 } & {
   changed: (callback: (newValue: T) => void) => void;
+  not: Omit<State<T>, 'changed'>;
 };
 
-export function state<T extends {}>(content: T, callback?: (newValue: T) => void): State<T> {
-  let _propListeners = {};
+export function state<T extends object>(content: T, callback?: (newValue: T) => void): State<T> {
+  let _propListeners: { [k: string]: any[] } = {};
   let _stateListeners = [];
 
   if (callback) _stateListeners.push(callback);
 
   const addListener = (prop, callback) => {
     if (!_propListeners[prop]) _propListeners[prop] = [];
-    _propListeners[prop].push(callback);
+    if (!_propListeners[prop].includes(callback)){
+      _propListeners[prop].push(callback);
+    } 
   };
 
   const emitChange = (target, prop) => {
@@ -79,6 +82,8 @@ export function state<T extends {}>(content: T, callback?: (newValue: T) => void
   proxy.changed = (callback) => {
     _stateListeners.push(callback);
   };
+
+  // proxy.not =
 
   return proxy as State<T>;
 }

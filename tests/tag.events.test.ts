@@ -59,4 +59,16 @@ describe('Tags', () => {
     c.element.dispatchEvent(new window.Event('click'));
     expect(callback).toHaveBeenCalled();
   });
+
+
+  it('tag.once', async () => {
+    createDomMock();
+    const callback = jest.fn();
+    const c = tag('child');
+    c.once('click', callback);
+    c.element.dispatchEvent(new window.Event('click'));
+    c.element.dispatchEvent(new window.Event('click'));
+
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 });

@@ -71,4 +71,10 @@ describe('State', () => {
     expect(fn1).not.toHaveBeenCalled();
     expect(fn2).toHaveBeenCalled();
   });
+
+  // it('state not', async () => {
+  //   const fn1 = jest.fn();
+  //   let testState = state({ hide: true });
+  //   expect(fn1).toHaveBeenCalledWith(false);
+  // });
 });

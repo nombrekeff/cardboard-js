@@ -7,7 +7,9 @@ export function state(content, callback) {
     const addListener = (prop, callback) => {
         if (!_propListeners[prop])
             _propListeners[prop] = [];
-        _propListeners[prop].push(callback);
+        if (!_propListeners[prop].includes(callback)) {
+            _propListeners[prop].push(callback);
+        }
     };
     const emitChange = (target, prop) => {
         if (_propListeners[prop]) {
@@ -63,6 +65,7 @@ export function state(content, callback) {
     proxy.changed = (callback) => {
         _stateListeners.push(callback);
     };
+    // proxy.not =
     return proxy;
 }
 //# sourceMappingURL=state.js.map

@@ -26,15 +26,26 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     add(...children: TagChildren): this;
     /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
-    /** Show this element if the consumer is truthy */
-    showIf(consumable: Consumable<boolean | number>): this;
+    doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    show(): boolean;
+    hide(): void;
     /** Hide this element if the consumer is truthy */
     hideIf(consumable: Consumable<boolean | number>): this;
+    /** Hide this element if the consumer is falsy */
+    hideIfNot(consumable: Consumable<boolean | number>): this;
+    /** Adds classes to the element if the consumer is truthy */
+    classIf(consumable: Consumable<any>, ...classes: string[]): this;
+    /** Adds classes to the element if the consumer is truthy */
+    classIfNot(consumable: Consumable<any>, ...classes: string[]): this;
+    /** Add attribute to the element if the consumer is truthy */
+    attrIf(consumable: Consumable<any>, attr: string, value?: string): this;
+    /** Add attribute to the element if the consumer is truthy */
+    attrIfNot(consumable: Consumable<any>, attr: string, value?: string): this;
     /** Disable this element if the consumer is truthy */
     disableIf(consumable: Consumable<any>): this;
-    doIf(consumable: Consumable<any>, callback: (value: any) => void): this;
-    /** Enable this element if the consumer is truthy */
-    enableIf(consumable: Consumable<any>): this;
+    /** Disable this element if the consumer is truthy */
+    disableIfNot(consumable: Consumable<any>): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
     text(text: any): this;
     config(config: TagConfig): this;

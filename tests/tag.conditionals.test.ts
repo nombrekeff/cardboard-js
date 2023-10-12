@@ -1,15 +1,15 @@
 import { createDomMock } from './__mocks__/client';
-import { tag, init, allTags, state, attached, hinput, hstyle, getElementIndex } from '../src/cardboard';
+import { tag, allTags, state, getElementIndex } from '../src/cardboard';
 const { div, button, input, a, ul, li, hr, p } = allTags;
 
 describe('Tag conditionals', () => {
   it('tag.showIf', async () => {
-    const dom = createDomMock();
+   createDomMock();
     const st = state({ show: true });
     const pp = tag('p', ["I'm here"]);
 
     const body = tag('(body)').add(
-      pp.showIf(st.show), //
+      pp.hideIfNot(st.show), //
     );
 
     expect(body.q('p')).toBeTruthy();
@@ -18,7 +18,7 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.showIf adds item at correct position', async () => {
-    const dom = createDomMock();
+    createDomMock();
     const st = state({ show: true });
     const pp1 = tag('p', ["I'm here"]);
     const pp = tag('p', ["I'm here"]);
@@ -26,10 +26,10 @@ describe('Tag conditionals', () => {
 
     tag('(body)').add(
       pp1,
-      pp.showIf(st.show), //
+      pp.hideIfNot(st.show), //
       pp2,
     );
-    
+
     expect(getElementIndex(pp.element)).toEqual(1);
     st.show = false;
     st.show = true;
@@ -64,17 +64,39 @@ describe('Tag conditionals', () => {
     expect(pp.hasAttr('disabled')).toBeFalsy();
   });
 
-  it('tag.enableIf', async () => {
+  it('tag.disableIfNot', async () => {
     createDomMock();
     const st = state({ enable: true });
     const pp = tag('p', ["I'm here"]);
 
     tag('(body)').add(
-      pp.enableIf(st.enable), //
+      pp.disableIfNot(st.enable), //
     );
 
     expect(pp.hasAttr('disabled')).toBeFalsy();
     st.enable = !st.enable;
     expect(pp.hasAttr('disabled')).toBeTruthy();
+  });
+
+  it('tag.classIf', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').classIf(st.enable, 'test-class');
+
+    expect(pp.hasClass('test-class')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasClass('test-class')).toBeTruthy();
+  });
+
+  it('tag.classIfNot', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').classIfNot(st.enable, 'test-class');
+
+    expect(pp.hasClass('test-class')).toBeTruthy();
+    st.enable = true;
+    expect(pp.hasClass('test-class')).toBeFalsy();
+
   });
 });

@@ -120,23 +120,29 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  /** Show this element if the consumer is truthy */
-  showIf(consumable: Consumable<boolean | number>) {
-    const handleShow = (value: any) => {
-      this.meta.ignoreRender = !value;
-      if (!this.parent) return;
-
-      if (value) {
-        this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
-      } else {
-        this.meta.childIndex = getElementIndex(this.element);
-        this.remove();
-      }
+  doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
+    const callback = (value) => {
+      if (value) ifTrue(value);
+      else ifFalse(value);
     };
-
-    consumable.changed(handleShow);
-    this.meta.ignoreRender = !consumable;
+    consumable.changed(callback);
+    callback(consumable);
     return this;
+  }
+
+  doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
+    return this.doIf(consumable, ifFalse, ifTrue);
+  }
+
+  show() {
+    if (!this.parent) return false;
+    this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+    return true;
+  }
+
+  hide() {
+    this.meta.childIndex = getElementIndex(this.element);
+    this.remove();
   }
 
   /** Hide this element if the consumer is truthy */
@@ -144,14 +150,8 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     const handleHide = (value: any) => {
       this.meta.ignoreRender = !value;
       if (!this.parent) return;
-
-      if (!value) {
-        this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
-      } 
-      else {
-        this.meta.childIndex = getElementIndex(this.element);
-        this.remove();
-      }
+      if (!value) this.show();
+      else this.hide();
     };
 
     consumable.changed(handleHide);
@@ -159,24 +159,64 @@ export class CTag<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /** Hide this element if the consumer is falsy */
+  hideIfNot(consumable: Consumable<boolean | number>) {
+    const handleShow = (value: any) => {
+      this.meta.ignoreRender = !value;
+      if (!this.parent) return;
+      if (value) this.show();
+      else this.hide();
+    };
+
+    consumable.changed(handleShow);
+    this.meta.ignoreRender = !consumable;
+    return this;
+  }
+
+  /** Adds classes to the element if the consumer is truthy */
+  classIf(consumable: Consumable<any>, ...classes: string[]) {
+    return this.doIf(
+      consumable,
+      () => this.addClass(...classes),
+      () => this.rmClass(...classes),
+    );
+  }
+
+  /** Adds classes to the element if the consumer is truthy */
+  classIfNot(consumable: Consumable<any>, ...classes: string[]) {
+    return this.doIfNot(
+      consumable,
+      () => this.addClass(...classes),
+      () => this.rmClass(...classes),
+    );
+  }
+
+  /** Add attribute to the element if the consumer is truthy */
+  attrIf(consumable: Consumable<any>, attr: string, value: string = '') {
+    return this.doIf(
+      consumable,
+      () => this.addAttr(attr, value),
+      () => this.rmAttr(attr),
+    );
+  }
+
+  /** Add attribute to the element if the consumer is truthy */
+  attrIfNot(consumable: Consumable<any>, attr: string, value: string = '') {
+    return this.doIfNot(
+      consumable,
+      () => this.addAttr(attr, value),
+      () => this.rmAttr(attr),
+    );
+  }
+
   /** Disable this element if the consumer is truthy */
   disableIf(consumable: Consumable<any>) {
-    consumable.changed((value) => this.setDisabled(value));
-    this.setDisabled(consumable);
-    return this;
+    return this.attrIf(consumable, 'disabled');
   }
 
-  doIf(consumable: Consumable<any>, callback: (value: any) => void) {
-    consumable.changed(callback);
-    callback(consumable);
-    return this;
-  }
-
-  /** Enable this element if the consumer is truthy */
-  enableIf(consumable: Consumable<any>) {
-    consumable.changed((value) => this.setDisabled(!value));
-    this.setDisabled(!consumable);
-    return this;
+  /** Disable this element if the consumer is truthy */
+  disableIfNot(consumable: Consumable<any>) {
+    return this.attrIfNot(consumable, 'disabled');
   }
 
   listen<K extends keyof HTMLElementEventMap>(

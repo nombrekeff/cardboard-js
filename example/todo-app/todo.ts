@@ -41,13 +41,8 @@ const addItemBtn = button('+')
 div.attach(itemInput, addItemBtn).addClass('header');
 
 const todoList = div
-  .attach(
-    p('There are no items')
-      .addClass('list-empty')
-      .hideIf(todoState.length),
-  )
+  .attach(p('There are no items').addClass('list-empty').hideIf(todoState.length))
   .addClass('todo-list');
-
 
 function addItem(value: string) {
   if (value) {
