@@ -47,7 +47,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     disable(): this;
     enable(): this;
     q(selector: any): CTag<HTMLElement>;
-    find(test: (el: HTMLElement) => boolean): Node;
+    find(test: (el: HTMLElement) => boolean): any;
     static find(selector: string): CTag<HTMLElement>;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;

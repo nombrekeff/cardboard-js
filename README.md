@@ -66,8 +66,8 @@ let counterState = state({ count: 0 });
 ```ts
 button()
 ```
-> `button()` or any other tag method for that matter, generates an HTMLElement in the page. To the body by default, but this can be changed. Check [Attaching](#attaching) further down.
-> If you don't want the tag to be automatically added, you can call `button.silent()` instead. This will just return the tag and let you handle it.
+> `button()` or any other tag method for that matter, generate an HTMLElement. But it's not added directly to the DOM. 
+> You can manually add children `div().add(p())`, or if there's a tag attached, you can simply do: `p.attach()`. Check the [Attaching](#attaching) section for more information.
 
 ```ts
 .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
