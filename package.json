@@ -6,13 +6,12 @@
   "main": "./dist/cardboard.js",
   "types": "./dist/cardboard.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -r dist && tsc && npm run build:example && npm run build:docs",
+    "test": "jest --coverage",
+    "build": "rimraf dist && tsc --p tsconfig.json && npm run build:example && npm run build:docs",
     "build:watch": "tsc --watch",
     "build:example": "tsc --p example/tsconfig.json",
     "build:example:watch": "tsc --watch --p example/tsconfig.json",
     "build:docs": "typedoc --out docs src/*.ts"
-
   },
   "author": "nombrekeff",
   "repository": {
@@ -20,9 +19,18 @@
   },
   "license": "ISC",
   "dependencies": {
+    "rimraf": "^5.0.5",
     "ts-loader": "^9.4.4",
     "typedoc": "^0.25.1",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/jsdom": "^21.1.3",
+    "jest": "^29.7.0",
+    "jsdom": "^22.1.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1"
   }
 }

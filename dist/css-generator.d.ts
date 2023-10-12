@@ -5,8 +5,7 @@ export declare class CssGenerator {
     } | {
         [key: string]: NestedStyleMap;
     }[]): string;
-    generateBlock(selector: string, style: NestedStyleMap): any;
-    joinSelectors(left: string, right: string): string;
+    generateBlock(selector: string, style: NestedStyleMap): string;
     generateBlockContent(selector: string, style: NestedStyleMap): string[];
     generateStyle(name: string, value: string): string;
 }

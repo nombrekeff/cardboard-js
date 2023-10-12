@@ -2,3 +2,4 @@
 /_*
 /example/**/*.js
 /example/**/*.js.map
+/coverage/

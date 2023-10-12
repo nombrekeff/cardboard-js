@@ -1,6 +1,7 @@
 import styles from './style.js';
 import { init, allTags, hinput, hstyle, attach, tag, state, CTag } from '../../dist/cardboard.js';
 import todoItem from './todo-item.js';
+
 const { div, button, h3, link, p, span } = allTags;
 
 const pageLinks = [
@@ -8,22 +9,24 @@ const pageLinks = [
   'https://fonts.gstatic.com',
   'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,600;0,700;1,100;1,300&display=swap',
 ];
-const makeLinks = () => pageLinks.map((url) => link().setAttr('href', url));
+const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
 init();
 hstyle();
 tag('(head)').add(...makeLinks());
 styles();
 
-const todoState = state({
-  items: [...JSON.parse(localStorage.getItem('TODOS'))],
-});
-todoState.items.changed((newItems) => {
-  localStorage.setItem('TODOS', JSON.stringify([...newItems]));
+const todoState = state([...JSON.parse(localStorage.getItem('TODOS'))], (newState) => {
+  localStorage.setItem('TODOS', JSON.stringify([...newState]));
 });
 
 const todoApp = div.attach().addClass('todo-app');
 attach(todoApp);
+
+h3.attach(
+  'Cardboard TODO',
+  span().consume(todoState.length, (self, count) => self.text(` (count: ${count}) `)),
+).setStyle({ textAlign: 'center', margin: '40px 0' });
 
 const itemInput = hinput({
   placeholder: 'Enter item content',
@@ -35,19 +38,10 @@ const addItemBtn = button('+')
   .listen(itemInput, 'input', (self, other) => (other.value ? self.enable() : self.disable()))
   .clicked(addItemFromInput);
 
-const todoCount = span('0').consume(todoState.items.length, (self, count) => self.text(` (count: ${count}) `));
-
-h3.attach('Cardboard TODO'.toUpperCase(), todoCount).addStyle({ textAlign: 'center', margin: '40px 0' });
 div.attach(itemInput, addItemBtn).addClass('header');
 
 const todoList = div
-  .attach(
-    p('There are no items')
-      .addClass('list-empty')
-      .consume(todoState.items.length, (t, v) => {
-        t.setStyle('display', v ? 'none' : 'block');
-      }),
-  )
+  .attach(p('There are no items').addClass('list-empty').hideIf(todoState.length))
   .addClass('todo-list');
 
 function addItem(value: string) {
@@ -55,8 +49,8 @@ function addItem(value: string) {
     todoList.add(
       todoItem(value, {
         remove: (s, c) => {
-          const index = todoState.items.indexOf(c);
-          todoState.items.splice(index, 1);
+          const index = todoState.indexOf(c);
+          todoState.splice(index, 1);
         },
       }),
     );
@@ -67,13 +61,11 @@ function addItem(value: string) {
 function addItemFromInput() {
   if (itemInput.value) {
     addItem(itemInput.value);
-    todoState.items.push(itemInput.value);
+    todoState.push(itemInput.value);
     itemInput.clear();
   }
 }
 
-for (const item of [...todoState.items]) {
+for (const item of [...todoState]) {
   addItem(item);
 }
-
-console.timeEnd('Page gen');

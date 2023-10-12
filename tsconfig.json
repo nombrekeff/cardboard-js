@@ -6,10 +6,12 @@
         "sourceMap": true,
         "declaration": true,
         "lib": [
-            "dom"
-        ]
+            "dom",
+            "ES2016"
+        ],
+        "types": []
     },
     "include": [
-        "./src/"
+        "./src/**/*.ts"
     ]
 }

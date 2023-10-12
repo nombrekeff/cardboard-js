@@ -1,26 +1,24 @@
 import { isObject } from './util.js';
 
-export type Consumable<T = any> = T & Partial<{ changed: (callback: (newValue: T) => void) => void }>;
+export type Consumable<T> = T & Partial<{ changed: (callback: (newValue: T) => void) => void }>;
 
 export type State<T extends Record<string, any>> = {
-  [K in keyof T]: Consumable<T[K]>;
+  [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
+} & {
+  changed: (callback: (newValue: T) => void) => void;
 };
 
-export function state<T extends {}>(content: T): State<T> {
-  let _propListeners = {};
+export function state<T extends object>(content: T, callback?: (newValue: T) => void): State<T> {
+  let _propListeners: { [k: string]: any[] } = {};
   let _stateListeners = [];
 
-  for (let prop of Object.getOwnPropertyNames(content)) {
-    if (isObject(content[prop])) {
-      content[prop] = state(content[prop]);
-    } else if (content[prop] instanceof Array) {
-      content[prop] = state(content[prop]);
-    }
-  }
+  if (callback) _stateListeners.push(callback);
 
   const addListener = (prop, callback) => {
     if (!_propListeners[prop]) _propListeners[prop] = [];
-    _propListeners[prop].push(callback);
+    if (!_propListeners[prop].includes(callback)){
+      _propListeners[prop].push(callback);
+    } 
   };
 
   const emitChange = (target, prop) => {
@@ -38,14 +36,25 @@ export function state<T extends {}>(content: T): State<T> {
   const addChangedMethod = (target, prop) => {
     const value: any = target[prop];
 
-    if (isObject(content[prop])) {
-      value.changed = (callback) => addListener(prop, callback);
-    } else if (value.__proto__) {
-      value.__proto__.changed = (callback) => addListener(prop, callback);
-    }
+    try {
+      if (isObject(target[prop])) {
+        value.changed = (callback) => addListener(prop, callback);
+      } else if (value.__proto__) {
+        value.__proto__.changed = (callback) => addListener(prop, callback);
+      }
+    } catch (error) {}
 
     return value;
   };
+
+  for (let prop of Object.getOwnPropertyNames(content)) {
+    if (isObject(content[prop])) {
+      content[prop] = state(content[prop], () => emitChange(content, prop));
+    } //
+    else if (content[prop] instanceof Array) {
+      content[prop] = state(content[prop], () => emitChange(content, prop));
+    }
+  }
 
   const proxy = new Proxy(content, {
     deleteProperty: function (target, prop) {
@@ -57,6 +66,11 @@ export function state<T extends {}>(content: T): State<T> {
       return addChangedMethod(target, prop);
     },
     set: (target, prop, value) => {
+      if (prop == 'changed') {
+        target[prop] = value;
+        return true;
+      }
+
       target[prop] = value;
       emitChange(target, prop);
       return true;
@@ -67,6 +81,8 @@ export function state<T extends {}>(content: T): State<T> {
   proxy.changed = (callback) => {
     _stateListeners.push(callback);
   };
+
+  // proxy.not =
 
   return proxy as State<T>;
 }
