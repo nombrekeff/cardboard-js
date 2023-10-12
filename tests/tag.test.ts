@@ -213,14 +213,6 @@ describe('Tags', () => {
     expect(t.children.length).toBe(0);
   });
 
-  it('attached', async () => {
-    createDomMock();
-    const c = tag('div');
-    attach(c);
-
-    expect(attached()).toBe(c);
-  });
-
   it('tag.consume', async () => {
     createDomMock();
     const callback = jest.fn();

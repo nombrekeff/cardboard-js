@@ -272,8 +272,14 @@ export function detach() {
         context.attachedTag = null;
     }
 }
+export function detachAll() {
+    context.attachedTag = null;
+    context.attachedTagStack = [];
+}
 export function init(options = { root: 'body' }) {
-    attach(new CTag(`(${options.root})`));
+    const root = new CTag(`(${options.root})`);
+    attach(root);
+    return root;
 }
 const interceptors = {
     ul: (children, attach = false) => {

@@ -58,13 +58,15 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
 export declare function attach(tag: CTag): void;
 export declare function detach(): void;
+export declare function detachAll(): void;
 export declare function init(options?: {
     root: string;
-}): void;
+}): CTag<HTMLElement>;
 type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
-export declare const allTags: {
-    [key in ValidTagName]?: ((...children: PickArgType<key>) => CTag) & {
+type AllTags = {
+    [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
         attach: (...children: PickArgType<key>) => CTag;
     };
 };
+export declare const allTags: AllTags;
 export {};

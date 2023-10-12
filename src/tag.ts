@@ -338,8 +338,15 @@ export function detach() {
   }
 }
 
+export function detachAll() {
+  context.attachedTag = null;
+  context.attachedTagStack = [];
+}
+
 export function init(options: { root: string } = { root: 'body' }) {
-  attach(new CTag(`(${options.root})`));
+  const root = new CTag(`(${options.root})`);
+  attach(root);
+  return root;
 }
 
 const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) } = {
@@ -357,12 +364,12 @@ const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) }
 };
 
 type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
-
-export const allTags: {
-  [key in ValidTagName]?: ((...children: PickArgType<key>) => CTag) & {
+type AllTags = {
+  [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
     attach: (...children: PickArgType<key>) => CTag;
   };
-} = new Proxy(
+};
+export const allTags: AllTags = new Proxy(
   {},
   {
     get: (t, p, r) => {
@@ -388,4 +395,4 @@ export const allTags: {
       return fn;
     },
   },
-);
+) as AllTags;
