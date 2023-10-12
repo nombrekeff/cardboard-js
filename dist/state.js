@@ -1,11 +1,15 @@
 import { isObject } from './util.js';
-export function state(content) {
+export function state(content, callback) {
     let _propListeners = {};
     let _stateListeners = [];
+    if (callback)
+        _stateListeners.push(callback);
     const addListener = (prop, callback) => {
         if (!_propListeners[prop])
             _propListeners[prop] = [];
-        _propListeners[prop].push(callback);
+        if (!_propListeners[prop].includes(callback)) {
+            _propListeners[prop].push(callback);
+        }
     };
     const emitChange = (target, prop) => {
         if (_propListeners[prop]) {
@@ -20,7 +24,7 @@ export function state(content) {
     const addChangedMethod = (target, prop) => {
         const value = target[prop];
         try {
-            if (isObject(content[prop])) {
+            if (isObject(target[prop])) {
                 value.changed = (callback) => addListener(prop, callback);
             }
             else if (value.__proto__) {
@@ -32,12 +36,10 @@ export function state(content) {
     };
     for (let prop of Object.getOwnPropertyNames(content)) {
         if (isObject(content[prop])) {
-            content[prop] = state(content[prop]);
-            content[prop].changed(() => emitChange(content, prop));
-        }
+            content[prop] = state(content[prop], () => emitChange(content, prop));
+        } //
         else if (content[prop] instanceof Array) {
-            content[prop] = state(content[prop]);
-            content[prop].changed(() => emitChange(content, prop));
+            content[prop] = state(content[prop], () => emitChange(content, prop));
         }
     }
     const proxy = new Proxy(content, {
@@ -50,6 +52,10 @@ export function state(content) {
             return addChangedMethod(target, prop);
         },
         set: (target, prop, value) => {
+            if (prop == 'changed') {
+                target[prop] = value;
+                return true;
+            }
             target[prop] = value;
             emitChange(target, prop);
             return true;
@@ -59,6 +65,7 @@ export function state(content) {
     proxy.changed = (callback) => {
         _stateListeners.push(callback);
     };
+    // proxy.not =
     return proxy;
 }
 //# sourceMappingURL=state.js.map

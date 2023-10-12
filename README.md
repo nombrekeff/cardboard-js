@@ -3,8 +3,6 @@
 
 ![](./header.png)
 
-
-
 Welcome to Carboard. A very simple, yet powerful "framework"/library to create web applications without the need to write any HTML.
 
 NOTE: There's also a server-side companion to **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
@@ -17,8 +15,7 @@ If you don't like writing HTML, or need a very basic framework for simple apps, 
 
 ### What does it do?
 
-It let's you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...
-It's lightweight, and very simple.
+It let's you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...It also handles a simple state management solution. It's lightweight, and very simple.
 
 ### Getting Started
 Install package: 
@@ -86,7 +83,10 @@ button()
 
 #### Todo Example
 ```ts
-const list = ul.addAttrs({ id: 'list' });
+const list = ul(
+  p('There are no items').hideIf(todoState.length),
+).addAttrs({ id: 'list' });
+
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
 
 const addItem = () => {
@@ -102,9 +102,12 @@ attached().add(list);
 
 Let me explain:
 ```ts
-const list = ul().addAttrs({ id: 'list' });
+const list = ul(
+  p('There are no items').hideIf(todoState.length),
+).addAttrs({ id: 'list' });
 ```
 > Create a **ul** list, with an id "list".
+> Adds a **p** child with text _'There are no items'_, which will be hidden if there are items
 
 ```ts
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });

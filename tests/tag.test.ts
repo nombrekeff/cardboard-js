@@ -183,7 +183,7 @@ describe('Tags', () => {
     const q = t.q('#test');
 
     expect(q).toBeInstanceOf(CTag);
-    expect(q.id).toBe('test');
+    expect(q!.id).toBe('test');
   });
 
   it('tag.find', async () => {
@@ -221,5 +221,17 @@ describe('Tags', () => {
     s.count++;
 
     expect(callback).toBeCalled();
+  });
+
+  it('tag.hide & tag.show', async () => {
+    createDomMock();
+    const test = tag('div').setId('test');
+    tag('(body)').add(test);
+
+    expect(document.querySelector('#test')).toBeTruthy();
+    test.hide();
+    expect(document.querySelector('#test')).not.toBeTruthy();
+    test.show();
+    expect(document.querySelector('#test')).toBeTruthy();
   });
 });

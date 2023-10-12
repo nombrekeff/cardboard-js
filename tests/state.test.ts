@@ -54,8 +54,27 @@ describe('State', () => {
     const fn = jest.fn();
     const s = state({ data: { name: 'test' } });
     s.data.changed!(fn);
-    s.data.name = 'Heyyyy';
+    s.data.name += 'Heyyyy';
 
     expect(fn).toHaveBeenCalled();
   });
+
+  it('One event does not call others', async () => {
+    const fn1 = jest.fn();
+    const fn2 = jest.fn();
+
+    let testState = state({ hide: true, disable: true });
+    testState.hide.changed!(fn1);
+    testState.disable.changed!(fn2);
+
+    testState.disable = !testState.disable;
+    expect(fn1).not.toHaveBeenCalled();
+    expect(fn2).toHaveBeenCalled();
+  });
+
+  // it('state not', async () => {
+  //   const fn1 = jest.fn();
+  //   let testState = state({ hide: true });
+  //   expect(fn1).toHaveBeenCalledWith(false);
+  // });
 });
