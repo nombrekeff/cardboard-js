@@ -1,8 +1,18 @@
+import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
 import { StyleMap, StyleSet, TagChild, TagChildren, TagConfig } from './types.js';
+type CTree = {
+    [key: string]: TagChild;
+};
+export declare let context: {
+    attachedTag: CTag;
+    attachedTagStack: CTag[];
+    css: CssGenerator;
+    tree: CTree;
+};
 /** Returns the currently attached {CTag}*/
 export declare function attached(): CTag<HTMLElement>;
 /**
@@ -13,6 +23,7 @@ export declare function attached(): CTag<HTMLElement>;
 export declare class CTag<T extends HTMLElement = HTMLElement> {
     element: T;
     parent: CTag;
+    _children: any[];
     /** If set to true, it be appended to the attached tag */
     private attachable;
     private meta;
