@@ -15,7 +15,7 @@ If you don't like writing HTML, or need a very basic framework for simple apps, 
 
 ### What does it do?
 
-It let's you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...It also handles a simple state management solution. It's lightweight, and very simple.
+It let's you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...It also offers a simple state management solution alongside a kind of reactive way of conditionally doing stuff like: **Hiding/showing elements**, **Disabling/enabling elements**, and more. And all of this in a very small pacakage.
 
 ### Getting Started
 Install package: 
@@ -24,7 +24,7 @@ Install package:
 npm install https://github.com/nombrekeff/cardboard-js
 ```
 
-Then you  can import the package. 
+Then you can import the package. 
 
 ```ts
 import { tag, init, allTags, state, attached, hinput, hstyle } from 'cardboard';
@@ -69,15 +69,15 @@ button()
 ```ts
 .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
 ```
-> the `.consume` method, reacts to changes in the state, and triggers the **callback**.
+> the [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#consume) method, reacts to changes in the state, and triggers the **callback**.
 > For example in the snippet above, whenever `counterState.count` changes, we set the **text** to `"Clicked ${count} times"`.
 > That will automatically change the innerContent of the HTML element.
 
 ```ts
 .clicked((_) => counterState.count++);
 ```
-> the `.clicked` method will be called, whenever the element is clicked. Quite simple!
-> it's a shortcut for `.on('click', callback);`, a couple of shorthands are provided. 
+> the [`.clicked`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#clicked) method will be called, whenever the element is clicked. Quite simple!
+> it's a shortcut for [`.on('click', callback)`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#on), a couple of shorthands are provided. 
 > If the event you want to listen does not have a shorthand, you can either, leave an issue for me to add it, send a PR or just use `.on(evtName, callback);`.
 
 
@@ -87,11 +87,17 @@ const list = ul(
   p('There are no items').hideIf(todoState.length),
 ).addAttrs({ id: 'list' });
 
-const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
+const itemInput = hinput({ 
+  placeholder: 'Enter item content', 
+  submit: (_) => addItem() 
+});
 
 const addItem = () => {
   if (itemInput.value) {
-    list.append(li(itemInput.value).clicked((self) => self.remove()));
+    list.append(
+      li(itemInput.value)
+        .clicked((self) => self.remove())
+    );
     itemInput.clear();
   }
 };
@@ -103,11 +109,14 @@ attached().append(list);
 Let me explain:
 ```ts
 const list = ul(
-  p('There are no items').hideIf(todoState.length),
+  p('There are no items')
+    .hideIf(todoState.length),
 ).addAttrs({ id: 'list' });
 ```
 > Create a **ul** list, with an id "list".
-> Adds a **p** child with text _'There are no items'_, which will be hidden if there are items
+> Adds a **p** child with text _'There are no items'_, which will be hidden if there are items. 
+> [`hideIf`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#hideIf) will listen to changes in `todoState.length`, if there are items (length > 0), the tag `p` will be hidden, removed from the DOM basically. Whenever the length goes back to 0, it will be automatically added to the DOM again. It will even figure out exactly where to be added relative to it's siblings and parent (i.e. _If a sibling before is also hidden, it will figure that out, and calculate it's position based on that_) 
+
 
 ```ts
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
@@ -124,13 +133,13 @@ const addItem = () => {
 };
 ```
 > Little method to handle adding items to the list. It will also clear the input.
-> To add an iten to the list, it's possible by calling `.append()` with the element we want.
+> To add an iten to the list, it's possible by calling [`.append()`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#append) with the element we want.
 > A `li` in this case, with the value of the input as it's text.
 
 ```ts
 button.attach('Add item').clicked(addItem);
 ```
-> Creates a button, which will add an item when it's clicked. calling `.attach` will add button to the attached tag.
+> Creates a button, which will add an item when it's clicked. calling [`.attach`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#attach) will add button to the attached tag.
 
 ```ts
 attached().append(list);
@@ -178,7 +187,7 @@ export function hinput(options: HInputOptions = {}) {
 
 ### Attaching
 
-Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the `init()` function.
+Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the [`init()`](https://nombrekeff.github.io/cardboard-js/functions/tag.init.html) function.
 
 If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
 
@@ -187,7 +196,7 @@ init();
 init({ root: '#app-root' });
 ```
 
-You can also manually attach to any element by calling the `attach()` function:
+You can also manually attach to any element by calling the [`attach()`](https://nombrekeff.github.io/cardboard-js/functions/tag.attach.html) function:
 ```ts
 init();
 const wrapper = div();
