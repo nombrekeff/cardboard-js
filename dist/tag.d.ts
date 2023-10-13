@@ -1,15 +1,11 @@
-import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
-import { TagName, ValidTagName } from './tag-names.js';
-import { StyleMap, StyleSet, TagChild, TagChildren, TagConfig } from './types.js';
-export declare let context: {
-    attachedTag: CTag;
-    attachedTagStack: CTag[];
-    css: CssGenerator;
-};
-/** Returns the currently attached {CTag}*/
+import { TagName } from './tag-names.js';
+import { AllTags, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
+/**
+ * Returns the currently attached {@link CTag}. See {@link attach} for more information.
+ */
 export declare function attached(): CTag;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -134,23 +130,71 @@ export declare class CTag {
     find(predicate: (el: TagChild) => boolean): TagChild;
     findTag(predicate: (el: CTag) => boolean): CTag;
     private _childrenFilterPredicate;
+    private _getElementForChild;
+    private _getElementChildren;
 }
+/**
+ * This function can do the following based on the first argument:
+ * * create a tag if you provide a tag name: (`div`, `abbr`, `custom-tag`, ...),
+ * * wrap around an existing element in the page if you pass in a selector: (`'(body)'`, `'(#id)'`, `'(.class)'`), any selector is allowed.
+ * * wrap around an element passed in
+ *
+ * Then it can receive a list of children to be added.
+ * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
+ *
+ * @example
+ * ```ts
+ * tag('div');
+ * tag('(body)');
+ * tag('(.someclass)');
+ * tag(document.querySelector('#something'));
+ * ```
+ */
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
+/**
+ * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
+ * they will be added as children of this tag.
+ * You can call attach multiple times, and the last attach tag will be used.
+ * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
+ *
+ * @example
+ * ```ts
+ * attach(div());
+ * div.attach();  // added as child of div
+ * p.attach();    // added as child of div
+ *
+ * attach(div()); // New div
+ * div.attach();  // added as child of new div
+ * p.attach();    // added as child of new div
+ *
+ * detach();      // Back to previous div
+ * detach();      // No attached tag
+ * ```
+ */
 export declare function attach(tag: CTag): void;
+/**
+ * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
+ * If there are no previous attached tags, it will clear the attached tag.
+ */
 export declare function detach(): void;
+/**
+ * Detaches all attached tags. There will be no attached tag after calling this function.
+ */
 export declare function detachAll(): void;
+/**
+ * It makes the body the attached tag ({@link attach}).
+ * You can pass in a selector for an element you want to be the default attached tag.
+ */
 export declare function init(options?: {
     root: string;
 }): CTag;
-export declare function getElementIndex(node: Element): number;
-export declare function isSelector(str: string): RegExpMatchArray;
-export declare function getElementForChild(cl: TagChild): Node;
-export declare function getElementChildren(element: HTMLElement): Node[];
-type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
-type AllTags = {
-    [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
-        attach: (...children: PickArgType<key>) => CTag;
-    };
-};
+/**
+ * List of all HTML tag functions. From `div` to `abbr` :)
+ * If you want to create any other tag, use the {@link tag} function.
+ *
+ * @example
+ * ```ts
+ * const { div, p, abbr, img, style, ... } = allTags;
+ * ```
+ */
 export declare const allTags: AllTags;
-export {};

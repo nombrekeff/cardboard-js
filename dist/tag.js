@@ -1,10 +1,12 @@
 import { CssGenerator } from './css-generator.js';
-export let context = {
+let context = {
     attachedTag: null,
     attachedTagStack: [],
     css: new CssGenerator(),
 };
-/** Returns the currently attached {CTag}*/
+/**
+ * Returns the currently attached {@link CTag}. See {@link attach} for more information.
+ */
 export function attached() {
     return context.attachedTag;
 }
@@ -15,7 +17,7 @@ export function attached() {
  */
 export class CTag {
     get children() {
-        return getElementChildren(this.element);
+        return this._getElementChildren(this.element);
     }
     get value() {
         return this.element.value;
@@ -43,7 +45,8 @@ export class CTag {
             nextSiblingID: null,
         };
         this.attachable = attachable;
-        if (typeof arg0 == 'string' && isSelector(arg0)) {
+        const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
+        if (isSelector) {
             this.attachable = false;
             this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
         }
@@ -65,16 +68,16 @@ export class CTag {
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
-        this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
+        this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
         this._children = children;
     }
     append(...children) {
-        this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
+        this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
         this._children.push(...children);
         return this;
     }
     prepend(...children) {
-        this.element.prepend(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
+        this.element.prepend(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
         this._children.unshift(...children);
         return this;
     }
@@ -449,16 +452,77 @@ export class CTag {
         }
         return true;
     }
+    _getElementForChild(cl) {
+        if (typeof cl === 'string')
+            return document.createTextNode(cl);
+        if (cl instanceof CTag)
+            return cl.element;
+        if (cl instanceof HTMLElement)
+            return cl;
+        return null;
+    }
+    _getElementChildren(element) {
+        let childNodes = element.childNodes;
+        let children = [];
+        let i = childNodes.length;
+        while (i--) {
+            if (childNodes[i].nodeType == 1) {
+                children.unshift(childNodes[i]);
+            }
+        }
+        return children;
+    }
 }
+/**
+ * This function can do the following based on the first argument:
+ * * create a tag if you provide a tag name: (`div`, `abbr`, `custom-tag`, ...),
+ * * wrap around an existing element in the page if you pass in a selector: (`'(body)'`, `'(#id)'`, `'(.class)'`), any selector is allowed.
+ * * wrap around an element passed in
+ *
+ * Then it can receive a list of children to be added.
+ * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
+ *
+ * @example
+ * ```ts
+ * tag('div');
+ * tag('(body)');
+ * tag('(.someclass)');
+ * tag(document.querySelector('#something'));
+ * ```
+ */
 export function tag(arg0, children = [], attach = false) {
     return new CTag(arg0, children, attach);
 }
+/**
+ * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
+ * they will be added as children of this tag.
+ * You can call attach multiple times, and the last attach tag will be used.
+ * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
+ *
+ * @example
+ * ```ts
+ * attach(div());
+ * div.attach();  // added as child of div
+ * p.attach();    // added as child of div
+ *
+ * attach(div()); // New div
+ * div.attach();  // added as child of new div
+ * p.attach();    // added as child of new div
+ *
+ * detach();      // Back to previous div
+ * detach();      // No attached tag
+ * ```
+ */
 export function attach(tag) {
     if (context.attachedTag) {
         context.attachedTagStack.push(context.attachedTag);
     }
     context.attachedTag = tag;
 }
+/**
+ * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
+ * If there are no previous attached tags, it will clear the attached tag.
+ */
 export function detach() {
     if (context.attachedTagStack.length > 0) {
         context.attachedTag = context.attachedTagStack.pop();
@@ -467,43 +531,23 @@ export function detach() {
         context.attachedTag = null;
     }
 }
+/**
+ * Detaches all attached tags. There will be no attached tag after calling this function.
+ */
 export function detachAll() {
     context.attachedTag = null;
     context.attachedTagStack = [];
 }
+/**
+ * It makes the body the attached tag ({@link attach}).
+ * You can pass in a selector for an element you want to be the default attached tag.
+ */
 export function init(options = { root: 'body' }) {
     const root = new CTag(`(${options.root})`);
     attach(root);
     return root;
 }
-export function getElementIndex(node) {
-    var index = 0;
-    while ((node = node.previousElementSibling)) {
-        index++;
-    }
-    return index;
-}
-export function isSelector(str) {
-    return str.match(/\(.+\)/);
-}
-export function getElementForChild(cl) {
-    if (typeof cl === 'string')
-        return document.createTextNode(cl);
-    if (cl instanceof CTag)
-        return cl.element;
-    if (cl instanceof HTMLElement)
-        return cl;
-    return null;
-}
-export function getElementChildren(element) {
-    var childNodes = element.childNodes, children = [], i = childNodes.length;
-    while (i--) {
-        if (childNodes[i].nodeType == 1) {
-            children.unshift(childNodes[i]);
-        }
-    }
-    return children;
-}
+/** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
     ul: (children, attach = false) => {
         return tag('ul', children.map((cl) => {
@@ -514,6 +558,15 @@ const interceptors = {
         return tag('style', [context.css.generateCss(styles)], attach);
     },
 };
+/**
+ * List of all HTML tag functions. From `div` to `abbr` :)
+ * If you want to create any other tag, use the {@link tag} function.
+ *
+ * @example
+ * ```ts
+ * const { div, p, abbr, img, style, ... } = allTags;
+ * ```
+ */
 export const allTags = new Proxy({}, {
     get: (t, p, r) => {
         const tagName = p.toString();
