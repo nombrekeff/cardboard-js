@@ -7,7 +7,7 @@ import { isObject } from './util.js';
  *
  * If you provide a list of {@link Consumable} the template must reference the index: `$0`, `$1`
  * If you provide a {@link State} the template must reference the property name: `$count`, `$someValue`
- * 
+ *
  * When the state or consumable changes, the text node will be automatically updated with the new template
  *
  * @example
@@ -22,7 +22,7 @@ export function template<T>(template: string, values: Consumable<any>[] | State<
   const interpolatePattern = /(\$([0-9]+|[a-z][a-z0-9_$]*))/i;
 
   const updateNode = () => {
-    node.nodeValue = template.replace(interpolatePattern, (_, __, p2) => values[p2].toString());
+    node.nodeValue = template.replace(interpolatePattern, (_, p1, p2) => (values[p2] ? values[p2].toString() : p1));
   };
 
   if (values instanceof Array) {
