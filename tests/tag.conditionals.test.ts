@@ -1,10 +1,15 @@
 import { createDomMock } from './__mocks__/client';
-import { tag, allTags, state, getElementIndex } from '../src/cardboard';
-const { div, button, input, a, ul, li, hr, p } = allTags;
-
+import { tag, allTags, state } from '../src/cardboard';
+function getElementIndex(node) {
+  var index = 0;
+  while ((node = node.previousElementSibling)) {
+    index++;
+  }
+  return index;
+}
 describe('Tag conditionals', () => {
   it('tag.showIf', async () => {
-   createDomMock();
+    createDomMock();
     const st = state({ show: true });
     const pp = tag('p', ["I'm here"]);
 
@@ -17,7 +22,7 @@ describe('Tag conditionals', () => {
     expect(body.q('p')).toBeFalsy();
   });
 
-  it('tag.showIf appends item at correct position', async () => {
+  it('tag.hideIfNot appends item at correct position', async () => {
     createDomMock();
     const st = state({ show: true });
     const pp1 = tag('p', ["I'm here"]);
@@ -97,6 +102,5 @@ describe('Tag conditionals', () => {
     expect(pp.hasClass('test-class')).toBeTruthy();
     st.enable = true;
     expect(pp.hasClass('test-class')).toBeFalsy();
-
   });
 });

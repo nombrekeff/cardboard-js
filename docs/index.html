@@ -29,22 +29,27 @@
 <p>I recomend destructuring tags, for a cleaner code:</p>
 <pre><code class="language-ts"><span class="hl-6">const</span><span class="hl-1"> { </span><span class="hl-7">div</span><span class="hl-1">, </span><span class="hl-7">p</span><span class="hl-1">, </span><span class="hl-7">span</span><span class="hl-1">, </span><span class="hl-7">b</span><span class="hl-1">, </span><span class="hl-7">script</span><span class="hl-1">, </span><span class="hl-7">button</span><span class="hl-1">, </span><span class="hl-7">style</span><span class="hl-1">, </span><span class="hl-7">a</span><span class="hl-1">, </span><span class="hl-7">hr</span><span class="hl-1"> } = </span><span class="hl-0">allTags</span><span class="hl-1">;</span>
 </code><button>Copy</button></pre>
-<a id="md:examples" class="tsd-anchor"></a><h3><a href="#md:examples">Examples</a></h3><p>Check out the <a href="/examples"><code>examples</code></a> folder for a variety of examples on how to use Cardboard.</p>
+<a id="md:docs" class="tsd-anchor"></a><h3><a href="#md:docs">Docs</a></h3><p>Check out the <a href="https://nombrekeff.github.io/cardboard-js/">Documentation</a> for more details.</p>
+<a id="md:examples" class="tsd-anchor"></a><h3><a href="#md:examples">Examples</a></h3><p>Check out the <a href="/examples"><code>examples</code></a> folder for a variety of examples on how to use Cardboard. 
+But here are a couple of examples that highlight what Cardboard can do:</p>
 <a id="md:clicker-example" class="tsd-anchor"></a><h4><a href="#md:clicker-example">Clicker Example</a></h4><pre><code class="language-ts"><span class="hl-6">let</span><span class="hl-1"> </span><span class="hl-0">counterState</span><span class="hl-1"> = </span><span class="hl-8">state</span><span class="hl-1">({ </span><span class="hl-0">count:</span><span class="hl-1"> </span><span class="hl-9">0</span><span class="hl-1"> });</span><br/><span class="hl-8">button</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-8">consume</span><span class="hl-1">(</span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">, (</span><span class="hl-0">self</span><span class="hl-1">, </span><span class="hl-0">count</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">self</span><span class="hl-1">.</span><span class="hl-8">text</span><span class="hl-1">(</span><span class="hl-5">`Clicked </span><span class="hl-6">${</span><span class="hl-0">count</span><span class="hl-6">}</span><span class="hl-5"> times`</span><span class="hl-1">))</span><br/><span class="hl-1">  .</span><span class="hl-8">clicked</span><span class="hl-1">((</span><span class="hl-0">_</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">++);</span>
 </code><button>Copy</button></pre>
 <p>Let me explain:</p>
 <pre><code class="language-ts"><span class="hl-6">let</span><span class="hl-1"> </span><span class="hl-0">counterState</span><span class="hl-1"> = </span><span class="hl-8">state</span><span class="hl-1">({ </span><span class="hl-0">count:</span><span class="hl-1"> </span><span class="hl-9">0</span><span class="hl-1"> });</span>
 </code><button>Copy</button></pre>
 <blockquote>
-<p>Creates a &quot;reactive&quot; state, or more so a state that can be listened to, globaly or per property.
-<code>counterState.changed((newState) =&gt; handleStateChange())</code><br><code>counterState.count.changed((newValue) =&gt; handleValueChange())</code></p>
+<p>Creates a state that can be listened to, globaly or per property: </p>
+<pre><code class="language-ts"><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-8">changed</span><span class="hl-1">((</span><span class="hl-0">newState</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-8">handleStateChange</span><span class="hl-1">());</span><br/><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">.</span><span class="hl-8">changed</span><span class="hl-1">((</span><span class="hl-0">newValue</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-8">handleValueChange</span><span class="hl-1">());</span>
+</code><button>Copy</button></pre>
 </blockquote>
+<hr>
 <pre><code class="language-ts"><span class="hl-8">button</span><span class="hl-1">()</span>
 </code><button>Copy</button></pre>
 <blockquote>
 <p><code>button()</code> or any other tag method for that matter, generate an HTMLElement. But it&#39;s not added directly to the DOM. 
 You can manually add children <code>div().append(p())</code>, or if there&#39;s a tag attached, you can simply do: <code>p.attach()</code>. Check the <a href="#attaching">Attaching</a> section for more information.</p>
 </blockquote>
+<hr>
 <pre><code class="language-ts"><span class="hl-1">.</span><span class="hl-8">consume</span><span class="hl-1">(</span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">, (</span><span class="hl-0">self</span><span class="hl-1">, </span><span class="hl-0">count</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">self</span><span class="hl-1">.</span><span class="hl-8">text</span><span class="hl-1">(</span><span class="hl-5">`Clicked </span><span class="hl-6">${</span><span class="hl-0">count</span><span class="hl-6">}</span><span class="hl-5"> times`</span><span class="hl-1">))</span>
 </code><button>Copy</button></pre>
 <blockquote>
@@ -52,6 +57,14 @@ You can manually add children <code>div().append(p())</code>, or if there&#39;s 
 For example in the snippet above, whenever <code>counterState.count</code> changes, we set the <strong>text</strong> to <code>&quot;Clicked ${count} times&quot;</code>.
 That will automatically change the innerContent of the HTML element.</p>
 </blockquote>
+<p>This can also be done in a simpler way by using <a href="https://nombrekeff.github.io/cardboard-js/classes/"><code>template()</code></a>.
+Instead of using consume, we can do it like this:</p>
+<pre><code class="language-ts"><span class="hl-8">button</span><span class="hl-1">(</span><span class="hl-8">template</span><span class="hl-1">(</span><span class="hl-5">`Clicked $count times`</span><span class="hl-1">, </span><span class="hl-0">counterState</span><span class="hl-1">))</span>
+</code><button>Copy</button></pre>
+<p>Instead of:</p>
+<pre><code class="language-ts"><span class="hl-8">button</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-8">consume</span><span class="hl-1">(</span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">, (</span><span class="hl-0">self</span><span class="hl-1">, </span><span class="hl-0">count</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">self</span><span class="hl-1">.</span><span class="hl-8">text</span><span class="hl-1">(</span><span class="hl-5">`Clicked </span><span class="hl-6">${</span><span class="hl-0">count</span><span class="hl-6">}</span><span class="hl-5"> times`</span><span class="hl-1">))</span>
+</code><button>Copy</button></pre>
+<hr>
 <pre><code class="language-ts"><span class="hl-1">.</span><span class="hl-8">clicked</span><span class="hl-1">((</span><span class="hl-0">_</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-0">counterState</span><span class="hl-1">.</span><span class="hl-0">count</span><span class="hl-1">++);</span>
 </code><button>Copy</button></pre>
 <blockquote>
@@ -69,6 +82,7 @@ If the event you want to listen does not have a shorthand, you can either, leave
 Adds a <strong>p</strong> child with text <em>&#39;There are no items&#39;</em>, which will be hidden if there are items. 
 <a href="https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#hideIf"><code>hideIf</code></a> will listen to changes in <code>todoState.length</code>, if there are items (length &gt; 0), the tag <code>p</code> will be hidden, removed from the DOM basically. Whenever the length goes back to 0, it will be automatically added to the DOM again. It will even figure out exactly where to be added relative to it&#39;s siblings and parent (i.e. <em>If a sibling before is also hidden, it will figure that out, and calculate it&#39;s position based on that</em>) </p>
 </blockquote>
+<hr>
 <pre><code class="language-ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">itemInput</span><span class="hl-1"> = </span><span class="hl-8">hinput</span><span class="hl-1">({ </span><span class="hl-0">placeholder:</span><span class="hl-1"> </span><span class="hl-5">&#39;Enter item content&#39;</span><span class="hl-1">, </span><span class="hl-8">submit</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">_</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-8">addItem</span><span class="hl-1">() });</span>
 </code><button>Copy</button></pre>
 <blockquote>
@@ -82,11 +96,13 @@ In this case we set the <strong>placeholder</strong> and sets the <code>submit</
 To add an iten to the list, it&#39;s possible by calling <a href="https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#append"><code>.append()</code></a> with the element we want.
 A <code>li</code> in this case, with the value of the input as it&#39;s text.</p>
 </blockquote>
+<hr>
 <pre><code class="language-ts"><span class="hl-0">button</span><span class="hl-1">.</span><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-5">&#39;Add item&#39;</span><span class="hl-1">).</span><span class="hl-8">clicked</span><span class="hl-1">(</span><span class="hl-0">addItem</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
 <blockquote>
 <p>Creates a button, which will add an item when it&#39;s clicked. calling <a href="https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#attach"><code>.attach</code></a> will add button to the attached tag.</p>
 </blockquote>
+<hr>
 <pre><code class="language-ts"><span class="hl-8">attached</span><span class="hl-1">().</span><span class="hl-8">append</span><span class="hl-1">(</span><span class="hl-0">list</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
 <blockquote>
@@ -114,7 +130,7 @@ It can then be used as any other cardboard tag method.
 <p>It&#39;s also possible to attach multiple times:</p>
 <pre><code class="language-ts"><span class="hl-8">init</span><span class="hl-1">();</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">wrapper</span><span class="hl-1"> = </span><span class="hl-0">div</span><span class="hl-1">.</span><span class="hl-8">attach</span><span class="hl-1">();</span><br/><br/><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-0">wrapper</span><span class="hl-1">);</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">childDiv</span><span class="hl-1"> = </span><span class="hl-0">div</span><span class="hl-1">.</span><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-5">&quot;I&#39;m inside wrapper&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-0">childDiv</span><span class="hl-1">);</span><br/><span class="hl-0">p</span><span class="hl-1">.</span><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-5">&quot;I&#39;m inside child div!&quot;</span><span class="hl-1">);</span><br/><span class="hl-8">detach</span><span class="hl-1">();</span><br/><br/><span class="hl-0">p</span><span class="hl-1">.</span><span class="hl-8">attach</span><span class="hl-1">(</span><span class="hl-5">&quot;I&#39;m now inside wrapper!&quot;</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
-</div></div>
+<a id="md:" class="tsd-anchor"></a><h3><a href="#md:"></a></h3></div></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -144,13 +160,15 @@ It can then be used as any other cardboard tag method.
 <ul>
 <li><a href="#md:what-does-it-do"><span>What does it do?</span></a></li>
 <li><a href="#md:getting-started"><span>Getting <wbr/>Started</span></a></li>
+<li><a href="#md:docs"><span>Docs</span></a></li>
 <li><a href="#md:examples"><span>Examples</span></a></li>
 <li>
 <ul>
 <li><a href="#md:clicker-example"><span>Clicker <wbr/>Example</span></a></li>
 <li><a href="#md:todo-example"><span>Todo <wbr/>Example</span></a></li>
 <li><a href="#md:component-example"><span>Component <wbr/>Example</span></a></li></ul></li>
-<li><a href="#md:attaching"><span>Attaching</span></a></li></ul></li></ul></li></ul></li></ul></div></details></div>
+<li><a href="#md:attaching"><span>Attaching</span></a></li>
+<li><a href="#md:"><span></span></a></li></ul></li></ul></li></ul></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>cardboard-js</span></a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".">

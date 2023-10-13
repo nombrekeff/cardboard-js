@@ -26,7 +26,7 @@ tag('br');
 hr();
 
 let counterState = state({ count: 0 });
-button.attach(template(`Clicked $0 times`, [counterState.count]))
+button.attach(template(`Clicked $count times`, counterState))
   .clicked((_) => counterState.count++);
 
 hr();

@@ -3,7 +3,7 @@ import styles from './style.js';
 import todoItem from './todo-item.js';
 import appState from './state.js';
 
-const { div, button, h3, link, p, span } = allTags;
+const { div, button, h3, link, p } = allTags;
 
 const pageLinks = [
   'https://fonts.googleapis.com',

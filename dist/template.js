@@ -19,7 +19,7 @@ export function template(template, values) {
     const node = document.createTextNode('');
     const interpolatePattern = /(\$([0-9]+|[a-z][a-z0-9_$]*))/i;
     const updateNode = () => {
-        node.nodeValue = template.replace(interpolatePattern, (_, __, p2) => values[p2].toString());
+        node.nodeValue = template.replace(interpolatePattern, (_, p1, p2) => (values[p2] ? values[p2].toString() : p1));
     };
     if (values instanceof Array) {
         for (let i = 0; i < values.length; i++) {
