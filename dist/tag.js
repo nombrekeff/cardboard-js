@@ -106,7 +106,9 @@ export class CTag {
         return this.doIf(consumable, ifFalse, ifTrue);
     }
     /**
-     * If the element is currently hidden it will add this element to the page
+     * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
+     * I will be placed exactly in the correct position, even if there are other elements hidden.
+     *
      */
     show() {
         if (!this.parent.children.includes(this.element)) {

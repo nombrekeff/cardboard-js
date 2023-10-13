@@ -3,7 +3,7 @@ import { tag, allTags, state, CTag } from '../src/cardboard';
 const { p } = allTags;
 
 const getChildStr = () => {
-  const children = Array.from(document.body.children);
+  const children = Array.from(document.body.childNodes);
   const childStrings: string[] = [];
   for (let i = 0; i < children.length; i++) {
     if (children[i].textContent) childStrings.push(children[i].textContent!);
@@ -12,7 +12,7 @@ const getChildStr = () => {
 };
 
 describe('Conditional show/hide', () => {
-  it.only('basic case', async () => {
+  it('basic case', async () => {
     createDomMock();
     const root = tag('(body)');
 
@@ -26,7 +26,6 @@ describe('Conditional show/hide', () => {
     );
 
     expect(getChildStr()).toEqual(['0', '1', '2']);
-
     st.hide1 = true;
     expect(getChildStr()).toEqual(['0', '2']);
     st.hide0 = true;
@@ -41,7 +40,37 @@ describe('Conditional show/hide', () => {
     expect(getChildStr()).toEqual(['0', '1', '2']);
   });
 
-  it.only('random test case', async () => {
+  it('Works between text nodes', async () => {
+    createDomMock();
+    const root = tag('(body)');
+    let st = state({ hide: false });
+
+    root.append('Hello', p('There').hideIf(st.hide), 'World');
+    expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
+    st.hide = true;
+    expect(getChildStr()).toEqual(['Hello', 'World']);
+    st.hide = false;
+    expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
+  });
+
+  it('Works with nested children', async () => {
+    createDomMock();
+    const root = tag('(body)');
+    let st = state({ hide: false });
+
+    root.append(
+      p().hideIf(st.hide).append(
+        p('Hey'), p('whats'), p('up'),
+      ),
+    );
+    expect(getChildStr()).toEqual(['Heywhatsup']);
+    st.hide = true;
+    expect(getChildStr()).toEqual([]);
+    st.hide = false;
+    expect(getChildStr()).toEqual(['Heywhatsup']);
+  });
+  
+  it('random test case', async () => {
     createDomMock();
     const root = tag('(body)');
 
