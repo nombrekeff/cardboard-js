@@ -1,10 +1,8 @@
 import { CssGenerator } from './css-generator.js';
-import { generateId } from './util.js';
 export let context = {
     attachedTag: null,
     attachedTagStack: [],
     css: new CssGenerator(),
-    tree: {},
 };
 /** Returns the currently attached {CTag}*/
 export function attached() {
@@ -26,9 +24,7 @@ export class CTag {
         return this.element.id;
     }
     setId(id) {
-        delete context.tree[id];
         this.element.id = id;
-        // context.tree[id] = this;
         return this;
     }
     setValue(newValue) {
@@ -36,15 +32,15 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
+        /** Reference to the parent @type {CTag} of this element */
         this.parent = null;
+        /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         /** If set to true, it be appended to the attached tag */
         this.attachable = false;
         this.meta = {
-            ignoreRender: false,
-            childIndex: 0,
+            isHidden: false,
             nextSiblingID: null,
-            prevSiblingID: null,
         };
         this.attachable = attachable;
         if (typeof arg0 == 'string' && isSelector(arg0)) {
@@ -61,10 +57,8 @@ export class CTag {
         else {
             throw new Error('Invalid argument 0');
         }
-        this.setId(generateId());
         if (context.attachedTag && this.attachable) {
             context.attachedTag.append(this);
-            context.tree[context.attachedTag.id] = context.attachedTag;
         }
         if (children.length > 0)
             this.setChildren(children);
@@ -77,6 +71,11 @@ export class CTag {
     append(...children) {
         this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
         this._children.push(...children);
+        return this;
+    }
+    prepend(...children) {
+        this.element.prepend(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
+        this._children.unshift(...children);
         return this;
     }
     /** Whenever the consumable changes, it will call the consumer */
@@ -111,37 +110,48 @@ export class CTag {
      */
     show() {
         if (!this.parent.children.includes(this.element)) {
+            // Get's the position of the element if all the children are visible
             const expectedIndex = this.parent._children.indexOf(this);
-            console.log({ expectedIndex, childCount: this.parent._children.length });
             // If the element should be the first child in the parent
             if (expectedIndex == 0) {
-                console.log('index 0');
                 this.parent.element.prepend(this.element);
             }
             // If the element should be the last child in the parent
             else if (expectedIndex == this.parent._children.length - 1) {
-                console.log('index last');
                 this.parent.element.append(this.element);
             }
             // If the element should be the nth child in the parent
             else {
-                console.log('index ' + expectedIndex);
-                this.parent.element.insertBefore(this.element, this.parent.element.childNodes[expectedIndex]);
+                // Calculate how many hidden children are before this element
+                let hiddenBefore = 0;
+                for (let i = expectedIndex - 1; i >= 0; i--) {
+                    const child = this.parent._children[i];
+                    if (child instanceof CTag) {
+                        if (child.meta.isHidden) {
+                            hiddenBefore++;
+                        }
+                    }
+                }
+                // Get the "real" children in the dom.
+                // The index takes into account the items that are hidden
+                const nextEl = this.parent.element.childNodes[expectedIndex - hiddenBefore];
+                this.parent.element.insertBefore(this.element, nextEl);
             }
         }
+        this.meta.isHidden = false;
         return true;
     }
     /** Hide this element (removed from DOM) */
     hide() {
         if (this.parent.children.includes(this.element)) {
             this.remove();
-            this.meta.ignoreRender = true;
+            this.meta.isHidden = true;
         }
     }
     /** Hide this element if the consumer is truthy */
     hideIf(consumable) {
         const handleHide = (value) => {
-            this.meta.ignoreRender = !value;
+            this.meta.isHidden = !value;
             if (!this.parent)
                 return;
             if (!value)
@@ -150,13 +160,13 @@ export class CTag {
                 this.hide();
         };
         consumable.changed(handleHide);
-        this.meta.ignoreRender = !!consumable;
+        this.meta.isHidden = !!consumable;
         return this;
     }
     /** Hide this element if the consumer is falsy */
     hideIfNot(consumable) {
         const handleShow = (value) => {
-            this.meta.ignoreRender = !value;
+            this.meta.isHidden = !value;
             if (!this.parent)
                 return;
             if (value)
@@ -165,7 +175,7 @@ export class CTag {
                 this.hide();
         };
         consumable.changed(handleShow);
-        this.meta.ignoreRender = !consumable;
+        this.meta.isHidden = !consumable;
         return this;
     }
     /** Adds classes to the element if the consumer is truthy */
@@ -407,32 +417,32 @@ export class CTag {
             this.rmAttr('disabled');
         }
     }
-    /** Query a child in this element */
+    /** Query a child in this element (in the DOM) */
     q(selector) {
         const element = this.element.querySelector(selector);
         if (element) {
             return new CTag(element);
         }
     }
-    _childrenFilterPredicate(item, index, items) {
-        if (item instanceof CTag) {
-            item.parent = this;
-            // console.log(item.parent);
-            // if (!context.tree[item.parent.id]) {
-            //   context.tree[item.parent.id] = {
-            //     el: item.parent,
-            //     subtree: {},
-            //   };
-            // }
-            // context.tree[item.parent.id].subtree[item.id] = {
-            //   el: item,
-            //   subtree: {},
-            // };
-            // delete context.tree[item.id];
+    /** Find a child in this element (in the DOM or NOT) */
+    find(predicate) {
+        for (const child of this._children) {
+            if (predicate(child)) {
+                return child;
+            }
         }
-        if (item instanceof CTag && item.meta.ignoreRender) {
-            if (items[index + 1])
-                item.meta.nextSiblingID = items[index + 1].element.id;
+    }
+    findTag(predicate) {
+        for (const child of this._children) {
+            if (child instanceof CTag && predicate(child)) {
+                return child;
+            }
+        }
+    }
+    _childrenFilterPredicate(item, index, items) {
+        if (item instanceof CTag)
+            item.parent = this;
+        if (item instanceof CTag && item.meta.isHidden) {
             return false;
         }
         return true;

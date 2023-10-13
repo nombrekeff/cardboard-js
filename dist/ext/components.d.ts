@@ -8,4 +8,4 @@ export type HInputOptions = {
     input?: EventCallback<'input'>;
     submit?: (tag: CTag, evt: Event) => void;
 };
-export declare function hinput(options?: HInputOptions): CTag<HTMLElement>;
+export declare function hinput(options?: HInputOptions): CTag;

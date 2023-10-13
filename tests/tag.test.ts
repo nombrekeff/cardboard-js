@@ -189,7 +189,7 @@ describe('Tags', () => {
   it('tag.find', async () => {
     createDomMock();
     const t = tag('custom').append(tag('p').setId('test'));
-    const q = t.find((t) => t.id == 'test');
+    const q = t.findTag((t) => t.id == 'test');
 
     expect(q).toBeInstanceOf(CTag);
     expect(q && q.id).toBe('test');
@@ -198,9 +198,9 @@ describe('Tags', () => {
   it('tag.find no item', async () => {
     createDomMock();
     const t = tag('custom').append(tag('p').setId('test'));
-    const q = t.find((t) => t.id == 'not-exists');
+    const q = t.findTag((t) => t.id == 'not-exists');
 
-    expect(q).toBe(null);
+    expect(q).toBe(undefined);
   });
 
   it('tag.remove', async () => {

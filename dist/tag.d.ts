@@ -4,26 +4,25 @@ import { PickPropertyValues } from './css-property-values.js';
 import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
 import { StyleMap, StyleSet, TagChild, TagChildren, TagConfig } from './types.js';
-type CTree = {
-    [key: string]: TagChild;
-};
 export declare let context: {
     attachedTag: CTag;
     attachedTagStack: CTag[];
     css: CssGenerator;
-    tree: CTree;
 };
 /** Returns the currently attached {CTag}*/
-export declare function attached(): CTag<HTMLElement>;
+export declare function attached(): CTag;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
-export declare class CTag<T extends HTMLElement = HTMLElement> {
-    element: T;
+export declare class CTag {
+    /** Reference to the HTMLElement that this @type {CTag} represents */
+    element: HTMLElement;
+    /** Reference to the parent @type {CTag} of this element */
     parent: CTag;
-    _children: any[];
+    /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
+    private _children;
     /** If set to true, it be appended to the attached tag */
     private attachable;
     private meta;
@@ -36,6 +35,7 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     /** Sets the children, removes previous children  */
     setChildren(children: TagChildren): void;
     append(...children: TagChildren): this;
+    prepend(...children: TagChildren): this;
     /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
     /**
@@ -126,17 +126,20 @@ export declare class CTag<T extends HTMLElement = HTMLElement> {
     enable(): this;
     /** Set whether the element should be disabled or not */
     setDisabled(disabled: boolean): void;
-    /** Query a child in this element */
+    /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
+    /** Find a child in this element (in the DOM or NOT) */
+    find(predicate: (el: TagChild) => boolean): TagChild;
+    findTag(predicate: (el: CTag) => boolean): CTag;
     private _childrenFilterPredicate;
 }
-export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
+export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
 export declare function attach(tag: CTag): void;
 export declare function detach(): void;
 export declare function detachAll(): void;
 export declare function init(options?: {
     root: string;
-}): CTag<HTMLElement>;
+}): CTag;
 export declare function getElementIndex(node: Element): number;
 export declare function isSelector(str: string): RegExpMatchArray;
 export declare function getElementForChild(cl: TagChild): Node;
