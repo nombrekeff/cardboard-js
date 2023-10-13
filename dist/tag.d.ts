@@ -1,8 +1,7 @@
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
-import { Consumable } from './state.js';
 import { TagName } from './tag-names.js';
-import { AllTags, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
+import { AllTags, Consumable, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
@@ -102,6 +101,12 @@ export declare class CTag {
     rmAttr(...attrs: string[]): this;
     hasAttr(...attr: string[]): boolean;
     getAttr(attr: string): any;
+    /**
+     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+     *
+     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     */
+    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable<any>;
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */

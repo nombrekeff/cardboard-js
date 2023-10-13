@@ -1,6 +1,7 @@
-import { hstyle, hinput, init, tag, state, allTags, attach } from '../../dist/cardboard.js';
+import { hstyle, hinput, init, tag, allTags, attach, template } from '../../dist/cardboard.js';
 import styles from './style.js';
 import todoItem from './todo-item.js';
+import appState from './state.js';
 
 const { div, button, h3, link, p, span } = allTags;
 
@@ -16,32 +17,28 @@ hstyle();
 tag('(head)').append(...makeLinks());
 styles();
 
-const todoState = state([...(JSON.parse(localStorage.getItem('TODOS')) || [])], (newState) => {
-  localStorage.setItem('TODOS', JSON.stringify([...newState]));
-});
+attach(div.attach().addClass('todo-app'));
 
-const todoApp = div.attach().addClass('todo-app');
-attach(todoApp);
-
-h3.attach(
-  'Cardboard TODO',
-  span().consume(todoState.length, (self, count) => self.text(` (count: ${count}) `)),
-).setStyle({ textAlign: 'center', margin: '40px 0' });
+h3.attach('Cardboard TODO', template(' (count: $0) ', [appState.length]))
+  .setStyle({
+    textAlign: 'center',
+    margin: '40px 0',
+  });
 
 const itemInput = hinput({
   placeholder: 'Enter item content',
   submit: addItemFromInput,
 });
+
 const addItemBtn = button('+')
   .addClass('btn-add')
-  .disable()
-  .listen(itemInput, 'input', (self, other) => (other.value ? self.enable() : self.disable()))
+  .disableIf(itemInput.when('input', (el) => !el.value))
   .clicked(addItemFromInput);
 
 div.attach(itemInput, addItemBtn).addClass('header');
 
 const todoList = div
-  .attach(p('There are no items').addClass('list-empty').hideIf(todoState.length))
+  .attach(p('There are no items').addClass('list-empty').hideIf(appState.length))
   .addClass('todo-list');
 
 function addItem(value: string) {
@@ -49,8 +46,8 @@ function addItem(value: string) {
     todoList.append(
       todoItem(value, {
         remove: (s, c) => {
-          const index = todoState.indexOf(c);
-          todoState.splice(index, 1);
+          const index = appState.indexOf(c);
+          appState.splice(index, 1);
         },
       }),
     );
@@ -61,11 +58,11 @@ function addItem(value: string) {
 function addItemFromInput() {
   if (itemInput.value) {
     addItem(itemInput.value);
-    todoState.push(itemInput.value);
+    appState.push(itemInput.value);
     itemInput.clear();
   }
 }
 
-for (const item of [...todoState]) {
+for (const item of [...appState]) {
   addItem(item);
 }

@@ -1,4 +1,4 @@
-import { tag, init, allTags, state, attached, hinput, hstyle } from '../dist/cardboard.js';
+import { tag, init, allTags, state, attached, hinput, hstyle, template } from '../dist/cardboard.js';
 const { div, button, input, a, ul, li, hr, style } = allTags;
 
 init();
@@ -26,8 +26,7 @@ tag('br');
 hr();
 
 let counterState = state({ count: 0 });
-button.attach()
-  .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
+button.attach(template(`Clicked $0 times`, [counterState.count]))
   .clicked((_) => counterState.count++);
 
 hr();

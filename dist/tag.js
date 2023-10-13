@@ -347,6 +347,20 @@ export class CTag {
     getAttr(attr) {
         return this.element.attributes[attr];
     }
+    /**
+     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+     *
+     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     */
+    when(evtName, fn) {
+        return {
+            changed: (listener) => {
+                this.on(evtName, () => {
+                    listener(fn(this));
+                });
+            },
+        };
+    }
     /** Add an event listener for a particular event */
     on(evtName, fn) {
         if (fn) {
@@ -457,7 +471,7 @@ export class CTag {
             return document.createTextNode(cl);
         if (cl instanceof CTag)
             return cl.element;
-        if (cl instanceof HTMLElement)
+        if (cl instanceof Node)
             return cl;
         return null;
     }

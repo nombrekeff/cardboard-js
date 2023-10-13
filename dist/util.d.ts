@@ -5,3 +5,5 @@ export declare const generateId: () => string;
 export declare const camelToDash: (str: any) => any;
 export declare const dashToCamel: (str: any) => any;
 export declare function isObject(obj: any): boolean;
+export declare const toJson: (possiblyJsonString: any) => any;
+export declare const fromJson: (possiblyJson: any) => string;

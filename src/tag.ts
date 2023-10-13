@@ -1,9 +1,8 @@
 import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
-import { Consumable } from './state.js';
 import { TagName, ValidTagName } from './tag-names.js';
-import { AllTags, StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
+import { AllTags, Consumable, StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
 
 let context: {
   attachedTag: CTag;
@@ -427,6 +426,21 @@ export class CTag {
     return this.element.attributes[attr];
   }
 
+  /** 
+   * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element 
+   * 
+   * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+   */
+  when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable<any> {
+    return {
+      changed: (listener) => {
+        this.on(evtName, () => {
+          listener(fn(this));
+        });
+      },
+    };
+  }
+
   /** Add an event listener for a particular event */
   on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     if (fn) {
@@ -550,7 +564,7 @@ export class CTag {
   private _getElementForChild(cl: TagChild): Node {
     if (typeof cl === 'string') return document.createTextNode(cl);
     if (cl instanceof CTag) return cl.element;
-    if (cl instanceof HTMLElement) return cl;
+    if (cl instanceof Node) return cl;
     return null;
   }
 
