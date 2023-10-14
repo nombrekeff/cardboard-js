@@ -1,7 +1,7 @@
 ## Carboard.js
 
 
-![](./header.png)
+![](./header-img.png)
 
 Welcome to Carboard. A very simple, yet powerful "framework"/library to create web applications without the need to write any HTML.
 
