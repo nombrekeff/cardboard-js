@@ -258,16 +258,6 @@ export class CTag {
   /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
   hideIfNot(consumable: Consumable<boolean | number>) {
     return this.hideIf(consumable, true);
-    const handleHide = (value: any) => {
-      this.meta.isHidden = !value;
-      if (!this.parent) return;
-      if (value) this.show();
-      else this.hide();
-    };
-
-    consumable.changed(handleHide);
-    handleHide(consumable);
-    return this;
   }
 
   /** Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes. */
