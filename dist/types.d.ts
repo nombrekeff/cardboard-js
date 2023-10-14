@@ -19,7 +19,7 @@ export type EventMap = {
     [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export type Consumable<T> = T & Partial<{
+export type Consumable<T = any> = T & Partial<{
     changed: (callback: (newValue: T) => void) => void;
 }>;
 export type PrimitiveConsumable = Consumable<string | number | boolean>;

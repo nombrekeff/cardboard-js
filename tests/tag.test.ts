@@ -39,11 +39,47 @@ describe('Tags', () => {
     expect(test.children[0]).toEqual(d.element);
   });
 
+  it('tag appends correctly', async () => {
+    createDomMock();
+    const s = tag('span');
+    const d = tag('div', [s]);
+    const p = tag('p');
+    d.append(p);
+
+    expect(d.children).toEqual([s.element, p.element]);
+  });
+
+  it('tag prepends correctly', async () => {
+    createDomMock();
+    const s = tag('span');
+    const d = tag('div', [s]);
+    const p = tag('p');
+    d.prepend(p);
+
+    expect(d.children).toEqual([p.element, s.element]);
+  });
+
   it('tag.text works correctly', async () => {
     createDomMock();
     const t = tag('custom').text('child');
     expect(t).toBeInstanceOf(CTag);
     expect(t.element.textContent).toEqual('child');
+  });
+
+  it('tag.when', async () => {
+    createDomMock();
+    const clickCallback = jest.fn();
+    const clickChange = jest.fn();
+
+    const t = tag('custom');
+    const tw = t.when('click', clickCallback);
+    tw.changed(clickChange);
+
+    expect('changed' in tw).toEqual(true);
+
+    expect(clickChange).not.toHaveBeenCalled();
+    t.element.dispatchEvent(new window.Event('click'));
+    expect(clickChange).toHaveBeenCalled();
   });
 
   it('tag.config works correctly', async () => {
@@ -129,16 +165,30 @@ describe('Tags', () => {
 
   it('tag.replaceClass', async () => {
     createDomMock();
-    const t = tag('custom').className('test box').replaceClass('test', 'new-test');
+    const t = tag('custom')
+      .className('test box')
+      .replaceClass('test', 'new-test');
 
     expect(t).toBeInstanceOf(CTag);
     expect(t.hasClass('test')).toBe(false);
     expect(t.hasClass('new-test')).toBe(true);
   });
 
+  it('tag.toggleClass', async () => {
+    createDomMock();
+    const t = tag('custom');
+    expect(t.hasClass('hello')).toBe(false);
+    t.toggleClass('hello');
+    expect(t.hasClass('hello')).toBe(true);
+    t.toggleClass('hello');
+    expect(t.hasClass('hello')).toBe(false);
+  });
+
   it('tag.rmStyle', async () => {
     createDomMock();
-    const t = tag('custom').addStyle('color', 'red').addStyle('background', 'white');
+    const t = tag('custom')
+      .addStyle('color', 'red')
+      .addStyle('background', 'white');
     t.rmStyle('color');
 
     expect(t).toBeInstanceOf(CTag);
@@ -164,6 +214,14 @@ describe('Tags', () => {
 
     t.enable();
     expect(t.hasAttr('disabled')).toBe(false);
+  });
+
+  it('tag.consumeValue', async () => {
+    createDomMock();
+    const t = tag('custom').setValue('hey');
+
+    expect(t.consumeValue).toBe('hey');
+    expect(t.value).toBe('');
   });
 
   it('tag.clear', async () => {

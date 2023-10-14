@@ -86,7 +86,7 @@ describe('Tag conditionals', () => {
   it('tag.classIf', async () => {
     createDomMock();
     const st = state({ enable: false });
-    const pp = tag('p').classIf(st.enable, 'test-class');
+    const pp = tag('p').classIf(st.enable, ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeFalsy();
     st.enable = true;
@@ -97,10 +97,56 @@ describe('Tag conditionals', () => {
   it('tag.classIfNot', async () => {
     createDomMock();
     const st = state({ enable: false });
-    const pp = tag('p').classIfNot(st.enable, 'test-class');
+    const pp = tag('p').classIfNot(st.enable, ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeTruthy();
     st.enable = true;
     expect(pp.hasClass('test-class')).toBeFalsy();
+  });
+
+  it('tag.stylesIf', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').stylesIf(st.enable, { color: 'red', backgroundColor: 'blue'});
+
+    expect(pp.hasStyle('color')).toBeFalsy();
+    expect(pp.hasStyle('backgroundColor')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+    expect(pp.hasStyle('backgroundColor')).toBeTruthy();
+  });
+
+  it('tag.stylesIfNot', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').stylesIfNot(st.enable, { color: 'red' });
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeFalsy();
+  });
+
+  it('tag.styleIf', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').styleIf(st.enable, 'color', 'red');
+
+    expect(pp.hasStyle('color')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+  });
+
+  it('tag.styleIfNot', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').styleIfNot(st.enable, 'color', 'red');
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeFalsy();
   });
 });
