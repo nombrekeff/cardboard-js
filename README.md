@@ -439,7 +439,7 @@ div().hideIf(data.hide);
 
 // Set classes and disabled based on data.disabled state
 input()
-  .classIf(data.disable, 'disabled', 'strike')
+  .classIf(data.disable, 'disabled', () => 'strike')
   .disableId(data.disable);
 
 // Text will update with the new state values interpolated into the template

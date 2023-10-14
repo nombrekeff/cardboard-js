@@ -42,25 +42,35 @@ export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   element: HTMLElement;
 
-  /** Reference to the parent @type {CTag} of this element */
-  parent: CTag = null;
+  /** @param parent Reference to the parent @type {CTag} of this element */
+  private _parent: CTag = null;
+  get parent() {
+    return this._parent;
+  }
+  set parent(newParent: CTag) {
+    this._parent = newParent;
+  }
 
   /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
   private _children: TagChild[] = [];
-
-  /** If set to true, it be appended to the attached tag */
-  private attachable: boolean = false;
-  private meta = {
-    isHidden: false,
-    nextSiblingID: null,
-  };
-
   get children() {
     return this._getElementChildren(this.element);
   }
 
+  /** If set to true, it be appended to the attached tag */
+  private _attachable: boolean = false;
+  private _meta = {
+    isHidden: false,
+    nextSiblingID: null,
+  };
+
   get value() {
     return (this.element as any).value;
+  }
+
+  setValue(newValue: string) {
+    (this.element as any).value = newValue;
+    return this;
   }
 
   /** Gets the value of the element and clears the value */
@@ -79,32 +89,27 @@ export class CTag {
     return this;
   }
 
-  setValue(newValue: string) {
-    (this.element as any).value = newValue;
-    return this;
-  }
-
   constructor(
     arg0: TagName | HTMLElement,
     children: TagChildren = [],
     attachable: boolean = false,
   ) {
-    this.attachable = attachable;
+    this._attachable = attachable;
     const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
 
     if (isSelector) {
-      this.attachable = false;
+      this._attachable = false;
       this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
     } else if (typeof arg0 == 'string') {
       this.element = document.createElement(arg0);
     } else if (arg0 instanceof HTMLElement) {
-      this.attachable = false;
+      this._attachable = false;
       this.element = arg0;
     } else {
       throw new Error('Invalid argument 0');
     }
 
-    if (context.attachedTag && this.attachable) {
+    if (context.attachedTag && this._attachable) {
       context.attachedTag.append(this);
     }
 
@@ -115,6 +120,7 @@ export class CTag {
   setChildren(children: TagChildren) {
     this.element.replaceChildren(
       ...children
+        .map(this._setChildrenParent.bind(this))
         .filter(this._childrenFilterPredicate.bind(this))
         .map(this._getElementForChild), //
     );
@@ -125,6 +131,7 @@ export class CTag {
   append(...children: TagChildren) {
     this.element.append(
       ...children
+        .map(this._setChildrenParent.bind(this))
         .filter(this._childrenFilterPredicate.bind(this))
         .map(this._getElementForChild), //
     );
@@ -176,7 +183,7 @@ export class CTag {
         for (let i = expectedIndex - 1; i >= 0; i--) {
           const child = this.parent._children[i];
           if (child instanceof CTag) {
-            if (child.meta.isHidden) {
+            if (child._meta.isHidden) {
               hiddenBefore++;
             }
           }
@@ -190,7 +197,7 @@ export class CTag {
         this.parent.element.insertBefore(this.element, nextEl);
       }
     }
-    this.meta.isHidden = false;
+    this._meta.isHidden = false;
     return true;
   }
 
@@ -198,7 +205,7 @@ export class CTag {
   hide() {
     if (this.parent.children.includes(this.element)) {
       this.remove();
-      this.meta.isHidden = true;
+      this._meta.isHidden = true;
     }
   }
 
@@ -247,7 +254,7 @@ export class CTag {
   hideIf(consumable: Consumable<boolean | number>, invert = false) {
     const handleHide = (value: any) => {
       const correctedValue = invert ? !value : !!value;
-      this.meta.isHidden = correctedValue;
+      this._meta.isHidden = correctedValue;
 
       if (!this.parent) return;
       if (!correctedValue) this.show();
@@ -759,9 +766,13 @@ export class CTag {
     }
   }
 
-  private _childrenFilterPredicate(item, index, items) {
+  private _setChildrenParent(item) {
     if (item instanceof CTag) item.parent = this;
-    if (item instanceof CTag && item.meta.isHidden) {
+    return item;
+  }
+
+  private _childrenFilterPredicate(item) {
+    if (item instanceof CTag && item._meta.isHidden) {
       return false;
     }
     return true;

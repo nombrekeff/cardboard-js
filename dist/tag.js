@@ -18,11 +18,21 @@ export function attached() {
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
 export class CTag {
+    get parent() {
+        return this._parent;
+    }
+    set parent(newParent) {
+        this._parent = newParent;
+    }
     get children() {
         return this._getElementChildren(this.element);
     }
     get value() {
         return this.element.value;
+    }
+    setValue(newValue) {
+        this.element.value = newValue;
+        return this;
     }
     /** Gets the value of the element and clears the value */
     get consumeValue() {
@@ -37,38 +47,34 @@ export class CTag {
         this.element.id = id;
         return this;
     }
-    setValue(newValue) {
-        this.element.value = newValue;
-        return this;
-    }
     constructor(arg0, children = [], attachable = false) {
-        /** Reference to the parent @type {CTag} of this element */
-        this.parent = null;
+        /** @param parent Reference to the parent @type {CTag} of this element */
+        this._parent = null;
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         /** If set to true, it be appended to the attached tag */
-        this.attachable = false;
-        this.meta = {
+        this._attachable = false;
+        this._meta = {
             isHidden: false,
             nextSiblingID: null,
         };
-        this.attachable = attachable;
+        this._attachable = attachable;
         const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
         if (isSelector) {
-            this.attachable = false;
+            this._attachable = false;
             this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
         }
         else if (typeof arg0 == 'string') {
             this.element = document.createElement(arg0);
         }
         else if (arg0 instanceof HTMLElement) {
-            this.attachable = false;
+            this._attachable = false;
             this.element = arg0;
         }
         else {
             throw new Error('Invalid argument 0');
         }
-        if (context.attachedTag && this.attachable) {
+        if (context.attachedTag && this._attachable) {
             context.attachedTag.append(this);
         }
         if (children.length > 0)
@@ -77,6 +83,7 @@ export class CTag {
     /** Sets the children, removes previous children  */
     setChildren(children) {
         this.element.replaceChildren(...children
+            .map(this._setChildrenParent.bind(this))
             .filter(this._childrenFilterPredicate.bind(this))
             .map(this._getElementForChild));
         this._children = children;
@@ -84,6 +91,7 @@ export class CTag {
     }
     append(...children) {
         this.element.append(...children
+            .map(this._setChildrenParent.bind(this))
             .filter(this._childrenFilterPredicate.bind(this))
             .map(this._getElementForChild));
         this._children.push(...children);
@@ -125,7 +133,7 @@ export class CTag {
                 for (let i = expectedIndex - 1; i >= 0; i--) {
                     const child = this.parent._children[i];
                     if (child instanceof CTag) {
-                        if (child.meta.isHidden) {
+                        if (child._meta.isHidden) {
                             hiddenBefore++;
                         }
                     }
@@ -136,14 +144,14 @@ export class CTag {
                 this.parent.element.insertBefore(this.element, nextEl);
             }
         }
-        this.meta.isHidden = false;
+        this._meta.isHidden = false;
         return true;
     }
     /** Hide this element (removed from DOM) */
     hide() {
         if (this.parent.children.includes(this.element)) {
             this.remove();
-            this.meta.isHidden = true;
+            this._meta.isHidden = true;
         }
     }
     /**
@@ -180,7 +188,7 @@ export class CTag {
     hideIf(consumable, invert = false) {
         const handleHide = (value) => {
             const correctedValue = invert ? !value : !!value;
-            this.meta.isHidden = correctedValue;
+            this._meta.isHidden = correctedValue;
             if (!this.parent)
                 return;
             if (!correctedValue)
@@ -560,10 +568,13 @@ export class CTag {
             }
         }
     }
-    _childrenFilterPredicate(item, index, items) {
+    _setChildrenParent(item) {
         if (item instanceof CTag)
             item.parent = this;
-        if (item instanceof CTag && item.meta.isHidden) {
+        return item;
+    }
+    _childrenFilterPredicate(item) {
+        if (item instanceof CTag && item._meta.isHidden) {
             return false;
         }
         return true;

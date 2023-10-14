@@ -14,20 +14,22 @@ export declare function attached(): CTag;
 export declare class CTag {
     /** Reference to the HTMLElement that this @type {CTag} represents */
     element: HTMLElement;
-    /** Reference to the parent @type {CTag} of this element */
-    parent: CTag;
+    /** @param parent Reference to the parent @type {CTag} of this element */
+    private _parent;
+    get parent(): CTag;
+    set parent(newParent: CTag);
     /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
     private _children;
-    /** If set to true, it be appended to the attached tag */
-    private attachable;
-    private meta;
     get children(): Node[];
+    /** If set to true, it be appended to the attached tag */
+    private _attachable;
+    private _meta;
     get value(): any;
+    setValue(newValue: string): this;
     /** Gets the value of the element and clears the value */
     get consumeValue(): any;
     get id(): string;
     setId(id: string): this;
-    setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
     /** Sets the children, removes previous children  */
     setChildren(children: TagChildren): this;
@@ -210,6 +212,7 @@ export declare class CTag {
     /** Find a child in this element (in the DOM or NOT) */
     find(predicate: (el: TagChild) => boolean): TagChild;
     findTag(predicate: (el: CTag) => boolean): CTag;
+    private _setChildrenParent;
     private _childrenFilterPredicate;
     private _getElementForChild;
     private _getElementChildren;

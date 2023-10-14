@@ -2,18 +2,18 @@
     "compilerOptions": {
         "outDir": "./",
         "module": "ES2015",
-        "target": "ES6",
+        "target": "ES2017",
         "sourceMap": true,
         "allowJs": true,
         "lib": [
             "dom",
             "es5",
             "es2015",
+            "ES2016",
+            "ES2017",
             "DOM"
         ],
-        "types": [
-            // "../dist/cardboard.d.ts"
-        ]
+        "types": []
     },
     "include": [
         "./**/*.ts"
