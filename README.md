@@ -1,4 +1,4 @@
-## Carboard.js
+## Carboard.js <!-- omit in toc -->
 
 
 ![](./header-img.png)
@@ -9,6 +9,21 @@ You don't need to build, use JSX, or compile. It works out of the box, and it's 
 NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
 
 > **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
+
+
+- [What does it do?](#what-does-it-do)
+- [Who's this for?](#whos-this-for)
+- [Getting Started](#getting-started)
+  - [Install](#install)
+  - [Importing](#importing)
+  - [Sneek peek](#sneek-peek)
+- [Examples](#examples)
+  - [Clicker Example](#clicker-example)
+  - [Todo Example](#todo-example)
+  - [Component Example](#component-example)
+- [Attaching](#attaching)
+
+
 
 ### What does it do?
 
@@ -43,12 +58,13 @@ It's perfect for when you want to create a very small page where you need a reac
 
 ### Getting Started
 
-Install package: 
+#### Install
 
 ```
 npm install https://github.com/nombrekeff/cardboard-js
 ```
 
+#### Importing
 Then you can import the package. 
 
 ```ts
@@ -64,7 +80,10 @@ I recomend destructuring tags, for cleaner code:
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 ```
 
-Sneek peek:
+#### * Check the [Examples](#examples) section to learn more <!-- omit in toc -->
+#### * Or check the [Documentation](https://nombrekeff.github.io/cardboard-js/) <!-- omit in toc -->
+
+#### Sneek peek
 
 ```ts
 const Counter = () => {
@@ -78,9 +97,6 @@ const Counter = () => {
 // Counter will be added to the body, as it's the attached tag.
 attached().append(Counter());
 ```
-
-#### * Check the [Examples](#examples) section to learn more
-#### * Or check the [Documentation](https://nombrekeff.github.io/cardboard-js/)
 
 ### Examples
 
