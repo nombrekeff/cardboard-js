@@ -1,4 +1,5 @@
 import { CssGenerator } from './css-generator.js';
+import { text } from './text.js';
 let context = {
     attachedTag: null,
     attachedTagStack: [],
@@ -74,16 +75,23 @@ export class CTag {
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
-        this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
+        this.element.replaceChildren(...children
+            .filter(this._childrenFilterPredicate.bind(this))
+            .map(this._getElementForChild));
         this._children = children;
+        return this;
     }
     append(...children) {
-        this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
+        this.element.append(...children
+            .filter(this._childrenFilterPredicate.bind(this))
+            .map(this._getElementForChild));
         this._children.push(...children);
         return this;
     }
     prepend(...children) {
-        this.element.prepend(...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild));
+        this.element.prepend(...children
+            .filter(this._childrenFilterPredicate.bind(this))
+            .map(this._getElementForChild));
         this._children.unshift(...children);
         return this;
     }
@@ -218,14 +226,20 @@ export class CTag {
         return this;
     }
     /**
-     * If {@param text} is provided, it sets the `textContent` of the element.
-     * If it's not provided, it returns the `textContent` of the element
+     * If {newText} is provided, it sets the `textContent` of the element.
+     * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
+     * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
+     *
+     * If no argument is provided, it returns the `textContent` of the element
      */
-    text(text) {
-        if (text == null) {
+    text(newText, st) {
+        if (newText == null) {
             return this.element.textContent;
         }
-        this.element.textContent = text;
+        if (st && newText) {
+            return this.setChildren([text(newText, st)]);
+        }
+        this.element.textContent = newText;
         return this;
     }
     /**

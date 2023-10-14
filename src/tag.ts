@@ -2,7 +2,18 @@ import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName, ValidTagName } from './tag-names.js';
-import { AllTags, Consumable, StyleMap, StyleSet, TagBuilder, TagChild, TagChildren, TagConfig } from './types.js';
+import { text } from './text.js';
+import {
+  AllTags,
+  Consumable,
+  State,
+  StyleMap,
+  StyleSet,
+  TagBuilder,
+  TagChild,
+  TagChildren,
+  TagConfig,
+} from './types.js';
 
 let context: {
   attachedTag: CTag;
@@ -72,7 +83,11 @@ export class CTag {
     return this;
   }
 
-  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
+  constructor(
+    arg0: TagName | HTMLElement,
+    children: TagChildren = [],
+    attachable: boolean = false,
+  ) {
     this.attachable = attachable;
     const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
 
@@ -98,14 +113,19 @@ export class CTag {
   /** Sets the children, removes previous children  */
   setChildren(children: TagChildren) {
     this.element.replaceChildren(
-      ...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild), //
+      ...children
+        .filter(this._childrenFilterPredicate.bind(this))
+        .map(this._getElementForChild), //
     );
     this._children = children;
+    return this;
   }
 
   append(...children: TagChildren) {
     this.element.append(
-      ...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild), //
+      ...children
+        .filter(this._childrenFilterPredicate.bind(this))
+        .map(this._getElementForChild), //
     );
     this._children.push(...children);
     return this;
@@ -113,14 +133,19 @@ export class CTag {
 
   prepend(...children: TagChildren) {
     this.element.prepend(
-      ...children.filter(this._childrenFilterPredicate.bind(this)).map(this._getElementForChild), //
+      ...children
+        .filter(this._childrenFilterPredicate.bind(this))
+        .map(this._getElementForChild), //
     );
     this._children.unshift(...children);
     return this;
   }
 
   /** Whenever the consumable changes, it will call the consumer */
-  consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void) {
+  consume<T>(
+    consumable: Consumable<T>,
+    consumer: (self: CTag, newValue: T) => void,
+  ) {
     consumable.changed((newValue) => consumer(this, newValue));
     consumer(this, consumable);
     return this;
@@ -129,7 +154,11 @@ export class CTag {
   /**
    * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
    */
-  doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
+  doIf(
+    consumable: Consumable<any>,
+    ifTrue: (value: any) => void,
+    ifFalse: (value: any) => void,
+  ) {
     const callback = (value) => {
       if (value) ifTrue(value);
       else ifFalse(value);
@@ -143,7 +172,11 @@ export class CTag {
    * The oposite of {this.doIf}
    * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
    */
-  doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void) {
+  doIfNot(
+    consumable: Consumable<any>,
+    ifTrue: (value: any) => void,
+    ifFalse: (value: any) => void,
+  ) {
     return this.doIf(consumable, ifFalse, ifTrue);
   }
 
@@ -180,7 +213,8 @@ export class CTag {
 
         // Get the "real" children in the dom.
         // The index takes into account the items that are hidden
-        const nextEl = this.parent.element.childNodes[expectedIndex - hiddenBefore];
+        const nextEl =
+          this.parent.element.childNodes[expectedIndex - hiddenBefore];
 
         this.parent.element.insertBefore(this.element, nextEl);
       }
@@ -281,15 +315,26 @@ export class CTag {
   }
 
   /**
-   * If {@param text} is provided, it sets the `textContent` of the element.
-   * If it's not provided, it returns the `textContent` of the element
+   * If {newText} is provided, it sets the `textContent` of the element.
+   * If {newText} is provided, and a state is provided. It will use the {newText} as a template, 
+   * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
+   * 
+   * If no argument is provided, it returns the `textContent` of the element
    */
-  text<T = string | null>(text?: T): T extends string ? CTag : string {
-    if (text == null) {
+  text<T = string | null>(
+    newText?: T,
+    st?: State<any>,
+  ): T extends string ? CTag : string {
+    if (newText == null) {
       return this.element.textContent as any;
     }
 
-    this.element.textContent = text as string;
+    if (st && newText) {
+      return this.setChildren([text(newText as string, st)]) as any;
+    }
+
+    this.element.textContent = newText as string;
+
     return this as any;
   }
 
@@ -445,7 +490,10 @@ export class CTag {
    *
    * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
    */
-  when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable<any> {
+  when<K extends keyof HTMLElementEventMap>(
+    evtName: K | string,
+    fn: (self: CTag) => any,
+  ): Consumable<any> {
     return {
       changed: (listener) => {
         this.on(evtName, () => {
@@ -456,7 +504,10 @@ export class CTag {
   }
 
   /** Add an event listener for a particular event */
-  on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
+  on<K extends keyof HTMLElementEventMap>(
+    evtName: K | string,
+    fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
+  ) {
     if (fn) {
       this.element.addEventListener(evtName, (evt: HTMLElementEventMap[K]) => {
         return fn(this, evt);
@@ -466,7 +517,10 @@ export class CTag {
   }
 
   /** Add an event listener for a particular event that will only fire once */
-  once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
+  once<K extends keyof HTMLElementEventMap>(
+    evtName: K | string,
+    fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
+  ) {
     if (fn) {
       const listener = (evt: HTMLElementEventMap[K]) => {
         fn(this, evt);
@@ -614,7 +668,11 @@ export class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export function tag(arg0: string | HTMLElement, children: TagChildren = [], attach: boolean = false) {
+export function tag(
+  arg0: string | HTMLElement,
+  children: TagChildren = [],
+  attach: boolean = false,
+) {
   return new CTag(arg0, children, attach);
 }
 
@@ -676,7 +734,9 @@ export function init(options: { root: string } = { root: 'body' }) {
 }
 
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
-const interceptors: { [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag) } = {
+const interceptors: {
+  [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag);
+} = {
   ul: (children: TagChildren, attach: boolean = false) => {
     return tag(
       'ul',

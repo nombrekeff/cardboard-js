@@ -5,7 +5,7 @@ import {
   tag,
   allTags,
   attach,
-  template,
+  text,
 } from '../../dist/cardboard.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
@@ -27,7 +27,7 @@ styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO', template(' (count: $length) ', appState)).setStyle({
+h3.attach('Cardboard TODO', text(' (count: $length) ', appState)).setStyle({
   textAlign: 'center',
   margin: '40px 0',
 });

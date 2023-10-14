@@ -3,19 +3,21 @@
 
 ![](./header-img.png)
 
-Welcome to Carboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any HTML. Without the need to build or use JSX or similar. It works out of the box, and it's plain JS. It's very light.
+Welcome to Carboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
+You don't need to build, use JSX, or compile. It works out of the box, and it's plain JS. 
 
-NOTE: There's also a server-side companion to **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
+NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
 
 > **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
 
 ### What does it do?
 
-Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process. **Everything is plain JS**. 
-The idea is that instead of writing **HTML**, then creating JS that interacts with the **HTML**. You directly write JS that represents both the **HTML** and the logic.
+Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process (_unless you use TS_). **Everything is plain JS**. It's very lightweight and performant. By design, there's very little additional computation on top of interacting directly with JS. As you interact with the elements directly, without needing complex stuff like diffing virtual doms and such. 
+
+The idea is that instead of writing **HTML** and then creating JS that interacts with the **HTML**. You directly write JS that represents both the **HTML** and the logic.
 It also offers a **state management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
 
-Here is a list of some of the features (_there more though_):
+Here is a list of some of the features it offers (_there more though_):
 * **showing/hiding elements**: You can conditionally add and remove items from the DOM whenever a state changes.
 * **enabling/disabling elements**: Reactively enable and disable elements based on a state.
 * **add/remove classes**: Reactively add an remove classes from elements based on a state.
@@ -26,20 +28,21 @@ Here is a list of some of the features (_there more though_):
 * **CSS in JS**: You can create `style` tags, and write the CSS directly as a JS obejct.
 * **Typed**: Cardboard aims to be 100% typed, meaning it will suggest any suggestable properties, methods, etc...(i.e. style `properties`, etc...)
 
-Cardboard offers all of this in a very small package, and with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
+Cardboard offers all of this in a very small package with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
 
-It's similar in philosphy to [VanJS](https://vanjs.org/) but with another flavor and with a few differences.
-
+> It's similar in philosphy to [VanJS](https://vanjs.org/) but with another flavor and with a few differences. 
+> If you need a more stable framework similar to this, go check them out. But remeber to come back in a while when Cardboard is more stable :P
 
 ### Who's this for?
 
-If you don't like writing HTML like me, or need a simple and lightweight framework that can do most things that bigger frameworks can do, Cardboard might be for you!
+If you don't like writing HTML, like me. Or need a simple and lightweight framework that can do most things that bigger frameworks can do with a smaller footprint, Cardboard might be for you!
 Cardboard can be used to build anything from a static page, to more advanced apps like dashboards.
 
 It's perfect for when you want to create a very small page where you need a reactive framework and you need to create it fast. But it should be able to create anything.
 
 
 ### Getting Started
+
 Install package: 
 
 ```
@@ -68,7 +71,7 @@ const Counter = () => {
   let counterState = state({ count: 0 });
 
   return button(
-    template(`Clicked $count times`, counterState)
+    text(`Clicked $count times`, counterState)
   ).clicked((_) => counterState.count++);
 };
 
@@ -126,15 +129,22 @@ the [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html
 For example in the snippet above, whenever `counterState.count` changes, we set the **text** to `"Clicked ${count} times"`.
 The callback will automatically change the **innerContent** of the HTMLElement by using `.text()`.
 
-This can also be done in a simpler way by using [`template()`](https://nombrekeff.github.io/cardboard-js/functions/template.template.html).
+This can also be done in a simpler way by using [`text()`](https://nombrekeff.github.io/cardboard-js/functions/text.text.html).
 Instead of using [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#consume), we can do it like this:
 
 ```ts
 button(
-  template(`Clicked $count times`, counterState)
+  text(`Clicked $count times`, counterState)
 );
 ```
-> Template will interpolate the variables (i.e. `$count`) in the template with the values in `counterState`. Whenever the property changes, it will upadte the text with the newly interpolated string. So, for better performance, if a property in the state is not referenced in the template and it changes, it will not update the template.
+> `text` will interpolate the variables (i.e. `$count`) in the string template, with the values in `counterState`. Whenever the property changes, it will update the text with the newly interpolated string. So, for better performance, if a property in the state is not referenced in the template and it changes, it will not update the template.
+> passing in a state is optional, you can also create text nodes for later modifying.
+
+```ts
+const tnode = text(`I will not react to anything!`);
+div(tnode);
+tnode.nodeValue = 'But I can be later changed';
+```
 
 ----
 

@@ -1,7 +1,7 @@
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import { AllTags, Consumable, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
+import { AllTags, Consumable, State, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
@@ -30,7 +30,7 @@ export declare class CTag {
     setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
     /** Sets the children, removes previous children  */
-    setChildren(children: TagChildren): void;
+    setChildren(children: TagChildren): this;
     append(...children: TagChildren): this;
     prepend(...children: TagChildren): this;
     /** Whenever the consumable changes, it will call the consumer */
@@ -70,10 +70,13 @@ export declare class CTag {
     disableIfNot(consumable: Consumable<any>): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /**
-     * If {@param text} is provided, it sets the `textContent` of the element.
-     * If it's not provided, it returns the `textContent` of the element
+     * If {newText} is provided, it sets the `textContent` of the element.
+     * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
+     * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
+     *
+     * If no argument is provided, it returns the `textContent` of the element
      */
-    text<T = string | null>(text?: T): T extends string ? CTag : string;
+    text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} config
      * instead of having to call a method for each property you want to changes

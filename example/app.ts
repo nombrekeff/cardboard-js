@@ -5,7 +5,7 @@ import {
   state,
   attached,
   hstyle,
-  template,
+  text,
   Input,
 } from '../dist/cardboard.js';
 const { div, button, input, a, ul, li, hr, style } = allTags;
@@ -27,7 +27,7 @@ style.attach({
 const Counter = () => {
   let counterState = state({ count: 0 });
 
-  return button(template(`Clicked $count times`, counterState)).clicked(
+  return button(text(`Clicked $count times`, counterState)).clicked(
     (_) => counterState.count++,
   );
 };
