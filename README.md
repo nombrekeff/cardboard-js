@@ -85,8 +85,9 @@ I recomend destructuring [tags](#ctag-aka-tag), for cleaner code:
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 ```
 
-#### * Check the [Examples](#examples) section to learn more <!-- omit in toc -->
-#### * Or check the [Documentation](https://nombrekeff.github.io/cardboard-js/) <!-- omit in toc -->
+* **Check the [Examples](#examples) section to view more examples**
+* **Check the [Concepts](#concepts) section to learn the basic concepts**
+* **Check the [Documentation](https://nombrekeff.github.io/cardboard-js/)**
 
 #### Sneek peek
 
