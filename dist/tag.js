@@ -147,7 +147,8 @@ export class CTag {
         }
     }
     /**
-     * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+     * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
      */
     doIf(consumable, ifTrue, ifFalse, invert = false) {
         if (invert) {
@@ -172,7 +173,10 @@ export class CTag {
     doIfNot(consumable, ifTrue, ifFalse) {
         return this.doIf(consumable, ifTrue, ifFalse, true);
     }
-    /** Hide this element when the consumer is truthy. Updates whenever the consumable changes. */
+    /**
+     * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
+     */
     hideIf(consumable, invert = false) {
         const handleHide = (value) => {
             const correctedValue = invert ? !value : !!value;
@@ -192,7 +196,10 @@ export class CTag {
     hideIfNot(consumable) {
         return this.hideIf(consumable, true);
     }
-    /** Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    /**
+     * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+     */
     classIf(consumable, classes, invert = false) {
         return this.doIf(consumable, () => this.addClass(...classes), () => this.rmClass(...classes), invert);
     }
@@ -200,15 +207,39 @@ export class CTag {
     classIfNot(consumable, classes) {
         return this.classIf(consumable, classes, true);
     }
-    /** Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    /**
+     * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
+     * Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
+     */
+    textIf(consumable, text, elseText = '', invert = false) {
+        return this.doIf(consumable, () => this.text(text), () => this.text(elseText), invert);
+    }
+    /**
+     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed
+     */
+    textIfNot(consumable, text, elseText = '') {
+        return this.textIf(consumable, text, elseText, true);
+    }
+    /**
+     * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
+     */
     attrIf(consumable, attr, value = '', invert = false) {
         return this.doIf(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr), invert);
     }
-    /** Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes. */
+    /**
+     * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed
+     */
     attrIfNot(consumable, attr, value = '') {
         return this.attrIf(consumable, attr, value, true);
     }
-    /** Disable this element when the consumer is truthy. Updates whenever the consumable changes. */
+    /**
+     * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
+     */
     disableIf(consumable, invert = false) {
         return this.attrIf(consumable, 'disabled', '', invert);
     }
@@ -218,6 +249,7 @@ export class CTag {
     }
     /**
      * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
      */
     styleIf(consumable, style, value = '', invert = false) {
         return this.doIf(consumable, () => this.addStyle(style, value), () => this.rmStyle(style), invert);
@@ -365,17 +397,20 @@ export class CTag {
         }
         return true;
     }
+    /** Adds a set of attributes to the element */
     setAttrs(attrs) {
         for (let key in attrs) {
             this.addAttr(key, attrs[key]);
         }
         return this;
     }
+    /** Adds a single attribute to the element */
     addAttr(key, value) {
         this.element.attributes[key] = value;
         this.element.setAttribute(key, value);
         return this;
     }
+    /** Remove attributes from the element */
     rmAttr(...attrs) {
         for (let key of attrs) {
             this.element.removeAttribute(key);
@@ -383,6 +418,7 @@ export class CTag {
         }
         return this;
     }
+    /** Check if this element has attributes */
     hasAttr(...attr) {
         for (let key of attr) {
             if (!(key in this.element.attributes)) {
@@ -391,6 +427,7 @@ export class CTag {
         }
         return true;
     }
+    /** Get an attributes value */
     getAttr(attr) {
         return this.element.attributes[attr];
     }
@@ -456,7 +493,9 @@ export class CTag {
         this.element.remove();
         return this;
     }
-    /** Clear the `value` */
+    /**
+     * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
+     */
     clear() {
         this.element.value = '';
         // Trigger input event, so clearing is treated as input!
