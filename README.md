@@ -28,6 +28,8 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
     - [Manually listening to state changes](#manually-listening-to-state-changes)
     - [Reacting](#reacting)
   - [Reusable Components](#reusable-components)
+  - [Lifecycle events](#lifecycle-events)
+  - [CSS in JS](#css-in-js)
 
 
 ### What does it do?
@@ -468,6 +470,52 @@ The use as any other tag:
 div(Counter());
 ```
 
-### CSS in JS
+### Lifecycle events
+
+In some cases you might want to do stuff when the element is added to the page, or when it's removed. For that Cardboard offers 2 functions for handling that:
+```ts
+const Clock = () => {
+  const st = state({
+    seconds: '00',
+    minutes: '00',
+    hours: '00',
+  });
+
+  const setTime = () => {
+    const currentDate = new Date();
+    st.seconds = currentDate.getSeconds().toString().padStart(2, '0');
+    st.minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    st.hours = currentDate.getHours().toString().padStart(2, '0');
+  };
+
+  let interval: number;
+  
+  return withLifecycle(
+    div(
+      span().text('$hours', st),
+      ':',
+      span().text('$minutes', st),
+      ':',
+      span().text('$seconds', st),
+    ),
+    {
+      start() {
+        // Add the interval when the element is added
+        setTime();
+        clearInterval(interval);
+        interval = setInterval(setTime, 500);
+      },
+      removed() {
+        // Clear the interval when the element is removed
+        clearInterval(interval);
+      },
+    },
+  );
+};
+``` 
+It's handy to do this, as you don't want the interval to keep going if the element is not in the page.
+
+
+### CSS in JS
 
 TODO
