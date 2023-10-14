@@ -22,6 +22,12 @@ export class CTag {
     get value() {
         return this.element.value;
     }
+    /** Gets the value of the element and clears the value */
+    get consumeValue() {
+        const value = this.value;
+        this.clear();
+        return value;
+    }
     get id() {
         return this.element.id;
     }

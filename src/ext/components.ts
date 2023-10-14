@@ -11,7 +11,7 @@ export type HInputOptions = {
   submit?: (tag: CTag, evt: Event) => void;
 };
 
-export function hinput(options: HInputOptions = {}) {
+export function Input(options: HInputOptions = {}) {
   const el = options.attach == true ? input.attach() : input();
 
   el.config({

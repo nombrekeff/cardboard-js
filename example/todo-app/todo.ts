@@ -1,6 +1,14 @@
-import { hstyle, hinput, init, tag, allTags, attach, template } from '../../dist/cardboard.js';
+import {
+  hstyle,
+  Input,
+  init,
+  tag,
+  allTags,
+  attach,
+  template,
+} from '../../dist/cardboard.js';
 import styles from './style.js';
-import todoItem from './todo-item.js';
+import TodoItem from './todo-item.js';
 import appState from './state.js';
 
 const { div, button, h3, link, p } = allTags;
@@ -19,13 +27,12 @@ styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO', template(' (count: $length) ',appState))
-  .setStyle({
-    textAlign: 'center',
-    margin: '40px 0',
-  });
+h3.attach('Cardboard TODO', template(' (count: $length) ', appState)).setStyle({
+  textAlign: 'center',
+  margin: '40px 0',
+});
 
-const itemInput = hinput({
+const itemInput = Input({
   placeholder: 'Enter item content',
   submit: addItemFromInput,
 });
@@ -38,13 +45,15 @@ const addItemBtn = button('+')
 div.attach(itemInput, addItemBtn).addClass('header');
 
 const todoList = div
-  .attach(p('There are no items').addClass('list-empty').hideIf(appState.length))
+  .attach(
+    p('There are no items').addClass('list-empty').hideIf(appState.length),
+  )
   .addClass('todo-list');
 
 function addItem(value: string) {
   if (value) {
     todoList.append(
-      todoItem(value, {
+      TodoItem(value, {
         remove: (s, c) => {
           const index = appState.indexOf(c);
           appState.splice(index, 1);
@@ -56,10 +65,11 @@ function addItem(value: string) {
 
 /* Adds a new TODO, from input field, adds to state */
 function addItemFromInput() {
-  if (itemInput.value) {
-    addItem(itemInput.value);
-    appState.push(itemInput.value);
-    itemInput.clear();
+  const value = itemInput.consumeValue;
+
+  if (value) {
+    addItem(value);
+    appState.push(value);
   }
 }
 

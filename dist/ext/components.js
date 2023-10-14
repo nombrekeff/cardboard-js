@@ -1,6 +1,6 @@
 import { allTags } from '../cardboard.js';
 const { input } = allTags;
-export function hinput(options = {}) {
+export function Input(options = {}) {
     var _a;
     const el = options.attach == true ? input.attach() : input();
     el.config({

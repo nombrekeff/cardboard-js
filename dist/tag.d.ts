@@ -23,6 +23,8 @@ export declare class CTag {
     private meta;
     get children(): Node[];
     get value(): any;
+    /** Gets the value of the element and clears the value */
+    get consumeValue(): any;
     get id(): string;
     setId(id: string): this;
     setValue(newValue: string): this;

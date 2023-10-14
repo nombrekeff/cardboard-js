@@ -12,19 +12,21 @@ import { isObject } from './util.js';
  */
 export function template(template, values) {
     const node = document.createTextNode('');
-    const interpolatePattern = /(\$([a-z][a-z0-9_$]*))/gi;
+    const interpolatePattern = /\B\$([a-z][a-z0-9_$]*)/gi;
     const updateNode = () => {
-        node.nodeValue = template.replace(interpolatePattern, (_, p1, p2) => {
-            console.log({ p1, p2, values });
-            return values[p2] != null ? values[p2].toString() : p1;
+        node.nodeValue = template.replace(interpolatePattern, (match, g1) => {
+            return values[g1] != null ? values[g1].toString() : match;
         });
     };
     if (isObject(values)) {
         for (let key in values) {
-            const item = values[key];
-            item.changed(() => {
-                updateNode();
-            });
+            // We're just interested in listening to the values that are references in the template.
+            if (template.includes(`$${key}`)) {
+                const item = values[key];
+                item.changed(() => {
+                    updateNode();
+                });
+            }
         }
     }
     updateNode();
