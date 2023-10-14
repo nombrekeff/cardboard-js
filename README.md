@@ -10,7 +10,7 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
 
 > **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
 
-
+### Table of contents
 - [What does it do?](#what-does-it-do)
 - [Who's this for?](#whos-this-for)
 - [Getting Started](#getting-started)
