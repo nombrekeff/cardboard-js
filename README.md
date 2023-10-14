@@ -1,4 +1,4 @@
-## Carboard.js <!-- omit in toc -->
+## Carboard.js
 
 
 ![](./header-img.png)
@@ -10,20 +10,23 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
 
 > **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
 
-### Table of contents
-- [Table of contents](#table-of-contents)
-- [What does it do?](#what-does-it-do)
-- [Who's this for?](#whos-this-for)
-- [Getting Started](#getting-started)
-  - [Install](#install)
-  - [Importing](#importing)
-  - [Sneek peek](#sneek-peek)
-- [Examples](#examples)
-  - [Clicker Example](#clicker-example)
-  - [Todo Example](#todo-example)
-  - [Component Example](#component-example)
-- [Attaching](#attaching)
-
+- [Carboard.js](#carboardjs)
+  - [What does it do?](#what-does-it-do)
+  - [Who's this for?](#whos-this-for)
+  - [Getting Started](#getting-started)
+    - [Install](#install)
+    - [Importing](#importing)
+    - [Sneek peek](#sneek-peek)
+  - [Examples](#examples)
+    - [Clicker Example](#clicker-example)
+    - [Todo Example](#todo-example)
+    - [Component Example](#component-example)
+- [Concepts](#concepts)
+  - [CTag aka tag](#ctag-aka-tag)
+  - [State](#state)
+    - [Manually listening to state changes](#manually-listening-to-state-changes)
+    - [Reacting](#reacting)
+  - [Attaching](#attaching)
 
 
 ### What does it do?
@@ -302,9 +305,103 @@ export function Input(options: Options = {}) {
 ```
 > It basically simplifies the creation of an input element, and adds some logic. 
 
+## Concepts
+Next I will explain a few concepts that will make using cardboard a lot easier.
+
+### CTag aka tag
+
+The base concept for Cardboard is the class `CTag`. It's designed so you don't need to use this class directly. 
+But you might need to type something if you write with TS, so it's good to now it exists. 
+
+To create a CTag you can use the [`tag`](https://nombrekeff.github.io/cardboard-js/functions/tag.tag.html) function
+```ts
+tag('div', tag('p', 'Hello!'));
+```
+
+While you can use the tag function directly, normally you will use the built-in tag function and no the `tag` function directly:
+```ts
+import { allTags } from 'cardboard-js';
+const { div, p } = allTags;
+div(p('Hello!'));
+```
+
+A tag represents a element in the page. They can be a new element, or a wrapper over existing elements in the page.
+When you create a tag, it will not be added to the DOM unless you manually add them. This can be done in a few ways.
+
+* Adding as a children:
+```ts
+div(
+  p('Hello!')
+);
+```
+* Adding with `append` or `prepend`
+```ts
+div().append(
+  p('Hello!')
+);
+div().prepend(
+  p('Hello!')
+);
+```
+* Attaching to attached tags. By calling `.attach`, the element will be added as a child of `div`. Read more about [Attaching](#attaching).
+```ts
+attach(div());
+
+p.attach('Hello!');
+p.attach('Hello!');
+```
+
+### State
+Another key aspect of Cardboard is the state. States hold data, and offer a way of reacting to it. It works mostly like any other state you might've used. It might be different to use but it does the same thing. 
+
+To create a state you just need to call the `state` function, and pass in an object or an array.
+```ts
+const list = state([]);
+const data = state({ count: 0, nested: { name: 'hey' }});
+```
+
+#### Manually listening to state changes
+
+You can manually listen to the whole state changes:
+```ts
+data.changed((newData) => {...});
+```
+Or to individual values:
+```ts
+data.count.changed((newCount) => {...});
+data.nested.name.changed((newName) => {...});
+```
+
+#### Reacting
+
+Tags can also use states for things such as: 
+* **disabling** an element based on some state
+* **removing** or adding elements (from the DOM) based on some state
+* **toggling classes** based on some state
+* **modifying attributes** based on some state
+* **text templates** with some state values interpolated that will change when the state changes
+
+Here are some examples:
+```ts
+const data = state({ count: 0, hide: false, disable: false });
+
+// Hides/shows based on data.hide, item is removed from DOM if hidden
+div().hideIf(data.hide);
+
+// Set classes and disabled based on data.disabled state
+input()
+  .classIf(data.disable, 'disabled', 'strike')
+  .disableId(data.disable);
+
+// Text will update with the new state values interpolated into the template
+p(text('Count is: $count', data));
+p().text('Count is: $count', data);
+
+// Create a custom reaction to a state change, you can do modify the element inside the callback.
+div().consume(data.hide, (self, hide) => {});
+```
 
 ### Attaching
-
 Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the [`init()`](https://nombrekeff.github.io/cardboard-js/functions/tag.init.html) function.
 
 If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
