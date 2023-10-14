@@ -149,4 +149,40 @@ describe('Tag conditionals', () => {
 
     expect(pp.hasStyle('color')).toBeFalsy();
   });
+
+  it('tag.textIf', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').textIf(st.enable, 'yes', 'no');
+
+    expect(pp.text()).toEqual('no');
+    st.enable = true;
+    expect(pp.text()).toEqual('yes');
+    st.enable = false;
+    expect(pp.text()).toEqual('no');
+  });
+
+  it('tag.textIf without else', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').textIf(st.enable, 'yes');
+
+    expect(pp.text()).toEqual('');
+    st.enable = true;
+    expect(pp.text()).toEqual('yes');
+    st.enable = false;
+    expect(pp.text()).toEqual('');
+  });
+
+  it('tag.textIfNot', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').textIfNot(st.enable, 'yes', 'no');
+
+    expect(pp.text()).toEqual('yes');
+    st.enable = true;
+    expect(pp.text()).toEqual('no');
+    st.enable = false;
+    expect(pp.text()).toEqual('yes');
+  });
 });
