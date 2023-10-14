@@ -13,5 +13,7 @@ export const dashToCamel = (str) => str.replace(/(\-[a-z])/g, (val) => val.toUpp
 export function isObject(obj) {
     return typeof obj === 'object' && !(obj instanceof Array);
 }
+export const toJson = (possiblyJsonString) => JSON.parse(possiblyJsonString);
+export const fromJson = (possiblyJson) => JSON.stringify(possiblyJson);
 const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 //# sourceMappingURL=util.js.map

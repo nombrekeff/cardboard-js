@@ -8,6 +8,7 @@ export function createDomMock(content = '') {
   global.HTMLInputElement = dom.window.HTMLInputElement;
   global.HTMLTextAreaElement = dom.window.HTMLTextAreaElement;
   global.InputEvent = dom.window.InputEvent;
+  global.Node = dom.window.Node;
 
   return dom;
 }

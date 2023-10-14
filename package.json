@@ -7,6 +7,7 @@
     "types": "./dist/cardboard.d.ts",
     "scripts": {
       "test": "jest --coverage",
+      "test:watch": "jest --coverage",
       "build": "rimraf dist && tsc --p tsconfig.json && npm run build:example && npm run build:docs",
       "build:watch": "tsc --watch",
       "build:example": "tsc --p example/tsconfig.json",

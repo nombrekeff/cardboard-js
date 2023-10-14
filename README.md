@@ -39,9 +39,14 @@ I recomend destructuring tags, for a cleaner code:
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 ```
 
+### Docs
+
+Check out the [Documentation](https://nombrekeff.github.io/cardboard-js/) for more details.
+
 ### Examples
 
-Check out the [`examples`](/examples) folder for a variety of examples on how to use Cardboard.
+Check out the [`examples`](/examples) folder for a variety of examples on how to use Cardboard. 
+But here are a couple of examples that highlight what Cardboard can do:
 
 #### Clicker Example
 
@@ -53,12 +58,17 @@ button()
 ```
 
 Let me explain:
+
 ```ts
 let counterState = state({ count: 0 });
 ```
-> Creates a "reactive" state, or more so a state that can be listened to, globaly or per property.
-> `counterState.changed((newState) => handleStateChange())`  
-> `counterState.count.changed((newValue) => handleValueChange())`
+> Creates a state that can be listened to, globaly or per property: 
+> ```ts 
+> counterState.changed((newState) => handleStateChange());
+> counterState.count.changed((newValue) => handleValueChange());
+> ```  
+
+----
 
 ```ts
 button()
@@ -66,12 +76,29 @@ button()
 > `button()` or any other tag method for that matter, generate an HTMLElement. But it's not added directly to the DOM. 
 > You can manually add children `div().append(p())`, or if there's a tag attached, you can simply do: `p.attach()`. Check the [Attaching](#attaching) section for more information.
 
+----
+
 ```ts
 .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
 ```
 > the [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#consume) method, reacts to changes in the state, and triggers the **callback**.
 > For example in the snippet above, whenever `counterState.count` changes, we set the **text** to `"Clicked ${count} times"`.
 > That will automatically change the innerContent of the HTML element.
+
+This can also be done in a simpler way by using [`template()`](https://nombrekeff.github.io/cardboard-js/classes/).
+Instead of using consume, we can do it like this:
+
+```ts
+button(template(`Clicked $count times`, counterState))
+```
+
+Instead of:
+```ts
+button()
+  .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
+```
+
+----
 
 ```ts
 .clicked((_) => counterState.count++);
@@ -117,6 +144,7 @@ const list = ul(
 > Adds a **p** child with text _'There are no items'_, which will be hidden if there are items. 
 > [`hideIf`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#hideIf) will listen to changes in `todoState.length`, if there are items (length > 0), the tag `p` will be hidden, removed from the DOM basically. Whenever the length goes back to 0, it will be automatically added to the DOM again. It will even figure out exactly where to be added relative to it's siblings and parent (i.e. _If a sibling before is also hidden, it will figure that out, and calculate it's position based on that_) 
 
+----
 
 ```ts
 const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
@@ -136,10 +164,14 @@ const addItem = () => {
 > To add an iten to the list, it's possible by calling [`.append()`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#append) with the element we want.
 > A `li` in this case, with the value of the input as it's text.
 
+----
+
 ```ts
 button.attach('Add item').clicked(addItem);
 ```
 > Creates a button, which will add an item when it's clicked. calling [`.attach`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#attach) will add button to the attached tag.
+
+----
 
 ```ts
 attached().append(list);
@@ -184,7 +216,6 @@ export function hinput(options: HInputOptions = {}) {
 > It can then be used as any other cardboard tag method.
 > `hinput({...})`
 
-
 ### Attaching
 
 Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the [`init()`](https://nombrekeff.github.io/cardboard-js/functions/tag.init.html) function.
@@ -222,3 +253,4 @@ detach();
 p.attach("I'm now inside wrapper!");
 ```
 
+### 

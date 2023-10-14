@@ -1,5 +1,4 @@
 import { init, allTags, state } from '../../dist/cardboard.js';
-
 const { div, button, p, input, br } = allTags;
 
 init();

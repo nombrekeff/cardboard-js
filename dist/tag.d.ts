@@ -1,8 +1,7 @@
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
-import { Consumable } from './state.js';
 import { TagName } from './tag-names.js';
-import { AllTags, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
+import { AllTags, Consumable, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
@@ -68,8 +67,11 @@ export declare class CTag {
     /** Disable this element if the consumer is truthy */
     disableIfNot(consumable: Consumable<any>): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
-    /** Set the `textContent` of the element */
-    text(text: any): this;
+    /**
+     * If {@param text} is provided, it sets the `textContent` of the element.
+     * If it's not provided, it returns the `textContent` of the element
+     */
+    text<T = string | null>(text?: T): T extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} config
      * instead of having to call a method for each property you want to changes
@@ -102,6 +104,12 @@ export declare class CTag {
     rmAttr(...attrs: string[]): this;
     hasAttr(...attr: string[]): boolean;
     getAttr(attr: string): any;
+    /**
+     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+     *
+     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     */
+    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable<any>;
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */
