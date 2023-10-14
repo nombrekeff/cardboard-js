@@ -472,7 +472,9 @@ div(Counter());
 
 ### Lifecycle events
 
-In some cases you might want to do stuff when the element is added to the page, or when it's removed. For that Cardboard offers 2 functions for handling that:
+In some cases you might want to do stuff when the element is added to the page, or when it's removed. For that Cardboard offers 2 functions for handling that.
+`withLifecycle(tag, { start, removed })` or `onLifecycle(tag, start, removed)`, both do the same thing, just different arguments.
+
 ```ts
 const Clock = () => {
   const st = state({
