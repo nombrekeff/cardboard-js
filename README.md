@@ -23,10 +23,11 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
     - [Component Example](#component-example)
 - [Concepts](#concepts)
   - [CTag aka tag](#ctag-aka-tag)
+  - [Attaching](#attaching)
   - [State](#state)
     - [Manually listening to state changes](#manually-listening-to-state-changes)
     - [Reacting](#reacting)
-  - [Attaching](#attaching)
+  - [Reusable Components](#reusable-components)
 
 
 ### What does it do?
@@ -34,17 +35,17 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
 Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process (_unless you use TS_). **Everything is plain JS**. It's very lightweight and performant. By design, there's very little additional computation on top of interacting directly with JS. As you interact with the elements directly, without needing complex stuff like diffing virtual doms and such. 
 
 The idea is that instead of writing **HTML** and then creating JS that interacts with the **HTML**. You directly write JS that represents both the **HTML** and the logic.
-It also offers a **state management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
+It also offers a **[state](#state) management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
 
 Here is a list of some of the features it offers (_there more though_):
-* **showing/hiding elements**: You can conditionally add and remove items from the DOM whenever a state changes.
-* **enabling/disabling elements**: Reactively enable and disable elements based on a state.
-* **add/remove classes**: Reactively add an remove classes from elements based on a state.
-* **add/remove attributes**: Reactively add an remove classes from elements based on a state.
-* **templates**: It allows you to create text templates that interpolate some state values, and update whenever the state changes.
-* **custom reactions**: If there isn't a built-in method that handles some reaction for you, there are methods that allow you to build your own.
-* **reusable components**: You can create reusable components, like in any other framework.
-* **CSS in JS**: You can create `style` tags, and write the CSS directly as a JS obejct.
+* **[showing/hiding elements](#reacting)**: You can conditionally add and remove items from the DOM whenever a state changes.
+* **[enabling/disabling elements](#reacting)**:  enable and disable elements manually, or based on a state.
+* **[add/remove classes](#reacting)**:  add an remove classes from elements manually, or based on a state.
+* **[add/remove attributes](#reacting)**:  add an remove classes from elementsmanually, or  based on a state.
+* **[templates](#reacting)**: It allows you to create text templates that interpolate some state values, and update whenever the state changes.
+* **[custom reactions](#reacting)**: If there isn't a built-in method that handles some reaction for you, there are methods that allow you to build your own.
+* **[reusable components](#reusable-components)**: You can create reusable components, like in any other framework.
+* **[CSS in JS](#css-in-js)**: You can create `style` tags, and write the CSS directly as a JS obejct.
 * **Typed**: Cardboard aims to be 100% typed, meaning it will suggest any suggestable properties, methods, etc...(i.e. style `properties`, etc...)
 
 Cardboard offers all of this in a very small package with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
@@ -78,7 +79,7 @@ const { div, button, input, a, ul, li, hr, style } = allTags;
 init({ root: 'body' }); // By calling init, any new tag added will be added to the "body" (passing root selector is optional, 'body' by default)
 ```
 
-I recomend destructuring tags, for cleaner code:
+I recomend destructuring [tags](#ctag-aka-tag), for cleaner code:
 
 ```ts
 const { div, p, span, b, script, button, style, a, hr } = allTags;
@@ -122,7 +123,7 @@ Let me explain:
 ```ts
 let counterState = state({ count: 0 });
 ```
-Creates a state that can be listened to, globaly or per property: 
+Creates a [state](#state) that can be listened to, globaly or per property: 
 ```ts 
 counterState.changed((newState) => handleStateChange());
 counterState.count.changed((newValue) => handleValueChange());
@@ -135,7 +136,7 @@ They can also be used to make tags react to state changes, as is explained below
 ```ts
 button()
 ```
-Cardboard offers a list of `allTags`, which allow you to create tags by calling the tagName as a function: i.e. `div()`, `p()`, `ul()`, etc...
+Cardboard offers a list of `allTags`, which allow you to create [tags](#ctag-aka-tag) by calling the tagName as a function: i.e. `div()`, `p()`, `ul()`, etc...
 In the above snippet, `button()`, or any other tag method for that matter, generate an HTMLElement. But it's **not added directly** to the DOM. 
 You can manually add children `div().append(p())`, or if there's a tag attached, you can simply do: `p.attach()`. Check the [Attaching](#attaching) section for more information.
 
@@ -351,6 +352,53 @@ p.attach('Hello!');
 p.attach('Hello!');
 ```
 
+
+
+### Attaching
+Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the [`init()`](https://nombrekeff.github.io/cardboard-js/functions/tag.init.html) function.
+
+If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
+
+```ts
+init();
+init({ root: '#app-root' });
+```
+
+Init returns the attached tag. So you can append items directly like this:
+```ts
+init().append(
+  div(),
+  p(),
+  img(), 
+);
+```
+
+You can also manually attach to any element by calling the [`attach()`](https://nombrekeff.github.io/cardboard-js/functions/tag.attach.html) function:
+```ts
+init();
+const wrapper = div();
+attach(wrapper);
+
+p.attach();
+span.attach();
+```
+> `p()` and `span()` will be added as children of wrapper.
+
+It's also possible to attach multiple times:
+```ts
+init();
+const wrapper = div.attach();
+
+attach(wrapper);
+const childDiv = div.attach("I'm inside wrapper");
+
+attach(childDiv);
+p.attach("I'm inside child div!");
+detach();
+
+p.attach("I'm now inside wrapper!");
+```
+
 ### State
 Another key aspect of Cardboard is the state. States hold data, and offer a way of reacting to it. It works mostly like any other state you might've used. It might be different to use but it does the same thing. 
 
@@ -401,47 +449,24 @@ p().text('Count is: $count', data);
 div().consume(data.hide, (self, hide) => {});
 ```
 
-### Attaching
-Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the [`init()`](https://nombrekeff.github.io/cardboard-js/functions/tag.init.html) function.
+### Reusable Components
 
-If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
-
+You can create reusable components very easily:
 ```ts
-init();
-init({ root: '#app-root' });
+const Counter = () => {
+  let counterState = state({ count: 0 });
+
+  return button(
+    text(`Clicked $count times`, counterState)
+  ).clicked((_) => counterState.count++);
+};
 ```
 
-Init returns the attached tag. So you can append items directly like this:
+The use as any other tag:
 ```ts
-init().append(
-  div(),
-  p(),
-  img(), 
-);
+div(Counter());
 ```
 
-You can also manually attach to any element by calling the [`attach()`](https://nombrekeff.github.io/cardboard-js/functions/tag.attach.html) function:
-```ts
-init();
-const wrapper = div();
-attach(wrapper);
+### CSS in JS
 
-p.attach();
-span.attach();
-```
-> `p()` and `span()` will be added as children of wrapper.
-
-It's also possible to attach multiple times:
-```ts
-init();
-const wrapper = div.attach();
-
-attach(wrapper);
-const childDiv = div.attach("I'm inside wrapper");
-
-attach(childDiv);
-p.attach("I'm inside child div!");
-detach();
-
-p.attach("I'm now inside wrapper!");
-```
+TODO
