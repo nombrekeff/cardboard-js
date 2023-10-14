@@ -236,6 +236,19 @@ export declare class CTag {
  */
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
 /**
+ * Will call {onStart} when the element is added to the DOM.
+ * And will call {onRemove} when the element is removed from the DOM.
+ */
+export declare function onLifecycle(tag: CTag, onStart: (tag: CTag, observer: MutationObserver) => void, onRemove: (tag: CTag, observer: MutationObserver) => void): MutationObserver;
+/**
+ * Will call {handler.onStart} when the element is added to the DOM.
+ * And will call {handler.onRemove} when the element is removed from the DOM.
+ */
+export declare const withLifecycle: (tag: CTag, handler: {
+    start: (tag: CTag) => void;
+    removed: (tag: CTag) => void;
+}) => CTag;
+/**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
  * You can call attach multiple times, and the last attach tag will be used.

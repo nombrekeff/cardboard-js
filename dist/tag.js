@@ -621,6 +621,47 @@ export function tag(arg0, children = [], attach = false) {
     return new CTag(arg0, children, attach);
 }
 /**
+ * Will call {onStart} when the element is added to the DOM.
+ * And will call {onRemove} when the element is removed from the DOM.
+ */
+export function onLifecycle(tag, onStart, onRemove) {
+    var _a, _b;
+    let observingParent = false;
+    const observer = new MutationObserver((mutations, observer) => {
+        let hasBeenAdded = false;
+        let hasBeenRemoved = false;
+        for (let mut of mutations) {
+            if (Array.from(mut.addedNodes).includes(tag.element)) {
+                hasBeenAdded = true;
+            }
+            if (Array.from(mut.removedNodes).includes(tag.element)) {
+                hasBeenRemoved = true;
+            }
+        }
+        if (hasBeenAdded) {
+            onStart(tag, observer);
+            if (!observingParent) {
+                observer.disconnect();
+                observer.observe(tag.element.parentElement, { childList: true });
+                observingParent = true;
+            }
+        }
+        if (hasBeenRemoved) {
+            onRemove(tag, observer);
+        }
+    });
+    observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.element) !== null && _b !== void 0 ? _b : document.body, { childList: true });
+    return observer;
+}
+/**
+ * Will call {handler.onStart} when the element is added to the DOM.
+ * And will call {handler.onRemove} when the element is removed from the DOM.
+ */
+export const withLifecycle = (tag, handler) => {
+    onLifecycle(tag, handler.start, handler.removed);
+    return tag;
+};
+/**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
  * You can call attach multiple times, and the last attach tag will be used.

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>NestedStyleMap | cardboard-js</title><meta name="description" content="Documentation for cardboard-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>onLifecycle | cardboard-js</title><meta name="description" content="Documentation for cardboard-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -13,12 +13,55 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
 <li><a href="../index.html">cardboard-js</a></li>
-<li><a href="../modules/types.html">types</a></li>
-<li><a href="types.NestedStyleMap.html">NestedStyleMap</a></li></ul>
-<h1>Type alias NestedStyleMap</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">Nested<wbr/>Style<wbr/>Map</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/><span>    </span><span class="tsd-signature-symbol">[</span><span class="tsd-kind-type-parameter">key</span><span class="tsd-signature-symbol"> in </span><a href="css_properties.CssProperty.html" class="tsd-signature-type tsd-kind-type-alias">CssProperty</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">?: </span><a href="css_property_values.PickPropertyValues.html" class="tsd-signature-type tsd-kind-type-alias">PickPropertyValues</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">key</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="types.StyleMap.html" class="tsd-signature-type tsd-kind-type-alias">StyleMap</a><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
+<li><a href="../modules/tag.html">tag</a></li>
+<li><a href="tag.onLifecycle.html">onLifecycle</a></li></ul>
+<h1>Function onLifecycle</h1></div>
+<section class="tsd-panel">
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="onLifecycle"><span class="tsd-kind-call-signature">on<wbr/>Lifecycle</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">onStart</span>, <span class="tsd-kind-parameter">onRemove</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">MutationObserver</span><a href="#onLifecycle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Will call {onStart} when the element is added to the DOM.
+And will call {onRemove} when the element is removed from the DOM.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">onStart</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">observer</span>: <span class="tsd-signature-type ">MutationObserver</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li>
+<li>
+<h5><span class="tsd-kind-parameter">onRemove</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">observer</span>: <span class="tsd-signature-type ">MutationObserver</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">MutationObserver</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/060cbf6/src/types.ts#L7">types.ts:7</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/060cbf6/src/tag.ts#L832">tag.ts:832</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
