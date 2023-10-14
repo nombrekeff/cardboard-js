@@ -129,7 +129,7 @@ the [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html
 For example in the snippet above, whenever `counterState.count` changes, we set the **text** to `"Clicked ${count} times"`.
 The callback will automatically change the **innerContent** of the HTMLElement by using `.text()`.
 
-This can also be done in a simpler way by using [`text()`](https://nombrekeff.github.io/cardboard-js/functions/text.text.html).
+This can also be done in a simpler way by using [`text()`](https://nombrekeff.github.io/cardboard-js/functions/text.text.html) as seen in the sneek peek.
 Instead of using [`.consume`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#consume), we can do it like this:
 
 ```ts
@@ -146,6 +146,12 @@ div(tnode);
 tnode.nodeValue = 'But I can be later changed';
 ```
 
+Additionally this can also be done by using the `.text` method of the tag:
+```ts
+button().text(`Clicked $count times`, counterState);
+```
+> It's up to you to decide when to use each option!
+
 ----
 
 ```ts
@@ -156,14 +162,19 @@ The [`.clicked`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html
 It's a shortcut for [`.on('click', callback)`](https://nombrekeff.github.io/cardboard-js/classes/tag.CTag.html#on), a couple of shorthands are provided. 
 If the event you want to listen does not have a shorthand, you can either, leave an issue for me to add it, send a PR or just use `.on(evtName, callback);`.
 
+```ts
+button('Not clicked')
+  .on('click', (self, evt) => self.text('Clicked'));
+```
 
 #### Todo Example
 ```ts
 const todos = state([]);
-const Todo = (value) => li(value)
-  .clicked(
-    (self) => self.remove() && removeFromList(value, todos)
-  ); 
+const Todo = (value) => 
+  li(value)
+    .clicked(
+      (self) => self.remove() && removeFromList(value, todos)
+    ); 
 
 const list = ul(
   p('There are no to-dos')
@@ -320,5 +331,3 @@ detach();
 
 p.attach("I'm now inside wrapper!");
 ```
-
-### 
