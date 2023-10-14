@@ -8,11 +8,8 @@ export type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | StyleMap;
 };
 export type StyleSet = { [key: string]: NestedStyleMap };
-
 export type TagChild = string | CTag | HTMLElement | Node;
-
 export type TagChildren = TagChild[];
-
 export type EventCallback<T extends EventName> = (
   tag: CTag,
   evt: HTMLElementEventMap[T],
