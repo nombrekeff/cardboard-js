@@ -1,4 +1,5 @@
 import { CssGenerator } from './css-generator.js';
+import { camelToDash } from './util.js';
 import { text } from './text.js';
 let context = {
     attachedTag: null,
@@ -102,30 +103,8 @@ export class CTag {
         return this;
     }
     /**
-     * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
-     */
-    doIf(consumable, ifTrue, ifFalse) {
-        const callback = (value) => {
-            if (value)
-                ifTrue(value);
-            else
-                ifFalse(value);
-        };
-        consumable.changed(callback);
-        callback(consumable);
-        return this;
-    }
-    /**
-     * The oposite of {this.doIf}
-     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
-     */
-    doIfNot(consumable, ifTrue, ifFalse) {
-        return this.doIf(consumable, ifFalse, ifTrue);
-    }
-    /**
      * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
      * I will be placed exactly in the correct position, even if there are other elements hidden.
-     *
      */
     show() {
         if (!this.parent.children.includes(this.element)) {
@@ -167,24 +146,52 @@ export class CTag {
             this.meta.isHidden = true;
         }
     }
-    /** Hide this element if the consumer is truthy */
-    hideIf(consumable) {
+    /**
+     * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+     */
+    doIf(consumable, ifTrue, ifFalse, invert = false) {
+        if (invert) {
+            let temp = ifTrue;
+            ifTrue = ifFalse;
+            ifFalse = temp;
+        }
+        const callback = (value) => {
+            if (value)
+                ifTrue(value);
+            else
+                ifFalse(value);
+        };
+        consumable.changed(callback);
+        callback(consumable);
+        return this;
+    }
+    /**
+     * The oposite of {this.doIf}
+     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+     */
+    doIfNot(consumable, ifTrue, ifFalse) {
+        return this.doIf(consumable, ifTrue, ifFalse, true);
+    }
+    /** Hide this element when the consumer is truthy. Updates whenever the consumable changes. */
+    hideIf(consumable, invert = false) {
         const handleHide = (value) => {
-            this.meta.isHidden = !value;
+            const correctedValue = invert ? !value : !!value;
+            this.meta.isHidden = correctedValue;
             if (!this.parent)
                 return;
-            if (!value)
+            if (!correctedValue)
                 this.show();
             else
                 this.hide();
         };
         consumable.changed(handleHide);
-        this.meta.isHidden = !!consumable;
+        handleHide(consumable);
         return this;
     }
-    /** Hide this element if the consumer is falsy */
+    /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
     hideIfNot(consumable) {
-        const handleShow = (value) => {
+        return this.hideIf(consumable, true);
+        const handleHide = (value) => {
             this.meta.isHidden = !value;
             if (!this.parent)
                 return;
@@ -193,33 +200,59 @@ export class CTag {
             else
                 this.hide();
         };
-        consumable.changed(handleShow);
-        this.meta.isHidden = !consumable;
+        consumable.changed(handleHide);
+        handleHide(consumable);
         return this;
     }
-    /** Adds classes to the element if the consumer is truthy */
-    classIf(consumable, ...classes) {
-        return this.doIf(consumable, () => this.addClass(...classes), () => this.rmClass(...classes));
+    /** Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    classIf(consumable, classes, invert = false) {
+        return this.doIf(consumable, () => this.addClass(...classes), () => this.rmClass(...classes), invert);
     }
-    /** Adds classes to the element if the consumer is truthy */
-    classIfNot(consumable, ...classes) {
-        return this.doIfNot(consumable, () => this.addClass(...classes), () => this.rmClass(...classes));
+    /** Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes. */
+    classIfNot(consumable, classes) {
+        return this.classIf(consumable, classes, true);
     }
-    /** Add attribute to the element if the consumer is truthy */
-    attrIf(consumable, attr, value = '') {
-        return this.doIf(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr));
+    /** Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    attrIf(consumable, attr, value = '', invert = false) {
+        return this.doIf(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr), invert);
     }
-    /** Add attribute to the element if the consumer is truthy */
+    /** Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes. */
     attrIfNot(consumable, attr, value = '') {
-        return this.doIfNot(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr));
+        return this.attrIf(consumable, attr, value, true);
     }
-    /** Disable this element if the consumer is truthy */
-    disableIf(consumable) {
-        return this.attrIf(consumable, 'disabled');
+    /** Disable this element when the consumer is truthy. Updates whenever the consumable changes. */
+    disableIf(consumable, invert = false) {
+        return this.attrIf(consumable, 'disabled', '', invert);
     }
-    /** Disable this element if the consumer is truthy */
+    /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
     disableIfNot(consumable) {
-        return this.attrIfNot(consumable, 'disabled');
+        return this.disableIf(consumable, true);
+    }
+    /**
+     * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+     */
+    styleIf(consumable, style, value = '', invert = false) {
+        return this.doIf(consumable, () => this.addStyle(style, value), () => this.rmStyle(style), invert);
+    }
+    /**
+     * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+     */
+    styleIfNot(consumable, style, value = '') {
+        return this.styleIf(consumable, style, value, true);
+    }
+    /**
+     * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+     */
+    stylesIf(consumable, styles, invert = false) {
+        return this.doIf(consumable, () => this.setStyle(styles), () => this.rmStyle(...Object.keys(styles)), invert);
+    }
+    /**
+     * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * For the oposite use  {@link stylesIf}
+     */
+    stylesIfNot(consumable, styles) {
+        return this.stylesIf(consumable, styles, true);
     }
     listen(tag, evt, consumer) {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
@@ -338,7 +371,7 @@ export class CTag {
     /** Check if this element has styles */
     hasStyle(...styles) {
         for (let key of styles) {
-            if (!this.element.style.getPropertyValue(key)) {
+            if (!this.element.style.getPropertyValue(camelToDash(key))) {
                 return false;
             }
         }

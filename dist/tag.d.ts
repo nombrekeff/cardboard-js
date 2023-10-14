@@ -36,38 +36,55 @@ export declare class CTag {
     /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
     /**
+     * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
+     * I will be placed exactly in the correct position, even if there are other elements hidden.
+     */
+    show(): boolean;
+    /** Hide this element (removed from DOM) */
+    hide(): void;
+    /**
      * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
      */
-    doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void, invert?: boolean): this;
     /**
      * The oposite of {this.doIf}
      * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
      */
     doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
-    /**
-     * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
-     * I will be placed exactly in the correct position, even if there are other elements hidden.
-     *
-     */
-    show(): boolean;
-    /** Hide this element (removed from DOM) */
-    hide(): void;
-    /** Hide this element if the consumer is truthy */
-    hideIf(consumable: Consumable<boolean | number>): this;
-    /** Hide this element if the consumer is falsy */
+    /** Hide this element when the consumer is truthy. Updates whenever the consumable changes. */
+    hideIf(consumable: Consumable<boolean | number>, invert?: boolean): this;
+    /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
     hideIfNot(consumable: Consumable<boolean | number>): this;
-    /** Adds classes to the element if the consumer is truthy */
-    classIf(consumable: Consumable<any>, ...classes: string[]): this;
-    /** Adds classes to the element if the consumer is truthy */
-    classIfNot(consumable: Consumable<any>, ...classes: string[]): this;
-    /** Add attribute to the element if the consumer is truthy */
-    attrIf(consumable: Consumable<any>, attr: string, value?: string): this;
-    /** Add attribute to the element if the consumer is truthy */
+    /** Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    classIf(consumable: Consumable<any>, classes: string[], invert?: boolean): this;
+    /** Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes. */
+    classIfNot(consumable: Consumable<any>, classes: string[]): this;
+    /** Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes. */
+    attrIf(consumable: Consumable<any>, attr: string, value?: string, invert?: boolean): this;
+    /** Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes. */
     attrIfNot(consumable: Consumable<any>, attr: string, value?: string): this;
-    /** Disable this element if the consumer is truthy */
-    disableIf(consumable: Consumable<any>): this;
-    /** Disable this element if the consumer is truthy */
+    /** Disable this element when the consumer is truthy. Updates whenever the consumable changes. */
+    disableIf(consumable: Consumable<any>, invert?: boolean): this;
+    /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
     disableIfNot(consumable: Consumable<any>): this;
+    /**
+     * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+     */
+    styleIf(consumable: Consumable<any>, style: string, value?: string, invert?: boolean): this;
+    /**
+     * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+     */
+    styleIfNot(consumable: Consumable<any>, style: string, value?: string): this;
+    /**
+     * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+     */
+    stylesIf(consumable: Consumable<any>, styles: StyleMap, invert?: boolean): this;
+    /**
+     * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * For the oposite use  {@link stylesIf}
+     */
+    stylesIfNot(consumable: Consumable<any>, styles: StyleMap): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /**
      * If {newText} is provided, it sets the `textContent` of the element.
@@ -101,7 +118,7 @@ export declare class CTag {
     /** Remove styles */
     rmStyle(...styleNames: string[]): this;
     /** Check if this element has styles */
-    hasStyle(...styles: string[]): boolean;
+    hasStyle<K extends CssProperty>(...styles: K[]): boolean;
     setAttrs(attrs: {
         [k: string]: string;
     }): this;
@@ -114,7 +131,7 @@ export declare class CTag {
      *
      * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
      */
-    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable<any>;
+    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable;
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */

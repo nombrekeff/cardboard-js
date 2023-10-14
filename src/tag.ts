@@ -1,7 +1,8 @@
 import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
-import { TagName, ValidTagName } from './tag-names.js';
+import { TagName } from './tag-names.js';
+import { camelToDash } from './util.js';
 import { text } from './text.js';
 import {
   AllTags,
@@ -152,38 +153,8 @@ export class CTag {
   }
 
   /**
-   * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
-   */
-  doIf(
-    consumable: Consumable<any>,
-    ifTrue: (value: any) => void,
-    ifFalse: (value: any) => void,
-  ) {
-    const callback = (value) => {
-      if (value) ifTrue(value);
-      else ifFalse(value);
-    };
-    consumable.changed(callback);
-    callback(consumable);
-    return this;
-  }
-
-  /**
-   * The oposite of {this.doIf}
-   * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
-   */
-  doIfNot(
-    consumable: Consumable<any>,
-    ifTrue: (value: any) => void,
-    ifFalse: (value: any) => void,
-  ) {
-    return this.doIf(consumable, ifFalse, ifTrue);
-  }
-
-  /**
    * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
    * I will be placed exactly in the correct position, even if there are other elements hidden.
-   *
    */
   show() {
     if (!this.parent.children.includes(this.element)) {
@@ -231,78 +202,162 @@ export class CTag {
     }
   }
 
-  /** Hide this element if the consumer is truthy */
-  hideIf(consumable: Consumable<boolean | number>) {
+  /**
+   * When the consumable changes, it will call {ifTrue} if the consumable is true. Or {ifFalse} if the consumable is false.
+   */
+  doIf(
+    consumable: Consumable<any>,
+    ifTrue: (value: any) => void,
+    ifFalse: (value: any) => void,
+    invert = false,
+  ) {
+    if (invert) {
+      let temp = ifTrue;
+      ifTrue = ifFalse;
+      ifFalse = temp;
+    }
+
+    const callback = (value) => {
+      if (value) ifTrue(value);
+      else ifFalse(value);
+    };
+
+    consumable.changed(callback);
+    callback(consumable);
+    return this;
+  }
+
+  /**
+   * The oposite of {this.doIf}
+   * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+   */
+  doIfNot(
+    consumable: Consumable<any>,
+    ifTrue: (value: any) => void,
+    ifFalse: (value: any) => void,
+  ) {
+    return this.doIf(consumable, ifTrue, ifFalse, true);
+  }
+
+  /** Hide this element when the consumer is truthy. Updates whenever the consumable changes. */
+  hideIf(consumable: Consumable<boolean | number>, invert = false) {
     const handleHide = (value: any) => {
-      this.meta.isHidden = !value;
+      const correctedValue = invert ? !value : !!value;
+      this.meta.isHidden = correctedValue;
+
       if (!this.parent) return;
-      if (!value) this.show();
+      if (!correctedValue) this.show();
       else this.hide();
     };
 
     consumable.changed(handleHide);
-    this.meta.isHidden = !!consumable;
+    handleHide(consumable);
     return this;
   }
 
-  /** Hide this element if the consumer is falsy */
+  /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
   hideIfNot(consumable: Consumable<boolean | number>) {
-    const handleShow = (value: any) => {
+    return this.hideIf(consumable, true);
+    const handleHide = (value: any) => {
       this.meta.isHidden = !value;
       if (!this.parent) return;
       if (value) this.show();
       else this.hide();
     };
 
-    consumable.changed(handleShow);
-    this.meta.isHidden = !consumable;
+    consumable.changed(handleHide);
+    handleHide(consumable);
     return this;
   }
 
-  /** Adds classes to the element if the consumer is truthy */
-  classIf(consumable: Consumable<any>, ...classes: string[]) {
+  /** Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes. */
+  classIf(consumable: Consumable<any>, classes: string[], invert = false) {
     return this.doIf(
       consumable,
       () => this.addClass(...classes),
       () => this.rmClass(...classes),
+      invert,
     );
   }
 
-  /** Adds classes to the element if the consumer is truthy */
-  classIfNot(consumable: Consumable<any>, ...classes: string[]) {
-    return this.doIfNot(
-      consumable,
-      () => this.addClass(...classes),
-      () => this.rmClass(...classes),
-    );
+  /** Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes. */
+  classIfNot(consumable: Consumable<any>, classes: string[]) {
+    return this.classIf(consumable, classes, true);
   }
 
-  /** Add attribute to the element if the consumer is truthy */
-  attrIf(consumable: Consumable<any>, attr: string, value: string = '') {
+  /** Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes. */
+  attrIf(
+    consumable: Consumable<any>,
+    attr: string,
+    value: string = '',
+    invert = false,
+  ) {
     return this.doIf(
       consumable,
       () => this.addAttr(attr, value),
       () => this.rmAttr(attr),
+      invert,
     );
   }
 
-  /** Add attribute to the element if the consumer is truthy */
+  /** Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes. */
   attrIfNot(consumable: Consumable<any>, attr: string, value: string = '') {
-    return this.doIfNot(
+    return this.attrIf(consumable, attr, value, true);
+  }
+
+  /** Disable this element when the consumer is truthy. Updates whenever the consumable changes. */
+  disableIf(consumable: Consumable<any>, invert = false) {
+    return this.attrIf(consumable, 'disabled', '', invert);
+  }
+
+  /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
+  disableIfNot(consumable: Consumable<any>) {
+    return this.disableIf(consumable, true);
+  }
+
+  /**
+   * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+   */
+  styleIf(
+    consumable: Consumable<any>,
+    style: string,
+    value: string = '',
+    invert = false,
+  ) {
+    return this.doIf(
       consumable,
-      () => this.addAttr(attr, value),
-      () => this.rmAttr(attr),
+      () => this.addStyle(style, value),
+      () => this.rmStyle(style),
+      invert,
     );
   }
 
-  /** Disable this element if the consumer is truthy */
-  disableIf(consumable: Consumable<any>) {
-    return this.attrIf(consumable, 'disabled');
+  /**
+   * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+   */
+  styleIfNot(consumable: Consumable<any>, style: string, value: string = '') {
+    return this.styleIf(consumable, style, value, true);
   }
 
-  /** Disable this element if the consumer is truthy */
-  disableIfNot(consumable: Consumable<any>) {
-    return this.attrIfNot(consumable, 'disabled');
+  /**
+   * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+   * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+   */
+  stylesIf(consumable: Consumable<any>, styles: StyleMap, invert = false) {
+    return this.doIf(
+      consumable,
+      () => this.setStyle(styles),
+      () => this.rmStyle(...Object.keys(styles)),
+      invert,
+    );
+  }
+
+  /**
+   * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+   * For the oposite use  {@link stylesIf}
+   */
+  stylesIfNot(consumable: Consumable<any>, styles: StyleMap) {
+    return this.stylesIf(consumable, styles, true);
   }
 
   listen<K extends keyof HTMLElementEventMap>(
@@ -316,9 +371,9 @@ export class CTag {
 
   /**
    * If {newText} is provided, it sets the `textContent` of the element.
-   * If {newText} is provided, and a state is provided. It will use the {newText} as a template, 
+   * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
    * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
-   * 
+   *
    * If no argument is provided, it returns the `textContent` of the element
    */
   text<T = string | null>(
@@ -442,9 +497,9 @@ export class CTag {
   }
 
   /** Check if this element has styles */
-  hasStyle(...styles: string[]) {
+  hasStyle<K extends CssProperty>(...styles: K[]) {
     for (let key of styles) {
-      if (!this.element.style.getPropertyValue(key)) {
+      if (!this.element.style.getPropertyValue(camelToDash(key))) {
         return false;
       }
     }
@@ -493,7 +548,7 @@ export class CTag {
   when<K extends keyof HTMLElementEventMap>(
     evtName: K | string,
     fn: (self: CTag) => any,
-  ): Consumable<any> {
+  ): Consumable {
     return {
       changed: (listener) => {
         this.on(evtName, () => {
