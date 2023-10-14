@@ -94,6 +94,17 @@ describe('Tag conditionals', () => {
     expect(pp.hasClass('test-class')).toBeTruthy();
   });
 
+  it('tag.classIf function', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').classIf(st.enable, () => ['test-class']);
+
+    expect(pp.hasClass('test-class')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasClass('test-class')).toBeTruthy();
+  });
+
   it('tag.classIfNot', async () => {
     createDomMock();
     const st = state({ enable: false });
@@ -104,10 +115,39 @@ describe('Tag conditionals', () => {
     expect(pp.hasClass('test-class')).toBeFalsy();
   });
 
+  it('tag.classIfNot function', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').classIfNot(st.enable, () => ['test-class']);
+
+    expect(pp.hasClass('test-class')).toBeTruthy();
+    st.enable = true;
+    expect(pp.hasClass('test-class')).toBeFalsy();
+  });
+
   it('tag.stylesIf', async () => {
     createDomMock();
     const st = state({ enable: false });
-    const pp = tag('p').stylesIf(st.enable, { color: 'red', backgroundColor: 'blue'});
+    const pp = tag('p').stylesIf(st.enable, {
+      color: 'red',
+      backgroundColor: 'blue',
+    });
+
+    expect(pp.hasStyle('color')).toBeFalsy();
+    expect(pp.hasStyle('backgroundColor')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+    expect(pp.hasStyle('backgroundColor')).toBeTruthy();
+  });
+
+  it('tag.stylesIf function', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').stylesIf(st.enable, () => ({
+      color: 'red',
+      backgroundColor: 'blue',
+    }));
 
     expect(pp.hasStyle('color')).toBeFalsy();
     expect(pp.hasStyle('backgroundColor')).toBeFalsy();
@@ -132,6 +172,18 @@ describe('Tag conditionals', () => {
     createDomMock();
     const st = state({ enable: false });
     const pp = tag('p').styleIf(st.enable, 'color', 'red');
+
+    expect(pp.hasStyle('color')).toBeFalsy();
+    st.enable = true;
+
+    expect(pp.hasStyle('color')).toBeTruthy();
+  });
+
+
+  it('tag.styleIf function', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').styleIf(st.enable, 'color', () => 'red');
 
     expect(pp.hasStyle('color')).toBeFalsy();
     st.enable = true;
@@ -172,6 +224,22 @@ describe('Tag conditionals', () => {
     expect(pp.text()).toEqual('yes');
     st.enable = false;
     expect(pp.text()).toEqual('');
+  });
+
+  it('tag.textIf with functions', async () => {
+    createDomMock();
+    const st = state({ enable: false });
+    const pp = tag('p').textIf(
+      st.enable,
+      () => 'yes',
+      () => 'no',
+    );
+
+    expect(pp.text()).toEqual('no');
+    st.enable = true;
+    expect(pp.text()).toEqual('yes');
+    st.enable = false;
+    expect(pp.text()).toEqual('no');
   });
 
   it('tag.textIfNot', async () => {

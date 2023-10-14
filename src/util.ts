@@ -9,10 +9,18 @@ export function removeFromList<T>(item: T, list: T[]) {
   return list;
 }
 
-export const camelToDash = (str) => str.replace(/([A-Z])/g, (val) => `-${val.toLowerCase()}`);
-export const dashToCamel = (str) => str.replace(/(\-[a-z])/g, (val) => val.toUpperCase().replace('-', ''));
+export const camelToDash = (str) =>
+  str.replace(/([A-Z])/g, (val) => `-${val.toLowerCase()}`);
+export const dashToCamel = (str) =>
+  str.replace(/(\-[a-z])/g, (val) => val.toUpperCase().replace('-', ''));
 export function isObject(obj: any): boolean {
   return typeof obj === 'object' && !(obj instanceof Array);
 }
 export const toJson = (possiblyJsonString) => JSON.parse(possiblyJsonString);
 export const fromJson = (possiblyJson) => JSON.stringify(possiblyJson);
+export const callOrReturn = <T>(val: T | ((...args: any) => T), ...args): T => {
+  if (typeof val === 'function') {
+    return (val as any)(...args);
+  }
+  return val;
+};

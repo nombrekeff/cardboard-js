@@ -1,5 +1,5 @@
 import { CssGenerator } from './css-generator.js';
-import { camelToDash } from './util.js';
+import { callOrReturn, camelToDash } from './util.js';
 import { text } from './text.js';
 let context = {
     attachedTag: null,
@@ -198,39 +198,48 @@ export class CTag {
     }
     /**
      * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * You can pass in an array of classes, or a function that returns a list of classes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
      */
     classIf(consumable, classes, invert = false) {
-        return this.doIf(consumable, () => this.addClass(...classes), () => this.rmClass(...classes), invert);
+        return this.doIf(consumable, () => this.addClass(...callOrReturn(classes, this)), () => this.rmClass(...callOrReturn(classes, this)), invert);
     }
-    /** Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes. */
+    /**
+     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * You can pass in an array of classes, or a function that returns a list of classes.
+     * For the oposite you can also use {@link classIf}
+     */
     classIfNot(consumable, classes) {
         return this.classIf(consumable, classes, true);
     }
     /**
      * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
+     * Both {text} and {elseText} can be a string or a function that returns a string.
      * Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
      */
     textIf(consumable, text, elseText = '', invert = false) {
-        return this.doIf(consumable, () => this.text(text), () => this.text(elseText), invert);
+        return this.doIf(consumable, () => this.text(callOrReturn(text, this)), () => this.text(callOrReturn(elseText, this)), invert);
     }
     /**
-     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
-     * If {invert} is set to true, the condition will be inversed
+     * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
+     * Both {text} and {elseText} can be a string or a function that returns a string.
+     * Updates whenever the consumable changes.
      */
     textIfNot(consumable, text, elseText = '') {
         return this.textIf(consumable, text, elseText, true);
     }
     /**
      * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
     attrIf(consumable, attr, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr), invert);
+        return this.doIf(consumable, () => this.addAttr(attr, callOrReturn(value, this)), () => this.rmAttr(attr), invert);
     }
     /**
      * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
     attrIfNot(consumable, attr, value = '') {
@@ -250,30 +259,37 @@ export class CTag {
     /**
      * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
+     * {value} can be a string or a function that returns a string.
      */
     styleIf(consumable, style, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addStyle(style, value), () => this.rmStyle(style), invert);
+        return this.doIf(consumable, () => this.addStyle(style, callOrReturn(value, this)), () => this.rmStyle(style), invert);
     }
     /**
      * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * {value} can be a string or a function that returns a string.
      */
     styleIfNot(consumable, style, value = '') {
         return this.styleIf(consumable, style, value, true);
     }
     /**
      * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
     stylesIf(consumable, styles, invert = false) {
-        return this.doIf(consumable, () => this.setStyle(styles), () => this.rmStyle(...Object.keys(styles)), invert);
+        return this.doIf(consumable, () => this.setStyle(callOrReturn(styles, this)), () => this.rmStyle(...Object.keys(styles)), invert);
     }
     /**
      * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
     stylesIfNot(consumable, styles) {
         return this.stylesIf(consumable, styles, true);
     }
+    /**
+     * Listen to an event on the element. Like addEventListener.
+     */
     listen(tag, evt, consumer) {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;

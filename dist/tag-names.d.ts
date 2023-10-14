@@ -1,10 +1,3 @@
-/**
- * @export
- * List of all known self-closing HTML tags
- */
-export declare const selfClosingTags: string[];
-/** List of all known closing HTML tags */
-export declare const closingTags: string[];
 /** List of all known HTML tags */
 export declare const allKnownTags: string[];
 export declare const storableTags: string[];
