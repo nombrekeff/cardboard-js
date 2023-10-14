@@ -19,7 +19,7 @@ styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO', template(' (count: $0) ', [appState.length]))
+h3.attach('Cardboard TODO', template(' (count: $length) ',appState))
   .setStyle({
     textAlign: 'center',
     margin: '40px 0',

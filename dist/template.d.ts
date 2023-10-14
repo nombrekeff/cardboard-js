@@ -1,18 +1,13 @@
-import { Consumable, State } from './types.js';
+import { State } from './types.js';
 /**
  * Create a **TextNode** from a template that reacts to some state change.
- * You can pass in a list of {@link Consumable}s or a {@link State} instance.
- *
- * If you provide a list of {@link Consumable} the template must reference the index: `$0`, `$1`
  * If you provide a {@link State} the template must reference the property name: `$count`, `$someValue`
- *
- * When the state or consumable changes, the text node will be automatically updated with the new template
+ * When the state property changes, the text node will be automatically updated with the new template
  *
  * @example
  * ```ts
  * const st = state({ count: 0 });
- * p(template(`Count: $0`, [st.count]));
  * p(template(`Count: $count`, st));
  * ```
  */
-export declare function template<T>(template: string, values: Consumable<any>[] | State<T>): Text;
+export declare function template<T>(template: string, values: State<T>): Text;

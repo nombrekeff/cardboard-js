@@ -211,8 +211,14 @@ export class CTag {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;
     }
-    /** Set the `textContent` of the element */
+    /**
+     * If {@param text} is provided, it sets the `textContent` of the element.
+     * If it's not provided, it returns the `textContent` of the element
+     */
     text(text) {
+        if (text == null) {
+            return this.element.textContent;
+        }
         this.element.textContent = text;
         return this;
     }
