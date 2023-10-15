@@ -862,7 +862,8 @@ export function onLifecycle(
   if (beforeRemove) {
     const tempElRemove = tag.element.remove;
     tag.element.remove = async () => {
-      if (await beforeRemove(tag)) {
+      const result = beforeRemove(tag);
+      if (!result || (result instanceof Promise && (await result))) {
         tempElRemove.call(tag.element);
       }
     };

@@ -488,7 +488,8 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     if (beforeRemove) {
         const tempElRemove = tag.element.remove;
         tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
-            if (yield beforeRemove(tag)) {
+            const result = beforeRemove(tag);
+            if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.element);
             }
         });

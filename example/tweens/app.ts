@@ -41,9 +41,9 @@ const Box = () => {
         tweenTag(tag, bounceIn);
       },
       beforeRemove(tag) {
-        // return new Promise((resolve) =>
-        //   tweenTag(tag, bounceOut, () => resolve(true)),
-        // );
+        return new Promise((resolve) =>
+          tweenTag(tag, bounceOut, () => resolve(true)),
+        );
       },
     },
   );
@@ -52,7 +52,7 @@ const Box = () => {
 let box: CTag;
 init()
   .append((box = Box()), br())
-  .clicked((self) => {
+  .clicked((_) => {
     if (box.element.parentElement) box.hide();
     else box.show();
   })
