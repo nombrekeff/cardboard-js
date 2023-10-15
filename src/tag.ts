@@ -938,6 +938,7 @@ export function attach(tag: CTag) {
     context.attachedTagStack.push(context.attachedTag);
   }
   context.attachedTag = tag;
+  return tag;
 }
 
 /**

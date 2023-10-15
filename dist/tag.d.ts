@@ -91,7 +91,7 @@ export declare const withLifecycle: (tag: CTag, handler: {
     removed?: (tag: CTag) => void;
     beforeRemove?: (tag: CTag) => Promise<boolean> | void;
 }) => CTag;
-export declare function attach(tag: CTag): void;
+export declare function attach(tag: CTag): CTag;
 export declare function detach(): void;
 export declare function detachAll(): void;
 export declare function init(options?: {

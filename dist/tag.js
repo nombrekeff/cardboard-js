@@ -529,6 +529,7 @@ export function attach(tag) {
         context.attachedTagStack.push(context.attachedTag);
     }
     context.attachedTag = tag;
+    return tag;
 }
 export function detach() {
     if (context.attachedTagStack.length > 0) {
