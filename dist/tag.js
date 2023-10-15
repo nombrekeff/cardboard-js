@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { CssGenerator } from './css-generator.js';
 import { callOrReturn, camelToDash } from './util.js';
 import { text } from './text.js';
@@ -6,17 +15,9 @@ let context = {
     attachedTagStack: [],
     css: new CssGenerator(),
 };
-/**
- * Returns the currently attached {@link CTag}. See {@link attach} for more information.
- */
 export function attached() {
     return context.attachedTag;
 }
-/**
- * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
- *
- * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
- */
 export class CTag {
     get parent() {
         return this._parent;
@@ -31,11 +32,13 @@ export class CTag {
     get value() {
         return this.element.value;
     }
+    get style() {
+        return this.element.style;
+    }
     setValue(newValue) {
         this.element.value = newValue;
         return this;
     }
-    /** Gets the value of the element and clears the value */
     get consumeValue() {
         const value = this.value;
         this.clear();
@@ -49,12 +52,9 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
-        /** @param parent Reference to the parent @type {CTag} of this element */
         this._parent = null;
-        /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         this._cachedChildren = [];
-        /** If set to true, it be appended to the attached tag */
         this._attachable = false;
         this._meta = {
             isHidden: false,
@@ -82,7 +82,6 @@ export class CTag {
         if (children.length > 0)
             this.setChildren(children);
     }
-    /** Sets the children, removes previous children  */
     setChildren(children) {
         this.element.replaceChildren(...children
             .map(this._setChildrenParent.bind(this))
@@ -106,31 +105,21 @@ export class CTag {
         this._children.unshift(...children);
         return this;
     }
-    /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
         consumer(this, consumable);
         return this;
     }
-    /**
-     * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
-     * I will be placed exactly in the correct position, even if there are other elements hidden.
-     */
     show() {
         if (!this.parent.children.includes(this.element)) {
-            // Get's the position of the element if all the children are visible
             const expectedIndex = this.parent._children.indexOf(this);
-            // If the element should be the first child in the parent
             if (expectedIndex == 0) {
                 this.parent.element.prepend(this.element);
             }
-            // If the element should be the last child in the parent
             else if (expectedIndex == this.parent._children.length - 1) {
                 this.parent.element.append(this.element);
             }
-            // If the element should be the nth child in the parent
             else {
-                // Calculate how many hidden children are before this element
                 let hiddenBefore = 0;
                 for (let i = expectedIndex - 1; i >= 0; i--) {
                     const child = this.parent._children[i];
@@ -140,8 +129,6 @@ export class CTag {
                         }
                     }
                 }
-                // Get the "real" children in the dom.
-                // The index takes into account the items that are hidden
                 const nextEl = this.parent.element.childNodes[expectedIndex - hiddenBefore];
                 this.parent.element.insertBefore(this.element, nextEl);
             }
@@ -149,17 +136,12 @@ export class CTag {
         this._meta.isHidden = false;
         return true;
     }
-    /** Hide this element (removed from DOM) */
     hide() {
         if (this.parent.children.includes(this.element)) {
             this.remove();
             this._meta.isHidden = true;
         }
     }
-    /**
-     * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
-     */
     doIf(consumable, ifTrue, ifFalse, invert = false) {
         if (invert) {
             let temp = ifTrue;
@@ -176,17 +158,9 @@ export class CTag {
         callback(consumable);
         return this;
     }
-    /**
-     * The oposite of {this.doIf}
-     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
-     */
     doIfNot(consumable, ifTrue, ifFalse) {
         return this.doIf(consumable, ifTrue, ifFalse, true);
     }
-    /**
-     * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
-     */
     hideIf(consumable, invert = false) {
         const handleHide = (value) => {
             const correctedValue = invert ? !value : !!value;
@@ -202,115 +176,49 @@ export class CTag {
         handleHide(consumable);
         return this;
     }
-    /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
     hideIfNot(consumable) {
         return this.hideIf(consumable, true);
     }
-    /**
-     * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
-     * You can pass in an array of classes, or a function that returns a list of classes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
-     */
     classIf(consumable, classes, invert = false) {
         return this.doIf(consumable, () => this.addClass(...callOrReturn(classes, this)), () => this.rmClass(...callOrReturn(classes, this)), invert);
     }
-    /**
-     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
-     * You can pass in an array of classes, or a function that returns a list of classes.
-     * For the oposite you can also use {@link classIf}
-     */
     classIfNot(consumable, classes) {
         return this.classIf(consumable, classes, true);
     }
-    /**
-     * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
-     * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
-     */
     textIf(consumable, text, elseText = '', invert = false) {
         return this.doIf(consumable, () => this.text(callOrReturn(text, this)), () => this.text(callOrReturn(elseText, this)), invert);
     }
-    /**
-     * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
-     * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
-     */
     textIfNot(consumable, text, elseText = '') {
         return this.textIf(consumable, text, elseText, true);
     }
-    /**
-     * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
-     * {value} can be a string or a function that returns a string.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
-     */
     attrIf(consumable, attr, value = '', invert = false) {
         return this.doIf(consumable, () => this.addAttr(attr, callOrReturn(value, this)), () => this.rmAttr(attr), invert);
     }
-    /**
-     * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
-     * {value} can be a string or a function that returns a string.
-     * If {invert} is set to true, the condition will be inversed
-     */
     attrIfNot(consumable, attr, value = '') {
         return this.attrIf(consumable, attr, value, true);
     }
-    /**
-     * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
-     */
     disableIf(consumable, invert = false) {
         return this.attrIf(consumable, 'disabled', '', invert);
     }
-    /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
     disableIfNot(consumable) {
         return this.disableIf(consumable, true);
     }
-    /**
-     * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
-     * {value} can be a string or a function that returns a string.
-     */
     styleIf(consumable, style, value = '', invert = false) {
         return this.doIf(consumable, () => this.addStyle(style, callOrReturn(value, this)), () => this.rmStyle(style), invert);
     }
-    /**
-     * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
-     * {value} can be a string or a function that returns a string.
-     */
     styleIfNot(consumable, style, value = '') {
         return this.styleIf(consumable, style, value, true);
     }
-    /**
-     * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
-     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
-     */
     stylesIf(consumable, styles, invert = false) {
         return this.doIf(consumable, () => this.setStyle(callOrReturn(styles, this)), () => this.rmStyle(...Object.keys(styles)), invert);
     }
-    /**
-     * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
-     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-     * For the oposite use  {@link stylesIf}
-     */
     stylesIfNot(consumable, styles) {
         return this.stylesIf(consumable, styles, true);
     }
-    /**
-     * Listen to an event on the element. Like addEventListener.
-     */
     listen(tag, evt, consumer) {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;
     }
-    /**
-     * If {newText} is provided, it sets the `textContent` of the element.
-     * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
-     * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
-     *
-     * If no argument is provided, it returns the `textContent` of the element
-     */
     text(newText, st) {
         if (newText == null) {
             return this.element.textContent;
@@ -321,10 +229,6 @@ export class CTag {
         this.element.textContent = newText;
         return this;
     }
-    /**
-     * Configure the element in a single call by passing @param {TagConfig} config
-     * instead of having to call a method for each property you want to changes
-     */
     config(config) {
         if (config.attr) {
             this.setAttrs(config.attr);
@@ -354,24 +258,20 @@ export class CTag {
         }
         return this;
     }
-    /** Add classes to the elements class list */
     addClass(...classNames) {
         this.element.classList.add(...classNames);
         return this;
     }
-    /** Set the elements class name */
     className(className) {
         this.element.className = className;
         return this;
     }
-    /** Remove classes from class list */
     rmClass(...classNames) {
         for (let key of classNames) {
             this.element.classList.remove(key);
         }
         return this;
     }
-    /** Check if classes are present in this element */
     hasClass(...classNames) {
         for (let key of classNames) {
             if (!this.element.classList.contains(key)) {
@@ -380,12 +280,10 @@ export class CTag {
         }
         return true;
     }
-    /** Replace a class with another */
     replaceClass(targetClass, replaceClass) {
         this.element.classList.replace(targetClass, replaceClass);
         return this;
     }
-    /** Toggle a class. If it's present it's removed, if it's not present its added. */
     toggleClass(targetClass) {
         if (this.hasClass(targetClass)) {
             this.rmClass(targetClass);
@@ -395,26 +293,22 @@ export class CTag {
         }
         return this;
     }
-    /** Add a single style */
     addStyle(property, value) {
         this.element.style[property] = value;
         return this;
     }
-    /** Set multiple styles at once */
     setStyle(styles) {
         for (let key in styles) {
             this.addStyle(key, styles[key]);
         }
         return this;
     }
-    /** Remove styles */
     rmStyle(...styleNames) {
         for (let key of styleNames) {
             this.element.style.removeProperty(key);
         }
         return this;
     }
-    /** Check if this element has styles */
     hasStyle(...styles) {
         for (let key of styles) {
             if (!this.element.style.getPropertyValue(camelToDash(key))) {
@@ -423,20 +317,17 @@ export class CTag {
         }
         return true;
     }
-    /** Adds a set of attributes to the element */
     setAttrs(attrs) {
         for (let key in attrs) {
             this.addAttr(key, attrs[key]);
         }
         return this;
     }
-    /** Adds a single attribute to the element */
     addAttr(key, value) {
         this.element.attributes[key] = value;
         this.element.setAttribute(key, value);
         return this;
     }
-    /** Remove attributes from the element */
     rmAttr(...attrs) {
         for (let key of attrs) {
             this.element.removeAttribute(key);
@@ -444,7 +335,6 @@ export class CTag {
         }
         return this;
     }
-    /** Check if this element has attributes */
     hasAttr(...attr) {
         for (let key of attr) {
             if (!(key in this.element.attributes)) {
@@ -453,15 +343,9 @@ export class CTag {
         }
         return true;
     }
-    /** Get an attributes value */
     getAttr(attr) {
         return this.element.attributes[attr];
     }
-    /**
-     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
-     *
-     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
-     */
     when(evtName, fn) {
         return {
             changed: (listener) => {
@@ -471,7 +355,6 @@ export class CTag {
             },
         };
     }
-    /** Add an event listener for a particular event */
     on(evtName, fn) {
         if (fn) {
             this.element.addEventListener(evtName, (evt) => {
@@ -480,7 +363,6 @@ export class CTag {
         }
         return this;
     }
-    /** Add an event listener for a particular event that will only fire once */
     once(evtName, fn) {
         if (fn) {
             const listener = (evt) => {
@@ -491,11 +373,9 @@ export class CTag {
         }
         return this;
     }
-    /** Add a **click** event listener */
     clicked(fn) {
         return this.on('click', fn);
     }
-    /** Add a **keypress** event listener */
     keyPressed(fn, key) {
         if (key) {
             return this.on('keypress', (_, evt) => {
@@ -506,40 +386,30 @@ export class CTag {
         }
         return this.on('keypress', fn);
     }
-    /** Add a **change** event listener */
     changed(fn) {
         return this.on('change', fn);
     }
-    /** Add a **submit** event listener */
     submited(fn) {
         return this.on('submit', fn);
     }
-    /** Remove element from the DOM */
     remove() {
         this.element.remove();
         return this;
     }
-    /**
-     * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
-     */
     clear() {
         this.element.value = '';
-        // Trigger input event, so clearing is treated as input!
         this.element.dispatchEvent(new InputEvent('input'));
         return this;
     }
-    /** Disable the element */
     disable() {
         this.setDisabled(true);
         this.addAttr('disabled', 'disabled');
         return this;
     }
-    /** Enable the element */
     enable() {
         this.setDisabled(false);
         return this;
     }
-    /** Set whether the element should be disabled or not */
     setDisabled(disabled) {
         if (disabled) {
             this.addAttr('disabled', 'disabled');
@@ -548,14 +418,12 @@ export class CTag {
             this.rmAttr('disabled');
         }
     }
-    /** Query a child in this element (in the DOM) */
     q(selector) {
         const element = this.element.querySelector(selector);
         if (element) {
             return new CTag(element);
         }
     }
-    /** Find a child in this element (in the DOM or NOT) */
     find(predicate) {
         for (const child of this._children) {
             if (predicate(child)) {
@@ -611,45 +479,32 @@ export class CTag {
         this._cachedChildren = children;
     }
 }
-/**
- * This function can do the following based on the first argument:
- * * create a tag if you provide a tag name: (`div`, `abbr`, `custom-tag`, ...),
- * * wrap around an existing element in the page if you pass in a selector: (`'(body)'`, `'(#id)'`, `'(.class)'`), any selector is allowed.
- * * wrap around an element passed in
- *
- * Then it can receive a list of children to be added.
- * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
- *
- * @example
- * ```ts
- * tag('div');
- * tag('(body)');
- * tag('(.someclass)');
- * tag(document.querySelector('#something'));
- * ```
- */
 export function tag(arg0, children = [], attach = false) {
     return new CTag(arg0, children, attach);
 }
-/**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
- */
-export function onLifecycle(tag, onStart, onRemove) {
+export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     var _a, _b;
     let observingParent = false;
+    if (beforeRemove) {
+        const tempElRemove = tag.element.remove;
+        tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
+            if (yield beforeRemove(tag)) {
+                tempElRemove.call(tag.element);
+            }
+        });
+    }
     const observer = new MutationObserver((mutations, observer) => {
         let hasBeenAdded = false;
         let hasBeenRemoved = false;
         for (let mut of mutations) {
-            if (Array.from(mut.addedNodes).includes(tag.element)) {
+            if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
                 hasBeenAdded = true;
             }
-            if (Array.from(mut.removedNodes).includes(tag.element)) {
+            if (onRemove && Array.from(mut.removedNodes).includes(tag.element)) {
                 hasBeenRemoved = true;
             }
         }
-        if (hasBeenAdded) {
+        if (hasBeenAdded && onStart) {
             onStart(tag, observer);
             if (!observingParent) {
                 observer.disconnect();
@@ -657,51 +512,23 @@ export function onLifecycle(tag, onStart, onRemove) {
                 observingParent = true;
             }
         }
-        if (hasBeenRemoved) {
+        if (hasBeenRemoved && onRemove) {
             onRemove(tag, observer);
         }
     });
     observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.element) !== null && _b !== void 0 ? _b : document.body, { childList: true });
     return observer;
 }
-/**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
- */
 export const withLifecycle = (tag, handler) => {
-    onLifecycle(tag, handler.start, handler.removed);
+    onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
     return tag;
 };
-/**
- * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
- * they will be added as children of this tag.
- * You can call attach multiple times, and the last attach tag will be used.
- * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
- *
- * @example
- * ```ts
- * attach(div());
- * div.attach();  // added as child of div
- * p.attach();    // added as child of div
- *
- * attach(div()); // New div
- * div.attach();  // added as child of new div
- * p.attach();    // added as child of new div
- *
- * detach();      // Back to previous div
- * detach();      // No attached tag
- * ```
- */
 export function attach(tag) {
     if (context.attachedTag) {
         context.attachedTagStack.push(context.attachedTag);
     }
     context.attachedTag = tag;
 }
-/**
- * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
- * If there are no previous attached tags, it will clear the attached tag.
- */
 export function detach() {
     if (context.attachedTagStack.length > 0) {
         context.attachedTag = context.attachedTagStack.pop();
@@ -710,23 +537,15 @@ export function detach() {
         context.attachedTag = null;
     }
 }
-/**
- * Detaches all attached tags. There will be no attached tag after calling this function.
- */
 export function detachAll() {
     context.attachedTag = null;
     context.attachedTagStack = [];
 }
-/**
- * It makes the body the attached tag ({@link attach}).
- * You can pass in a selector for an element you want to be the default attached tag.
- */
 export function init(options = { root: 'body' }) {
     const root = new CTag(`(${options.root})`);
     attach(root);
     return root;
 }
-/** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
     ul: (children, attach = false) => {
         return tag('ul', children.map((cl) => {
@@ -737,15 +556,6 @@ const interceptors = {
         return tag('style', [context.css.generateCss(styles)], attach);
     },
 };
-/**
- * List of all HTML tag functions. From `div` to `abbr` :)
- * If you want to create any other tag, use the {@link tag} function.
- *
- * @example
- * ```ts
- * const { div, p, abbr, img, style, ... } = allTags;
- * ```
- */
 export const allTags = new Proxy({}, {
     get: (t, p, r) => {
         const tagName = p.toString();

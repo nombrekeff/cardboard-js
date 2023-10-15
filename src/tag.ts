@@ -71,6 +71,10 @@ export class CTag {
     return (this.element as any).value;
   }
 
+  get style() {
+    return this.element.style;
+  }
+
   setValue(newValue: string) {
     (this.element as any).value = newValue;
     return this;
@@ -789,9 +793,9 @@ export class CTag {
   }
 
   // Update cached child nodes whenever this elements childs change
-  // This makes it a lot faster to get children. 
+  // This makes it a lot faster to get children.
   // If the children have not changed, there's no need to set the children, use the previous ones
-  private _mutationObserver: MutationObserver;  
+  private _mutationObserver: MutationObserver;
   private _getElementChildren(element: HTMLElement) {
     if (!this._mutationObserver) {
       this._mutationObserver = new MutationObserver((mutations, observer) => {
@@ -851,21 +855,32 @@ export function onLifecycle(
   tag: CTag,
   onStart: (tag: CTag, observer: MutationObserver) => void,
   onRemove: (tag: CTag, observer: MutationObserver) => void,
+  beforeRemove?: (tag: CTag) => Promise<boolean>,
 ) {
   let observingParent = false;
+
+  if (beforeRemove) {
+    const tempElRemove = tag.element.remove;
+    tag.element.remove = async () => {
+      if (await beforeRemove(tag)) {
+        tempElRemove.call(tag.element);
+      }
+    };
+  }
+
   const observer = new MutationObserver((mutations, observer) => {
     let hasBeenAdded = false;
     let hasBeenRemoved = false;
     for (let mut of mutations) {
-      if (Array.from(mut.addedNodes).includes(tag.element)) {
+      if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
         hasBeenAdded = true;
       }
-      if (Array.from(mut.removedNodes).includes(tag.element)) {
+      if (onRemove && Array.from(mut.removedNodes).includes(tag.element)) {
         hasBeenRemoved = true;
       }
     }
 
-    if (hasBeenAdded) {
+    if (hasBeenAdded && onStart) {
       onStart(tag, observer);
       if (!observingParent) {
         observer.disconnect();
@@ -873,7 +888,7 @@ export function onLifecycle(
         observingParent = true;
       }
     }
-    if (hasBeenRemoved) {
+    if (hasBeenRemoved && onRemove) {
       onRemove(tag, observer);
     }
   });
@@ -888,11 +903,12 @@ export function onLifecycle(
 export const withLifecycle = (
   tag: CTag,
   handler: {
-    start: (tag: CTag) => void;
-    removed: (tag: CTag) => void;
+    start?: (tag: CTag) => void;
+    removed?: (tag: CTag) => void;
+    beforeRemove?: (tag: CTag) => Promise<boolean>;
   },
 ): CTag => {
-  onLifecycle(tag, handler.start, handler.removed);
+  onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
   return tag;
 };
 

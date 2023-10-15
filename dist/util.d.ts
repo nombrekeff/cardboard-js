@@ -1,4 +1,3 @@
-/** Removes an item from an array if it exists. It returns the same array without the item */
 export declare function removeFromList<T>(item: T, list: T[]): T[];
 export declare const camelToDash: (str: any) => any;
 export declare const dashToCamel: (str: any) => any;
