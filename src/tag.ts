@@ -259,7 +259,9 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
    */
   hideIf(consumable: Consumable<boolean | number>, invert = false) {
+    console.log('hideIf');
     const handleHide = (value: any) => {
+      console.log('Handle hide');
       const correctedValue = invert ? !value : !!value;
       this._meta.isHidden = correctedValue;
 

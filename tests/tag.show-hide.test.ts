@@ -12,6 +12,23 @@ const getChildStr = () => {
 };
 
 describe('Conditional show/hide', () => {
+  it.only('basic case', async () => {
+    createDomMock();
+    const root = tag('(body)');
+
+    let st = state({ hide0: false });
+    let p0: CTag, p1: CTag, p2: CTag;
+
+    root.append(
+      (p0 = p('0').hideIf(st.hide0)), //
+    );
+    expect(getChildStr()).toEqual(['0']);
+    st.hide0 = true;
+    expect(getChildStr()).toEqual([]);
+    st.hide0 = false;
+    expect(getChildStr()).toEqual(['0']);
+  });
+
   it('basic case', async () => {
     createDomMock();
     const root = tag('(body)');
@@ -32,8 +49,8 @@ describe('Conditional show/hide', () => {
     expect(getChildStr()).toEqual(['2']);
     st.hide2 = true;
     expect(getChildStr()).toEqual([]);
-    st.hide2 = false;
-    expect(getChildStr()).toEqual(['2']);
+    st.hide0 = false;
+    expect(getChildStr()).toEqual(['0']);
     st.hide0 = false;
     expect(getChildStr()).toEqual(['0', '2']);
     st.hide1 = false;
@@ -58,18 +75,14 @@ describe('Conditional show/hide', () => {
     const root = tag('(body)');
     let st = state({ hide: false });
 
-    root.append(
-      p().hideIf(st.hide).append(
-        p('Hey'), p('whats'), p('up'),
-      ),
-    );
+    root.append(p().hideIf(st.hide).append(p('Hey'), p('whats'), p('up')));
     expect(getChildStr()).toEqual(['Heywhatsup']);
     st.hide = true;
     expect(getChildStr()).toEqual([]);
     st.hide = false;
     expect(getChildStr()).toEqual(['Heywhatsup']);
   });
-  
+
   it('random test case', async () => {
     createDomMock();
     const root = tag('(body)');

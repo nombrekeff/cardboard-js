@@ -162,7 +162,9 @@ export class CTag {
         return this.doIf(consumable, ifTrue, ifFalse, true);
     }
     hideIf(consumable, invert = false) {
+        console.log('hideIf');
         const handleHide = (value) => {
+            console.log('Handle hide');
             const correctedValue = invert ? !value : !!value;
             this._meta.isHidden = correctedValue;
             if (!this.parent)

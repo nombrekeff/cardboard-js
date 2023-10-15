@@ -56,9 +56,6 @@ export function state(content, callback) {
                 target[prop] = value;
                 return true;
             }
-            if ((target[prop] == value)) {
-                return true;
-            }
             target[prop] = value;
             emitChange(target, prop);
             return true;

@@ -89,11 +89,7 @@ export function state<T extends object>(
         target[prop] = value;
         return true;
       }
-      // Don't emit if value is the same
-      if ((target[prop] == value)) {
-        return true;
-      }
-
+     
       target[prop] = value;
       emitChange(target, prop);
       return true;
