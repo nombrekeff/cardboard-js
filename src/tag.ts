@@ -53,8 +53,11 @@ export class CTag {
 
   /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
   private _children: TagChild[] = [];
+
+  private _cachedChildren: Node[] = [];
   get children() {
-    return this._getElementChildren(this.element);
+    this._getElementChildren(this.element);
+    return this._cachedChildren;
   }
 
   /** If set to true, it be appended to the attached tag */
@@ -785,8 +788,23 @@ export class CTag {
     return null;
   }
 
-  private _getElementChildren(element: HTMLElement): Node[] {
+  // Update cached child nodes whenever this elements childs change
+  // This makes it a lot faster to get children. 
+  // If the children have not changed, there's no need to set the children, use the previous ones
+  private _mutationObserver: MutationObserver;  
+  private _getElementChildren(element: HTMLElement) {
+    if (!this._mutationObserver) {
+      this._mutationObserver = new MutationObserver((mutations, observer) => {
+        this._setCachedChildren(element);
+      });
+      this._mutationObserver.observe(this.element, { childList: true });
+      this._setCachedChildren(element);
+    }
+  }
+
+  private _setCachedChildren(element: HTMLElement) {
     let childNodes = element.childNodes;
+
     let children = [];
     let i = childNodes.length;
 
@@ -796,7 +814,7 @@ export class CTag {
       }
     }
 
-    return children;
+    this._cachedChildren = children;
   }
 }
 
@@ -825,7 +843,7 @@ export function tag(
   return new CTag(arg0, children, attach);
 }
 
-/** 
+/**
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
@@ -863,7 +881,7 @@ export function onLifecycle(
   return observer;
 }
 
-/** 
+/**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.
  */

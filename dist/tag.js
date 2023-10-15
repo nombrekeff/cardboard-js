@@ -25,7 +25,8 @@ export class CTag {
         this._parent = newParent;
     }
     get children() {
-        return this._getElementChildren(this.element);
+        this._getElementChildren(this.element);
+        return this._cachedChildren;
     }
     get value() {
         return this.element.value;
@@ -52,6 +53,7 @@ export class CTag {
         this._parent = null;
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
+        this._cachedChildren = [];
         /** If set to true, it be appended to the attached tag */
         this._attachable = false;
         this._meta = {
@@ -589,6 +591,15 @@ export class CTag {
         return null;
     }
     _getElementChildren(element) {
+        if (!this._mutationObserver) {
+            this._mutationObserver = new MutationObserver((mutations, observer) => {
+                this._setCachedChildren(element);
+            });
+            this._mutationObserver.observe(this.element, { childList: true });
+            this._setCachedChildren(element);
+        }
+    }
+    _setCachedChildren(element) {
         let childNodes = element.childNodes;
         let children = [];
         let i = childNodes.length;
@@ -597,7 +608,7 @@ export class CTag {
                 children.unshift(childNodes[i]);
             }
         }
-        return children;
+        this._cachedChildren = children;
     }
 }
 /**

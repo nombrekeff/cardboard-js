@@ -20,6 +20,7 @@ export declare class CTag {
     set parent(newParent: CTag);
     /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
     private _children;
+    private _cachedChildren;
     get children(): Node[];
     /** If set to true, it be appended to the attached tag */
     private _attachable;
@@ -215,7 +216,9 @@ export declare class CTag {
     private _setChildrenParent;
     private _childrenFilterPredicate;
     private _getElementForChild;
+    private _mutationObserver;
     private _getElementChildren;
+    private _setCachedChildren;
 }
 /**
  * This function can do the following based on the first argument:
