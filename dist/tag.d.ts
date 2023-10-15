@@ -85,11 +85,11 @@ export declare class CTag {
     private _setCachedChildren;
 }
 export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
-export declare function onLifecycle(tag: CTag, onStart: (tag: CTag, observer: MutationObserver) => void, onRemove: (tag: CTag, observer: MutationObserver) => void, beforeRemove?: (tag: CTag) => Promise<boolean>): MutationObserver;
+export declare function onLifecycle(tag: CTag, onStart: (tag: CTag, observer: MutationObserver) => void, onRemove: (tag: CTag, observer: MutationObserver) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | void): MutationObserver;
 export declare const withLifecycle: (tag: CTag, handler: {
     start?: (tag: CTag) => void;
     removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean>;
+    beforeRemove?: (tag: CTag) => Promise<boolean> | void;
 }) => CTag;
 export declare function attach(tag: CTag): void;
 export declare function detach(): void;

@@ -855,7 +855,7 @@ export function onLifecycle(
   tag: CTag,
   onStart: (tag: CTag, observer: MutationObserver) => void,
   onRemove: (tag: CTag, observer: MutationObserver) => void,
-  beforeRemove?: (tag: CTag) => Promise<boolean>,
+  beforeRemove?: (tag: CTag) => Promise<boolean> | void,
 ) {
   let observingParent = false;
 
@@ -905,7 +905,7 @@ export const withLifecycle = (
   handler: {
     start?: (tag: CTag) => void;
     removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean>;
+    beforeRemove?: (tag: CTag) => Promise<boolean> | void;
   },
 ): CTag => {
   onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
