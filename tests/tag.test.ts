@@ -288,8 +288,10 @@ describe('Tags', () => {
 
     expect(document.querySelector('#test')).toBeTruthy();
     test.hide();
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(document.querySelector('#test')).not.toBeTruthy();
     test.show();
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(document.querySelector('#test')).toBeTruthy();
   });
 });

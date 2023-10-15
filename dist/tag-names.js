@@ -1,4 +1,3 @@
-/** List of all known HTML tags */
 export const allKnownTags = [
     'area',
     'base',

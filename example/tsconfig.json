@@ -13,7 +13,9 @@
             "ES2017",
             "DOM"
         ],
-        "types": []
+        "types": [
+            "@tweenjs/tween.js",
+        ]
     },
     "include": [
         "./**/*.ts"

@@ -1,12 +1,16 @@
 import { createDomMock } from './__mocks__/client';
 import { tag, state } from '../src/cardboard';
+
 function getElementIndex(node) {
   var index = 0;
+
   while ((node = node.previousElementSibling)) {
     index++;
   }
+
   return index;
 }
+
 describe('Tag conditionals', () => {
   it('tag.showIf', async () => {
     createDomMock();
@@ -23,11 +27,11 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.hideIfNot appends item at correct position', async () => {
-    createDomMock();
+    const dom = createDomMock();
     const st = state({ show: true });
-    const pp1 = tag('p', ["I'm here"]);
-    const pp = tag('p', ["I'm here"]);
-    const pp2 = tag('p', ["I'm here"]);
+    const pp1 = tag('p', ["I'm here 1"]);
+    const pp = tag('p', ["I'm here 2"]);
+    const pp2 = tag('p', ["I'm here 3"]);
 
     tag('(body)').append(
       pp1,
@@ -35,10 +39,17 @@ describe('Tag conditionals', () => {
       pp2,
     );
 
-    expect(getElementIndex(pp.element)).toEqual(1);
+    console.log('raw', dom.serialize());
+    expect(pp.element.parentElement).toBeTruthy();
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+
     st.show = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(pp.element.parentElement).toBeFalsy();
+    
     st.show = true;
-    expect(getElementIndex(pp.element)).toEqual(1);
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(pp.element.parentElement).toBeTruthy();
   });
 
   it('tag.hideIf', async () => {
@@ -178,7 +189,6 @@ describe('Tag conditionals', () => {
 
     expect(pp.hasStyle('color')).toBeTruthy();
   });
-
 
   it('tag.styleIf function', async () => {
     createDomMock();

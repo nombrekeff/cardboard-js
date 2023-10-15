@@ -18,7 +18,7 @@
 <h1>Function onLifecycle</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="onLifecycle"><span class="tsd-kind-call-signature">on<wbr/>Lifecycle</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">onStart</span>, <span class="tsd-kind-parameter">onRemove</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">MutationObserver</span><a href="#onLifecycle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="onLifecycle"><span class="tsd-kind-call-signature">on<wbr/>Lifecycle</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">onStart</span>, <span class="tsd-kind-parameter">onRemove</span>, <span class="tsd-kind-parameter">beforeRemove</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">MutationObserver</span><a href="#onLifecycle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Will call {onStart} when the element is added to the DOM.
 And will call {onRemove} when the element is removed from the DOM.</p>
@@ -57,11 +57,24 @@ And will call {onRemove} when the element is removed from the DOM.</p>
 <h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
 <li>
 <h5><span class="tsd-kind-parameter">observer</span>: <span class="tsd-signature-type ">MutationObserver</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">beforeRemove</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">MutationObserver</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/7129e26/src/tag.ts#L850">tag.ts:850</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/78dc5e2/src/tag.ts#L854">tag.ts:854</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
