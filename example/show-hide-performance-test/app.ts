@@ -1,4 +1,4 @@
-import { init, allTags, state, CTag } from '../../dist/cardboard.js';
+import { init, allTags, state, CTag, attached } from '../../dist/cardboard.js';
 
 const { div, style, span, p } = allTags;
 
@@ -19,19 +19,16 @@ const Clock = () => {
   setInterval(setTime, 500);
   setTime();
 
-  return div(
-    span().text('$hours', st),
-    ':',
-    span().text('$minutes', st),
-    ':',
-    span().text('$seconds', st),
-  );
+  return div(span().text('$hours', st), ':', span().text('$minutes', st), ':', span().text('$seconds', st));
 };
 
 const st = state({
   hide: false,
 });
-setTimeout(() => (st.hide = true), 2500);
+setTimeout(() => st.hide = true, 2000);
+setTimeout(() => (st.hide = false), 3000);
+setTimeout(() => st.hide = true, 4000);
+setTimeout(() => (st.hide = false), 5000);
 
 let clock: CTag;
 const root = init().append(
@@ -54,5 +51,5 @@ const root = init().append(
 );
 
 for (let i = 0; i < 1000; i++) {
-  root.append(div(i.toString()).hideIf(st.hide));
+  root.append(div(`${i}`).hideIf(st.hide));
 }
