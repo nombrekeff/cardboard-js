@@ -29,7 +29,6 @@ NOTE: There's also a server-side version of **Cardboard** I've written, called [
     - [Reacting](#reacting)
   - [Reusable Components](#reusable-components)
   - [Lifecycle events](#lifecycle-events)
-  - [CSS in JS](#css-in-js)
 
 
 ### What does it do?
@@ -518,6 +517,15 @@ const Clock = () => {
 It's handy to do this, as you don't want the interval to keep going if the element is not in the page.
 
 
-### CSS in JS
+<!-- TODO: CSS in JS -->
 
-TODO
+<!-- 
+TODO: Add section comparing performance against other alternatives,  
+
+* It's 170% faster than svelte
+* It's ? faster than react
+* It's ? faster than preact
+* It's ? faster than angular
+* It's ? faster than VanJS
+* It scores 100% 100% 100% on lighthouse
+-->
