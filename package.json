@@ -1,6 +1,6 @@
 {
     "name": "cardboard-js",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "A very simple, yet powerful framework/library to create web applications without the need to write any HTML.",
     "type": "module",
     "main": "./dist/cardboard.js",
