@@ -11,7 +11,6 @@ let testState = state({
   disable: true,
 });
 
-
 div.attach(
   div(
     p('Paragraph 1').setId('p1').hideIf(testState.hide1),
@@ -33,4 +32,18 @@ div.attach(
   button('Disable Input').clicked(() => {
     testState.disable = !testState.disable;
   }),
+);
+
+let st = state({ show: true });
+
+const pp1 = p("I'm here 1");
+const pp2 = p("I'm here 2");
+const pp3 = p("I'm here 3");
+
+br();
+button.attach('Toggle').clicked(() => (st.show = !st.show)),
+div.attach(
+  pp1,
+  pp2.hideIfNot(st.show), //
+  pp3,
 );

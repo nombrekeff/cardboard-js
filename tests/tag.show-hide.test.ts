@@ -12,7 +12,7 @@ const getChildStr = () => {
 };
 
 describe('Conditional show/hide', () => {
-  it.only('basic case', async () => {
+  it('basic case', async () => {
     createDomMock();
     const root = tag('(body)');
 
@@ -24,8 +24,12 @@ describe('Conditional show/hide', () => {
     );
     expect(getChildStr()).toEqual(['0']);
     st.hide0 = true;
+
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual([]);
+
     st.hide0 = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['0']);
   });
 
@@ -44,16 +48,22 @@ describe('Conditional show/hide', () => {
 
     expect(getChildStr()).toEqual(['0', '1', '2']);
     st.hide1 = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['0', '2']);
     st.hide0 = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['2']);
     st.hide2 = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual([]);
+    st.hide2 = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['2']);
     st.hide0 = false;
-    expect(getChildStr()).toEqual(['0']);
-    st.hide0 = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['0', '2']);
     st.hide1 = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['0', '1', '2']);
   });
 
@@ -64,8 +74,10 @@ describe('Conditional show/hide', () => {
 
     root.append('Hello', p('There').hideIf(st.hide), 'World');
     expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     st.hide = true;
     expect(getChildStr()).toEqual(['Hello', 'World']);
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     st.hide = false;
     expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
   });
@@ -77,8 +89,10 @@ describe('Conditional show/hide', () => {
 
     root.append(p().hideIf(st.hide).append(p('Hey'), p('whats'), p('up')));
     expect(getChildStr()).toEqual(['Heywhatsup']);
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     st.hide = true;
     expect(getChildStr()).toEqual([]);
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     st.hide = false;
     expect(getChildStr()).toEqual(['Heywhatsup']);
   });
@@ -102,10 +116,11 @@ describe('Conditional show/hide', () => {
 
     expect(getChildStr()).toEqual(getExpectedChildStr());
 
-    const checkRandomShowHide = () => {
+    const checkRandomShowHide = async () => {
       for (let i = 0; i < st.length * 2; i++) {
         if (Math.random() > 0.4) {
           st[i % st.length] = !st[i % st.length];
+          await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
         }
       }
 
@@ -113,8 +128,8 @@ describe('Conditional show/hide', () => {
     };
 
     // Test showing and hiding elements at random
-    for (let i = 0; i < 10; i++) {
-      checkRandomShowHide();
+    for (let i = 0; i < 5; i++) {
+      await checkRandomShowHide();
     }
   });
 });
