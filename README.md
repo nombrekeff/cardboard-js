@@ -71,8 +71,11 @@ It's perfect for when you want to create a very small page where you need a reac
 
 Well, hello! I'm always open for help on projects, and this one in particular! If you find the project interesting, useful, fun, or you feel some other kind of emotion, and that emotion inclines you to maybe consider helping out, that'd be great! 
 
-There's still no guide for contributing, but I will try to make one as soon as I can. Until then feel free to help in any way you want! You can help with the Wiki, using and testing the project, reporting bugs, fixing bugs, adding features, etc... Just remember to leave an issue if the change is big or changes some core concept of cardboard.
+You can help with the Wiki, using and testing the project, reporting bugs, fixing bugs, adding features, etc... Just remember to leave an issue if the change is big or changes some core concept of cardboard.
 
+Take a look at this guides:
+* [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
+* [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
 
 <!-- TODO: CSS in JS -->
 
