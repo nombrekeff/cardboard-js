@@ -6,9 +6,7 @@
 Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
 You don't need to build, use JSX, or compile. It works out of the box, and it's plain JS. 
 
-NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as a string on the server. I'm planning to make Cardboard work server-side as well in v2.0.0. So you can look forward to that!
-
-> **!NOTE!**: Cardboard is in early development, so use it with caution! Any help is appreciated!
+> **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the project for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
 
 ```ts
@@ -59,6 +57,9 @@ Cardboard offers all of this in a very small package with a very simple API. As 
 
 > It's similar in philosphy to [VanJS](https://vanjs.org/) but with another flavor and with a few differences. 
 > If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
+----
+> NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as a string on the server. 
+> I'm planning to make Cardboard work server-side as well in v2.0.0. So you can look forward to that!
 
 ### Who's this for?
 
