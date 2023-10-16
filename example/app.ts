@@ -1,7 +1,16 @@
-import { tag, init, allTags, state, attached, hinput, hstyle } from '../dist/cardboard.js';
+import {
+  tag,
+  init,
+  allTags,
+  state,
+  attached,
+  hstyle,
+  text,
+  Input,
+} from '../dist/cardboard.js';
 const { div, button, input, a, ul, li, hr, style } = allTags;
 
-init();
+const root = init();
 hstyle();
 style.attach({
   '#list:after': {
@@ -14,39 +23,50 @@ style.attach({
   },
 });
 
-div.attach('Hey!!');
-div.attach('Heyy 2');
+// Counter
+const Counter = () => {
+  let counterState = state({ count: 0 });
 
-const link = (text, link?) => a.attach(text).setAttrs({ href: link });
+  return button(text(`Clicked $count times`, counterState)).clicked(
+    (_) => counterState.count++,
+  );
+};
 
-div.attach('Hello world 2!').config({ style: { color: 'red' } });
-tag('br');
-link('Link', 'https://www.google.com');
-tag('br');
-hr();
+root.append(Counter());
 
-let counterState = state({ count: 0 });
-button.attach()
-  .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
-  .clicked((_) => counterState.count++);
+// Attributes
 
-hr();
-input.attach()
+hr.attach();
+input
+  .attach()
   .setAttrs({ placeholder: 'Enter number', type: 'number' })
   .changed((t, evt) => {
     console.log(evt);
   });
-hr();
+hr.attach();
 
-const list = ul.attach().setAttrs({ id: 'list' });
-const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
+// Todo List
 
-const addItem = () => {
-  if (itemInput.value) {
-    list.add(li(itemInput.value).clicked((self) => self.remove()));
-    itemInput.clear();
-  }
+const Todo = (value) =>
+  li(
+    value,
+    button('X').clicked((self) => self.parent.remove()),
+  );
+
+const TodoList = () => {
+  const list = ul().setId('list');
+  const itemInput = Input({
+    placeholder: 'Enter item content',
+    submit: (_) => addItem(),
+  });
+
+  const addItem = () => {
+    if (itemInput.value) {
+      list.append(Todo(itemInput.consumeValue));
+    }
+  };
+
+  return div(itemInput, button('Add item').clicked(addItem), list);
 };
 
-button('Add item').clicked(addItem);
-attached().add(list);
+attached().append(TodoList());

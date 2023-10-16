@@ -27,7 +27,7 @@ export default function styles() {
     },
     '.header': {
       ...flexCenterCenter,
-      background: '#efd7e166',
+      background: '#efd7e133',
       borderRadius: '6px',
       position: 'relative',
       margin: '0 32px',

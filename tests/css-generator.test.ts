@@ -1,4 +1,4 @@
-import { CssGenerator } from '../src/css-generator';
+import { CssGenerator } from '../src/css-generator.js';
 
 describe('CssGenerator', () => {
   const generator = new CssGenerator();

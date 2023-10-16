@@ -1,14 +1,33 @@
+import { State } from './types.js';
 import { isObject } from './util.js';
 
-export type Consumable<T> = T & Partial<{ changed: (callback: (newValue: T) => void) => void }>;
-
-export type State<T extends Record<string, any>> = {
-  [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
-} & {
-  changed: (callback: (newValue: T) => void) => void;
-};
-
-export function state<T extends object>(content: T, callback?: (newValue: T) => void): State<T> {
+/**
+ * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
+ * {@param content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
+ * In arrays, length will also be reactive.
+ *
+ * You can pass an optional {@param callback}, that will be called anything in the state changes.
+ *
+ * Additionally you can listen to it after creating it: `state().changed(() => { })`
+ *
+ * @example
+ * ```ts
+ * const st = state({ count: 0 });
+ * st.changed(() => { ... });
+ * st.count.changed(() => { ... });
+ *
+ * st.count++;
+ * st.count = 3;
+ *
+ * div().hideIf(st.count);
+ * div().disableIf(st.count);
+ * div(template('Count is: $count', st));
+ * ```
+ */
+export function state<T extends object>(
+  content: T,
+  callback?: (newValue: T) => void,
+): State<T> {
   let _propListeners: { [k: string]: any[] } = {};
   let _stateListeners = [];
 
@@ -16,9 +35,9 @@ export function state<T extends object>(content: T, callback?: (newValue: T) => 
 
   const addListener = (prop, callback) => {
     if (!_propListeners[prop]) _propListeners[prop] = [];
-    if (!_propListeners[prop].includes(callback)){
+    if (!_propListeners[prop].includes(callback)) {
       _propListeners[prop].push(callback);
-    } 
+    }
   };
 
   const emitChange = (target, prop) => {
@@ -70,7 +89,7 @@ export function state<T extends object>(content: T, callback?: (newValue: T) => 
         target[prop] = value;
         return true;
       }
-
+     
       target[prop] = value;
       emitChange(target, prop);
       return true;
