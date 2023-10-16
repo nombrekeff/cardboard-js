@@ -3,12 +3,12 @@
 
 ![](./header-img.png)
 
-Welcome to Carboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
+Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
 You don't need to build, use JSX, or compile. It works out of the box, and it's plain JS. 
 
-NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
+NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as a string on the server. I'm planning to make Cardboard work server-side as well in v2.0.0. So you can look forward to that!
 
-> **!NOTE!**: Cardboard is in early development, so use with caution! Any help is appreciated!
+> **!NOTE!**: Cardboard is in early development, so use it with caution! Any help is appreciated!
 
 
 ```ts
@@ -73,7 +73,7 @@ Well, hello! I'm always open for help on projects, and this one in particular! I
 
 You can help with the Wiki, using and testing the project, reporting bugs, fixing bugs, adding features, etc... Just remember to leave an issue if the change is big or changes some core concept of cardboard.
 
-Take a look at this guides:
+Take a look at these guides:
 * [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
 * [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
 
