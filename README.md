@@ -84,6 +84,18 @@ Cardboard can be used to build anything from a static page to more advanced apps
 
 It's perfect for when you want to create a very small page where you need a reactive framework and you need to create it fast. But it should be able to create anything.
 
+### Backstory
+
+I'm not going to lie, I didn't expect I'd be writing this when I first started writing Cardboard. It was supposed to be a little experiment for another project of mine ([Hobo](https://github.com/nombrekeff/hobo-js)) that I thought would fail.  
+What was the experiment? I hear you asking. Well, it was just to make [Hobo](https://github.com/nombrekeff/hobo-js) work with the DOM, instead of rendering HTML as a string. It's funny how things play out sometimes! We never know when we're going to build something to be proud of. 
+
+> You can read an article I made on [how I made the initial draft of cardboard](https://dev.to/nombrekeff/from-concept-to-reality-my-process-of-building-cardboard-40fb)!
+
+I will not tell you the full story but know that Cardboard started as an experiment meant to fail. But for some reason, every piece started to fit perfectly with one another, 
+until today, where Cardboard could be considered functional. Not finished though, it's still a lot of work before that point. That takes us to you. I, hopefully, ask you to consider helping out. Let's make Cardboard worth it's contents ;)
+
+**Why the name?**: Funny story, well not really. It's named Cardboard to keep on the brand of Hobo. But you could think it's named that, because, like cardboard, it's useful, light, versatile and cheap. 
+
 ### Contributing
 
 Well, hello! I'm always open for help on projects, and this one in particular! If you find the project interesting, useful, fun, or you feel some other kind of emotion, and that emotion inclines you to maybe consider helping out, that'd be great! 
@@ -93,3 +105,8 @@ You can help with the Wiki, using and testing the project, reporting bugs, fixin
 Take a look at these guides:
 * [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
 * [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
+
+
+
+
+
