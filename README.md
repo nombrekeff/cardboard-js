@@ -33,10 +33,23 @@ tag('(body)').append(Counter());
 ```
 npm install https://github.com/nombrekeff/cardboard-js
 ```
+#### Setup
 
-#### [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started), for a basic guide.
-#### [Wiki Examples](https://github.com/nombrekeff/cardboard-js/wiki/Examples), for more examples.
-#### [Documentation](https://nombrekeff.github.io/cardboard-js/), for technical docs.
+```ts
+import { tag, init, allTags } from 'cardboard-js';
+// Or
+import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js';
+
+const { div, p, span, b, script, button, style, a, hr } = allTags;
+
+const root = attach(tag('(body)'));
+
+root.append(div(p('Hello world!')));
+```
+
+#### 🔸 [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started) - for a getting started guide.
+#### 🔸 [Wiki Examples](https://github.com/nombrekeff/cardboard-js/wiki/Examples) - for human documentation, and examples.
+#### 🔸 [Documentation](https://nombrekeff.github.io/cardboard-js/) - for technical docs.
 
 ### What does it do?
 
