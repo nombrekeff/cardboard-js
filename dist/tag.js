@@ -1,16 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { CssGenerator } from './css-generator.js';
-import { callOrReturn, camelToDash } from './util.js';
-import { text } from './text.js';
-let context = {
+import { getElementChildren, getElementForChild, getElementIndex, isSelector } from './util.js';
+export let context = {
     attachedTag: null,
     attachedTagStack: [],
     css: new CssGenerator(),
@@ -19,30 +9,11 @@ export function attached() {
     return context.attachedTag;
 }
 export class CTag {
-    get parent() {
-        return this._parent;
-    }
-    set parent(newParent) {
-        this._parent = newParent;
-    }
     get children() {
-        this._getElementChildren(this.element);
-        return this._cachedChildren;
+        return getElementChildren(this.element);
     }
     get value() {
         return this.element.value;
-    }
-    get style() {
-        return this.element.style;
-    }
-    setValue(newValue) {
-        this.element.value = newValue;
-        return this;
-    }
-    get consumeValue() {
-        const value = this.value;
-        this.clear();
-        return value;
     }
     get id() {
         return this.element.id;
@@ -51,103 +22,52 @@ export class CTag {
         this.element.id = id;
         return this;
     }
+    setValue(newValue) {
+        this.element.value = newValue;
+        return this;
+    }
     constructor(arg0, children = [], attachable = false) {
-        this._parent = null;
-        this._children = [];
-        this._cachedChildren = [];
-        this._attachable = false;
-        this._meta = {
-            isHidden: false,
-            nextSiblingID: null,
+        this.parent = null;
+        /** If set to true, it be appended to the attached tag */
+        this.attachable = false;
+        this.meta = {
+            ignoreRender: false,
+            childIndex: 0,
         };
-        this._attachable = attachable;
-        const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
-        if (isSelector) {
-            this._attachable = false;
+        this.attachable = attachable;
+        if (typeof arg0 == 'string' && isSelector(arg0)) {
+            this.attachable = false;
             this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
         }
         else if (typeof arg0 == 'string') {
             this.element = document.createElement(arg0);
         }
         else if (arg0 instanceof HTMLElement) {
-            this._attachable = false;
+            this.attachable = false;
             this.element = arg0;
         }
         else {
             throw new Error('Invalid argument 0');
         }
-        if (context.attachedTag && this._attachable) {
-            context.attachedTag.append(this);
+        this.set(children);
+        if (context.attachedTag && this.attachable) {
+            context.attachedTag.add(this);
         }
-        if (children.length > 0)
-            this.setChildren(children);
     }
-    setChildren(children) {
-        this.element.replaceChildren(...children
-            .map(this._setChildrenParent.bind(this))
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
-        this._children = children;
+    set(children) {
+        this.element.replaceChildren(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
+    }
+    add(...children) {
+        this.element.append(...children.filter(this._childrenFilterPredicate.bind(this)).map(getElementForChild));
         return this;
     }
-    append(...children) {
-        this.element.append(...children
-            .map(this._setChildrenParent.bind(this))
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
-        this._children.push(...children);
-        return this;
-    }
-    prepend(...children) {
-        this.element.prepend(...children
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
-        this._children.unshift(...children);
-        return this;
-    }
+    /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
         consumer(this, consumable);
         return this;
     }
-    show() {
-        if (!this.parent.children.includes(this.element)) {
-            const expectedIndex = this.parent._children.indexOf(this);
-            if (expectedIndex == 0) {
-                this.parent.element.prepend(this.element);
-            }
-            else if (expectedIndex == this.parent._children.length - 1) {
-                this.parent.element.append(this.element);
-            }
-            else {
-                let hiddenBefore = 0;
-                for (let i = expectedIndex - 1; i >= 0; i--) {
-                    const child = this.parent._children[i];
-                    if (child instanceof CTag) {
-                        if (child._meta.isHidden) {
-                            hiddenBefore++;
-                        }
-                    }
-                }
-                const nextEl = this.parent.element.childNodes[expectedIndex - hiddenBefore];
-                this.parent.element.insertBefore(this.element, nextEl);
-            }
-        }
-        this._meta.isHidden = false;
-        return true;
-    }
-    hide() {
-        if (this.parent.children.includes(this.element)) {
-            this.remove();
-            this._meta.isHidden = true;
-        }
-    }
-    doIf(consumable, ifTrue, ifFalse, invert = false) {
-        if (invert) {
-            let temp = ifTrue;
-            ifTrue = ifFalse;
-            ifFalse = temp;
-        }
+    doIf(consumable, ifTrue, ifFalse) {
         const callback = (value) => {
             if (value)
                 ifTrue(value);
@@ -159,74 +79,78 @@ export class CTag {
         return this;
     }
     doIfNot(consumable, ifTrue, ifFalse) {
-        return this.doIf(consumable, ifTrue, ifFalse, true);
+        return this.doIf(consumable, ifFalse, ifTrue);
     }
-    hideIf(consumable, invert = false) {
+    show() {
+        if (!this.parent)
+            return false;
+        this.parent.element.insertBefore(this.element, this.parent.element.children[this.meta.childIndex]);
+        return true;
+    }
+    hide() {
+        this.meta.childIndex = getElementIndex(this.element);
+        this.remove();
+    }
+    /** Hide this element if the consumer is truthy */
+    hideIf(consumable) {
         const handleHide = (value) => {
-            const correctedValue = invert ? !value : !!value;
-            this._meta.isHidden = correctedValue;
+            this.meta.ignoreRender = !value;
             if (!this.parent)
                 return;
-            if (!correctedValue)
+            if (!value)
                 this.show();
             else
                 this.hide();
         };
         consumable.changed(handleHide);
-        handleHide(consumable);
+        this.meta.ignoreRender = !!consumable;
         return this;
     }
+    /** Hide this element if the consumer is falsy */
     hideIfNot(consumable) {
-        return this.hideIf(consumable, true);
+        const handleShow = (value) => {
+            this.meta.ignoreRender = !value;
+            if (!this.parent)
+                return;
+            if (value)
+                this.show();
+            else
+                this.hide();
+        };
+        consumable.changed(handleShow);
+        this.meta.ignoreRender = !consumable;
+        return this;
     }
-    classIf(consumable, classes, invert = false) {
-        return this.doIf(consumable, () => this.addClass(...callOrReturn(classes, this)), () => this.rmClass(...callOrReturn(classes, this)), invert);
+    /** Adds classes to the element if the consumer is truthy */
+    classIf(consumable, ...classes) {
+        return this.doIf(consumable, () => this.addClass(...classes), () => this.rmClass(...classes));
     }
-    classIfNot(consumable, classes) {
-        return this.classIf(consumable, classes, true);
+    /** Adds classes to the element if the consumer is truthy */
+    classIfNot(consumable, ...classes) {
+        return this.doIfNot(consumable, () => this.addClass(...classes), () => this.rmClass(...classes));
     }
-    textIf(consumable, text, elseText = '', invert = false) {
-        return this.doIf(consumable, () => this.text(callOrReturn(text, this)), () => this.text(callOrReturn(elseText, this)), invert);
+    /** Add attribute to the element if the consumer is truthy */
+    attrIf(consumable, attr, value = '') {
+        return this.doIf(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr));
     }
-    textIfNot(consumable, text, elseText = '') {
-        return this.textIf(consumable, text, elseText, true);
-    }
-    attrIf(consumable, attr, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addAttr(attr, callOrReturn(value, this)), () => this.rmAttr(attr), invert);
-    }
+    /** Add attribute to the element if the consumer is truthy */
     attrIfNot(consumable, attr, value = '') {
-        return this.attrIf(consumable, attr, value, true);
+        return this.doIfNot(consumable, () => this.addAttr(attr, value), () => this.rmAttr(attr));
     }
-    disableIf(consumable, invert = false) {
-        return this.attrIf(consumable, 'disabled', '', invert);
+    /** Disable this element if the consumer is truthy */
+    disableIf(consumable) {
+        return this.attrIf(consumable, 'disabled');
     }
+    /** Disable this element if the consumer is truthy */
     disableIfNot(consumable) {
-        return this.disableIf(consumable, true);
-    }
-    styleIf(consumable, style, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addStyle(style, callOrReturn(value, this)), () => this.rmStyle(style), invert);
-    }
-    styleIfNot(consumable, style, value = '') {
-        return this.styleIf(consumable, style, value, true);
-    }
-    stylesIf(consumable, styles, invert = false) {
-        return this.doIf(consumable, () => this.setStyle(callOrReturn(styles, this)), () => this.rmStyle(...Object.keys(styles)), invert);
-    }
-    stylesIfNot(consumable, styles) {
-        return this.stylesIf(consumable, styles, true);
+        return this.attrIfNot(consumable, 'disabled');
     }
     listen(tag, evt, consumer) {
         tag.on(evt, (other, evt) => consumer(this, other, evt));
         return this;
     }
-    text(newText, st) {
-        if (newText == null) {
-            return this.element.textContent;
-        }
-        if (st && newText) {
-            return this.setChildren([text(newText, st)]);
-        }
-        this.element.textContent = newText;
+    text(text) {
+        this.element.textContent = text;
         return this;
     }
     config(config) {
@@ -249,7 +173,7 @@ export class CTag {
             this.setValue(config.value);
         }
         if (config.children) {
-            this.append(...config.children);
+            this.add(...config.children);
         }
         if (config.on) {
             for (const key in config.on) {
@@ -284,15 +208,6 @@ export class CTag {
         this.element.classList.replace(targetClass, replaceClass);
         return this;
     }
-    toggleClass(targetClass) {
-        if (this.hasClass(targetClass)) {
-            this.rmClass(targetClass);
-        }
-        else {
-            this.addClass(targetClass);
-        }
-        return this;
-    }
     addStyle(property, value) {
         this.element.style[property] = value;
         return this;
@@ -311,7 +226,7 @@ export class CTag {
     }
     hasStyle(...styles) {
         for (let key of styles) {
-            if (!this.element.style.getPropertyValue(camelToDash(key))) {
+            if (!this.element.style.getPropertyValue(key)) {
                 return false;
             }
         }
@@ -345,15 +260,6 @@ export class CTag {
     }
     getAttr(attr) {
         return this.element.attributes[attr];
-    }
-    when(evtName, fn) {
-        return {
-            changed: (listener) => {
-                this.on(evtName, () => {
-                    listener(fn(this));
-                });
-            },
-        };
     }
     on(evtName, fn) {
         if (fn) {
@@ -398,6 +304,7 @@ export class CTag {
     }
     clear() {
         this.element.value = '';
+        // Trigger input event, so clearing is treated as input!
         this.element.dispatchEvent(new InputEvent('input'));
         return this;
     }
@@ -424,112 +331,32 @@ export class CTag {
             return new CTag(element);
         }
     }
-    find(predicate) {
-        for (const child of this._children) {
-            if (predicate(child)) {
-                return child;
-            }
+    find(test) {
+        const actualChildren = [...this.children];
+        for (const child of actualChildren) {
+            if (test(child))
+                return tag(child);
         }
+        return null;
     }
-    findTag(predicate) {
-        for (const child of this._children) {
-            if (child instanceof CTag && predicate(child)) {
-                return child;
-            }
-        }
-    }
-    _setChildrenParent(item) {
+    _childrenFilterPredicate(item, index) {
         if (item instanceof CTag)
             item.parent = this;
-        return item;
-    }
-    _childrenFilterPredicate(item) {
-        if (item instanceof CTag && item._meta.isHidden) {
+        if (item instanceof CTag && item.meta.ignoreRender) {
+            item.meta.childIndex = index;
             return false;
         }
         return true;
-    }
-    _getElementForChild(cl) {
-        if (typeof cl === 'string')
-            return document.createTextNode(cl);
-        if (cl instanceof CTag)
-            return cl.element;
-        if (cl instanceof Node)
-            return cl;
-        return null;
-    }
-    _getElementChildren(element) {
-        if (!this._mutationObserver) {
-            this._mutationObserver = new MutationObserver((mutations, observer) => {
-                this._setCachedChildren(element);
-            });
-            this._mutationObserver.observe(this.element, { childList: true });
-            this._setCachedChildren(element);
-        }
-    }
-    _setCachedChildren(element) {
-        let childNodes = element.childNodes;
-        let children = [];
-        let i = childNodes.length;
-        while (i--) {
-            if (childNodes[i].nodeType == 1) {
-                children.unshift(childNodes[i]);
-            }
-        }
-        this._cachedChildren = children;
     }
 }
 export function tag(arg0, children = [], attach = false) {
     return new CTag(arg0, children, attach);
 }
-export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
-    var _a, _b;
-    let observingParent = false;
-    if (beforeRemove) {
-        const tempElRemove = tag.element.remove;
-        tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
-            const result = beforeRemove(tag);
-            if (!result || (result instanceof Promise && (yield result))) {
-                tempElRemove.call(tag.element);
-            }
-        });
-    }
-    const observer = new MutationObserver((mutations, observer) => {
-        let hasBeenAdded = false;
-        let hasBeenRemoved = false;
-        for (let mut of mutations) {
-            if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
-                hasBeenAdded = true;
-            }
-            if (onRemove && Array.from(mut.removedNodes).includes(tag.element)) {
-                hasBeenRemoved = true;
-            }
-        }
-        if (hasBeenAdded && onStart) {
-            onStart(tag, observer);
-            if (!observingParent) {
-                observer.disconnect();
-                observer.observe(tag.element.parentElement, { childList: true });
-                observingParent = true;
-            }
-        }
-        if (hasBeenRemoved && onRemove) {
-            onRemove(tag, observer);
-        }
-    });
-    observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.element) !== null && _b !== void 0 ? _b : document.body, { childList: true });
-    return observer;
-}
-export const withLifecycle = (tag, handler) => {
-    onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
-    return tag;
-};
 export function attach(tag) {
     if (context.attachedTag) {
         context.attachedTagStack.push(context.attachedTag);
     }
     context.attachedTag = tag;
-    return tag;
 }
 export function detach() {
     if (context.attachedTagStack.length > 0) {

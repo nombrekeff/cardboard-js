@@ -3,18 +3,13 @@
         "target": "ES6",
         "module": "ES2015",
         "outDir": "dist",
-        "moduleResolution": "node",
         "sourceMap": true,
         "declaration": true,
-        "removeComments": true,
         "lib": [
             "dom",
             "ES2016"
         ],
-        "types": [
-            "node",
-            "@tweenjs/tween.js",
-        ]
+        "types": []
     },
     "include": [
         "./src/**/*.ts"

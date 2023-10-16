@@ -1,60 +1,63 @@
+import { CssGenerator } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
-import { TagName } from './tag-names.js';
-import { AllTags, Consumable, State, StyleMap, TagChild, TagChildren, TagConfig } from './types.js';
-export declare function attached(): CTag;
-export declare class CTag {
-    element: HTMLElement;
-    private _parent;
-    get parent(): CTag;
-    set parent(newParent: CTag);
-    private _children;
-    private _cachedChildren;
+import { Consumable } from './state.js';
+import { TagName, ValidTagName } from './tag-names.js';
+import { StyleMap, StyleSet, TagChildren, TagConfig } from './types.js';
+export declare let context: {
+    attachedTag: CTag;
+    attachedTagStack: CTag[];
+    css: CssGenerator;
+};
+export declare function attached(): CTag<HTMLElement>;
+export declare class CTag<T extends HTMLElement = HTMLElement> {
+    element: T;
+    parent: CTag;
+    /** If set to true, it be appended to the attached tag */
+    private attachable;
+    private meta;
     get children(): Node[];
-    private _attachable;
-    private _meta;
     get value(): any;
-    get style(): CSSStyleDeclaration;
-    setValue(newValue: string): this;
-    get consumeValue(): any;
     get id(): string;
     setId(id: string): this;
+    setValue(newValue: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
-    setChildren(children: TagChildren): this;
-    append(...children: TagChildren): this;
-    prepend(...children: TagChildren): this;
+    set(children: TagChildren): void;
+    add(...children: TagChildren): this;
+    /** Whenever the consumable changes, it will call the consumer */
     consume<T>(consumable: Consumable<T>, consumer: (self: CTag, newValue: T) => void): this;
+    doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
     show(): boolean;
     hide(): void;
-    doIf(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void, invert?: boolean): this;
-    doIfNot(consumable: Consumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
-    hideIf(consumable: Consumable<boolean | number>, invert?: boolean): this;
+    /** Hide this element if the consumer is truthy */
+    hideIf(consumable: Consumable<boolean | number>): this;
+    /** Hide this element if the consumer is falsy */
     hideIfNot(consumable: Consumable<boolean | number>): this;
-    classIf(consumable: Consumable<any>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
-    classIfNot(consumable: Consumable<any>, classes: string[] | ((self: CTag) => string[])): this;
-    textIf(consumable: Consumable<any>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
-    textIfNot(consumable: Consumable<any>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
-    attrIf(consumable: Consumable<any>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
-    attrIfNot(consumable: Consumable<any>, attr: string, value?: string | ((self: CTag) => string)): this;
-    disableIf(consumable: Consumable<any>, invert?: boolean): this;
+    /** Adds classes to the element if the consumer is truthy */
+    classIf(consumable: Consumable<any>, ...classes: string[]): this;
+    /** Adds classes to the element if the consumer is truthy */
+    classIfNot(consumable: Consumable<any>, ...classes: string[]): this;
+    /** Add attribute to the element if the consumer is truthy */
+    attrIf(consumable: Consumable<any>, attr: string, value?: string): this;
+    /** Add attribute to the element if the consumer is truthy */
+    attrIfNot(consumable: Consumable<any>, attr: string, value?: string): this;
+    /** Disable this element if the consumer is truthy */
+    disableIf(consumable: Consumable<any>): this;
+    /** Disable this element if the consumer is truthy */
     disableIfNot(consumable: Consumable<any>): this;
-    styleIf(consumable: Consumable<any>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
-    styleIfNot(consumable: Consumable<any>, style: string, value?: string | ((self: CTag) => string)): this;
-    stylesIf(consumable: Consumable<any>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
-    stylesIfNot(consumable: Consumable<any>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
-    text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string;
+    text(text: any): this;
     config(config: TagConfig): this;
     addClass(...classNames: string[]): this;
     className(className: string): this;
     rmClass(...classNames: string[]): this;
     hasClass(...classNames: string[]): boolean;
     replaceClass(targetClass: string, replaceClass: string): this;
-    toggleClass(targetClass: string): this;
     addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
     setStyle(styles: StyleMap): this;
     rmStyle(...styleNames: string[]): this;
-    hasStyle<K extends CssProperty>(...styles: K[]): boolean;
+    hasStyle(...styles: string[]): boolean;
     setAttrs(attrs: {
         [k: string]: string;
     }): this;
@@ -62,7 +65,6 @@ export declare class CTag {
     rmAttr(...attrs: string[]): this;
     hasAttr(...attr: string[]): boolean;
     getAttr(attr: string): any;
-    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable;
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
@@ -75,26 +77,21 @@ export declare class CTag {
     enable(): this;
     setDisabled(disabled: boolean): void;
     q(selector: any): CTag | undefined;
-    find(predicate: (el: TagChild) => boolean): TagChild;
-    findTag(predicate: (el: CTag) => boolean): CTag;
-    private _setChildrenParent;
+    find(test: (el: HTMLElement) => boolean): CTag<HTMLElement>;
     private _childrenFilterPredicate;
-    private _getElementForChild;
-    private _mutationObserver;
-    private _getElementChildren;
-    private _setCachedChildren;
 }
-export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
-export declare function onLifecycle(tag: CTag, onStart: (tag: CTag, observer: MutationObserver) => void, onRemove: (tag: CTag, observer: MutationObserver) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | void): MutationObserver;
-export declare const withLifecycle: (tag: CTag, handler: {
-    start?: (tag: CTag) => void;
-    removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean> | void;
-}) => CTag;
-export declare function attach(tag: CTag): CTag;
+export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag<HTMLElement>;
+export declare function attach(tag: CTag): void;
 export declare function detach(): void;
 export declare function detachAll(): void;
 export declare function init(options?: {
     root: string;
-}): CTag;
+}): CTag<HTMLElement>;
+type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
+type AllTags = {
+    [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
+        attach: (...children: PickArgType<key>) => CTag;
+    };
+};
 export declare const allTags: AllTags;
+export {};

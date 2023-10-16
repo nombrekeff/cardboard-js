@@ -3,5 +3,3 @@
 /example/**/*.js
 /example/**/*.js.map
 /coverage/
-/example/show-hide-performance-test/
-/index.html

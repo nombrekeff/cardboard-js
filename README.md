@@ -1,91 +1,215 @@
-## 📦 Carboard.js
+## Carboard.js
 
 
-![](./header-img.png)
+![](./header.png)
 
-Welcome to Carboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
-You don't need to build, use JSX, or compile. It works out of the box, and it's plain JS. 
+Welcome to Carboard. A very simple, yet powerful "framework"/library to create web applications without the need to write any HTML.
 
-NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
+NOTE: There's also a server-side companion to **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as string in the server.
 
-> **!NOTE!**: Cardboard is in early development, so use with caution! Any help is appreciated!
+> **!NOTE!**: Cardboard is in early development, so use with caution! Any help is apreciated!
 
+### Who's this for?
 
-```ts
-const Counter = () => {
-  let counter = state({ count: 0 });
+If you don't like writing HTML, or need a very basic framework for simple apps, Cardboard might be for you!
 
-  return button()
-    .text(`Clicked $count times`, counter)
-    .addStyle('color', 'red')
-    .clicked((_) => counter.count++);
-};
+### What does it do?
 
-// Counter will be added to the body
-tag('(body)').append(Counter());
-```
-
+It let's you write javascript code instead of HTML. It hass a simple API to do anything you want with the HTML elements, like adding styles, attributes, events...It also handles a simple state management solution. It's lightweight, and very simple.
 
 ### Getting Started
-#### Install
+Install package: 
 
 ```
 npm install https://github.com/nombrekeff/cardboard-js
 ```
 
-#### [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started), for a basic guide.
-#### [Wiki Examples](https://github.com/nombrekeff/cardboard-js/wiki/Examples), for more examples.
-#### [Documentation](https://nombrekeff.github.io/cardboard-js/), for technical docs.
+Then you  can import the package. 
 
-### What does it do?
+```ts
+import { tag, init, allTags, state, attached, hinput, hstyle } from 'cardboard';
+const { div, button, input, a, ul, li, hr, style } = allTags;
 
-Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process (_unless you use TS_). **Everything is plain JS**. It's very lightweight and performant. By design, there's very little additional computation on top of interacting directly with JS. As you interact with the elements directly, without needing complex stuff like diffing virtual doms and such. 
+init({ root: 'body' }); // By calling init, any new tag added will be added to the "body" (passing root selector is optional, 'body' by default)
+```
 
-The idea is that instead of writing **HTML** and then creating JS that interacts with the **HTML**. You directly write JS that represents both the **HTML** and the logic.
-It also offers a **[state](#state) management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
+I recomend destructuring tags, for a cleaner code:
 
-Here is a list of some of the features it offers (_there are more though_):
-* **[showing/hiding elements](#reacting)**: You can conditionally add and remove items from the DOM whenever a state changes.
-* **[enabling/disabling elements](#reacting)**:  enable and disable elements manually, or based on a state.
-* **[add/remove classes](#reacting)**:  add and remove classes from elements manually, or based on a state.
-* **[add/remove attributes](#reacting)**:  add and remove classes from elements manually, or  based on a state.
-* **[templates](#reacting)**: It allows you to create text templates that interpolate some state values, and update whenever the state changes.
-* **[custom reactions](#reacting)**: If there isn't a built-in method that handles some reactions for you, there are methods that allow you to build your own.
-* **[reusable components](#reusable-components)**: You can create reusable components, like in any other framework.
-* **[CSS in JS](#css-in-js)**: You can create `style` tags, and write the CSS directly as a JS object.
-* **Typed**: Cardboard aims to be 100% typed, meaning it will suggest any suggestable properties, methods, etc...(i.e. style `properties`, etc...)
+```ts
+const { div, p, span, b, script, button, style, a, hr } = allTags;
+```
 
-Cardboard offers all of this in a very small package with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
+### Examples
 
-> It's similar in philosphy to [VanJS](https://vanjs.org/) but with another flavor and with a few differences. 
-> If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
+Check out the [`examples`](/examples) folder for a variety of examples on how to use Cardboard.
 
-### Who's this for?
+#### Clicker Example
 
-If you don't like writing HTML, like me. Or need a simple and lightweight framework that can do most things that bigger frameworks can do with a smaller footprint, Cardboard might be for you!
-Cardboard can be used to build anything from a static page to more advanced apps like dashboards.
+```ts
+let counterState = state({ count: 0 });
+button()
+  .consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
+  .clicked((_) => counterState.count++);
+```
 
-It's perfect for when you want to create a very small page where you need a reactive framework and you need to create it fast. But it should be able to create anything.
+Let me explain:
+```ts
+let counterState = state({ count: 0 });
+```
+> Creates a "reactive" state, or more so a state that can be listened to, globaly or per property.
+> `counterState.changed((newState) => handleStateChange())`  
+> `counterState.count.changed((newValue) => handleValueChange())`
 
-### Contributing
+```ts
+button()
+```
+> `button()` or any other tag method for that matter, generates an HTMLElement in the page. To the body by default, but this can be changed. Check [Attaching](#attaching) further down.
+> If you don't want the tag to be automatically added, you can call `button.silent()` instead. This will just return the tag and let you handle it.
 
-Well, hello! I'm always open for help on projects, and this one in particular! If you find the project interesting, useful, fun, or you feel some other kind of emotion, and that emotion inclines you to maybe consider helping out, that'd be great! 
+```ts
+.consume(counterState.count, (self, count) => self.text(`Clicked ${count} times`))
+```
+> the `.consume` method, reacts to changes in the state, and triggers the **callback**.
+> For example in the snippet above, whenever `counterState.count` changes, we set the **text** to `"Clicked ${count} times"`.
+> That will automatically change the innerContent of the HTML element.
 
-You can help with the Wiki, using and testing the project, reporting bugs, fixing bugs, adding features, etc... Just remember to leave an issue if the change is big or changes some core concept of cardboard.
+```ts
+.clicked((_) => counterState.count++);
+```
+> the `.clicked` method will be called, whenever the element is clicked. Quite simple!
+> it's a shortcut for `.on('click', callback);`, a couple of shorthands are provided. 
+> If the event you want to listen does not have a shorthand, you can either, leave an issue for me to add it, send a PR or just use `.on(evtName, callback);`.
 
-Take a look at this guides:
-* [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
-* [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
 
-<!-- TODO: CSS in JS -->
+#### Todo Example
+```ts
+const list = ul(
+  p('There are no items').hideIf(todoState.length),
+).addAttrs({ id: 'list' });
 
-<!-- 
-TODO: Add section comparing performance against other alternatives,  
+const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
 
-* It's 170% faster than svelte
-* It's ? faster than react
-* It's ? faster than preact
-* It's ? faster than angular
-* It's ? faster than VanJS
-* It scores 100% 100% 100% on lighthouse
--->
+const addItem = () => {
+  if (itemInput.value) {
+    list.add(li(itemInput.value).clicked((self) => self.remove()));
+    itemInput.clear();
+  }
+};
+
+button.attach('Add item').clicked(addItem);
+attached().add(list);
+```
+
+Let me explain:
+```ts
+const list = ul(
+  p('There are no items').hideIf(todoState.length),
+).addAttrs({ id: 'list' });
+```
+> Create a **ul** list, with an id "list".
+> Adds a **p** child with text _'There are no items'_, which will be hidden if there are items
+
+```ts
+const itemInput = hinput({ placeholder: 'Enter item content', submit: (_) => addItem() });
+```
+> `hinput` is a custom component that makes working with inputs easier. It internally generates a input element, configured with the options provided.
+> In this case we set the **placeholder** and sets the `submit` event, which will be triggered when the enter key is pressed.
+
+```ts
+const addItem = () => {
+  if (itemInput.value) {
+    list.add(li(itemInput.value).clicked((self) => self.remove()));
+    itemInput.clear();
+  }
+};
+```
+> Little method to handle adding items to the list. It will also clear the input.
+> To add an iten to the list, it's possible by calling `.add()` with the element we want.
+> A `li` in this case, with the value of the input as it's text.
+
+```ts
+button.attach('Add item').clicked(addItem);
+```
+> Creates a button, which will add an item when it's clicked. calling `.attach` will add button to the attached tag.
+
+```ts
+attached().add(list);
+```
+> `attached()` returns the currently attached element (body by default), read more about it i nthe [Attaching](#attaching) section below.
+> `.add(list)` will add the list element created above to the attached element.
+
+#### Component Example
+You can also create reusable components, quite simply. Check this example out:
+
+```ts
+export type HInputOptions = {
+  value?: string;
+  placeholder?: string;
+  tooltip?: string;
+  attach?: boolean;
+  change?: EventCallback<'change'>;
+  submit?: (tag: HoboTag, evt: Event) => void;
+};
+
+export function hinput(options: HInputOptions = {}) {
+  const el = options.attach == true ? input.attach() : input();
+
+  el.config({
+    attr: { tooltip: options.tooltip, placeholder: options.placeholder },
+    on: {
+      change: options.change,
+      submit: options.submit,
+      keypress: (tag, evt) => {
+        if (evt.key == 'Enter') {
+          options.submit(tag, evt);
+        }
+      },
+    },
+    value: options.value ?? '',
+  });
+
+  return el;
+}
+```
+> It basically simplifies the creation of an input element, and adds some logic.
+> It can then be used as any other cardboard tag method.
+> `hinput({...})`
+
+
+### Attaching
+
+Cardboard by default will not be attached to anything. So when you create elements nothing will appear in the page. If you want to be able to add items to some parent element, you must first initialize Carboard by calling the `init()` function.
+
+If no arguments are passed to init, it will automatically attach to the body. You can also pass a selector of the element you want to attach to.
+
+```ts
+init();
+init({ root: '#app-root' });
+```
+
+You can also manually attach to any element by calling the `attach()` function:
+```ts
+init();
+const wrapper = div();
+attach(wrapper);
+
+p.attach();
+span.attach();
+```
+> `p()` and `span()` will be added as children of wrapper.
+
+It's also possible to attach multiple times:
+```ts
+init();
+const wrapper = div.attach();
+
+attach(wrapper);
+const childDiv = div.attach("I'm inside wrapper");
+
+attach(childDiv);
+p.attach("I'm inside child div!");
+detach();
+
+p.attach("I'm now inside wrapper!");
+```
+
