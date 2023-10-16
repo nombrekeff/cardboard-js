@@ -7,7 +7,9 @@ import {
   hstyle,
   text,
   Input,
+  CTag,
 } from '../dist/cardboard.js';
+import { makeTween, tween, tweenTag } from '../dist/ext/tween.js';
 const { div, button, input, a, ul, li, hr, style } = allTags;
 
 const root = init();
@@ -24,12 +26,37 @@ style.attach({
 });
 
 // Counter
-const Counter = () => {
-  let counterState = state({ count: 0 });
+const bounceOut = (tag: CTag) =>
+  makeTween({
+    from: { scale: '0.9' },
+    to: { scale: '1' },
+    duration: 100,
+    easing: tween.Easing.Quadratic.InOut,
+    update: (value) => tag.setStyle({ scale: `${value.scale}` }),
+  });
 
-  return button(text(`Clicked $count times`, counterState)).clicked(
-    (_) => counterState.count++,
-  );
+const bounceIn = (tag: CTag) =>
+  makeTween({
+    from: { scale: '1' },
+    to: { scale: '0.9' },
+    duration: 100,
+    easing: tween.Easing.Quadratic.InOut,
+    update: (value) => tag.setStyle({ scale: `${value.scale}` }),
+  });
+
+const Counter = () => {
+  let counter = state({ count: 0 });
+
+  return button()
+    .text(`Clicked $count times`, counter)
+    .addStyle('color', 'red')
+    .addClass('clicker')
+    .clicked((self) => {
+      counter.count++;
+      tweenTag(self, bounceIn, () => {
+        tweenTag(self, bounceOut);
+      });
+    });
 };
 
 root.append(Counter());

@@ -93,16 +93,3 @@ You can help with the Wiki, using and testing the project, reporting bugs, fixin
 Take a look at these guides:
 * [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
 * [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
-
-<!-- TODO: CSS in JS -->
-
-<!-- 
-TODO: Add section comparing performance against other alternatives,  
-
-* It's 170% faster than svelte
-* It's ? faster than react
-* It's ? faster than preact
-* It's ? faster than angular
-* It's ? faster than VanJS
-* It scores 100% 100% 100% on lighthouse
--->
