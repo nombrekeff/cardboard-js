@@ -3,8 +3,11 @@
 
 ![](./header-img.png)
 
-Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications without the need to write any **HTML**.  
-You don't need to build, use JSX, or compile. It works out of the box, and it's plain JS. 
+Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications. 
+All of this with, **no HTML**, **no build** (_unless you use TS or decide to build_), **no compile**, **no JSX**. 
+It works out of the box, it's extremely lightweight and very performant. 
+
+It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour and with a few differences. If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
 
 > **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the project for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
@@ -55,11 +58,11 @@ Here is a list of some of the features it offers (_there are more though_):
 
 Cardboard offers all of this in a very small package with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
 
-> It's similar in philosphy to [VanJS](https://vanjs.org/) but with another flavor and with a few differences. 
-> If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
+
 ----
-> NOTE: There's also a server-side version of **Cardboard** I've written, called [**Hobo**](https://github.com/nombrekeff/hobo-js) in case you need to generate HTML as a string on the server. 
-> I'm planning to make Cardboard work server-side as well in v2.0.0. So you can look forward to that!
+> NOTE: There's also a server-side alternative to **Cardboard** I've also written, called [**Hobo**](https://github.com/nombrekeff/hobo-js). In case you need something similar to Cardboard that works server-side!
+> I'm planning to make Cardboard work server-side as well in v2.0.0. So you can look forward to that, or help out!
+----
 
 ### Who's this for?
 
