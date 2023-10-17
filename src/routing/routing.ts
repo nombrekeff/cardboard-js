@@ -72,7 +72,10 @@ export class Router<T extends Record<string, Route> = {}> {
     }
 
     const route = this._getRoute();
-    this._rootParent.append(route);
+    if (route.parent) route.show();
+    else {
+      this._rootParent.append(route);
+    }
     this._currentRouteTag = route;
   }
 

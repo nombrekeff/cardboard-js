@@ -47,7 +47,11 @@ export class Router {
                 yield this._currentRouteTag.hide();
             }
             const route = this._getRoute();
-            this._rootParent.append(route);
+            if (route.parent)
+                route.show();
+            else {
+                this._rootParent.append(route);
+            }
             this._currentRouteTag = route;
         });
     }
