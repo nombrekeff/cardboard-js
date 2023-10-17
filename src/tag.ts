@@ -211,7 +211,6 @@ export class CTag {
   /** Hide this element (removed from DOM) */
   async hide() {
     if (this.parent.children.includes(this.element)) {
-      console.log(this.remove);
       await this.remove();
       this._meta.isHidden = true;
     }
@@ -863,18 +862,15 @@ export function onLifecycle(
   if (beforeRemove) {
     const tempElRemove = tag.element.remove;
     tag.element.remove = async () => {
-      console.log('element.remove');
       const result = beforeRemove(tag);
       if (!result || (result instanceof Promise && (await result))) {
         tempElRemove.call(tag.element);
       }
-      console.log('element.remove end');
     };
   }
   if (onStart) {
     const tempOnStart = tag.show;
     tag.show = async () => {
-      console.log('element.show');
       const result = tempOnStart.call(tag);
       if (result instanceof Promise) {
         return await result;
@@ -902,7 +898,6 @@ export function onLifecycle(
       if (result instanceof Promise) {
         await result;
       }
-
 
       // When element is added, change observer to observe parent instead of body
       // Improve performance, as we just need to know if it's added or removed from the parent!

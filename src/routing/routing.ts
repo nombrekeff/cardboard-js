@@ -1,4 +1,5 @@
-import { allTags, CTag } from './tag.js';
+import { allTags, CTag } from '../tag.js';
+import { RouteMatcher, routeMatcher } from './route-matcher.js';
 
 const { div, a } = allTags;
 
@@ -23,8 +24,10 @@ export class Router<T extends Record<string, Route> = {}> {
   private _currentRoute?: string;
   private _currentRouteTag?: CTag;
   private _rootParent: CTag;
+  private _routeMatchers: { matcher: RouteMatcher; key: string }[] = [];
 
-  public rootNames: keyof T;
+  public params: Record<string, string> = {};
+  public query: URLSearchParams = new URLSearchParams();
 
   public get currentRoute(): string {
     return this._currentRoute;
@@ -37,16 +40,27 @@ export class Router<T extends Record<string, Route> = {}> {
     this._location = this._window.location;
     this._history = this._window.history;
 
+    this._initRouteMatchers();
     this._modifyPushState();
     this._listenEvents();
 
     this.navigate(this._options.initialRoute);
   }
 
-  public navigate(path: string) {
-    console.debug(`[Router] -> Navigate to ${path}`);
-    if (path != this._currentRoute) {
-      this._history.pushState('data', '', path);
+  public navigate(path: string, query?: Record<string, string>) {
+    const querySearch = new URLSearchParams(query);
+    const queryStr = querySearch.toString();
+    const cQuery = this.query.toString();
+    
+    console.debug(`[Router] -> Navigate to ${path}`, { queryStr, cQuery });
+
+    if (path != this._currentRoute || queryStr !== cQuery) {
+      this.query = querySearch;
+      this._history.pushState(
+        'data',
+        '',
+        path + (queryStr ? '?' + queryStr : ''),
+      );
     }
   }
 
@@ -62,9 +76,8 @@ export class Router<T extends Record<string, Route> = {}> {
     this._currentRouteTag = route;
   }
 
-  private _getRoute() {
-    console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
-
+  // Follow aliases until a valid route is found
+  private _getEffectiveRoute() {
     let effectiveRoute = this._currentRoute;
     let maxCalls = 10000;
 
@@ -79,6 +92,23 @@ export class Router<T extends Record<string, Route> = {}> {
         );
         effectiveRoute = alias;
       } else {
+        break;
+      }
+    }
+    return effectiveRoute;
+  }
+
+  private _getRoute() {
+    console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
+    let effectiveRoute = this._getEffectiveRoute();
+    this.query = new URLSearchParams(this._location.search);
+
+    // Find matcher
+    for (let matcher of this._routeMatchers) {
+      const params = matcher.matcher.parse(effectiveRoute);
+      if (params) {
+        effectiveRoute = matcher.key;
+        this.params = params;
         break;
       }
     }
@@ -140,6 +170,15 @@ export class Router<T extends Record<string, Route> = {}> {
       this._window.dispatchEvent(new Event('pushstate'));
     };
   }
+
+  public _initRouteMatchers() {
+    for (let matcherStr in this._options.routes) {
+      this._routeMatchers.push({
+        key: matcherStr,
+        matcher: routeMatcher(matcherStr),
+      });
+    }
+  }
 }
 
 export let router: Router<any> | undefined;
@@ -151,7 +190,11 @@ export function makeRouter<T extends Record<string, Route> = {}>(
   return router as Router<T>;
 }
 
-export function Link(child: string | CTag, path) {
+export function Link(
+  child: string | CTag,
+  path,
+  query?: Record<string, string>,
+) {
   return a(child)
     .addAttr('href', 'javascript:;')
     .setStyle({ margin: '0 8px 0 0' })
@@ -160,7 +203,7 @@ export function Link(child: string | CTag, path) {
         throw new Error('Link can\t navigate, there is no router available');
       }
 
-      router.navigate(path);
+      router.navigate(path, query);
     });
 }
 

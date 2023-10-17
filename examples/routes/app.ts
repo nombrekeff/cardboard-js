@@ -3,11 +3,12 @@ import {
   allTags,
   tag,
 } from './node_modules/cardboard-js/dist/cardboard.js';
-import { makeRouter } from './node_modules/cardboard-js/dist/routing.js';
+import { makeRouter } from './node_modules/cardboard-js/dist/routing/routing.js';
 
 import { Header } from './components/header.js';
 import { AboutRoute } from './routes/about.route.js';
 import { HomeRoute } from './routes/home.route.js';
+import { UserRoute } from './routes/user.route.js';
 
 const { div } = allTags;
 
@@ -37,6 +38,7 @@ const myRouter = makeRouter({
     '/home': '/', // Alias from /home to /
     '/': (_) => HomeRoute(),
     '/about': (_) => AboutRoute(),
+    '/user/:id': (_) => UserRoute(),
     '/404': (router) => div('404: Route not found: ' + router.currentRoute),
   },
   initialRoute: '/',

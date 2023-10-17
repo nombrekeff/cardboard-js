@@ -16,7 +16,7 @@
         ],
         "types": [
             "@tweenjs/tween.js",
-            "./node_modules/cardboard-js/dist/cardboard.d.ts",
+            // "./node_modules/cardboard-js/dist/cardboard.d.ts",
         ]
     },
     "include": [

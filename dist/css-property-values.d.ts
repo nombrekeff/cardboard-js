@@ -21,4 +21,3 @@ export type FontWeightOptions = 'normal' | 'bold' | 'bolder' | 'lighter' | '100'
 export type FontStyleOptions = 'normal' | 'italic' | 'oblique' | CommonOptions;
 export type FlexDirectionOptions = 'row' | 'column' | 'row-reverse' | 'column-reverse' | CommonOptions;
 export {};
-//# sourceMappingURL=css-property-values.d.ts.map

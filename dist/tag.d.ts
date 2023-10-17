@@ -301,4 +301,3 @@ export declare function init(options?: {
  * ```
  */
 export declare const allTags: AllTags;
-//# sourceMappingURL=tag.d.ts.map

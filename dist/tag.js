@@ -167,7 +167,6 @@ export class CTag {
     hide() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.parent.children.includes(this.element)) {
-                console.log(this.remove);
                 yield this.remove();
                 this._meta.isHidden = true;
             }
@@ -660,18 +659,15 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     if (beforeRemove) {
         const tempElRemove = tag.element.remove;
         tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
-            console.log('element.remove');
             const result = beforeRemove(tag);
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.element);
             }
-            console.log('element.remove end');
         });
     }
     if (onStart) {
         const tempOnStart = tag.show;
         tag.show = () => __awaiter(this, void 0, void 0, function* () {
-            console.log('element.show');
             const result = tempOnStart.call(tag);
             if (result instanceof Promise) {
                 return yield result;

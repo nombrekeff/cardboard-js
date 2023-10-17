@@ -14,4 +14,3 @@ export type TweenOptions<T> = {
 export declare function makeTween<T extends {}>(opts: TweenOptions<T>): Tween<T>;
 export declare function tweenTag(tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void): CTag;
 export declare function tweenTagAsync(tag: CTag, tween: (tag: CTag) => Tween<any>): Promise<CTag>;
-//# sourceMappingURL=tween.d.ts.map

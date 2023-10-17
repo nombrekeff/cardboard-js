@@ -9,4 +9,3 @@ export declare class CssGenerator {
     generateBlockContent(selector: string, style: NestedStyleMap): string[];
     generateStyle(name: string, value: string): string;
 }
-//# sourceMappingURL=css-generator.d.ts.map

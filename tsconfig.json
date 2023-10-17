@@ -6,7 +6,6 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "declaration": true,
-        "declarationMap": true,
         "esModuleInterop": true,
         "lib": [
             "dom",

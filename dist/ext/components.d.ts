@@ -9,4 +9,3 @@ export type HInputOptions = {
     submit?: (tag: CTag, evt: Event) => void;
 };
 export declare function Input(options?: HInputOptions): CTag;
-//# sourceMappingURL=components.d.ts.map

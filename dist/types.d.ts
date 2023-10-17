@@ -49,4 +49,3 @@ export type AllTags = {
         attach: (...children: PickArgType<key>) => CTag;
     };
 };
-//# sourceMappingURL=types.d.ts.map

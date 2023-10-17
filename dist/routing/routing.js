@@ -7,7 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { allTags } from './tag.js';
+import { allTags } from '../tag.js';
+import { routeMatcher } from './route-matcher.js';
 const { div, a } = allTags;
 export class Router {
     get currentRoute() {
@@ -16,19 +17,27 @@ export class Router {
     constructor(options) {
         var _a;
         this._routes = {};
+        this._routeMatchers = [];
+        this.params = {};
+        this.query = new URLSearchParams();
         this._options = options;
         this._rootParent = options.rootParent;
         this._window = (_a = options.window) !== null && _a !== void 0 ? _a : window;
         this._location = this._window.location;
         this._history = this._window.history;
+        this._initRouteMatchers();
         this._modifyPushState();
         this._listenEvents();
         this.navigate(this._options.initialRoute);
     }
-    navigate(path) {
-        console.debug(`[Router] -> Navigate to ${path}`);
-        if (path != this._currentRoute) {
-            this._history.pushState('data', '', path);
+    navigate(path, query) {
+        const querySearch = new URLSearchParams(query);
+        const queryStr = querySearch.toString();
+        const cQuery = this.query.toString();
+        console.debug(`[Router] -> Navigate to ${path}`, { queryStr, cQuery });
+        if (path != this._currentRoute || queryStr !== cQuery) {
+            this.query = querySearch;
+            this._history.pushState('data', '', path + (queryStr ? '?' + queryStr : ''));
         }
     }
     _setRoute() {
@@ -42,8 +51,8 @@ export class Router {
             this._currentRouteTag = route;
         });
     }
-    _getRoute() {
-        console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
+    // Follow aliases until a valid route is found
+    _getEffectiveRoute() {
         let effectiveRoute = this._currentRoute;
         let maxCalls = 10000;
         while (typeof this._options.routes[effectiveRoute] === 'string' &&
@@ -54,6 +63,21 @@ export class Router {
                 effectiveRoute = alias;
             }
             else {
+                break;
+            }
+        }
+        return effectiveRoute;
+    }
+    _getRoute() {
+        console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
+        let effectiveRoute = this._getEffectiveRoute();
+        this.query = new URLSearchParams(this._location.search);
+        // Find matcher
+        for (let matcher of this._routeMatchers) {
+            const params = matcher.matcher.parse(effectiveRoute);
+            if (params) {
+                effectiveRoute = matcher.key;
+                this.params = params;
                 break;
             }
         }
@@ -97,13 +121,21 @@ export class Router {
             this._window.dispatchEvent(new Event('pushstate'));
         };
     }
+    _initRouteMatchers() {
+        for (let matcherStr in this._options.routes) {
+            this._routeMatchers.push({
+                key: matcherStr,
+                matcher: routeMatcher(matcherStr),
+            });
+        }
+    }
 }
 export let router;
 export function makeRouter(opts) {
     router = new Router(opts);
     return router;
 }
-export function Link(child, path) {
+export function Link(child, path, query) {
     return a(child)
         .addAttr('href', 'javascript:;')
         .setStyle({ margin: '0 8px 0 0' })
@@ -111,7 +143,7 @@ export function Link(child, path) {
         if (!router) {
             throw new Error('Link can\t navigate, there is no router available');
         }
-        router.navigate(path);
+        router.navigate(path, query);
     });
 }
 export default {};
