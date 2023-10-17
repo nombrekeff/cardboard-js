@@ -1,7 +1,7 @@
-import { JSDOM } from 'jsdom';
+import jsdom, { JSDOM } from 'jsdom';
 
 export function createDomMock(content = '') {
-  const dom = new JSDOM(content);
+  const dom = new JSDOM(content, { url: 'https://example.org/' });
   global.document = dom.window.document;
   global.window = dom.window as any;
   global.HTMLElement = dom.window.HTMLElement;

@@ -1,4 +1,6 @@
-import { hstyle, Input, init, tag, allTags, attach, text, } from '../../dist/cardboard.js';
+import { init, tag, allTags, attach, text } from '../../dist/cardboard.js';
+import { Input } from '../../dist/ext/components.js';
+import { hstyle } from '../../dist/ext/base-style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import appState from './state.js';

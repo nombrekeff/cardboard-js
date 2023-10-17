@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "declaration": true,
-        "removeComments": true,
+        "esModuleInterop": true,
         "lib": [
             "dom",
             "ES2016"
@@ -18,5 +18,8 @@
     },
     "include": [
         "./src/**/*.ts"
+    ],
+    "exclude": [
+        "./dist"
     ]
 }

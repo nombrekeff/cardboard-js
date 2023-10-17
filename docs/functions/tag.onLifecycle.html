@@ -29,11 +29,11 @@ And will call {onRemove} when the element is removed from the DOM.</p>
 <li>
 <h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">onStart</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-parameter">onStart</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -42,7 +42,7 @@ And will call {onRemove} when the element is removed from the DOM.</p>
 <h5><span class="tsd-kind-parameter">tag</span>: <a href="../classes/tag.CTag.html" class="tsd-signature-type tsd-kind-class">CTag</a></h5></li>
 <li>
 <h5><span class="tsd-kind-parameter">observer</span>: <span class="tsd-signature-type ">MutationObserver</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></li>
 <li>
 <h5><span class="tsd-kind-parameter">onRemove</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">observer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
@@ -74,7 +74,7 @@ And will call {onRemove} when the element is removed from the DOM.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">MutationObserver</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/78dc5e2/src/tag.ts#L854">tag.ts:854</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/79ea100/src/tag.ts#L855">tag.ts:855</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

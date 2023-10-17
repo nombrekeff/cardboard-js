@@ -1,4 +1,4 @@
-import { NestedStyleMap } from './types.js';
+import type { NestedStyleMap } from './types.js';
 export declare class CssGenerator {
     generateCss(styleSheet: {
         [key: string]: NestedStyleMap;

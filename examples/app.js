@@ -1,6 +1,8 @@
-import { init, allTags, state, attached, hstyle, Input, } from '../dist/cardboard.js';
+import { init, allTags, state, attached } from '../dist/cardboard.js';
+import { Input } from '../dist/ext/components.js';
+import { hstyle } from '../dist/ext/base-style.js';
 import { makeTween, tween, tweenTag } from '../dist/ext/tween.js';
-const { div, button, input, a, ul, li, hr, style } = allTags;
+const { div, button, input, ul, li, hr, style } = allTags;
 const root = init();
 hstyle();
 style.attach({

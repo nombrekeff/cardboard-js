@@ -3,6 +3,11 @@ export { tween_1 as tween };
 import * as TWEEN from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
 export function makeTween(opts) {
     var _a, _b;
+    // This is done to remove flickering the first time the tween is run
+    // This will set properties to the initial value. 
+    // This way when the tween is run, it will start with the correct properties.
+    if (opts.update)
+        opts.update(opts.from, this);
     return new TWEEN.Tween(opts.from)
         .to(opts.to, opts.duration)
         .repeat((_a = opts.repeat) !== null && _a !== void 0 ? _a : 0)

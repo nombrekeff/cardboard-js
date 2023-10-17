@@ -1,5 +1,5 @@
 import { CTag } from '../cardboard.js';
-import { EventCallback } from '../types.js';
+import type { EventCallback } from '../types.js';
 export type HInputOptions = {
     value?: string;
     placeholder?: string;

@@ -1,12 +1,13 @@
+/** Removes an item from an array if it exists. It returns whether it was removed or not */
 export function removeFromList(item, list) {
     const index = list.indexOf(item);
     if (index !== -1) {
         list.splice(index, 1);
+        return true;
     }
-    return list;
+    return false;
 }
 export const camelToDash = (str) => str.replace(/([A-Z])/g, (val) => `-${val.toLowerCase()}`);
-export const dashToCamel = (str) => str.replace(/(\-[a-z])/g, (val) => val.toUpperCase().replace('-', ''));
 export function isObject(obj) {
     return typeof obj === 'object' && !(obj instanceof Array);
 }

@@ -1,4 +1,4 @@
-import { NamedColor } from './colors';
+import { NamedColor } from './colors.js';
 
 // Create script to collect all the values, wherever posible.
 // Scrap https://dofactory.com/css/properties#list or other site, and get all single word options

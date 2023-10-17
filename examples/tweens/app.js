@@ -3,31 +3,21 @@ import { makeTween, tweenTag, tween } from '../../dist/ext/tween.js';
 const { div, br } = allTags;
 const sizeEnd = { w: 350, h: 350 };
 const sizeStart = { w: 0, h: 0 };
-const bounceOut = (tag) => makeTween({
-    from: Object.assign({}, sizeEnd),
-    to: Object.assign({}, sizeStart),
-    duration: 300,
-    easing: tween.Easing.Quadratic.InOut,
-    update: (value) => tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` }),
-});
-const bounceIn = (tag) => makeTween({
-    from: Object.assign({}, sizeStart),
-    to: Object.assign({}, sizeEnd),
-    duration: 1000,
-    easing: tween.Easing.Elastic.InOut,
-    update: (value) => tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` }),
-});
+const sharedOpts = { duration: 300, easing: tween.Easing.Quadratic.InOut };
+const updateTag = (tag, value) => tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` });
+const bounceOut = (tag) => makeTween(Object.assign(Object.assign({ from: Object.assign({}, sizeEnd), to: Object.assign({}, sizeStart) }, sharedOpts), { update: updateTag.bind(this, tag) }));
+const bounceIn = (tag) => makeTween(Object.assign(Object.assign({ from: Object.assign({}, sizeStart), to: Object.assign({}, sizeEnd) }, sharedOpts), { update: updateTag.bind(this, tag) }));
 const Box = () => {
     return withLifecycle(div().setStyle({
         width: `${sizeEnd.w}px`,
         height: `${sizeEnd.h}px`,
         background: '#f3f3f3',
-        scale: '.6',
         borderRadius: '8px',
         display: 'inline-block',
     }), {
         start(tag) {
             tweenTag(tag, bounceIn);
+            return true;
         },
         beforeRemove(tag) {
             return new Promise((resolve) => tweenTag(tag, bounceOut, () => resolve(true)));
