@@ -5,25 +5,24 @@ const { div, br } = allTags;
 
 const sizeEnd = { w: 350, h: 350 };
 const sizeStart = { w: 0, h: 0 };
+const sharedOpts = { duration: 300, easing: tween.Easing.Quadratic.InOut };
+const updateTag = (tag: CTag, value) =>
+  tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` });
 
 const bounceOut = (tag: CTag) =>
   makeTween({
     from: { ...sizeEnd },
     to: { ...sizeStart },
-    duration: 300,
-    easing: tween.Easing.Quadratic.InOut,
-    update: (value) =>
-      tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` }),
+    ...sharedOpts,
+    update: updateTag.bind(this, tag),
   });
-
+  
 const bounceIn = (tag: CTag) =>
   makeTween({
     from: { ...sizeStart },
     to: { ...sizeEnd },
-    duration: 1000,
-    easing: tween.Easing.Elastic.InOut,
-    update: (value) =>
-      tag.setStyle({ width: `${value.w}px`, height: `${value.h}px` }),
+    ...sharedOpts,
+    update: updateTag.bind(this, tag),
   });
 
 const Box = () => {
@@ -32,7 +31,6 @@ const Box = () => {
       width: `${sizeEnd.w}px`,
       height: `${sizeEnd.h}px`,
       background: '#f3f3f3',
-      scale: '.6',
       borderRadius: '8px',
       display: 'inline-block',
     }),
