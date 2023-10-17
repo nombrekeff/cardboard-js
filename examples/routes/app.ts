@@ -58,7 +58,24 @@ const myRouter = makeRouter({
   },
 });
 
-console.debug(myRouter);
-// myRouter.navigate('/about');
-
-// setTimeout(() => myRouter.navigate('/home'), 2000);
+const pageSequence = [
+  '/',
+  '/about',
+  '/user/123',
+  '/home',
+  '/about',
+  '/',
+  '/about',
+  '/user/123',
+  '/user/234',
+  '/home',
+  '/about',
+];
+let index = 0;
+let interval = setInterval(() => {
+  if (index < pageSequence.length - 1) {
+    myRouter.navigate(pageSequence[index++]);
+  } else {
+    clearInterval(interval);
+  }
+}, 500);

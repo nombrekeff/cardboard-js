@@ -1,5 +1,4 @@
-import { eventEmitter } from '../events.js';
-import { allTags, CTag, onLifecycle, withLifecycle } from '../tag.js';
+import { allTags, CTag, onLifecycle } from '../tag.js';
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
 
 const { div, a } = allTags;
@@ -100,12 +99,12 @@ export class Router<T extends Record<string, Route> = {}> {
   private _getEffectiveRoute() {
     let effectiveRoute = this._currentRoute;
     let maxCalls = 10000;
+    let alias;
 
     while (
-      typeof this._options.routes[effectiveRoute] === 'string' &&
+      typeof (alias = this._options.routes[effectiveRoute]) === 'string' &&
       maxCalls--
     ) {
-      let alias = this._options.routes[effectiveRoute];
       if (typeof alias === 'string') {
         effectiveRoute = alias;
       } else {

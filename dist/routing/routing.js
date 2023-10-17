@@ -65,9 +65,9 @@ export class Router {
     _getEffectiveRoute() {
         let effectiveRoute = this._currentRoute;
         let maxCalls = 10000;
-        while (typeof this._options.routes[effectiveRoute] === 'string' &&
+        let alias;
+        while (typeof (alias = this._options.routes[effectiveRoute]) === 'string' &&
             maxCalls--) {
-            let alias = this._options.routes[effectiveRoute];
             if (typeof alias === 'string') {
                 effectiveRoute = alias;
             }
