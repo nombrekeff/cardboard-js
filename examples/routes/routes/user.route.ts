@@ -20,7 +20,7 @@ export const UserRoute = () => {
     ),
     {
       start(tag) {
-        console.debug('User is: ', router.params, router);
+        console.debug('User is: ', router.params.id, router);
         tweenTag(tag, fadeOut);
       },
       beforeRemove(tag) {
