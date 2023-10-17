@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { allTags } from '../tag.js';
+import { allTags, onLifecycle } from '../tag.js';
 import { routeMatcher } from './route-matcher.js';
 const { div, a } = allTags;
 export class Router {
@@ -34,7 +34,6 @@ export class Router {
         const querySearch = new URLSearchParams(query);
         const queryStr = querySearch.toString();
         const cQuery = this.query.toString();
-        console.debug(`[Router] -> Navigate to ${path}`, { queryStr, cQuery });
         if (path != this._currentRoute || queryStr !== cQuery) {
             this.query = querySearch;
             this._history.pushState('data', '', path + (queryStr ? '?' + queryStr : ''));
@@ -42,18 +41,25 @@ export class Router {
     }
     _setRoute() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.debug(`[Router] -> _setRoute ${this._currentRoute}`);
             if (this._currentRouteTag) {
                 yield this._currentRouteTag.hide();
             }
             const route = this._getRoute();
-            if (route.parent)
-                route.show();
+            if (route.parent) {
+                yield route.show();
+            } //
             else {
+                this._hookLifecycle(route);
                 this._rootParent.append(route);
             }
             this._currentRouteTag = route;
         });
+    }
+    _hookLifecycle(route) {
+        const options = this._options;
+        if (!options.remove && !options.start)
+            return;
+        onLifecycle(route, options.start ? options.start : null, options.remove ? options.remove : null, options.beforeRemove ? options.beforeRemove : null);
     }
     // Follow aliases until a valid route is found
     _getEffectiveRoute() {
@@ -63,7 +69,6 @@ export class Router {
             maxCalls--) {
             let alias = this._options.routes[effectiveRoute];
             if (typeof alias === 'string') {
-                console.debug(`[Router] -> _getRoute ${effectiveRoute} is alias for ${alias}`);
                 effectiveRoute = alias;
             }
             else {
@@ -73,7 +78,6 @@ export class Router {
         return effectiveRoute;
     }
     _getRoute() {
-        console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
         let navigatedRoute = this._getEffectiveRoute();
         let effectiveRoute = navigatedRoute;
         this.query = new URLSearchParams(this._location.search);
@@ -89,18 +93,15 @@ export class Router {
             }
         }
         if (!matched) {
-            console.debug(`[Router] -> _getRoute ${navigatedRoute} not found, fallback to ${this._options.fallbackRoute}`);
             effectiveRoute = this._options.fallbackRoute;
         }
         if (!(effectiveRoute in this._options.routes)) {
-            console.debug(`[Router] -> _getRoute ${navigatedRoute} not found in the router, fallback to "noRoot" or default error`);
             return this._options.noRouteBuilder
                 ? this._options.noRouteBuilder(this)
                 : div('No route found for: ' + navigatedRoute);
         }
         // If the route is already built before, just return that
         if (this._routes[effectiveRoute]) {
-            console.debug(`[Router] -> _getRoute ${effectiveRoute} is cached, using that`);
             this._routes[effectiveRoute].show();
             return this._routes[effectiveRoute];
         }
@@ -108,7 +109,6 @@ export class Router {
         if (typeof routeBuilder !== 'function') {
             throw new Error('Can find route builder for ' + this._currentRoute);
         }
-        console.debug(`[Router] -> _getRoute ${effectiveRoute} is not cached, creating new one`);
         return (this._routes[effectiveRoute] = routeBuilder(this));
     }
     _setCurrentRoute() {
@@ -153,5 +153,4 @@ export function Link(child, path, query) {
         router.navigate(path, query);
     });
 }
-export default {};
 //# sourceMappingURL=routing.js.map

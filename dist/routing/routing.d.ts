@@ -8,6 +8,9 @@ type RouterOptions<T extends Record<string, Route> = {}> = {
     fallbackRoute?: string;
     noRouteBuilder?: RouteBuilder;
     window?: Window & typeof globalThis;
+    start?: (route: CTag) => Promise<boolean> | boolean;
+    remove?: (route: CTag) => Promise<boolean> | boolean;
+    beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
 };
 export declare class Router<T extends Record<string, Route> = {}> {
     private _options;
@@ -25,6 +28,7 @@ export declare class Router<T extends Record<string, Route> = {}> {
     constructor(options: RouterOptions<T>);
     navigate(path: string, query?: Record<string, string>): void;
     private _setRoute;
+    private _hookLifecycle;
     private _getEffectiveRoute;
     private _getRoute;
     private _setCurrentRoute;
@@ -35,5 +39,4 @@ export declare class Router<T extends Record<string, Route> = {}> {
 export declare let router: Router<any> | undefined;
 export declare function makeRouter<T extends Record<string, Route> = {}>(opts: RouterOptions<T>): Router<T>;
 export declare function Link(child: string | CTag, path: any, query?: Record<string, string>): CTag;
-declare const _default: {};
-export default _default;
+export {};

@@ -19,9 +19,11 @@ const Clock = () => {
             setTime();
             clearInterval(interval);
             interval = setInterval(setTime, 500);
+            return true;
         },
         removed() {
             clearInterval(interval);
+            return true;
         },
     });
 };

@@ -18,15 +18,15 @@ export const AboutRoute = () => {
       ),
     ),
     {
-      start(tag) {
-        console.log('start');
-        tweenTag(tag, fadeOut);
-      },
-      beforeRemove(tag) {
-        return new Promise((resolve) =>
-          tweenTag(tag, fadeIn, () => resolve(true)),
-        );
-      },
+      // start(tag) {
+      //   console.log('start');
+      //   tweenTag(tag, fadeOut);
+      // },
+      // beforeRemove(tag) {
+      //   return new Promise((resolve) =>
+      //     tweenTag(tag, fadeIn, () => resolve(true)),
+      //   );
+      // },
     },
   );
 };

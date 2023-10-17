@@ -1,4 +1,5 @@
-import { allTags, CTag } from '../tag.js';
+import { eventEmitter } from '../events.js';
+import { allTags, CTag, onLifecycle, withLifecycle } from '../tag.js';
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
 
 const { div, a } = allTags;
@@ -13,6 +14,9 @@ type RouterOptions<T extends Record<string, Route> = {}> = {
   fallbackRoute?: string;
   noRouteBuilder?: RouteBuilder;
   window?: Window & typeof globalThis;
+  start?: (route: CTag) => Promise<boolean> | boolean;
+  remove?: (route: CTag) => Promise<boolean> | boolean;
+  beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
 };
 
 export class Router<T extends Record<string, Route> = {}> {
@@ -52,8 +56,6 @@ export class Router<T extends Record<string, Route> = {}> {
     const queryStr = querySearch.toString();
     const cQuery = this.query.toString();
 
-    console.debug(`[Router] -> Navigate to ${path}`, { queryStr, cQuery });
-
     if (path != this._currentRoute || queryStr !== cQuery) {
       this.query = querySearch;
       this._history.pushState(
@@ -65,18 +67,33 @@ export class Router<T extends Record<string, Route> = {}> {
   }
 
   private async _setRoute() {
-    console.debug(`[Router] -> _setRoute ${this._currentRoute}`);
-
     if (this._currentRouteTag) {
       await this._currentRouteTag.hide();
     }
 
     const route = this._getRoute();
-    if (route.parent) route.show();
+
+    if (route.parent) {
+      await route.show();
+    } //
     else {
+      this._hookLifecycle(route);
       this._rootParent.append(route);
     }
+
     this._currentRouteTag = route;
+  }
+
+  private _hookLifecycle(route: CTag) {
+    const options = this._options;
+    if (!options.remove && !options.start) return;
+
+    onLifecycle(
+      route,
+      options.start ? options.start : null,
+      options.remove ? options.remove : null,
+      options.beforeRemove ? options.beforeRemove : null,
+    );
   }
 
   // Follow aliases until a valid route is found
@@ -90,9 +107,6 @@ export class Router<T extends Record<string, Route> = {}> {
     ) {
       let alias = this._options.routes[effectiveRoute];
       if (typeof alias === 'string') {
-        console.debug(
-          `[Router] -> _getRoute ${effectiveRoute} is alias for ${alias}`,
-        );
         effectiveRoute = alias;
       } else {
         break;
@@ -102,7 +116,6 @@ export class Router<T extends Record<string, Route> = {}> {
   }
 
   private _getRoute() {
-    console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
     let navigatedRoute = this._getEffectiveRoute();
     let effectiveRoute = navigatedRoute;
     this.query = new URLSearchParams(this._location.search);
@@ -120,16 +133,10 @@ export class Router<T extends Record<string, Route> = {}> {
     }
 
     if (!matched) {
-      console.debug(
-        `[Router] -> _getRoute ${navigatedRoute} not found, fallback to ${this._options.fallbackRoute}`,
-      );
       effectiveRoute = this._options.fallbackRoute;
     }
 
     if (!(effectiveRoute in this._options.routes)) {
-      console.debug(
-        `[Router] -> _getRoute ${navigatedRoute} not found in the router, fallback to "noRoot" or default error`,
-      );
       return this._options.noRouteBuilder
         ? this._options.noRouteBuilder(this)
         : div('No route found for: ' + navigatedRoute);
@@ -137,9 +144,6 @@ export class Router<T extends Record<string, Route> = {}> {
 
     // If the route is already built before, just return that
     if (this._routes[effectiveRoute]) {
-      console.debug(
-        `[Router] -> _getRoute ${effectiveRoute} is cached, using that`,
-      );
       this._routes[effectiveRoute].show();
       return this._routes[effectiveRoute];
     }
@@ -148,9 +152,6 @@ export class Router<T extends Record<string, Route> = {}> {
     if (typeof routeBuilder !== 'function') {
       throw new Error('Can find route builder for ' + this._currentRoute);
     }
-    console.debug(
-      `[Router] -> _getRoute ${effectiveRoute} is not cached, creating new one`,
-    );
     return (this._routes[effectiveRoute] = routeBuilder(this));
   }
 
@@ -212,5 +213,3 @@ export function Link(
       router.navigate(path, query);
     });
 }
-
-export default {};

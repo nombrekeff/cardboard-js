@@ -243,15 +243,15 @@ export declare function tag(arg0: string | HTMLElement, children?: TagChildren, 
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export declare function onLifecycle(tag: CTag, onStart: (tag: CTag, observer: MutationObserver) => Promise<any> | void, onRemove: (tag: CTag, observer: MutationObserver) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | void): MutationObserver;
+export declare function onLifecycle(tag: CTag, onStart?: (tag: CTag) => Promise<boolean> | boolean, onRemove?: (tag: CTag) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | boolean): MutationObserver;
 /**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.
  */
 export declare const withLifecycle: (tag: CTag, handler: {
-    start?: (tag: CTag) => Promise<boolean> | void;
+    start?: (tag: CTag) => Promise<boolean> | boolean;
     removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean> | void;
+    beforeRemove?: (tag: CTag) => Promise<boolean> | boolean;
 }) => CTag;
 /**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),

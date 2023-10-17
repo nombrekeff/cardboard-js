@@ -3,12 +3,17 @@ import {
   allTags,
   tag,
 } from './node_modules/cardboard-js/dist/cardboard.js';
+import {
+  tweenTag,
+  tweenTagAsync,
+} from './node_modules/cardboard-js/dist/ext/tween.js';
 import { makeRouter } from './node_modules/cardboard-js/dist/routing/routing.js';
 
 import { Header } from './components/header.js';
 import { AboutRoute } from './routes/about.route.js';
 import { HomeRoute } from './routes/home.route.js';
 import { UserRoute } from './routes/user.route.js';
+import { fadeIn, fadeOut } from './components/app-tweens.js';
 
 const { div } = allTags;
 
@@ -43,6 +48,14 @@ const myRouter = makeRouter({
   },
   initialRoute: '/',
   fallbackRoute: '/404',
+  async start(route) {
+    await tweenTagAsync(route, fadeOut);
+    return true;
+  },
+  async beforeRemove(route) {
+    await tweenTagAsync(route, fadeIn);
+    return true;
+  },
 });
 
 console.debug(myRouter);

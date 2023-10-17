@@ -687,7 +687,7 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             }
         }
         if (hasBeenAdded && onStart) {
-            const result = onStart(tag, observer);
+            const result = onStart(tag);
             if (result instanceof Promise) {
                 yield result;
             }
@@ -700,7 +700,7 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             }
         }
         if (hasBeenRemoved && onRemove) {
-            onRemove(tag, observer);
+            onRemove(tag);
         }
     }));
     observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.element) !== null && _b !== void 0 ? _b : document.body, {

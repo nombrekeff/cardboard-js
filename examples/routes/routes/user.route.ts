@@ -19,15 +19,15 @@ export const UserRoute = () => {
       ),
     ),
     {
-      start(tag) {
-        console.debug('User is: ', router.params.id, router);
-        tweenTag(tag, fadeOut);
-      },
-      beforeRemove(tag) {
-        return new Promise((resolve) =>
-          tweenTag(tag, fadeIn, () => resolve(true)),
-        );
-      },
+      // start(tag) {
+      //   console.debug('User is: ', router.params.id, router);
+      //   tweenTag(tag, fadeOut);
+      // },
+      // beforeRemove(tag) {
+      //   return new Promise((resolve) =>
+      //     tweenTag(tag, fadeIn, () => resolve(true)),
+      //   );
+      // },
     },
   );
 };

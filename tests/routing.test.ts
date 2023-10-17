@@ -174,4 +174,48 @@ describe('Routing', () => {
 
     expect(Array.from(document.body.children)).toContain(about.element);
   });
+
+  it('router params work', async () => {
+    createDomMock();
+
+    const home = div('Home');
+    const about = div('About');
+    const HomeRoute = jest.fn(() => home);
+    const AboutRoute = jest.fn(() => about);
+
+    makeRouter({
+      rootParent: tag('(body)'),
+      routes: {
+        '/home/:id': HomeRoute,
+        '/about': AboutRoute,
+      },
+      initialRoute: '/home/123',
+    });
+
+    await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(Array.from(document.body.children)).toContain(home.element);
+  });
+
+  it('query params work', async () => {
+    createDomMock();
+
+    const home = div('Home');
+    const about = div('About');
+    const HomeRoute = jest.fn(() => home);
+    const AboutRoute = jest.fn(() => about);
+
+    const router = makeRouter({
+      rootParent: tag('(body)'),
+      routes: {
+        '/home/:id': HomeRoute,
+        '/about': AboutRoute,
+      },
+      initialRoute: '/home/123',
+    });
+
+    router.navigate('/about', { q: '123' });
+
+    await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(window.location.search).toEqual('?q=123');
+  });
 });

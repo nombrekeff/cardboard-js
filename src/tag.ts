@@ -853,9 +853,9 @@ export function tag(
  */
 export function onLifecycle(
   tag: CTag,
-  onStart: (tag: CTag, observer: MutationObserver) => Promise<any> | void,
-  onRemove: (tag: CTag, observer: MutationObserver) => void,
-  beforeRemove?: (tag: CTag) => Promise<boolean> | void,
+  onStart?: (tag: CTag) => Promise<boolean> | boolean,
+  onRemove?: (tag: CTag) => void,
+  beforeRemove?: (tag: CTag) => Promise<boolean> | boolean,
 ) {
   let observingParent = false;
 
@@ -868,7 +868,7 @@ export function onLifecycle(
       }
     };
   }
-  
+
   if (onStart) {
     const tempOnStart = tag.show;
     tag.show = async () => {
@@ -895,7 +895,7 @@ export function onLifecycle(
     }
 
     if (hasBeenAdded && onStart) {
-      const result = onStart(tag, observer);
+      const result = onStart(tag);
       if (result instanceof Promise) {
         await result;
       }
@@ -910,7 +910,7 @@ export function onLifecycle(
     }
 
     if (hasBeenRemoved && onRemove) {
-      onRemove(tag, observer);
+      onRemove(tag);
     }
   });
 
@@ -929,9 +929,9 @@ export function onLifecycle(
 export const withLifecycle = (
   tag: CTag,
   handler: {
-    start?: (tag: CTag) => Promise<boolean> | void;
+    start?: (tag: CTag) => Promise<boolean> | boolean;
     removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean> | void;
+    beforeRemove?: (tag: CTag) => Promise<boolean> | boolean;
   },
 ): CTag => {
   onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
