@@ -59,15 +59,16 @@ The idea is that instead of writing **HTML** and then creating JS that interacts
 It also offers a **[state](#state) management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
 
 Here is a list of some of the features it offers (_there are more though_):
-* **[showing/hiding elements](#reacting)**: You can conditionally add and remove items from the DOM whenever a state changes.
-* **[enabling/disabling elements](#reacting)**:  enable and disable elements manually, or based on a state.
-* **[add/remove classes](#reacting)**:  add and remove classes from elements manually, or based on a state.
-* **[add/remove attributes](#reacting)**:  add and remove classes from elements manually, or  based on a state.
-* **[templates](#reacting)**: It allows you to create text templates that interpolate some state values, and update whenever the state changes.
-* **[custom reactions](#reacting)**: If there isn't a built-in method that handles some reactions for you, there are methods that allow you to build your own.
-* **[reusable components](#reusable-components)**: You can create reusable components, like in any other framework.
+* **[NO HTML](https://github.com/nombrekeff/cardboard-js/wiki/Tags)**: You don't need to write those nifty little angle brackets anymore! You can create any HTML with Cardboard.
+* **[State](https://github.com/nombrekeff/cardboard-js/wiki/State)**: Out-of-the-box reactive state.
+* **[Tag Manipulation](https://github.com/nombrekeff/cardboard-js/wiki/Manipulating-Tags)**: Manipulate any HTML properties of any element, manually and based on state. i.e. adding classes, showing/hiding elements, removing styles, listening to events, and much more...  
+* **[Built-in Text Templates](https://github.com/nombrekeff/cardboard-js/wiki/Text-Templates)**: Easy text and template manipulation when working with states.
+* **[Reusable Components](https://github.com/nombrekeff/cardboard-js/wiki/Reusable-Component)**: You can create reusable components, like in any other framework.
+* **[Tweening](https://github.com/nombrekeff/cardboard-js/wiki/Tweening)**: Extremely simple tweening out of the box.
+* **[Routing](https://github.com/nombrekeff/cardboard-js/wiki/Routing)**: Create single page apps like a breeze.
 * **[CSS in JS](#css-in-js)**: You can create `style` tags, and write the CSS directly as a JS object.
 * **Typed**: Cardboard aims to be 100% typed, meaning it will suggest any suggestable properties, methods, etc...(i.e. style `properties`, etc...)
+* **ATAP**: As tested as possible!
 
 Cardboard offers all of this in a very small package with a very simple API. As it is plain JS it's possible to learn in a very short amount of time. And you can build apps very fast when you get the hang of it. It can be used both in JavaScript and TypeScript.
 
