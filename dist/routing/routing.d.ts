@@ -6,7 +6,7 @@ type RouterOptions<T extends Record<string, Route> = {}> = {
     routes: T;
     initialRoute: string;
     fallbackRoute?: string;
-    noRoot?: RouteBuilder;
+    noRouteBuilder?: RouteBuilder;
     window?: Window & typeof globalThis;
 };
 export declare class Router<T extends Record<string, Route> = {}> {

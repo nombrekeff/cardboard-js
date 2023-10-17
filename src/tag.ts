@@ -868,6 +868,7 @@ export function onLifecycle(
       }
     };
   }
+  
   if (onStart) {
     const tempOnStart = tag.show;
     tag.show = async () => {

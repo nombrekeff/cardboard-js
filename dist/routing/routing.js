@@ -70,26 +70,29 @@ export class Router {
     }
     _getRoute() {
         console.debug(`[Router] -> _getRoute ${this._currentRoute}`);
-        let effectiveRoute = this._getEffectiveRoute();
+        let navigatedRoute = this._getEffectiveRoute();
+        let effectiveRoute = navigatedRoute;
         this.query = new URLSearchParams(this._location.search);
         // Find matcher
+        let matched = false;
         for (let matcher of this._routeMatchers) {
             const params = matcher.matcher.parse(effectiveRoute);
             if (params) {
                 effectiveRoute = matcher.key;
                 this.params = params;
+                matched = true;
                 break;
             }
         }
-        if (!(effectiveRoute in this._options.routes)) {
-            console.debug(`[Router] -> _getRoute ${effectiveRoute} not found, fallback to ${this._options.fallbackRoute}`);
+        if (!matched) {
+            console.debug(`[Router] -> _getRoute ${navigatedRoute} not found, fallback to ${this._options.fallbackRoute}`);
             effectiveRoute = this._options.fallbackRoute;
         }
         if (!(effectiveRoute in this._options.routes)) {
-            console.debug(`[Router] -> _getRoute ${effectiveRoute} not found in the router, fallback to "noRoot" or default error`);
-            return this._options.noRoot
-                ? this._options.noRoot(this)
-                : div('No route found for: ' + effectiveRoute);
+            console.debug(`[Router] -> _getRoute ${navigatedRoute} not found in the router, fallback to "noRoot" or default error`);
+            return this._options.noRouteBuilder
+                ? this._options.noRouteBuilder(this)
+                : div('No route found for: ' + navigatedRoute);
         }
         // If the route is already built before, just return that
         if (this._routes[effectiveRoute]) {
@@ -118,7 +121,7 @@ export class Router {
         const pushState = this._history.pushState;
         this._history.pushState = (...args) => {
             pushState.call(this._history, ...args);
-            this._window.dispatchEvent(new Event('pushstate'));
+            this._window.dispatchEvent(new window.Event('pushstate'));
         };
     }
     _initRouteMatchers() {
