@@ -48,7 +48,7 @@ root.append(div(p('Hello world!')));
 ```
 
 #### 🔸 [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started) - for a getting started guide.
-#### 🔸 [Wiki Examples](https://github.com/nombrekeff/cardboard-js/wiki/Examples) - for human documentation, and examples.
+#### 🔸 [Wiki](https://github.com/nombrekeff/cardboard-js/wiki/Examples) - for human documentation, and examples.
 #### 🔸 [Documentation](https://nombrekeff.github.io/cardboard-js/) - for technical docs.
 
 ### What does it do?
