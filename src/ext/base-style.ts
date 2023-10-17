@@ -1,5 +1,5 @@
 import { allTags } from '../cardboard.js';
-import { StyleSet } from '../types.js';
+import type { StyleSet } from '../types.js';
 const { style } = allTags;
 
 const baseStyles: StyleSet = {

@@ -2,12 +2,11 @@ import {
   init,
   allTags,
   state,
-  hstyle,
   CTag,
   attached,
   withLifecycle,
 } from '../../dist/cardboard.js';
-
+import { hstyle } from '../../dist/ext/base-style.js';
 const { div, style, span, button, p } = allTags;
 
 const Clock = () => {
@@ -25,7 +24,7 @@ const Clock = () => {
   };
 
   let interval: number;
-  
+
   return withLifecycle(
     div(
       span().text('$hours', st),
@@ -46,7 +45,6 @@ const Clock = () => {
     },
   );
 };
-
 
 let clock: CTag;
 init().append(

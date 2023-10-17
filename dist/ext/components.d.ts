@@ -1,5 +1,5 @@
 import { CTag } from '../cardboard.js';
-import { EventCallback } from '../types.js';
+import type { EventCallback } from '../types.js';
 export type HInputOptions = {
     value?: string;
     placeholder?: string;
@@ -9,3 +9,4 @@ export type HInputOptions = {
     submit?: (tag: CTag, evt: Event) => void;
 };
 export declare function Input(options?: HInputOptions): CTag;
+//# sourceMappingURL=components.d.ts.map

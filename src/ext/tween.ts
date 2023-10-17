@@ -21,6 +21,11 @@ export type TweenOptions<T> = {
 };
 
 export function makeTween<T extends {}>(opts: TweenOptions<T>): Tween<T> {
+  // This is done to remove flickering the first time the tween is run
+  // This will set properties to the initial value. 
+  // This way when the tween is run, it will start with the correct properties.
+  if (opts.update) opts.update(opts.from, this);
+
   return (new TWEEN.Tween(opts.from) as Tween<T>)
     .to(opts.to, opts.duration)
     .repeat(opts.repeat ?? 0)

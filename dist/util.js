@@ -1,3 +1,4 @@
+/** Removes an item from an array if it exists. It returns the same array without the item */
 export function removeFromList(item, list) {
     const index = list.indexOf(item);
     if (index !== -1) {

@@ -4,7 +4,7 @@ import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
 import { callOrReturn, camelToDash } from './util.js';
 import { text } from './text.js';
-import {
+import type {
   AllTags,
   Consumable,
   State,
@@ -170,7 +170,7 @@ export class CTag {
    * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
    * I will be placed exactly in the correct position, even if there are other elements hidden.
    */
-  show() {
+  async show() {
     if (!this.parent.children.includes(this.element)) {
       // Get's the position of the element if all the children are visible
       const expectedIndex = this.parent._children.indexOf(this);
@@ -209,9 +209,10 @@ export class CTag {
   }
 
   /** Hide this element (removed from DOM) */
-  hide() {
+  async hide() {
     if (this.parent.children.includes(this.element)) {
-      this.remove();
+      console.log(this.remove);
+      await this.remove();
       this._meta.isHidden = true;
     }
   }
@@ -711,8 +712,8 @@ export class CTag {
   }
 
   /** Remove element from the DOM */
-  remove() {
-    this.element.remove();
+  async remove() {
+    await this.element.remove();
     return this;
   }
 
@@ -853,7 +854,7 @@ export function tag(
  */
 export function onLifecycle(
   tag: CTag,
-  onStart: (tag: CTag, observer: MutationObserver) => void,
+  onStart: (tag: CTag, observer: MutationObserver) => Promise<any> | void,
   onRemove: (tag: CTag, observer: MutationObserver) => void,
   beforeRemove?: (tag: CTag) => Promise<boolean> | void,
 ) {
@@ -862,16 +863,31 @@ export function onLifecycle(
   if (beforeRemove) {
     const tempElRemove = tag.element.remove;
     tag.element.remove = async () => {
+      console.log('element.remove');
       const result = beforeRemove(tag);
       if (!result || (result instanceof Promise && (await result))) {
         tempElRemove.call(tag.element);
       }
+      console.log('element.remove end');
+    };
+  }
+  if (onStart) {
+    const tempOnStart = tag.show;
+    tag.show = async () => {
+      console.log('element.show');
+      const result = tempOnStart.call(tag);
+      if (result instanceof Promise) {
+        return await result;
+      }
+
+      return result;
     };
   }
 
-  const observer = new MutationObserver((mutations, observer) => {
+  const observer = new MutationObserver(async (mutations, observer) => {
     let hasBeenAdded = false;
     let hasBeenRemoved = false;
+
     for (let mut of mutations) {
       if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
         hasBeenAdded = true;
@@ -882,18 +898,31 @@ export function onLifecycle(
     }
 
     if (hasBeenAdded && onStart) {
-      onStart(tag, observer);
+      const result = onStart(tag, observer);
+      if (result instanceof Promise) {
+        await result;
+      }
+
+
+      // When element is added, change observer to observe parent instead of body
+      // Improve performance, as we just need to know if it's added or removed from the parent!
       if (!observingParent) {
         observer.disconnect();
         observer.observe(tag.element.parentElement, { childList: true });
         observingParent = true;
       }
     }
+
     if (hasBeenRemoved && onRemove) {
       onRemove(tag, observer);
     }
   });
-  observer.observe(tag.parent?.element ?? document.body, { childList: true });
+
+  observer.observe(tag.parent?.element ?? document.body, {
+    childList: true,
+    subtree: true,
+  });
+
   return observer;
 }
 
@@ -904,7 +933,7 @@ export function onLifecycle(
 export const withLifecycle = (
   tag: CTag,
   handler: {
-    start?: (tag: CTag) => void;
+    start?: (tag: CTag) => Promise<boolean> | void;
     removed?: (tag: CTag) => void;
     beforeRemove?: (tag: CTag) => Promise<boolean> | void;
   },
@@ -992,6 +1021,7 @@ const interceptors: {
  * List of all HTML tag functions. From `div` to `abbr` :)
  * If you want to create any other tag, use the {@link tag} function.
  *
+ * @type {AllTags}
  * @example
  * ```ts
  * const { div, p, abbr, img, style, ... } = allTags;

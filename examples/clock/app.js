@@ -1,4 +1,5 @@
-import { init, allTags, state, hstyle, withLifecycle, } from '../../dist/cardboard.js';
+import { init, allTags, state, withLifecycle, } from '../../dist/cardboard.js';
+import { hstyle } from '../../dist/ext/base-style.js';
 const { div, style, span, button, p } = allTags;
 const Clock = () => {
     const st = state({

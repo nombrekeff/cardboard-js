@@ -1,7 +1,7 @@
-import { CssProperty } from './css-properties';
-import { PickPropertyValues } from './css-property-values';
-import { CTag } from './tag';
-import { ValidTagName } from './tag-names';
+import type { CssProperty } from './css-properties.js';
+import type { PickPropertyValues } from './css-property-values.js';
+import type { CTag } from './tag.js';
+import type { ValidTagName } from './tag-names.js';
 export type StyleMap = {
     [key in CssProperty]?: PickPropertyValues<key>;
 };
@@ -43,6 +43,10 @@ export type TagConfig = {
 export type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 export type AllTags = {
     [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
+        /**
+         * This will attach (append) this tag to the currently attached tag if there is one.
+         */
         attach: (...children: PickArgType<key>) => CTag;
     };
 };
+//# sourceMappingURL=types.d.ts.map

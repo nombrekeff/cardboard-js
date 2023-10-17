@@ -1,4 +1,4 @@
-import { State } from './types.js';
+import type { State } from './types.js';
 import { isObject } from './util.js';
 
 /**

@@ -1,4 +1,4 @@
-import { NamedColor } from './colors';
+import { NamedColor } from './colors.js';
 export type PickPropertyValues<T> = T extends 'color' ? ColorOptions : T extends 'alignContent' ? AlignContentOptions : T extends 'alignItems' ? AlignItemsOptions : T extends 'alignSelf' ? AlignSelfOptions : T extends 'all' ? AllOptions : T extends 'accentColor' ? ColorOptions : T extends 'animationDirection' ? AnimationDirectionOptions : T extends 'animationFillMode' ? AnimationFillModeOptions : T extends 'animationPlayState' ? AnimationPlayStateOptions : T extends 'animationPlayState' ? AnimationPlayStateOptions : T extends 'borderStyle' ? BorderStyleOptions : T extends 'background' ? ColorOptions : T extends 'backgroundColor' ? ColorOptions : T extends 'backgroundImage' ? BackgroundImageOptions : T extends 'backgroundRepeat' ? BackgroundRepeatOptions : T extends 'backgroundAttachment' ? BackgroundAttachmentOptions : T extends 'backgroundPosition' ? BackgroundPositionOptions : T extends 'position' ? PPositionOptions : T extends 'transform' ? TransformOptions : T extends 'fontStyle' ? FontStyleOptions : T extends 'fontWeight' ? FontWeightOptions : T extends 'flexDirection' ? FlexDirectionOptions : T extends 'zIndex' ? string : T extends 'top' ? string : T extends 'display' ? DisplayOptions : T extends 'bottom' ? string : T extends 'left' ? string : T extends 'right' ? string : string & {};
 export type CommonOptions = 'initial' | 'inherit' | (string & {});
 export type ColorOptions = NamedColor | (string & {});
@@ -21,3 +21,4 @@ export type FontWeightOptions = 'normal' | 'bold' | 'bolder' | 'lighter' | '100'
 export type FontStyleOptions = 'normal' | 'italic' | 'oblique' | CommonOptions;
 export type FlexDirectionOptions = 'row' | 'column' | 'row-reverse' | 'column-reverse' | CommonOptions;
 export {};
+//# sourceMappingURL=css-property-values.d.ts.map

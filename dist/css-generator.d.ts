@@ -1,4 +1,4 @@
-import { NestedStyleMap } from './types.js';
+import type { NestedStyleMap } from './types.js';
 export declare class CssGenerator {
     generateCss(styleSheet: {
         [key: string]: NestedStyleMap;
@@ -9,3 +9,4 @@ export declare class CssGenerator {
     generateBlockContent(selector: string, style: NestedStyleMap): string[];
     generateStyle(name: string, value: string): string;
 }
+//# sourceMappingURL=css-generator.d.ts.map

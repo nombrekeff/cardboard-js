@@ -1,7 +1,7 @@
-import { CssProperty } from './css-properties';
-import { PickPropertyValues } from './css-property-values';
-import { CTag } from './tag';
-import { ValidTagName } from './tag-names';
+import type { CssProperty } from './css-properties.js';
+import type { PickPropertyValues } from './css-property-values.js';
+import type { CTag } from './tag.js';
+import type { ValidTagName } from './tag-names.js';
 
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
 export type NestedStyleMap = {

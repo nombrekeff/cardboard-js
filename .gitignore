@@ -1,7 +1,8 @@
 /node_modules/
 /_*
-/example/**/*.js
-/example/**/*.js.map
+/examples/**/*.js
+/examples/**/*.js.map
 /coverage/
 /example/show-hide-performance-test/
 /index.html
+node_modules/
