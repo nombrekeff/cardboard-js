@@ -9,7 +9,7 @@ It works out of the box, it's extremely lightweight and very performant. See **[
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour and with a few differences. If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
 
-> **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the project for a vision of what's coming for v1.0.0 - help is much appreciated! 
+> **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
 
 ```ts
