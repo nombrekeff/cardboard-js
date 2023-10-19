@@ -125,33 +125,19 @@ export class CTag {
 
   /** Sets the children, removes previous children  */
   setChildren(children: TagChildren) {
-    this.element.replaceChildren(
-      ...children
-        .map(this._setChildrenParent.bind(this))
-        .filter(this._childrenFilterPredicate.bind(this))
-        .map(this._getElementForChild), //
-    );
+    this.element.replaceChildren(...this._mapChildren(children));
     this._children = children;
     return this;
   }
 
   append(...children: TagChildren) {
-    this.element.append(
-      ...children
-        .map(this._setChildrenParent.bind(this))
-        .filter(this._childrenFilterPredicate.bind(this))
-        .map(this._getElementForChild), //
-    );
+    this.element.append(...this._mapChildren(children));
     this._children.push(...children);
     return this;
   }
 
   prepend(...children: TagChildren) {
-    this.element.prepend(
-      ...children
-        .filter(this._childrenFilterPredicate.bind(this))
-        .map(this._getElementForChild), //
-    );
+    this.element.prepend(...this._mapChildren(children));
     this._children.unshift(...children);
     return this;
   }
@@ -455,8 +441,7 @@ export class CTag {
     evt: K,
     consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void,
   ) {
-    tag.on(evt, (other, evt) => consumer(this, other, evt));
-    return this;
+    return tag.on(evt, (other, evt) => consumer(this, other, evt));
   }
 
   /**
@@ -555,13 +540,10 @@ export class CTag {
   }
 
   /** Toggle a class. If it's present it's removed, if it's not present its added. */
-  toggleClass(targetClass: string) {
-    if (this.hasClass(targetClass)) {
-      this.rmClass(targetClass);
-    } else {
-      this.addClass(targetClass);
-    }
-    return this;
+  toggleClass(targetClass: string): CTag {
+    return this.hasClass(targetClass)
+      ? this.rmClass(targetClass)
+      : this.addClass(targetClass);
   }
 
   /** Add a single style */
@@ -605,7 +587,7 @@ export class CTag {
   }
 
   /** Adds a single attribute to the element */
-  addAttr(key: string, value: string) {
+  addAttr(key: string, value: string = '') {
     this.element.attributes[key] = value;
     this.element.setAttribute(key, value);
     return this;
@@ -646,9 +628,7 @@ export class CTag {
   ): Consumable {
     return {
       changed: (listener) => {
-        this.on(evtName, () => {
-          listener(fn(this));
-        });
+        this.on(evtName, () => listener(fn(this)));
       },
     };
   }
@@ -672,7 +652,7 @@ export class CTag {
     fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
   ) {
     if (fn) {
-      const listener = (evt: HTMLElementEventMap[K]) => {
+      const listener = (evt) => {
         fn(this, evt);
         this.element.removeEventListener(evtName, listener);
       };
@@ -728,24 +708,17 @@ export class CTag {
 
   /** Disable the element */
   disable() {
-    this.setDisabled(true);
-    this.addAttr('disabled', 'disabled');
-    return this;
+    return this.setDisabled(true);
   }
 
   /** Enable the element */
   enable() {
-    this.setDisabled(false);
-    return this;
+    return this.setDisabled(false);
   }
 
   /** Set whether the element should be disabled or not */
   setDisabled(disabled: boolean) {
-    if (disabled) {
-      this.addAttr('disabled', 'disabled');
-    } else {
-      this.rmAttr('disabled');
-    }
+    return disabled ? this.addAttr('disabled') : this.rmAttr('disabled');
   }
 
   /** Query a child in this element (in the DOM) */
@@ -798,7 +771,7 @@ export class CTag {
   private _mutationObserver: MutationObserver;
   private _getElementChildren(element: HTMLElement) {
     if (!this._mutationObserver) {
-      this._mutationObserver = new MutationObserver((mutations, observer) => {
+      this._mutationObserver = new MutationObserver(() => {
         this._setCachedChildren(element);
       });
       this._mutationObserver.observe(this.element, { childList: true });
@@ -808,7 +781,6 @@ export class CTag {
 
   private _setCachedChildren(element: HTMLElement) {
     let childNodes = element.childNodes;
-
     let children = [];
     let i = childNodes.length;
 
@@ -819,6 +791,13 @@ export class CTag {
     }
 
     this._cachedChildren = children;
+  }
+
+  private _mapChildren(children: TagChildren) {
+    return children
+      .map(this._setChildrenParent.bind(this))
+      .filter(this._childrenFilterPredicate.bind(this))
+      .map(this._getElementForChild);
   }
 }
 
@@ -866,6 +845,7 @@ export function onLifecycle(
       if (!result || (result instanceof Promise && (await result))) {
         tempElRemove.call(tag.element);
       }
+      return result;
     };
   }
 
@@ -876,7 +856,6 @@ export function onLifecycle(
       if (result instanceof Promise) {
         return await result;
       }
-
       return result;
     };
   }

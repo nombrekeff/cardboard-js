@@ -133,7 +133,7 @@ export declare class CTag {
     /**
      * Listen to an event on the element. Like addEventListener.
      */
-    listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
     /**
      * If {newText} is provided, it sets the `textContent` of the element.
      * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
@@ -158,7 +158,7 @@ export declare class CTag {
     /** Replace a class with another */
     replaceClass(targetClass: string, replaceClass: string): this;
     /** Toggle a class. If it's present it's removed, if it's not present its added. */
-    toggleClass(targetClass: string): this;
+    toggleClass(targetClass: string): CTag;
     /** Add a single style */
     addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
     /** Set multiple styles at once */
@@ -172,7 +172,7 @@ export declare class CTag {
         [k: string]: string;
     }): this;
     /** Adds a single attribute to the element */
-    addAttr(key: string, value: string): this;
+    addAttr(key: string, value?: string): this;
     /** Remove attributes from the element */
     rmAttr(...attrs: string[]): this;
     /** Check if this element has attributes */
@@ -208,7 +208,7 @@ export declare class CTag {
     /** Enable the element */
     enable(): this;
     /** Set whether the element should be disabled or not */
-    setDisabled(disabled: boolean): void;
+    setDisabled(disabled: boolean): this;
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
@@ -220,6 +220,7 @@ export declare class CTag {
     private _mutationObserver;
     private _getElementChildren;
     private _setCachedChildren;
+    private _mapChildren;
 }
 /**
  * This function can do the following based on the first argument:

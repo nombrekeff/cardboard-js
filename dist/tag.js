@@ -96,25 +96,17 @@ export class CTag {
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
-        this.element.replaceChildren(...children
-            .map(this._setChildrenParent.bind(this))
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
+        this.element.replaceChildren(...this._mapChildren(children));
         this._children = children;
         return this;
     }
     append(...children) {
-        this.element.append(...children
-            .map(this._setChildrenParent.bind(this))
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
+        this.element.append(...this._mapChildren(children));
         this._children.push(...children);
         return this;
     }
     prepend(...children) {
-        this.element.prepend(...children
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild));
+        this.element.prepend(...this._mapChildren(children));
         this._children.unshift(...children);
         return this;
     }
@@ -317,8 +309,7 @@ export class CTag {
      * Listen to an event on the element. Like addEventListener.
      */
     listen(tag, evt, consumer) {
-        tag.on(evt, (other, evt) => consumer(this, other, evt));
-        return this;
+        return tag.on(evt, (other, evt) => consumer(this, other, evt));
     }
     /**
      * If {newText} is provided, it sets the `textContent` of the element.
@@ -403,13 +394,9 @@ export class CTag {
     }
     /** Toggle a class. If it's present it's removed, if it's not present its added. */
     toggleClass(targetClass) {
-        if (this.hasClass(targetClass)) {
-            this.rmClass(targetClass);
-        }
-        else {
-            this.addClass(targetClass);
-        }
-        return this;
+        return this.hasClass(targetClass)
+            ? this.rmClass(targetClass)
+            : this.addClass(targetClass);
     }
     /** Add a single style */
     addStyle(property, value) {
@@ -447,7 +434,7 @@ export class CTag {
         return this;
     }
     /** Adds a single attribute to the element */
-    addAttr(key, value) {
+    addAttr(key, value = '') {
         this.element.attributes[key] = value;
         this.element.setAttribute(key, value);
         return this;
@@ -481,9 +468,7 @@ export class CTag {
     when(evtName, fn) {
         return {
             changed: (listener) => {
-                this.on(evtName, () => {
-                    listener(fn(this));
-                });
+                this.on(evtName, () => listener(fn(this)));
             },
         };
     }
@@ -548,23 +533,15 @@ export class CTag {
     }
     /** Disable the element */
     disable() {
-        this.setDisabled(true);
-        this.addAttr('disabled', 'disabled');
-        return this;
+        return this.setDisabled(true);
     }
     /** Enable the element */
     enable() {
-        this.setDisabled(false);
-        return this;
+        return this.setDisabled(false);
     }
     /** Set whether the element should be disabled or not */
     setDisabled(disabled) {
-        if (disabled) {
-            this.addAttr('disabled', 'disabled');
-        }
-        else {
-            this.rmAttr('disabled');
-        }
+        return disabled ? this.addAttr('disabled') : this.rmAttr('disabled');
     }
     /** Query a child in this element (in the DOM) */
     q(selector) {
@@ -610,7 +587,7 @@ export class CTag {
     }
     _getElementChildren(element) {
         if (!this._mutationObserver) {
-            this._mutationObserver = new MutationObserver((mutations, observer) => {
+            this._mutationObserver = new MutationObserver(() => {
                 this._setCachedChildren(element);
             });
             this._mutationObserver.observe(this.element, { childList: true });
@@ -627,6 +604,12 @@ export class CTag {
             }
         }
         this._cachedChildren = children;
+    }
+    _mapChildren(children) {
+        return children
+            .map(this._setChildrenParent.bind(this))
+            .filter(this._childrenFilterPredicate.bind(this))
+            .map(this._getElementForChild);
     }
 }
 /**
@@ -663,6 +646,7 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.element);
             }
+            return result;
         });
     }
     if (onStart) {

@@ -25,13 +25,11 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
   const updateNode = () => {
-    if (!values) {
-      node.nodeValue = textTemplate;
-    } else {
-      node.nodeValue = textTemplate.replace(interpolatePattern, (match, g1) => {
-        return values[g1] != null ? values[g1].toString() : match;
-      });
-    }
+    node.nodeValue = !values
+      ? textTemplate
+      : textTemplate.replace(interpolatePattern, (m, g1) =>
+          values[g1] != null ? values[g1].toString() : m,
+        );
   };
 
   if (values && isObject(values)) {
@@ -39,9 +37,7 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
       // We're just interested in listening to the values that are references in the text.
       if (textTemplate.includes(`$${key}`)) {
         const item = values[key];
-        item.changed(() => {
-          updateNode();
-        });
+        item.changed(updateNode);
       }
     }
   }

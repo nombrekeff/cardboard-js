@@ -153,7 +153,6 @@ describe('Routing', () => {
 
     const home = div('Home');
     const about = div('About');
-    const link = Link('Test', '/about');
 
     const HomeRoute = jest.fn(() => home);
     const AboutRoute = jest.fn(() => about);
@@ -167,6 +166,7 @@ describe('Routing', () => {
       initialRoute: '/home',
     });
 
+    const link = Link('Test', '/about');
     init().append(link);
 
     link.element.dispatchEvent(new window.Event('click'));
