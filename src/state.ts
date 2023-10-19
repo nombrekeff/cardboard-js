@@ -67,10 +67,7 @@ export function state<T extends object>(
   };
 
   for (let prop of Object.getOwnPropertyNames(content)) {
-    if (isObject(content[prop])) {
-      content[prop] = state(content[prop], () => emitChange(content, prop));
-    } //
-    else if (content[prop] instanceof Array) {
+    if (isObject(content[prop]) || content[prop] instanceof Array) {
       content[prop] = state(content[prop], () => emitChange(content, prop));
     }
   }
@@ -89,19 +86,14 @@ export function state<T extends object>(
         target[prop] = value;
         return true;
       }
-     
+
       target[prop] = value;
       emitChange(target, prop);
       return true;
     },
   }) as any;
 
-  // Whole state changed
-  proxy.changed = (callback) => {
-    _stateListeners.push(callback);
-  };
-
-  // proxy.not =
+  proxy.changed = _stateListeners.push.bind(_stateListeners);
 
   return proxy as State<T>;
 }

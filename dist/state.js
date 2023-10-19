@@ -58,10 +58,7 @@ export function state(content, callback) {
         return value;
     };
     for (let prop of Object.getOwnPropertyNames(content)) {
-        if (isObject(content[prop])) {
-            content[prop] = state(content[prop], () => emitChange(content, prop));
-        } //
-        else if (content[prop] instanceof Array) {
+        if (isObject(content[prop]) || content[prop] instanceof Array) {
             content[prop] = state(content[prop], () => emitChange(content, prop));
         }
     }
@@ -84,11 +81,7 @@ export function state(content, callback) {
             return true;
         },
     });
-    // Whole state changed
-    proxy.changed = (callback) => {
-        _stateListeners.push(callback);
-    };
-    // proxy.not =
+    proxy.changed = _stateListeners.push.bind(_stateListeners);
     return proxy;
 }
 //# sourceMappingURL=state.js.map

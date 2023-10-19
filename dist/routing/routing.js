@@ -71,9 +71,8 @@ export class Router {
             if (typeof alias === 'string') {
                 effectiveRoute = alias;
             }
-            else {
+            else
                 break;
-            }
         }
         return effectiveRoute;
     }
@@ -139,8 +138,7 @@ export class Router {
 }
 export let router;
 export function makeRouter(opts) {
-    router = new Router(opts);
-    return router;
+    return (router = new Router(opts));
 }
 export function Link(child, path, query) {
     return a(child)

@@ -107,10 +107,9 @@ export class Router<T extends Record<string, Route> = {}> {
     ) {
       if (typeof alias === 'string') {
         effectiveRoute = alias;
-      } else {
-        break;
-      }
+      } else break;
     }
+
     return effectiveRoute;
   }
 
@@ -192,8 +191,7 @@ export let router: Router<any> | undefined;
 export function makeRouter<T extends Record<string, Route> = {}>(
   opts: RouterOptions<T>,
 ) {
-  router = new Router<T>(opts);
-  return router as Router<T>;
+  return (router = new Router<T>(opts));
 }
 
 export function Link(
