@@ -1,5 +1,4 @@
 import type { State } from './types.js';
-import { isObject } from './util.js';
 
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.

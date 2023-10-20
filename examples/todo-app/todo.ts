@@ -20,9 +20,6 @@ tag('(head)').append(...makeLinks());
 styles();
 
 attach(div.attach().addClass('todo-app'));
-appState.changed(() => {
-  console.log("State changed!!!");
-});
 
 h3.attach('Cardboard TODO').text(' (count: $length) ', appState).setStyle({
   textAlign: 'center',
