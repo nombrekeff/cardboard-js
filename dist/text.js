@@ -1,4 +1,3 @@
-import { isObject } from './util.js';
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
  *
@@ -26,8 +25,8 @@ export function text(textTemplate, values) {
             ? textTemplate
             : textTemplate.replace(interpolatePattern, (m, g1) => values[g1] != null ? values[g1].toString() : m);
     };
-    if (values && isObject(values)) {
-        for (let key in values) {
+    if (values && 'changed' in values) {
+        for (let key of Object.getOwnPropertyNames(values)) {
             // We're just interested in listening to the values that are references in the text.
             if (textTemplate.includes(`$${key}`)) {
                 const item = values[key];

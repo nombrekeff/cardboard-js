@@ -30,6 +30,6 @@ const baseStyles = {
         },
     },
 };
-export function hstyle(attach = true) {
+export function BaseStyle(attach = true) {
     return attach ? style.attach(baseStyles) : style(baseStyles);
 }

@@ -1,11 +1,11 @@
 import type { NestedStyleMap } from './types.js';
 export declare class CssGenerator {
-    generateCss(styleSheet: {
+    genCss(styleSheet: {
         [key: string]: NestedStyleMap;
     } | {
         [key: string]: NestedStyleMap;
     }[]): string;
-    generateBlock(selector: string, style: NestedStyleMap): string;
-    generateBlockContent(selector: string, style: NestedStyleMap): string[];
-    generateStyle(name: string, value: string): string;
+    genBlock(selector: string, style: NestedStyleMap): string;
+    genBlockContent(selector: string, style: NestedStyleMap): string[];
+    genStyle(name: string, value: string): string;
 }

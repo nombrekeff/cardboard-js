@@ -4,7 +4,6 @@ export default {
   transform: {
     '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
   },
-  // setupFiles: ['./tests/__mocks__/client.ts'],
   extensionsToTreatAsEsm: ['.ts'],
   globals: {
     'ts-jest': {
