@@ -7,7 +7,7 @@ Welcome to Cardboard. A very simple, yet powerful reactive framework, to create 
 All of this with, **no HTML**, **no build** (_unless you use TS or decide to build_), **no compile**, **no JSX**. 
 It works out of the box, it's extremely lightweight and very performant. See **[What Does It Do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
 
-It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour and with a few differences. If you need a more stable framework similar to this, go check them out. But remember to come back in a while when Cardboard is more stable :P
+It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour, a bit heavier and with a few differences.
 
 > **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
