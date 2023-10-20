@@ -8,7 +8,7 @@
   "scripts": {
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watchAll",
-    "build": "rimraf dist && tsc --p tsconfig.json && npm run build:docs && npm run build:example",
+    "build": "rimraf dist && tsc --p tsconfig.json && npm run build:docs && npm run build:example && npm run build:bundle:main",
     "build:watch": "tsc --watch",
     "build:example": "tsc --p examples/tsconfig.json",
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",

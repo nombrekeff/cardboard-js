@@ -14,12 +14,12 @@ export class CEvent {
     constructor() {
         this._listeners = [];
     }
-    listen(callback) {
-        this._listeners.push(callback);
+    listen(fn) {
+        this._listeners.push(fn);
         return this;
     }
-    remove(callback) {
-        removeFromList(callback, this._listeners);
+    remove(fn) {
+        removeFromList(fn, this._listeners);
     }
     dispatch(data) {
         this._listeners.forEach((el) => el(data));
@@ -30,16 +30,16 @@ export class CMappedEvent {
     constructor() {
         this._listeners = {};
     }
-    listen(evt, callback) {
+    listen(evt, fn) {
         if (!(evt in this._listeners)) {
-            this._listeners[evt] = [callback];
+            this._listeners[evt] = [fn];
         }
         else {
-            this._listeners[evt].push(callback);
+            this._listeners[evt].push(fn);
         }
     }
-    remove(evt, callback) {
-        removeFromList(callback, this._listeners[evt]);
+    remove(evt, fn) {
+        removeFromList(fn, this._listeners[evt]);
     }
     dispatch(evt, data) {
         if (evt in this._listeners) {

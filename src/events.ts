@@ -16,13 +16,13 @@ type CEventCallback<T = any> = (data: T) => void;
 export class CEvent<T> {
   private _listeners: ((data: T) => void)[] = [];
 
-  listen(callback: (data: T) => void) {
-    this._listeners.push(callback);
+  listen(fn: (data: T) => void) {
+    this._listeners.push(fn);
     return this;
   }
 
-  remove(callback: (data: T) => void) {
-    removeFromList(callback, this._listeners);
+  remove(fn: (data: T) => void) {
+    removeFromList(fn, this._listeners);
   }
 
   dispatch(data?: T) {
@@ -34,16 +34,16 @@ export class CEvent<T> {
 export class CMappedEvent<K extends string = string, T = any> {
   private _listeners: { [key in K]?: CEventCallback[] } = {};
 
-  listen(evt: K, callback: CEventCallback<T>) {
+  listen(evt: K, fn: CEventCallback<T>) {
     if (!(evt in this._listeners)) {
-      this._listeners[evt] = [callback];
+      this._listeners[evt] = [fn];
     } else {
-      this._listeners[evt].push(callback);
+      this._listeners[evt].push(fn);
     }
   }
 
-  remove(evt: K, callback: CEventCallback<T>) {
-    removeFromList(callback, this._listeners[evt]);
+  remove(evt: K, fn: CEventCallback<T>) {
+    removeFromList(fn, this._listeners[evt]);
   }
 
   dispatch(evt: K, data?: T) {

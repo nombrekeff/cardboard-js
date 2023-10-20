@@ -25,23 +25,18 @@ import { isArray, isObject } from './util.js';
  * div(template('Count is: $count', st));
  * ```
  */
-
 export function state<T extends object>(
   content: T,
-  callback?: (newValue: T) => void,
+  fn?: (newValue: T) => void,
 ): State<T> {
-  let _propListeners: CMappedEvent<string, T> = new CMappedEvent();
-  let _stateListeners = new CEvent<T>();
+  let _propEvt: CMappedEvent<string, T> = new CMappedEvent();
+  let _stateEvt = new CEvent<T>();
 
-  if (callback) _stateListeners.listen(callback);
-
-  const addListener = (prop, callback) => {
-    _propListeners.listen(prop, callback);
-  };
+  if (fn) _stateEvt.listen(fn);
 
   const emitChange = (target, prop) => {
-    _propListeners.dispatch(prop, target[prop]);
-    _stateListeners.dispatch(target);
+    _propEvt.dispatch(prop, target[prop]);
+    _stateEvt.dispatch(target);
   };
 
   const addChangedMethod = (target, prop) => {
@@ -49,9 +44,9 @@ export function state<T extends object>(
 
     try {
       if (isObject(value)) {
-        value.changed = (callback) => addListener(prop, callback);
+        value.changed = (callback) => _propEvt.listen(prop, callback);
       } else if (value.__proto__) {
-        value.__proto__.changed = (callback) => addListener(prop, callback);
+        value.__proto__.changed = (callback) => _propEvt.listen(prop, callback);
       }
     } catch (error) {}
 
@@ -87,7 +82,7 @@ export function state<T extends object>(
   }) as any;
 
   proxy.changed = (callback: (newValue: T) => void) =>
-    _stateListeners.listen(callback);
+    _stateEvt.listen(callback);
 
   return proxy as State<T>;
 }

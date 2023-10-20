@@ -5,4 +5,4 @@ export declare function isObject(obj: any): boolean;
 export declare function isArray(obj: any): boolean;
 export declare const toJson: (possiblyJsonString: any) => any;
 export declare const fromJson: (possiblyJson: any) => string;
-export declare const callOrReturn: <T>(val: T | ((...args: any) => T), ...args: any[]) => T;
+export declare const val: <T>(val: T | ((...args: any) => T), ...args: any[]) => T;

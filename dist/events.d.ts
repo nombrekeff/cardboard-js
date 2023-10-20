@@ -12,14 +12,14 @@ type CEventCallback<T = any> = (data: T) => void;
  */
 export declare class CEvent<T> {
     private _listeners;
-    listen(callback: (data: T) => void): this;
-    remove(callback: (data: T) => void): void;
+    listen(fn: (data: T) => void): this;
+    remove(fn: (data: T) => void): void;
     dispatch(data?: T): this;
 }
 export declare class CMappedEvent<K extends string = string, T = any> {
     private _listeners;
-    listen(evt: K, callback: CEventCallback<T>): void;
-    remove(evt: K, callback: CEventCallback<T>): void;
+    listen(evt: K, fn: CEventCallback<T>): void;
+    remove(evt: K, fn: CEventCallback<T>): void;
     dispatch(evt: K, data?: T): void;
 }
 export declare function singleEvent<T>(): CEvent<T>;

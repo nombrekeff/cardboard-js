@@ -22,7 +22,7 @@ export function isArray(obj) {
 }
 export const toJson = (possiblyJsonString) => JSON.parse(possiblyJsonString);
 export const fromJson = (possiblyJson) => JSON.stringify(possiblyJson);
-export const callOrReturn = <T>(val: T | ((...args: any) => T), ...args): T => {
+export const val = <T>(val: T | ((...args: any) => T), ...args): T => {
   if (typeof val === 'function') {
     return (val as any)(...args);
   }

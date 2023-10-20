@@ -18,7 +18,7 @@ export function isArray(obj) {
 }
 export const toJson = (possiblyJsonString) => JSON.parse(possiblyJsonString);
 export const fromJson = (possiblyJson) => JSON.stringify(possiblyJson);
-export const callOrReturn = (val, ...args) => {
+export const val = (val, ...args) => {
     if (typeof val === 'function') {
         return val(...args);
     }

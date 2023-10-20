@@ -31,9 +31,7 @@ export class Router {
         this.navigate(this._options.initialRoute);
     }
     navigate(path, query) {
-        const querySearch = new URLSearchParams(query);
-        const queryStr = querySearch.toString();
-        const cQuery = this.query.toString();
+        const querySearch = new URLSearchParams(query), queryStr = querySearch.toString(), cQuery = this.query.toString();
         if (path != this._currentRoute || queryStr !== cQuery) {
             this.query = querySearch;
             this._history.pushState('data', '', path + (queryStr ? '?' + queryStr : ''));
@@ -41,8 +39,8 @@ export class Router {
     }
     _setRoute() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this._currentRouteTag) {
-                yield this._currentRouteTag.hide();
+            if (this._currentTag) {
+                yield this._currentTag.hide();
             }
             const route = this._getRoute();
             if (route.parent) {
@@ -52,7 +50,7 @@ export class Router {
                 this._hookLifecycle(route);
                 this._rootParent.append(route);
             }
-            this._currentRouteTag = route;
+            this._currentTag = route;
         });
     }
     _hookLifecycle(route) {
@@ -63,9 +61,7 @@ export class Router {
     }
     // Follow aliases until a valid route is found
     _getEffectiveRoute() {
-        let effectiveRoute = this._currentRoute;
-        let maxCalls = 10000;
-        let alias;
+        let effectiveRoute = this._currentRoute, maxCalls = 10000, alias;
         while (typeof (alias = this._options.routes[effectiveRoute]) === 'string' &&
             maxCalls--) {
             if (typeof alias === 'string') {
@@ -77,38 +73,36 @@ export class Router {
         return effectiveRoute;
     }
     _getRoute() {
-        let navigatedRoute = this._getEffectiveRoute();
-        let effectiveRoute = navigatedRoute;
+        let navigatedRoute = this._getEffectiveRoute(), route = navigatedRoute, matched = false, opts = this._options;
         this.query = new URLSearchParams(this._location.search);
         // Find matcher
-        let matched = false;
-        for (let matcher of this._routeMatchers) {
-            const params = matcher.matcher.parse(effectiveRoute);
+        for (let { matcher, key } of this._routeMatchers) {
+            const params = matcher.parse(route);
             if (params) {
-                effectiveRoute = matcher.key;
                 this.params = params;
+                route = key;
                 matched = true;
                 break;
             }
         }
         if (!matched) {
-            effectiveRoute = this._options.fallbackRoute;
+            route = opts.fallbackRoute;
         }
-        if (!(effectiveRoute in this._options.routes)) {
-            return this._options.noRouteBuilder
-                ? this._options.noRouteBuilder(this)
+        if (!(route in opts.routes)) {
+            return opts.noRouteBuilder
+                ? opts.noRouteBuilder(this)
                 : div('No route found for: ' + navigatedRoute);
         }
         // If the route is already built before, just return that
-        if (this._routes[effectiveRoute]) {
-            this._routes[effectiveRoute].show();
-            return this._routes[effectiveRoute];
+        if (this._routes[route]) {
+            this._routes[route].show();
+            return this._routes[route];
         }
-        let routeBuilder = this._options.routes[effectiveRoute];
-        if (typeof routeBuilder !== 'function') {
+        let builder = opts.routes[route];
+        if (typeof builder !== 'function') {
             throw new Error('Can find route builder for ' + this._currentRoute);
         }
-        return (this._routes[effectiveRoute] = routeBuilder(this));
+        return (this._routes[route] = builder(this));
     }
     _setCurrentRoute() {
         if (this.currentRoute == this._location.pathname)

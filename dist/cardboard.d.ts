@@ -1,28 +1,18 @@
-/// <reference types="@tweenjs/tween.js" />
 export * from './tag.js';
 export * from './state.js';
 export * from './css-generator.js';
 export * from './util.js';
 export * from './text.js';
 export * from './events.js';
-export * from './ext/base_style.js';
-export * from './ext/components.js';
 export * from './ext/routing.js';
-export * from './ext/tween.js';
 import * as _tag from './tag.js';
 import * as _css from './css-generator.js';
 import * as _events from './events.js';
-import * as _components from './ext/components.js';
 import * as _routing from './ext/routing.js';
-import * as _tween from './ext/tween.js';
 export declare const Cardboard: {
-    makeTween<T extends {}>(opts: _tween.TweenOptions<T>): _tween.Tween<T>;
-    tweenTag(tag: _tag.CTag, tween: (tag: _tag.CTag) => _tween.Tween<any>, onComplete?: () => void): _tag.CTag;
-    tweenTagAsync(tag: _tag.CTag, tween: (tag: _tag.CTag) => _tween.Tween<any>): Promise<_tag.CTag>;
-    tween: any;
-    makeRouter<T_1 extends Record<string, string | ((router: _routing.Router<any>) => _tag.CTag)> = {}>(opts: {
+    makeRouter<T extends Record<string, string | ((router: _routing.Router<any>) => _tag.CTag)> = {}>(opts: {
         rootParent: _tag.CTag;
-        routes: T_1;
+        routes: T;
         initialRoute: string;
         fallbackRoute?: string;
         noRouteBuilder?: (router: _routing.Router<any>) => _tag.CTag;
@@ -30,26 +20,24 @@ export declare const Cardboard: {
         start?: (route: _tag.CTag) => boolean | Promise<boolean>;
         remove?: (route: _tag.CTag) => boolean | Promise<boolean>;
         beforeRemove?: (route: _tag.CTag) => boolean | Promise<boolean>;
-    }): _routing.Router<T_1>;
+    }): _routing.Router<T>;
     Link(child: string | _tag.CTag, path: any, query?: Record<string, string>): _tag.CTag;
     Router: typeof _routing.Router;
     router: _routing.Router<any>;
-    Input(options?: _components.HInputOptions): _tag.CTag;
-    BaseStyle(attach?: boolean): _tag.CTag;
-    singleEvent<T_2>(): _events.CEvent<T_2>;
-    mappedEvent<K extends string, T_3>(): _events.CMappedEvent<K, T_3>;
+    singleEvent<T_1>(): _events.CEvent<T_1>;
+    mappedEvent<K extends string, T_2>(): _events.CMappedEvent<K, T_2>;
     CEvent: typeof _events.CEvent;
     CMappedEvent: typeof _events.CMappedEvent;
-    text<T_4>(textTemplate: string, values?: import("./types.js").State<T_4>): Node;
-    removeFromList<T_5>(item: T_5, list: T_5[]): boolean;
+    text<T_3>(textTemplate: string, values?: import("./types.js").State<T_3>): Node;
+    removeFromList<T_4>(item: T_4, list: T_4[]): boolean;
     isObject(obj: any): boolean;
     isArray(obj: any): boolean;
     camelToDash: (str: any) => any;
     toJson: (possiblyJsonString: any) => any;
     fromJson: (possiblyJson: any) => string;
-    callOrReturn: <T_6>(val: T_6 | ((...args: any) => T_6), ...args: any[]) => T_6;
+    val: <T_5>(val: T_5 | ((...args: any) => T_5), ...args: any[]) => T_5;
     CssGenerator: typeof _css.CssGenerator;
-    state<T_7 extends object>(content: T_7, callback?: (newValue: T_7) => void): import("./types.js").State<T_7>;
+    state<T_6 extends object>(content: T_6, fn?: (newValue: T_6) => void): import("./types.js").State<T_6>;
     attached(): _tag.CTag;
     tag(arg0: string | HTMLElement, children?: import("./types.js").TagChildren, attach?: boolean): _tag.CTag;
     onLifecycle(tag: _tag.CTag, onStart?: (tag: _tag.CTag) => boolean | Promise<boolean>, onRemove?: (tag: _tag.CTag) => void, beforeRemove?: (tag: _tag.CTag) => boolean | Promise<boolean>): MutationObserver;

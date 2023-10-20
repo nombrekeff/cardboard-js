@@ -23,26 +23,23 @@ import { isArray, isObject } from './util.js';
  * div(template('Count is: $count', st));
  * ```
  */
-export function state(content, callback) {
-    let _propListeners = new CMappedEvent();
-    let _stateListeners = new CEvent();
-    if (callback)
-        _stateListeners.listen(callback);
-    const addListener = (prop, callback) => {
-        _propListeners.listen(prop, callback);
-    };
+export function state(content, fn) {
+    let _propEvt = new CMappedEvent();
+    let _stateEvt = new CEvent();
+    if (fn)
+        _stateEvt.listen(fn);
     const emitChange = (target, prop) => {
-        _propListeners.dispatch(prop, target[prop]);
-        _stateListeners.dispatch(target);
+        _propEvt.dispatch(prop, target[prop]);
+        _stateEvt.dispatch(target);
     };
     const addChangedMethod = (target, prop) => {
         const value = target[prop];
         try {
             if (isObject(value)) {
-                value.changed = (callback) => addListener(prop, callback);
+                value.changed = (callback) => _propEvt.listen(prop, callback);
             }
             else if (value.__proto__) {
-                value.__proto__.changed = (callback) => addListener(prop, callback);
+                value.__proto__.changed = (callback) => _propEvt.listen(prop, callback);
             }
         }
         catch (error) { }
@@ -73,6 +70,6 @@ export function state(content, callback) {
             return true;
         },
     });
-    proxy.changed = (callback) => _stateListeners.listen(callback);
+    proxy.changed = (callback) => _stateEvt.listen(callback);
     return proxy;
 }

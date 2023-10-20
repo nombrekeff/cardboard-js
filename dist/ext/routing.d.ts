@@ -19,7 +19,7 @@ export declare class Router<T extends Record<string, Route> = {}> {
     private _location;
     private _history;
     private _currentRoute?;
-    private _currentRouteTag?;
+    private _currentTag?;
     private _rootParent;
     private _routeMatchers;
     params: Record<string, string>;
