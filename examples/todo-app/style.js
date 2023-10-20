@@ -75,4 +75,3 @@ export default function styles() {
             } }),
     });
 }
-//# sourceMappingURL=style.js.map

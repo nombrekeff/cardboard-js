@@ -69,4 +69,3 @@ const TodoList = () => {
     return div(itemInput, button('Add item').clicked(addItem), list);
 };
 attached().append(TodoList());
-//# sourceMappingURL=app.js.map

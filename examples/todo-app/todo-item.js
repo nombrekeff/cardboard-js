@@ -11,4 +11,3 @@ export default function TodoItem(content, opts) {
         .addClass('btn-remove')
         .clicked((self) => removeItem(self.parent))).addClass('todo-item');
 }
-//# sourceMappingURL=todo-item.js.map

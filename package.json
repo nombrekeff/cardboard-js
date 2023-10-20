@@ -14,7 +14,8 @@
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",
     "build:docs": "typedoc --out docs src/*.ts",
     "ts:defs": "tsc --p tsconfig.types.json",
-    "pack:esm": "webpack"
+    "pack:esm": "webpack",
+    "build:_exp": "tsc --p _experiments/tsconfig.json"
   },
   "author": "nombrekeff",
   "repository": {

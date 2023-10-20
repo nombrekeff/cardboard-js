@@ -18,4 +18,3 @@ export function Input(options = {}) {
     });
     return el;
 }
-//# sourceMappingURL=components.js.map

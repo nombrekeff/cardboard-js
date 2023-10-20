@@ -1,16 +1,16 @@
 import { removeFromList } from './util.js';
 /**
- * As the name indicates, it's a implementation of an event emitter. Listen to, and trigger, events.
+ * As the name indicates, it's an implementation of an event listener/emitter (single events, for multiple events use {@link}). Listen to, and trigger, events.
  *
  * @example
  * ```ts
- * const evt = new EventEmitter<bool>();
+ * const evt = new CEvent<bool>();
  * evt.listen(listener);
  * evt.dispatch(true);
  * evt.remove(listener);
  * ```
  */
-export class EventEmitter {
+export class CEvent {
     constructor() {
         this._listeners = [];
     }
@@ -26,7 +26,30 @@ export class EventEmitter {
         return this;
     }
 }
-export function eventEmitter() {
-    return new EventEmitter();
+export class CMappedEvent {
+    constructor() {
+        this._listeners = {};
+    }
+    listen(evt, callback) {
+        if (!(evt in this._listeners)) {
+            this._listeners[evt] = [callback];
+        }
+        else {
+            this._listeners[evt].push(callback);
+        }
+    }
+    remove(evt, callback) {
+        removeFromList(callback, this._listeners[evt]);
+    }
+    dispatch(evt, data) {
+        if (evt in this._listeners) {
+            this._listeners[evt].forEach((el) => el(data));
+        }
+    }
 }
-//# sourceMappingURL=events.js.map
+export function singleEvent() {
+    return new CEvent();
+}
+export function mappedEvent() {
+    return new CMappedEvent();
+}

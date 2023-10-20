@@ -151,4 +151,3 @@ export function Link(child, path, query) {
         router.navigate(path, query);
     });
 }
-//# sourceMappingURL=routing.js.map

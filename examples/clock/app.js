@@ -49,4 +49,3 @@ setTimeout(() => {
 }, 6000);
 const list = div.attach();
 button.attach('Add item').clicked(() => list.append(p('Item')));
-//# sourceMappingURL=app.js.map

@@ -38,4 +38,3 @@ export function text(textTemplate, values) {
     updateNode();
     return node;
 }
-//# sourceMappingURL=text.js.map

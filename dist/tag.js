@@ -799,4 +799,3 @@ export const allTags = new Proxy({}, {
         return fn;
     },
 });
-//# sourceMappingURL=tag.js.map

@@ -7,4 +7,3 @@ export * from './text.js';
 export * from './events.js';
 export * from './routing/routing.js';
 export default {};
-//# sourceMappingURL=cardboard.js.map

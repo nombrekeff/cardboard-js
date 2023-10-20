@@ -32,4 +32,3 @@ export class CssGenerator {
         return `${camelToDash(name)}:${value};`;
     }
 }
-//# sourceMappingURL=css-generator.js.map

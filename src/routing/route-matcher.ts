@@ -24,7 +24,7 @@ function validateRule(rule, value) {
   // getting .toString from a new object {} or Object.prototype, I'm assuming
   // that exports will always be an object, and using its .toString method.
   // Bad idea? Let me know by filing an issue
-  var type = exports.toString.call(rule).charAt(8);
+  var type = rule.toString.call(rule).charAt(8);
   // If regexp, match. If function, invoke. Otherwise, compare. Note that ==
   // is used because type coercion is needed, as `value` will always be a
   // string, but `rule` might not.

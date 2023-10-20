@@ -53,4 +53,3 @@ function addItemFromInput() {
 for (const item of [...appState]) {
     addItem(item);
 }
-//# sourceMappingURL=todo.js.map

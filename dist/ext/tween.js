@@ -35,4 +35,3 @@ export function tweenTag(tag, tween, onComplete) {
 export function tweenTagAsync(tag, tween) {
     return new Promise((resolve) => tweenTag(tag, tween, () => resolve(tag)));
 }
-//# sourceMappingURL=tween.js.map
