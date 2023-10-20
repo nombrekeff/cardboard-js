@@ -4,14 +4,14 @@ describe('CssGenerator', () => {
   const generator = new CssGenerator();
 
   it('generateCss() basic works', async () => {
-    const generated = generator.generateCss({
+    const generated = generator.genCss({
       body: {},
     });
     expect(generated).toEqual('body{}');
   });
 
-  it('generateCss() with styles', async () => {
-    const generated = generator.generateCss({
+  it('genCss() with styles', async () => {
+    const generated = generator.genCss({
       body: {
         color: 'red',
         flexDirection: 'column',
@@ -20,8 +20,8 @@ describe('CssGenerator', () => {
     expect(generated).toEqual('body{color:red;flex-direction:column;}');
   });
 
-  it('generateCss() with nested styles', async () => {
-    const generated = generator.generateCss({
+  it('genCss() with nested styles', async () => {
+    const generated = generator.genCss({
       body: {
         color: 'red',
         flexDirection: 'column',
