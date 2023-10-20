@@ -988,7 +988,7 @@ const interceptors: {
     );
   },
   style: (styles: StyleSet[], attach: boolean = false) => {
-    return tag('style', [context.css.generateCss(styles)], attach);
+    return tag('style', [context.css.genCss(styles)], attach);
   },
 };
 

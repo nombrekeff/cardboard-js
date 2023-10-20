@@ -1,5 +1,5 @@
 import { allTags, CTag, onLifecycle } from '../tag.js';
-import { RouteMatcher, routeMatcher } from './route-matcher.js';
+import { RouteMatcher, routeMatcher } from '../route-matcher.js';
 
 const { div, a } = allTags;
 
