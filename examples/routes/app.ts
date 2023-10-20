@@ -3,12 +3,8 @@ import {
   allTags,
   tag,
 } from './node_modules/cardboard-js/dist/cardboard.js';
-import {
-  tweenTag,
-  tweenTagAsync,
-} from './node_modules/cardboard-js/dist/ext/tween.js';
-import { makeRouter } from './node_modules/cardboard-js/dist/routing/routing.js';
-
+import { tweenTagAsync } from './node_modules/cardboard-js/dist/ext/tween.js';
+import { makeRouter } from './node_modules/cardboard-js/dist/ext/routing.js';
 import { Header } from './components/header.js';
 import { AboutRoute } from './routes/about.route.js';
 import { HomeRoute } from './routes/home.route.js';
