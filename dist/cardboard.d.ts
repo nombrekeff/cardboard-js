@@ -7,7 +7,6 @@ export * from './events.js';
 export * from './ext/routing.js';
 export type * from './types';
 import * as _tag from './tag.js';
-import * as _css from './css-generator.js';
 import * as _events from './events.js';
 import * as _routing from './ext/routing.js';
 export declare const Cardboard: {
@@ -27,7 +26,14 @@ export declare const Cardboard: {
     toJson: (possiblyJsonString: any) => any;
     fromJson: (possiblyJson: any) => string;
     val: <T_4>(val: T_4 | ((...args: any) => T_4), ...args: any[]) => T_4;
-    CssGenerator: typeof _css.CssGenerator;
+    genCss(styleSheet: {
+        [key: string]: import("./types").NestedStyleMap;
+    } | {
+        [key: string]: import("./types").NestedStyleMap;
+    }[]): string;
+    genBlock(selector: string, style: import("./types").NestedStyleMap): string;
+    genBlockContent(selector: string, style: import("./types").NestedStyleMap): string[];
+    genStyle(name: string, value: string): string;
     state<T_5 extends object>(content: T_5, fn?: (newValue: T_5) => void): import("./types").State<T_5>;
     attached(): _tag.CTag;
     tag(arg0: string | HTMLElement, children?: import("./types").TagChildren, attach?: boolean): _tag.CTag;

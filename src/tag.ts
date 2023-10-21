@@ -1,4 +1,4 @@
-import { CssGenerator } from './css-generator.js';
+import { genCss } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
@@ -20,11 +20,9 @@ import { createConsumable, isConsumable } from './consumables.js';
 let context: {
   attached: CTag;
   stack: CTag[];
-  css: CssGenerator;
 } = {
   attached: null,
   stack: [],
-  css: new CssGenerator(),
 };
 
 /**
@@ -975,7 +973,7 @@ const interceptors: {
     );
   },
   style: (styles: StyleSet[], attach: boolean = false) => {
-    return tag('style', [context.css.genCss(styles)], attach);
+    return tag('style', [genCss(styles)], attach);
   },
 };
 

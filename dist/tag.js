@@ -7,14 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { CssGenerator } from './css-generator.js';
+import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createConsumable, isConsumable } from './consumables.js';
 let context = {
     attached: null,
     stack: [],
-    css: new CssGenerator(),
 };
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
@@ -755,7 +754,7 @@ const interceptors = {
         }));
     },
     style: (styles, attach = false) => {
-        return tag('style', [context.css.genCss(styles)], attach);
+        return tag('style', [genCss(styles)], attach);
     },
 };
 /**
