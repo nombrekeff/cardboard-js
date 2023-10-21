@@ -18,7 +18,8 @@ const Counter = () => {
 
   return button()
     .text(`Clicked $count times`, counter)
-    .addStyle('color', 'red')
+    .addStyle('color', 'gray')
+    .stylesIf(counter.count, { color: 'black' }) // If count > 0, it will make the color black
     .clicked((_) => counter.count++);
 };
 
