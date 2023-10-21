@@ -1,6 +1,6 @@
 /// <reference types="@tweenjs/tween.js" />
-import { CTag } from '../tag.js';
 export * as tween from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
+import type { CTag } from '../tag.js';
 import type { Easing, Tween } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
 export type { Easing, Tween, } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
 export type TweenOptions<T> = {

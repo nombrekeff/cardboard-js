@@ -1,8 +1,8 @@
-import { eventEmitter } from '../src/events.js';
+import { singleEvent } from '../src/events.js';
 
-describe('EventEmitter', () => {
+describe('singleEvent', () => {
   it('simple case works', async () => {
-    const event = eventEmitter();
+    const event = singleEvent();
     const cb = jest.fn();
     event.listen(cb);
 
@@ -12,7 +12,7 @@ describe('EventEmitter', () => {
   });
 
   it('multiple listeners case works', async () => {
-    const event = eventEmitter();
+    const event = singleEvent();
     const cb1 = jest.fn();
     const cb2 = jest.fn();
     event.listen(cb1);
@@ -25,7 +25,7 @@ describe('EventEmitter', () => {
   });
 
   it('multiple listeners and dispatch case works', async () => {
-    const event = eventEmitter();
+    const event = singleEvent();
     const cb1 = jest.fn();
     const cb2 = jest.fn();
     event.listen(cb1);
@@ -39,7 +39,7 @@ describe('EventEmitter', () => {
   });
 
   it('remove case works', async () => {
-    const event = eventEmitter();
+    const event = singleEvent();
     const cb1 = jest.fn();
     const cb2 = jest.fn();
     event.listen(cb1);

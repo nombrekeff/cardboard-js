@@ -20,4 +20,3 @@ br();
 button.attach('Toggle').clicked(() => (st.show = !st.show)),
     div.attach(pp1, pp2.hideIfNot(st.show), //
     pp3);
-//# sourceMappingURL=conditionals.js.map

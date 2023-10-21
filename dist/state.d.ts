@@ -22,4 +22,4 @@ import type { State } from './types.js';
  * div(template('Count is: $count', st));
  * ```
  */
-export declare function state<T extends object>(content: T, callback?: (newValue: T) => void): State<T>;
+export declare function state<T extends object>(content: T, fn?: (newValue: T) => void): State<T>;

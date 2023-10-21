@@ -1,4 +1,5 @@
-import { isObject } from './util.js';
+import { CEvent, CMappedEvent } from './events.js';
+import { isArray, isObject } from './util.js';
 /**
  * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
  * {@param content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
@@ -22,44 +23,32 @@ import { isObject } from './util.js';
  * div(template('Count is: $count', st));
  * ```
  */
-export function state(content, callback) {
-    let _propListeners = {};
-    let _stateListeners = [];
-    if (callback)
-        _stateListeners.push(callback);
-    const addListener = (prop, callback) => {
-        if (!_propListeners[prop])
-            _propListeners[prop] = [];
-        if (!_propListeners[prop].includes(callback)) {
-            _propListeners[prop].push(callback);
-        }
-    };
+export function state(content, fn) {
+    let _propEvt = new CMappedEvent();
+    let _stateEvt = new CEvent();
+    if (fn)
+        _stateEvt.listen(fn);
     const emitChange = (target, prop) => {
-        if (_propListeners[prop]) {
-            for (const listener of _propListeners[prop]) {
-                listener(target[prop]);
-            }
-        }
-        for (const listener of _stateListeners) {
-            listener(target);
-        }
+        _propEvt.dispatch(prop, target[prop]);
+        _stateEvt.dispatch(target);
     };
     const addChangedMethod = (target, prop) => {
         const value = target[prop];
         try {
-            if (isObject(target[prop])) {
-                value.changed = (callback) => addListener(prop, callback);
+            if (isObject(value)) {
+                value.changed = (callback) => _propEvt.listen(prop, callback);
             }
             else if (value.__proto__) {
-                value.__proto__.changed = (callback) => addListener(prop, callback);
+                value.__proto__.changed = (callback) => _propEvt.listen(prop, callback);
             }
         }
         catch (error) { }
         return value;
     };
     for (let prop of Object.getOwnPropertyNames(content)) {
-        if (isObject(content[prop]) || content[prop] instanceof Array) {
-            content[prop] = state(content[prop], () => emitChange(content, prop));
+        let val = content[prop];
+        if (isObject(val) || isArray(val)) {
+            content[prop] = state(val, emitChange.bind(this, content, prop));
         }
     }
     const proxy = new Proxy(content, {
@@ -81,7 +70,6 @@ export function state(content, callback) {
             return true;
         },
     });
-    proxy.changed = _stateListeners.push.bind(_stateListeners);
+    proxy.changed = (callback) => _stateEvt.listen(callback);
     return proxy;
 }
-//# sourceMappingURL=state.js.map

@@ -1,5 +1,4 @@
-import { init, allTags, state, withLifecycle, } from '../../dist/cardboard.js';
-import { hstyle } from '../../dist/ext/base-style.js';
+import { allTags, init, state, withLifecycle, } from '../../dist/cardboard.js';
 const { div, style, span, button, p } = allTags;
 const Clock = () => {
     const st = state({
@@ -28,7 +27,7 @@ const Clock = () => {
     });
 };
 let clock;
-init().append(hstyle(), style({
+init().append(style({
     body: {
         display: 'flex',
         flexDirection: 'column',
@@ -49,4 +48,3 @@ setTimeout(() => {
 }, 6000);
 const list = div.attach();
 button.attach('Add item').clicked(() => list.append(p('Item')));
-//# sourceMappingURL=app.js.map

@@ -1,5 +1,5 @@
 import { createDomMock } from './__mocks__/client';
-import { tag, state } from '../src/cardboard';
+import { tag, state } from '../src/cardboard.js';
 
 function getElementIndex(node) {
   var index = 0;

@@ -1,5 +1,5 @@
 import { createDomMock } from './__mocks__/client';
-import { Link, makeRouter } from '../src/routing/routing';
+import { Link, makeRouter } from '../src/ext/routing';
 import { tag, allTags, init } from '../src/tag';
 const { div } = allTags;
 

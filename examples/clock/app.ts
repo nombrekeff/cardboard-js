@@ -1,12 +1,11 @@
 import {
-  init,
-  allTags,
-  state,
   CTag,
-  attached,
+  allTags,
+  init,
+  state,
   withLifecycle,
 } from '../../dist/cardboard.js';
-import { hstyle } from '../../dist/ext/base-style.js';
+
 const { div, style, span, button, p } = allTags;
 
 const Clock = () => {
@@ -50,7 +49,6 @@ const Clock = () => {
 
 let clock: CTag;
 init().append(
-  hstyle(),
   style({
     body: {
       display: 'flex',

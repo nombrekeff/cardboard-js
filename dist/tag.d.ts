@@ -27,6 +27,8 @@ export declare class CTag {
     private _meta;
     get value(): any;
     get style(): CSSStyleDeclaration;
+    get className(): string;
+    get classList(): DOMTokenList;
     setValue(newValue: string): this;
     /** Gets the value of the element and clears the value */
     get consumeValue(): any;
@@ -143,18 +145,18 @@ export declare class CTag {
      */
     text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string;
     /**
-     * Configure the element in a single call by passing @param {TagConfig} config
+     * Configure the element in a single call by passing @param {TagConfig} c
      * instead of having to call a method for each property you want to changes
      */
-    config(config: TagConfig): this;
+    config(c: TagConfig): this;
     /** Add classes to the elements class list */
-    addClass(...classNames: string[]): this;
+    addClass(...classes: string[]): this;
     /** Set the elements class name */
-    className(className: string): this;
+    setClassName(className: string): this;
     /** Remove classes from class list */
-    rmClass(...classNames: string[]): this;
+    rmClass(...classes: string[]): this;
     /** Check if classes are present in this element */
-    hasClass(...classNames: string[]): boolean;
+    hasClass(...classes: string[]): boolean;
     /** Replace a class with another */
     replaceClass(targetClass: string, replaceClass: string): this;
     /** Toggle a class. If it's present it's removed, if it's not present its added. */
@@ -217,9 +219,9 @@ export declare class CTag {
     private _setChildrenParent;
     private _childrenFilterPredicate;
     private _getElementForChild;
-    private _mutationObserver;
-    private _getElementChildren;
-    private _setCachedChildren;
+    private _observer;
+    private _getChildren;
+    private _cacheChildren;
     private _mapChildren;
 }
 /**

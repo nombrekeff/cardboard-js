@@ -1,6 +1,6 @@
 import { init, tag, allTags, attach, text } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
-import { hstyle } from '../../dist/ext/base-style.js';
+import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import appState from './state.js';
@@ -15,13 +15,13 @@ const pageLinks = [
 const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
 init();
-hstyle();
+BaseStyle();
 tag('(head)').append(...makeLinks());
 styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO', text(' (count: $length) ', appState)).setStyle({
+h3.attach('Cardboard TODO').text(' (count: $length) ', appState).setStyle({
   textAlign: 'center',
   margin: '40px 0',
 });

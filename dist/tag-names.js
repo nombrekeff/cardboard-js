@@ -116,4 +116,3 @@ export const allKnownTags = [
     'video',
 ];
 export const storableTags = ['style', 'script'];
-//# sourceMappingURL=tag-names.js.map

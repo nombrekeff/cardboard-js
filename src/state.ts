@@ -1,5 +1,6 @@
+import { CEvent, CMappedEvent } from './events.js';
 import type { State } from './types.js';
-import { isObject } from './util.js';
+import { isArray, isObject } from './util.js';
 
 /**
  * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
@@ -26,40 +27,26 @@ import { isObject } from './util.js';
  */
 export function state<T extends object>(
   content: T,
-  callback?: (newValue: T) => void,
+  fn?: (newValue: T) => void,
 ): State<T> {
-  let _propListeners: { [k: string]: any[] } = {};
-  let _stateListeners = [];
+  let _propEvt: CMappedEvent<string, T> = new CMappedEvent();
+  let _stateEvt = new CEvent<T>();
 
-  if (callback) _stateListeners.push(callback);
-
-  const addListener = (prop, callback) => {
-    if (!_propListeners[prop]) _propListeners[prop] = [];
-    if (!_propListeners[prop].includes(callback)) {
-      _propListeners[prop].push(callback);
-    }
-  };
+  if (fn) _stateEvt.listen(fn);
 
   const emitChange = (target, prop) => {
-    if (_propListeners[prop]) {
-      for (const listener of _propListeners[prop]) {
-        listener(target[prop]);
-      }
-    }
-
-    for (const listener of _stateListeners) {
-      listener(target);
-    }
+    _propEvt.dispatch(prop, target[prop]);
+    _stateEvt.dispatch(target);
   };
 
   const addChangedMethod = (target, prop) => {
     const value: any = target[prop];
 
     try {
-      if (isObject(target[prop])) {
-        value.changed = (callback) => addListener(prop, callback);
+      if (isObject(value)) {
+        value.changed = (callback) => _propEvt.listen(prop, callback);
       } else if (value.__proto__) {
-        value.__proto__.changed = (callback) => addListener(prop, callback);
+        value.__proto__.changed = (callback) => _propEvt.listen(prop, callback);
       }
     } catch (error) {}
 
@@ -67,8 +54,9 @@ export function state<T extends object>(
   };
 
   for (let prop of Object.getOwnPropertyNames(content)) {
-    if (isObject(content[prop]) || content[prop] instanceof Array) {
-      content[prop] = state(content[prop], () => emitChange(content, prop));
+    let val = content[prop];
+    if (isObject(val) || isArray(val)) {
+      content[prop] = state(val, emitChange.bind(this, content, prop));
     }
   }
 
@@ -93,7 +81,8 @@ export function state<T extends object>(
     },
   }) as any;
 
-  proxy.changed = _stateListeners.push.bind(_stateListeners);
+  proxy.changed = (callback: (newValue: T) => void) =>
+    _stateEvt.listen(callback);
 
   return proxy as State<T>;
 }

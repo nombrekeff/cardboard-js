@@ -166,7 +166,7 @@ describe('Tags', () => {
   it('tag.replaceClass', async () => {
     createDomMock();
     const t = tag('custom')
-      .className('test box')
+      .setClassName('test box')
       .replaceClass('test', 'new-test');
 
     expect(t).toBeInstanceOf(CTag);
