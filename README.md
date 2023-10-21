@@ -4,6 +4,8 @@
 ![](./header-img.png)
 
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
+[![Project Status](https://img.shields.io/badge/Project_Status-Semi_Stable-orange)](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)
+
 
 Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications. 
 All of this with, **no HTML**, **no build** (_unless you use TS or decide to build_), **no compile**, **no JSX**. 
@@ -11,7 +13,7 @@ It works out of the box, it's extremely lightweight and very performant. See **[
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour, a bit heavier and with a few differences.
 
-> **!NOTE!**: Cardboard is in early development, so use it with caution. You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
+> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), so use it with caution. You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
 
 ```ts
