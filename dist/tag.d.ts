@@ -62,9 +62,9 @@ export declare class CTag {
      * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
-    hideIf(consumable: Consumable<boolean | number>, invert?: boolean): this;
+    hideIf(consumable: Consumable<boolean> | Consumable<number>, invert?: boolean): this;
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-    hideIfNot(consumable: Consumable<boolean | number>): this;
+    hideIfNot(consumable: Consumable<boolean> | Consumable<number>): this;
     /**
      * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
@@ -186,7 +186,7 @@ export declare class CTag {
      *
      * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
      */
-    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag) => any): Consumable;
+    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag, evt: HTMLElementEventMap[K]) => any): Consumable<any>;
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */

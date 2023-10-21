@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { CssGenerator } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
+import { createConsumable } from './consumables.js';
 let context = {
     attached: null,
     stack: [],
@@ -185,7 +186,7 @@ export class CTag {
                 ifFalse(value);
         };
         consumable.changed(callback);
-        callback(consumable);
+        callback(consumable.value);
         return this;
     }
     /**
@@ -211,7 +212,7 @@ export class CTag {
                 this.hide();
         };
         consumable.changed(handleHide);
-        handleHide(consumable);
+        handleHide(consumable.value);
         return this;
     }
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
@@ -463,17 +464,13 @@ export class CTag {
      * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
      */
     when(evtName, fn) {
-        return {
-            changed: (listener) => {
-                this.on(evtName, () => listener(fn(this)));
-            },
-        };
+        const cons = createConsumable({});
+        this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
+        return cons;
     }
     /** Add an event listener for a particular event */
     on(evtName, fn) {
-        this.element.addEventListener(evtName, (evt) => {
-            return fn(this, evt);
-        });
+        this.element.addEventListener(evtName, (evt) => fn(this, evt));
         return this;
     }
     /** Add an event listener for a particular event that will only fire once */

@@ -16,14 +16,12 @@ export class CEvent {
     }
     listen(fn) {
         this._listeners.push(fn);
-        return this;
     }
     remove(fn) {
         removeFromList(fn, this._listeners);
     }
     dispatch(data) {
         this._listeners.forEach((el) => el(data));
-        return this;
     }
 }
 export class CMappedEvent {

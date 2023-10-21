@@ -15,6 +15,7 @@ import type {
   TagChildren,
   TagConfig,
 } from './types.js';
+import { createConsumable } from './consumables.js';
 
 let context: {
   attached: CTag;
@@ -228,7 +229,7 @@ export class CTag {
     };
 
     consumable.changed(callback);
-    callback(consumable);
+    callback(consumable.value);
     return this;
   }
 
@@ -248,7 +249,7 @@ export class CTag {
    * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
    */
-  hideIf(consumable: Consumable<boolean | number>, invert = false) {
+  hideIf(consumable: Consumable<boolean> | Consumable<number>, invert = false) {
     const handleHide = (value: any) => {
       const correctedValue = invert ? !value : !!value;
       this._meta.isHidden = correctedValue;
@@ -259,12 +260,12 @@ export class CTag {
     };
 
     consumable.changed(handleHide);
-    handleHide(consumable);
+    handleHide(consumable.value);
     return this;
   }
 
   /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-  hideIfNot(consumable: Consumable<boolean | number>) {
+  hideIfNot(consumable: Consumable<boolean> | Consumable<number>) {
     return this.hideIf(consumable, true);
   }
 
@@ -614,13 +615,11 @@ export class CTag {
    */
   when<K extends keyof HTMLElementEventMap>(
     evtName: K | string,
-    fn: (self: CTag) => any,
-  ): Consumable {
-    return {
-      changed: (listener) => {
-        this.on(evtName, () => listener(fn(this)));
-      },
-    };
+    fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
+  ): Consumable<any> {
+    const cons = createConsumable<any>({});
+    this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
+    return cons;
   }
 
   /** Add an event listener for a particular event */
@@ -628,9 +627,7 @@ export class CTag {
     evtName: K | string,
     fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
   ) {
-    this.element.addEventListener(evtName, (evt: HTMLElementEventMap[K]) => {
-      return fn(this, evt);
-    });
+    this.element.addEventListener(evtName, (evt: any) => fn(this, evt));
     return this;
   }
 

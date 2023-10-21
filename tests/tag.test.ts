@@ -1,5 +1,5 @@
 import { state } from '../src/state';
-import { CTag, attach, attached, tag } from '../src/tag';
+import { CTag, attach, tag } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
@@ -73,7 +73,7 @@ describe('Tags', () => {
 
     const t = tag('custom');
     const tw = t.when('click', clickCallback);
-    tw.changed(clickChange);
+    tw.changed!(clickChange);
 
     expect('changed' in tw).toEqual(true);
 

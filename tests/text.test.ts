@@ -10,7 +10,6 @@ describe('text', () => {
     expect(t1.text()).toEqual('Count is: 0');
   });
 
-
   it('template text works', async () => {
     createDomMock();
     const st = state({ count: 0, count2: 0 });

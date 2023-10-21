@@ -23,14 +23,13 @@ export function text(textTemplate, values) {
     const updateNode = () => {
         node.nodeValue = !values
             ? textTemplate
-            : textTemplate.replace(interpolatePattern, (m, g1) => values[g1] != null ? values[g1].toString() : m);
+            : textTemplate.replace(interpolatePattern, (m, g1) => values[g1] != null ? values[g1] : m);
     };
     if (values && 'changed' in values) {
         for (let key of Object.getOwnPropertyNames(values)) {
             // We're just interested in listening to the values that are references in the text.
             if (textTemplate.includes(`$${key}`)) {
-                const item = values[key];
-                item.changed(updateNode);
+                values[key].changed(updateNode);
             }
         }
     }

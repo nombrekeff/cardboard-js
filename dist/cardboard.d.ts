@@ -37,7 +37,8 @@ export declare const Cardboard: {
     fromJson: (possiblyJson: any) => string;
     val: <T_5>(val: T_5 | ((...args: any) => T_5), ...args: any[]) => T_5;
     CssGenerator: typeof _css.CssGenerator;
-    state<T_6 extends object>(content: T_6, fn?: (newValue: T_6) => void): import("./types.js").State<T_6>;
+    state_<T_6 extends object>(content: T_6, fn?: (newValue: T_6) => void): import("./types.js").State<T_6>;
+    state<T_7 extends object>(content: T_7, fn?: (newValue: T_7) => void): import("./types.js").State<T_7>;
     attached(): _tag.CTag;
     tag(arg0: string | HTMLElement, children?: import("./types.js").TagChildren, attach?: boolean): _tag.CTag;
     onLifecycle(tag: _tag.CTag, onStart?: (tag: _tag.CTag) => boolean | Promise<boolean>, onRemove?: (tag: _tag.CTag) => void, beforeRemove?: (tag: _tag.CTag) => boolean | Promise<boolean>): MutationObserver;

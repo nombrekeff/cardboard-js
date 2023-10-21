@@ -19,8 +19,30 @@ export type EventMap = {
   [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export type Consumable<T = any> = T &
-  Partial<{ changed: (callback: (newValue: T) => void) => void }>;
+
+export type Consumable<T> = T &
+  Partial<{
+    changed: (callback: (newValue: T) => void) => void;
+    dispatch: (newValue: T) => void;
+    updateVal: (newValue: T) => void;
+    value: T;
+  }>;
+
+export type ConsumableTypes = string | bigint | number | boolean | object;
+export type PickConsumableType<T extends ConsumableTypes> = T extends string
+  ? string
+  : T extends object
+  ? object
+  : T extends bigint
+  ? string
+  : T extends bigint
+  ? bigint
+  : T extends number
+  ? number
+  : T extends boolean
+  ? boolean
+  : any;
+
 export type PrimitiveConsumable = Consumable<string | number | boolean>;
 export type State<T extends Record<string, any>> = {
   [K in keyof T]: T[K] extends Record<string, any>

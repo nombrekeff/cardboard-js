@@ -12,9 +12,9 @@ type CEventCallback<T = any> = (data: T) => void;
  */
 export declare class CEvent<T> {
     private _listeners;
-    listen(fn: (data: T) => void): this;
+    listen(fn: (data: T) => void): void;
     remove(fn: (data: T) => void): void;
-    dispatch(data?: T): this;
+    dispatch(data?: T): void;
 }
 export declare class CMappedEvent<K extends string = string, T = any> {
     private _listeners;

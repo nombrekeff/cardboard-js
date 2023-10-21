@@ -18,7 +18,6 @@ export class CEvent<T> {
 
   listen(fn: (data: T) => void) {
     this._listeners.push(fn);
-    return this;
   }
 
   remove(fn: (data: T) => void) {
@@ -27,7 +26,6 @@ export class CEvent<T> {
 
   dispatch(data?: T) {
     this._listeners.forEach((el) => el(data));
-    return this;
   }
 }
 

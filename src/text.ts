@@ -27,7 +27,7 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
     node.nodeValue = !values
       ? textTemplate
       : textTemplate.replace(interpolatePattern, (m, g1) =>
-          values[g1] != null ? values[g1].toString() : m,
+          values[g1] != null ? values[g1] : m,
         );
   };
 
@@ -35,8 +35,7 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
     for (let key of Object.getOwnPropertyNames(values)) {
       // We're just interested in listening to the values that are references in the text.
       if (textTemplate.includes(`$${key}`)) {
-        const item = values[key];
-        item.changed(updateNode);
+        values[key].changed(updateNode);
       }
     }
   }

@@ -1,3 +1,4 @@
+import { createConsumable } from './consumables.js';
 import { CEvent, CMappedEvent } from './events.js';
 import { isArray, isObject } from './util.js';
 /**
@@ -23,7 +24,7 @@ import { isArray, isObject } from './util.js';
  * div(template('Count is: $count', st));
  * ```
  */
-export function state(content, fn) {
+export function state_(content, fn) {
     let _propEvt = new CMappedEvent();
     let _stateEvt = new CEvent();
     if (fn)
@@ -67,6 +68,55 @@ export function state(content, fn) {
             }
             target[prop] = value;
             emitChange(target, prop);
+            return true;
+        },
+    });
+    proxy.changed = (callback) => _stateEvt.listen(callback);
+    return proxy;
+}
+export function state(content, fn) {
+    let _stateEvt = new CEvent();
+    let _consumables = {};
+    if (fn)
+        _stateEvt.listen(fn);
+    const emitChange = (target, prop, value) => {
+        target[prop] = value;
+        if (_consumables[prop] != null) {
+            console.log({ target, prop, value });
+            _consumables[prop].dispatch(value);
+        }
+        _stateEvt.dispatch(target);
+    };
+    const addChangedMethod = (target, prop) => {
+        return (_consumables[prop] = createConsumable(target[prop]));
+    };
+    // TODO: Think if having nested states is worth it or not.
+    // It might be better to not make nested objects/arrays into states
+    for (let prop of Object.getOwnPropertyNames(content)) {
+        let val = content[prop];
+        if (isObject(val) || isArray(val)) {
+            content[prop] = state(val, emitChange.bind(this, content, prop));
+        }
+        else if (!(typeof val === 'function')) {
+            addChangedMethod(content, prop);
+        }
+    }
+    const proxy = new Proxy(content, {
+        deleteProperty: function (target, prop) {
+            emitChange(target, prop, target[prop]);
+            delete target[prop];
+            return true;
+        },
+        get: (target, prop) => {
+            var _a;
+            return (_a = _consumables[prop]) !== null && _a !== void 0 ? _a : target[prop];
+        },
+        set: (target, prop, value) => {
+            if (prop == 'changed' && !target[prop]) {
+                target[prop] = value;
+                return true;
+            }
+            emitChange(target, prop, value);
             return true;
         },
     });
