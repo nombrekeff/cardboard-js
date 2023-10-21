@@ -3,6 +3,8 @@
 
 ![](./header-img.png)
 
+[![Tests](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
+
 Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications. 
 All of this with, **no HTML**, **no build** (_unless you use TS or decide to build_), **no compile**, **no JSX**. 
 It works out of the box, it's extremely lightweight and very performant. See **[What Does It Do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
