@@ -1,6 +1,6 @@
-type CEventCallback<T = any> = (data: T) => void;
+import type { CEventCallback } from './types';
 /**
- * As the name indicates, it's an implementation of an event listener/emitter (single events, for multiple events use {@link}). Listen to, and trigger, events.
+ * Single event listener/emitter, listen to, and trigger events. (for mapped events use {@link CMappedEvent}).
  *
  * @example
  * ```ts
@@ -16,6 +16,17 @@ export declare class CEvent<T> {
     remove(fn: (data: T) => void): void;
     dispatch(data?: T): void;
 }
+/**
+ * Mapped event listener/emitter, listen to, and trigger events. (for single events use {@link CEvent}).
+ *
+ * @example
+ * ```ts
+ * const evt = new CMappedEvent<bool>();
+ * evt.listen('evt', listener);
+ * evt.dispatch('evt', true);
+ * evt.remove('evt', listener);
+ * ```
+ */
 export declare class CMappedEvent<K extends string = string, T = any> {
     private _listeners;
     listen(evt: K, fn: CEventCallback<T>): void;
@@ -24,4 +35,3 @@ export declare class CMappedEvent<K extends string = string, T = any> {
 }
 export declare function singleEvent<T>(): CEvent<T>;
 export declare function mappedEvent<K extends string, T>(): CMappedEvent<K, T>;
-export {};

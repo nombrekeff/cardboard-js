@@ -6,7 +6,6 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import type {
   AllTags,
-  Consumable,
   IConsumable,
   State,
   StyleMap,
@@ -15,7 +14,7 @@ import type {
   TagChild,
   TagChildren,
   TagConfig,
-} from './types.js';
+} from './types';
 import { createConsumable, isConsumable } from './consumables.js';
 
 let context: {
@@ -153,11 +152,11 @@ export class CTag {
 
   /** Whenever the consumable changes, it will call the consumer */
   consume<T>(
-    consumable: Consumable<T>,
+    consumable: IConsumable<T>,
     consumer: (self: CTag, newValue: T) => void,
   ) {
     consumable.changed((newValue) => consumer(this, newValue));
-    consumer(this, consumable);
+    consumer(this, consumable.value);
     return this;
   }
 
@@ -213,7 +212,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
    */
   doIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     ifTrue: (value: any) => void,
     ifFalse: (value: any) => void,
     invert = false,
@@ -239,7 +238,7 @@ export class CTag {
    * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
    */
   doIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     ifTrue: (value: any) => void,
     ifFalse: (value: any) => void,
   ) {
@@ -250,7 +249,10 @@ export class CTag {
    * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
    */
-  hideIf(consumable: Consumable<boolean> | Consumable<number>, invert = false) {
+  hideIf(
+    consumable: IConsumable<boolean> | IConsumable<number>,
+    invert = false,
+  ) {
     const handleHide = (value: any) => {
       const correctedValue = invert ? !value : !!value;
       this._meta.isHidden = correctedValue;
@@ -266,7 +268,7 @@ export class CTag {
   }
 
   /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-  hideIfNot(consumable: Consumable<boolean> | Consumable<number>) {
+  hideIfNot(consumable: IConsumable<boolean> | IConsumable<number>) {
     return this.hideIf(consumable, true);
   }
 
@@ -276,7 +278,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
    */
   classIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     classes: string[] | ((self: CTag) => string[]),
     invert = false,
   ) {
@@ -294,7 +296,7 @@ export class CTag {
    * For the oposite you can also use {@link classIf}
    */
   classIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     classes: string[] | ((self: CTag) => string[]),
   ) {
     return this.classIf(consumable, classes, true);
@@ -307,7 +309,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
    */
   textIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
     invert = false,
@@ -326,7 +328,7 @@ export class CTag {
    * Updates whenever the consumable changes.
    */
   textIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
   ) {
@@ -339,7 +341,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
    */
   attrIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     attr: string,
     value: string | ((self: CTag) => string) = '',
     invert = false,
@@ -358,7 +360,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed
    */
   attrIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     attr: string,
     value: string | ((self: CTag) => string) = '',
   ) {
@@ -369,12 +371,12 @@ export class CTag {
    * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
    */
-  disableIf(consumable: Consumable<any>, invert = false) {
+  disableIf(consumable: IConsumable<any>, invert = false) {
     return this.attrIf(consumable, 'disabled', '', invert);
   }
 
   /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-  disableIfNot(consumable: Consumable<any>) {
+  disableIfNot(consumable: IConsumable<any>) {
     return this.disableIf(consumable, true);
   }
 
@@ -384,7 +386,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    */
   styleIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     style: string,
     value: string | ((self: CTag) => string) = '',
     invert = false,
@@ -402,7 +404,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    */
   styleIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     style: string,
     value: string | ((self: CTag) => string) = '',
   ) {
@@ -415,7 +417,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
    */
   stylesIf(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     styles: StyleMap | ((self: CTag) => StyleMap),
     invert = false,
   ) {
@@ -433,7 +435,7 @@ export class CTag {
    * For the oposite use  {@link stylesIf}
    */
   stylesIfNot(
-    consumable: Consumable<any>,
+    consumable: IConsumable<any>,
     styles: StyleMap | ((self: CTag) => StyleMap),
   ) {
     return this.stylesIf(consumable, styles, true);
@@ -455,7 +457,8 @@ export class CTag {
    * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
    * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
    *
-   * If no argument is provided, it returns the `textContent` of the element
+   * If no argument is provided, it returns the `textContent` of the element.
+   * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
    */
   text<T = string | null>(
     newText?: T,
@@ -610,14 +613,14 @@ export class CTag {
   }
 
   /**
-   * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+   * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
    *
-   * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+   * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
    */
   when<K extends keyof HTMLElementEventMap>(
     evtName: K | string,
     fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
-  ): Consumable<any> {
+  ): IConsumable<any> {
     const cons = createConsumable<any>({});
     this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
     return cons;

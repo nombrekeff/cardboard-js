@@ -1,5 +1,5 @@
 import { isConsumable } from './consumables.js';
-import type { State } from './types.js';
+import type { State } from './types';
 
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
@@ -11,6 +11,8 @@ import type { State } from './types.js';
  * Only the properties that are referenced in the template will be listened to.
  *
  * **NOTE** If you're not interpolating, and dont need to change the text, you can directly pass in a string ('string') instead of (`text('string')`).
+ *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
  *
  * @example
  * ```ts

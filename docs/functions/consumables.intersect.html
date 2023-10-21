@@ -18,8 +18,11 @@
 <h1>Function intersect</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="intersect"><span class="tsd-kind-call-signature">intersect</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">consumable</span>, <span class="tsd-kind-parameter">intersector</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Consumable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span><a href="#intersect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="intersect"><span class="tsd-kind-call-signature">intersect</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">other</span>, <span class="tsd-kind-parameter">intersector</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/types.IConsumable.html" class="tsd-signature-type tsd-kind-interface">IConsumable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span><a href="#intersect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Creates a new <a href="../classes/consumables.Consumable.html" class="tsd-kind-class">Consumable</a> that intersects another <a href="../classes/consumables.Consumable.html" class="tsd-kind-class">Consumable</a>.
+The new <a href="../classes/consumables.Consumable.html" class="tsd-kind-class">Consumable</a> updates and dispatches whenever the other <a href="../classes/consumables.Consumable.html" class="tsd-kind-class">Consumable</a> changes.</p>
+</div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
@@ -31,7 +34,7 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">consumable</span>: <span class="tsd-signature-type ">IConsumable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
+<h5><span class="tsd-kind-parameter">other</span>: <a href="../interfaces/types.IConsumable.html" class="tsd-signature-type tsd-kind-interface">IConsumable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
 <li>
 <h5><span class="tsd-kind-parameter">intersector</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">ogVal</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
@@ -45,9 +48,13 @@
 <li>
 <h5><span class="tsd-kind-parameter">ogVal</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">K</span></h4></li></ul></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Consumable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="../interfaces/types.IConsumable.html" class="tsd-signature-type tsd-kind-interface">IConsumable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">K</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-9">value</span><span class="hl-1"> = </span><span class="hl-2">createConsumable</span><span class="hl-1">(</span><span class="hl-4">2</span><span class="hl-1">);</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-9">isGreater</span><span class="hl-1"> = </span><span class="hl-2">intersect</span><span class="hl-1">(</span><span class="hl-3">cons</span><span class="hl-1">, (</span><span class="hl-3">value</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> </span><span class="hl-3">value</span><span class="hl-1"> &gt; </span><span class="hl-4">5</span><span class="hl-1">);</span><br/><span class="hl-7">// &gt; isGreater == false;</span><br/><span class="hl-3">value</span><span class="hl-1">.</span><span class="hl-2">dispatch</span><span class="hl-1">(</span><span class="hl-4">6</span><span class="hl-1">);</span><br/><span class="hl-7">// &gt; isGreater == true;</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in consumables.ts:47</li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/consumables.ts#L96">consumables.ts:96</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

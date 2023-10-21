@@ -1,4 +1,4 @@
-import type { NestedStyleMap } from './types.js';
+import type { NestedStyleMap } from './types';
 import { camelToDash, isObject } from './util.js';
 
 export class CssGenerator {

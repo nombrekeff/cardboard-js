@@ -17,7 +17,7 @@
 <li><a href="events.CEvent.html">CEvent</a></li></ul>
 <h1>Class CEvent&lt;T&gt;</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>As the name indicates, it&#39;s an implementation of an event listener/emitter (single events, for multiple events use ). Listen to, and trigger, events.</p>
+<div class="tsd-comment tsd-typography"><p>Single event listener/emitter, listen to, and trigger events. (for mapped events use <a href="../variables/cardboard.Cardboard.html#__type.CMappedEvent" class="tsd-kind-class">CMappedEvent</a>).</p>
 </div>
 <div class="tsd-comment tsd-typography">
 <h4>Example</h4><pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-9">evt</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-2">CEvent</span><span class="hl-1">&lt;</span><span class="hl-15">bool</span><span class="hl-1">&gt;();</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">listen</span><span class="hl-1">(</span><span class="hl-3">listener</span><span class="hl-1">);</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">dispatch</span><span class="hl-1">(</span><span class="hl-0">true</span><span class="hl-1">);</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">remove</span><span class="hl-1">(</span><span class="hl-3">listener</span><span class="hl-1">);</span>
@@ -33,7 +33,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">CEvent</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/f62d2bf/src/events.ts#L16">events.ts:16</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/events.ts#L15">events.ts:15</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -85,7 +85,7 @@
 <h5><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/f62d2bf/src/events.ts#L17">events.ts:17</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/events.ts#L16">events.ts:16</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="dispatch" class="tsd-anchor"></a>
@@ -100,7 +100,7 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/f62d2bf/src/events.ts#L27">events.ts:27</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/events.ts#L26">events.ts:26</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="listen" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>listen</span><a href="#listen" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -124,7 +124,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/f62d2bf/src/events.ts#L19">events.ts:19</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/events.ts#L18">events.ts:18</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="remove" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>remove</span><a href="#remove" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -148,7 +148,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/f62d2bf/src/events.ts#L23">events.ts:23</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/494c112/src/events.ts#L22">events.ts:22</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

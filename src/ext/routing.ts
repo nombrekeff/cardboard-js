@@ -3,10 +3,10 @@ import { RouteMatcher, routeMatcher } from '../route-matcher.js';
 
 const { div, a } = allTags;
 
-type RouteBuilder = (router: Router<any>) => CTag;
-type Route = RouteBuilder | string;
+export type RouteBuilder = (router: Router<any>) => CTag;
+export type Route = RouteBuilder | string;
 
-type RouterOptions<T extends Record<string, Route> = {}> = {
+export type RouterOptions<T extends Record<string, Route> = {}> = {
   rootParent: CTag;
   routes: T;
   initialRoute: string;
@@ -18,6 +18,9 @@ type RouterOptions<T extends Record<string, Route> = {}> = {
   beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
 };
 
+/**
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+ */
 export class Router<T extends Record<string, Route> = {}> {
   private _options: RouterOptions<T>;
   private _routes: Record<string, CTag> = {};
@@ -50,17 +53,21 @@ export class Router<T extends Record<string, Route> = {}> {
     this.navigate(this._options.initialRoute);
   }
 
-  public navigate(path: string, query?: Record<string, string>) {
+  /**
+   * Navigate to a {@link route} with optional {@link query} parameters.
+   * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+   */
+  public navigate(route: string, query?: Record<string, string>) {
     const querySearch = new URLSearchParams(query),
       queryStr = querySearch.toString(),
       cQuery = this.query.toString();
 
-    if (path != this._currentRoute || queryStr !== cQuery) {
+    if (route != this._currentRoute || queryStr !== cQuery) {
       this.query = querySearch;
       this._history.pushState(
         'data',
         '',
-        path + (queryStr ? '?' + queryStr : ''),
+        route + (queryStr ? '?' + queryStr : ''),
       );
     }
   }

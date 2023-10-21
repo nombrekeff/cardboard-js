@@ -10,6 +10,8 @@ import { isConsumable } from './consumables.js';
  *
  * **NOTE** If you're not interpolating, and dont need to change the text, you can directly pass in a string ('string') instead of (`text('string')`).
  *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
+ *
  * @example
  * ```ts
  * const st = state({ count: 0 });

@@ -21,10 +21,9 @@ export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
 export interface IConsumable<T> {
   changed?(callback: (newValue: T) => void);
   dispatch?(newValue: T);
-  updateVal?(newValue: T);
   value?: T;
 }
-export type Consumable<T> = T & Partial<IConsumable<T>>;
+export type StateConsumable<T> = T & Partial<IConsumable<T>>;
 export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export type ConsumableTypes = string | bigint | number | boolean | object;
 export type PickConsumableType<T extends ConsumableTypes> = T extends string
@@ -41,20 +40,16 @@ export type PickConsumableType<T extends ConsumableTypes> = T extends string
   ? boolean
   : any;
 
-export type PrimitiveConsumable = Consumable<string | number | boolean>;
+export type PrimitiveConsumable = StateConsumable<string | number | boolean>;
 export type State<T extends Record<string, any>> = T extends any[]
-  ? {
-      [K in keyof T]: T[K] extends Record<string, any>
-        ? State<T[K]>
-        : Consumable<T[K]>;
-    } & {
+  ? T & {
       changed: (callback: (newValue: T) => void) => void;
-      length: Consumable<number>;
+      length: StateConsumable<number>;
     }
   : {
       [K in keyof T]: T[K] extends Record<string, any>
         ? State<T[K]>
-        : Consumable<T[K]>;
+        : StateConsumable<T[K]>;
     } & {
       changed: (callback: (newValue: T) => void) => void;
     };
@@ -78,3 +73,4 @@ export type AllTags = {
     attach: (...children: PickArgType<key>) => CTag;
   };
 };
+export type CEventCallback<T = any> = (data: T) => void;

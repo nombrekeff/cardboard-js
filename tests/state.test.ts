@@ -23,7 +23,6 @@ describe('State', () => {
     s.list.push('aaa');
     expect(s.list[1]).toBe('aaa');
     s.list.splice(1, 1);
-    console.log(s.list[0], s.list[0].value);
     expect(s.list[0]).toBe('a');
     expect(s.list[1]).toBeUndefined();
   });

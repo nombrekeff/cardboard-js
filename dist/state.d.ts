@@ -1,4 +1,4 @@
-import type { State } from './types.js';
+import type { State } from './types';
 /**
  * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
  * {@link content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
@@ -7,6 +7,8 @@ import type { State } from './types.js';
  * You can pass an optional {@link fn}, that will be called anything in the state changes.
  *
  * Additionally you can listen to it after creating it: `state().changed(() => { })`
+ *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/State
  *
  * @example
  * ```ts

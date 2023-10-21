@@ -119,7 +119,7 @@ export class CTag {
     /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
-        consumer(this, consumable);
+        consumer(this, consumable.value);
         return this;
     }
     /**
@@ -321,7 +321,8 @@ export class CTag {
      * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
      * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
      *
-     * If no argument is provided, it returns the `textContent` of the element
+     * If no argument is provided, it returns the `textContent` of the element.
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
     text(newText, st) {
         if (newText == null) {
@@ -459,9 +460,9 @@ export class CTag {
         return this.element.attributes[attr];
     }
     /**
-     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
      */
     when(evtName, fn) {
         const cons = createConsumable({});

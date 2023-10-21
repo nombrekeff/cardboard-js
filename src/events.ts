@@ -1,9 +1,8 @@
+import type { CEventCallback } from './types';
 import { removeFromList } from './util.js';
 
-type CEventCallback<T = any> = (data: T) => void;
-
 /**
- * As the name indicates, it's an implementation of an event listener/emitter (single events, for multiple events use {@link}). Listen to, and trigger, events.
+ * Single event listener/emitter, listen to, and trigger events. (for mapped events use {@link CMappedEvent}).
  *
  * @example
  * ```ts
@@ -28,6 +27,18 @@ export class CEvent<T> {
     this._listeners.forEach((el) => el(data));
   }
 }
+
+/**
+ * Mapped event listener/emitter, listen to, and trigger events. (for single events use {@link CEvent}).
+ *
+ * @example
+ * ```ts
+ * const evt = new CMappedEvent<bool>();
+ * evt.listen('evt', listener);
+ * evt.dispatch('evt', true);
+ * evt.remove('evt', listener);
+ * ```
+ */
 
 export class CMappedEvent<K extends string = string, T = any> {
   private _listeners: { [key in K]?: CEventCallback[] } = {};

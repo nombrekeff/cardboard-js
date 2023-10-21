@@ -1,7 +1,7 @@
 import { createConsumable } from './consumables.js';
 import { CEvent, CMappedEvent } from './events.js';
 import { isArray, isObject } from './util.js';
-import type { Consumable, State } from './types.js';
+import type { StateConsumable, State } from './types';
 
 /**
  * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
@@ -10,8 +10,10 @@ import type { Consumable, State } from './types.js';
  *
  * You can pass an optional {@link fn}, that will be called anything in the state changes.
  *
- * Additionally you can listen to it after creating it: `state().changed(() => { })`
- *
+ * Additionally you can listen to it after creating it: `state().changed(() => { })`  
+ * 
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/State
+ * 
  * @example
  * ```ts
  * const st = state({ count: 0 });
@@ -31,7 +33,7 @@ export function state<T extends object>(
   fn?: (newValue: T) => void,
 ): State<T> {
   let _stateEvt = new CEvent<T>();
-  let _consumables: Record<string | symbol, Consumable<any>> = {};
+  let _consumables: Record<string | symbol, StateConsumable<any>> = {};
 
   if (fn) _stateEvt.listen(fn);
 

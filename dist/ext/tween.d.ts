@@ -11,6 +11,15 @@ export type TweenOptions<T> = {
     easing?: typeof Easing;
     update?: (value: T, t: typeof Tween) => void;
 };
+/**
+ * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
+ */
 export declare function makeTween<T extends {}>(opts: TweenOptions<T>): Tween<T>;
+/**
+ * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
+ */
 export declare function tweenTag(tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void): CTag;
+/**
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
+ */
 export declare function tweenTagAsync(tag: CTag, tween: (tag: CTag) => Tween<any>): Promise<CTag>;

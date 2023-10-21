@@ -1,4 +1,4 @@
-import type { StyleMap } from '../../../dist/types.js';
+import type { StyleMap } from '../../../src/types';
 import {
   allTags,
   Link,

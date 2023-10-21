@@ -10,6 +10,8 @@ import { isArray, isObject } from './util.js';
  *
  * Additionally you can listen to it after creating it: `state().changed(() => { })`
  *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/State
+ *
  * @example
  * ```ts
  * const st = state({ count: 0 });
