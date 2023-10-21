@@ -47,6 +47,15 @@ const root = attach(tag('(body)'));
 root.append(div(p('Hello world!')));
 ```
 
+#### Single file script
+If you just want to add it to your site and start using Cardboard, you can import the bundle file:
+```html
+<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
+<script>
+const { div, p } = Carboard.allTags;
+</script>
+```
+
 #### 🔸 [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started) - for a getting started guide.
 #### 🔸 [Wiki](https://github.com/nombrekeff/cardboard-js/wiki/Examples) - for human documentation, and examples.
 #### 🔸 [Documentation](https://nombrekeff.github.io/cardboard-js/) - for technical docs.
