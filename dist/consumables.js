@@ -17,7 +17,7 @@ class Consumable extends CEvent {
         this.listen(callback);
     }
     dispatch(val) {
-        // Make sure assining the value is before the dispatch call, 
+        // Make sure assining the value is before the dispatch call,
         // otherwise Consumable value is not update when the listeners are called
         this._value = val;
         super.dispatch(val);
@@ -25,6 +25,9 @@ class Consumable extends CEvent {
     updateVal(value) {
         this._value = value;
     }
+}
+export function isConsumable(obj) {
+    return obj instanceof Consumable;
 }
 export function createConsumable(val) {
     return new Consumable(val);

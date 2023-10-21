@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { CssGenerator } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
-import { createConsumable } from './consumables.js';
+import { createConsumable, isConsumable } from './consumables.js';
 let context = {
     attached: null,
     stack: [],
@@ -353,7 +353,7 @@ export class CTag {
         if (c.children)
             this.append(...c.children);
         if (c.on) {
-            for (const key in c.on) {
+            for (const key of Object.keys(c.on)) {
                 this.on(key, c.on[key]);
             }
         }
@@ -470,7 +470,8 @@ export class CTag {
     }
     /** Add an event listener for a particular event */
     on(evtName, fn) {
-        this.element.addEventListener(evtName, (evt) => fn(this, evt));
+        if (fn)
+            this.element.addEventListener(evtName, (evt) => fn(this, evt));
         return this;
     }
     /** Add an event listener for a particular event that will only fire once */
@@ -568,6 +569,9 @@ export class CTag {
     _getElementForChild(cl) {
         if (typeof cl === 'string')
             return document.createTextNode(cl);
+        if (isConsumable(cl)) {
+            return text('$val', { val: cl });
+        }
         if (cl instanceof CTag)
             return cl.element;
         if (cl instanceof Node)

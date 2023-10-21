@@ -1,10 +1,5 @@
 import { CEvent } from './events.js';
-interface IConsumable<T> {
-    changed(callback: (newValue: T) => void): any;
-    dispatch(val: T): any;
-    updateVal(value: T): any;
-    value: T;
-}
+import type { IConsumable } from './types.js';
 declare class Consumable<T> extends CEvent<T> implements IConsumable<T> {
     _value: T;
     get value(): T;
@@ -15,6 +10,7 @@ declare class Consumable<T> extends CEvent<T> implements IConsumable<T> {
     dispatch(val: T): void;
     updateVal(value: T): void;
 }
+export declare function isConsumable(obj: any): boolean;
 export declare function createConsumable<T>(val: T): Consumable<T>;
 export declare function intersect<T, K>(consumable: IConsumable<T>, intersector: (ogVal: T) => K): Consumable<K>;
 export declare function greaterThan(consumable: IConsumable<number>, val: number): Consumable<boolean>;

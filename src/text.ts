@@ -1,3 +1,4 @@
+import { isConsumable } from './consumables.js';
 import type { State } from './types.js';
 
 /**
@@ -19,7 +20,7 @@ import type { State } from './types.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text<T>(textTemplate: string, values?: State<T>): Node {
+export function text(textTemplate: string, values?: Record<string, any>): Node {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
@@ -31,10 +32,10 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
         );
   };
 
-  if (values && 'changed' in values) {
+  if (values) {
     for (let key of Object.getOwnPropertyNames(values)) {
       // We're just interested in listening to the values that are references in the text.
-      if (textTemplate.includes(`$${key}`)) {
+      if (textTemplate.includes(`$${key}`) && isConsumable(values[key])) {
         values[key].changed(updateNode);
       }
     }

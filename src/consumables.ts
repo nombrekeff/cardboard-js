@@ -1,11 +1,5 @@
 import { CEvent } from './events.js';
-import type { Consumable as _Consumable } from './types.js';
-interface IConsumable<T> {
-  changed(callback: (newValue: T) => void);
-  dispatch(val: T);
-  updateVal(value: T);
-  value: T;
-}
+import type { IConsumable, Consumable as _Consumable } from './types.js';
 
 class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   _value: T;
@@ -29,9 +23,9 @@ class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   }
 
   dispatch(val: T) {
-    // Make sure assining the value is before the dispatch call, 
+    // Make sure assining the value is before the dispatch call,
     // otherwise Consumable value is not update when the listeners are called
-    this._value = val; 
+    this._value = val;
     super.dispatch(val);
   }
 
@@ -39,7 +33,9 @@ class Consumable<T> extends CEvent<T> implements IConsumable<T> {
     this._value = value;
   }
 }
-
+export function isConsumable(obj: any) {
+  return obj instanceof Consumable;
+}
 export function createConsumable<T>(val: T): Consumable<T> {
   return new Consumable<T>(val);
 }

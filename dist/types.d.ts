@@ -11,7 +11,6 @@ export type NestedStyleMap = {
 export type StyleSet = {
     [key: string]: NestedStyleMap;
 };
-export type TagChild = string | CTag | HTMLElement | Node;
 export type TagChildren = TagChild[];
 export type EventCallback<T extends EventName> = (tag: CTag, evt: HTMLElementEventMap[T]) => void;
 export type EventName = keyof HTMLElementEventMap;
@@ -19,16 +18,23 @@ export type EventMap = {
     [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export type Consumable<T> = T & Partial<{
-    changed: (callback: (newValue: T) => void) => void;
-    dispatch: (newValue: T) => void;
-    updateVal: (newValue: T) => void;
-    value: T;
-}>;
+export interface IConsumable<T> {
+    changed?(callback: (newValue: T) => void): any;
+    dispatch?(newValue: T): any;
+    updateVal?(newValue: T): any;
+    value?: T;
+}
+export type Consumable<T> = T & Partial<IConsumable<T>>;
+export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export type ConsumableTypes = string | bigint | number | boolean | object;
 export type PickConsumableType<T extends ConsumableTypes> = T extends string ? string : T extends object ? object : T extends bigint ? string : T extends bigint ? bigint : T extends number ? number : T extends boolean ? boolean : any;
 export type PrimitiveConsumable = Consumable<string | number | boolean>;
-export type State<T extends Record<string, any>> = {
+export type State<T extends Record<string, any>> = T extends any[] ? {
+    [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
+} & {
+    changed: (callback: (newValue: T) => void) => void;
+    length: Consumable<number>;
+} : {
     [K in keyof T]: T[K] extends Record<string, any> ? State<T[K]> : Consumable<T[K]>;
 } & {
     changed: (callback: (newValue: T) => void) => void;

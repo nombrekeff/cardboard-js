@@ -7,6 +7,7 @@ import { text } from './text.js';
 import type {
   AllTags,
   Consumable,
+  IConsumable,
   State,
   StyleMap,
   StyleSet,
@@ -15,7 +16,7 @@ import type {
   TagChildren,
   TagConfig,
 } from './types.js';
-import { createConsumable } from './consumables.js';
+import { createConsumable, isConsumable } from './consumables.js';
 
 let context: {
   attached: CTag;
@@ -486,7 +487,7 @@ export class CTag {
     if (c.value) this.setValue(c.value);
     if (c.children) this.append(...c.children);
     if (c.on) {
-      for (const key in c.on) {
+      for (const key of Object.keys(c.on)) {
         this.on(key, c.on[key]);
       }
     }
@@ -627,7 +628,7 @@ export class CTag {
     evtName: K | string,
     fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
   ) {
-    this.element.addEventListener(evtName, (evt: any) => fn(this, evt));
+    if (fn) this.element.addEventListener(evtName, (evt: any) => fn(this, evt));
     return this;
   }
 
@@ -740,6 +741,9 @@ export class CTag {
 
   private _getElementForChild(cl: TagChild): Node {
     if (typeof cl === 'string') return document.createTextNode(cl);
+    if (isConsumable(cl)) {
+      return text('$val', { val: cl });
+    }
     if (cl instanceof CTag) return cl.element;
     if (cl instanceof Node) return cl;
     return null;

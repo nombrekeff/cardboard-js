@@ -8,7 +8,6 @@ export type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | StyleMap;
 };
 export type StyleSet = { [key: string]: NestedStyleMap };
-export type TagChild = string | CTag | HTMLElement | Node;
 export type TagChildren = TagChild[];
 export type EventCallback<T extends EventName> = (
   tag: CTag,
@@ -19,15 +18,14 @@ export type EventMap = {
   [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-
-export type Consumable<T> = T &
-  Partial<{
-    changed: (callback: (newValue: T) => void) => void;
-    dispatch: (newValue: T) => void;
-    updateVal: (newValue: T) => void;
-    value: T;
-  }>;
-
+export interface IConsumable<T> {
+  changed?(callback: (newValue: T) => void);
+  dispatch?(newValue: T);
+  updateVal?(newValue: T);
+  value?: T;
+}
+export type Consumable<T> = T & Partial<IConsumable<T>>;
+export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export type ConsumableTypes = string | bigint | number | boolean | object;
 export type PickConsumableType<T extends ConsumableTypes> = T extends string
   ? string
@@ -44,13 +42,22 @@ export type PickConsumableType<T extends ConsumableTypes> = T extends string
   : any;
 
 export type PrimitiveConsumable = Consumable<string | number | boolean>;
-export type State<T extends Record<string, any>> = {
-  [K in keyof T]: T[K] extends Record<string, any>
-    ? State<T[K]>
-    : Consumable<T[K]>;
-} & {
-  changed: (callback: (newValue: T) => void) => void;
-};
+export type State<T extends Record<string, any>> = T extends any[]
+  ? {
+      [K in keyof T]: T[K] extends Record<string, any>
+        ? State<T[K]>
+        : Consumable<T[K]>;
+    } & {
+      changed: (callback: (newValue: T) => void) => void;
+      length: Consumable<number>;
+    }
+  : {
+      [K in keyof T]: T[K] extends Record<string, any>
+        ? State<T[K]>
+        : Consumable<T[K]>;
+    } & {
+      changed: (callback: (newValue: T) => void) => void;
+    };
 export type TagConfig = {
   style?: StyleMap;
   attr?: { [k: string]: string };

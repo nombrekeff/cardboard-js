@@ -3,7 +3,7 @@ import { Input } from '../../dist/ext/components.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
-import appState from './state.js';
+import { appState } from './state.js';
 
 const { div, button, h3, link, p } = allTags;
 
@@ -21,10 +21,12 @@ styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO').text(' (count: $length) ', appState).setStyle({
-  textAlign: 'center',
-  margin: '40px 0',
-});
+h3.attach('Cardboard TODO - count: ', appState.length)
+  // .text(' (count: $length) ', appState)
+  .setStyle({
+    textAlign: 'center',
+    margin: '40px 0',
+  });
 
 const itemInput = Input({
   placeholder: 'Enter item content',

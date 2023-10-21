@@ -1,10 +1,10 @@
 import type { State } from './types.js';
 /**
  * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
- * {@param content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
+ * {@link content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
  * In arrays, length will also be reactive.
  *
- * You can pass an optional {@param callback}, that will be called anything in the state changes.
+ * You can pass an optional {@link fn}, that will be called anything in the state changes.
  *
  * Additionally you can listen to it after creating it: `state().changed(() => { })`
  *
@@ -22,5 +22,4 @@ import type { State } from './types.js';
  * div(template('Count is: $count', st));
  * ```
  */
-export declare function state_<T extends object>(content: T, fn?: (newValue: T) => void): State<T>;
 export declare function state<T extends object>(content: T, fn?: (newValue: T) => void): State<T>;
