@@ -34,7 +34,7 @@ export declare class Router<T extends Record<string, Route> = {}> {
     private _setCurrentRoute;
     private _listenEvents;
     private _modifyPushState;
-    _initRouteMatchers(): void;
+    private _initRouteMatchers;
 }
 export declare let router: Router<any> | undefined;
 export declare function makeRouter<T extends Record<string, Route> = {}>(opts: RouterOptions<T>): Router<T>;

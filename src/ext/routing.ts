@@ -178,7 +178,7 @@ export class Router<T extends Record<string, Route> = {}> {
     };
   }
 
-  public _initRouteMatchers() {
+  private _initRouteMatchers() {
     for (let matcherStr in this._options.routes) {
       this._routeMatchers.push({
         key: matcherStr,
