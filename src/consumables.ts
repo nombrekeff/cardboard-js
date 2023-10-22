@@ -76,7 +76,7 @@ export function isConsumable(obj: any) {
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export function createConsumable<T>(val: T): IConsumable<T> {
+export function createConsumable<T>(val: T): Consumable<T> {
   return new Consumable<T>(val);
 }
 
@@ -96,7 +96,7 @@ export function createConsumable<T>(val: T): IConsumable<T> {
 export function intersect<T, K>(
   other: IConsumable<T>,
   intersector: (ogVal: T) => K,
-): IConsumable<K> {
+): Consumable<K> {
   const consumable = createConsumable<K>(intersector(other.value));
   other.changed((newVal) => consumable.dispatch(intersector(newVal)));
   return consumable as any;

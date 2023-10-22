@@ -1,6 +1,6 @@
 import { createConsumable, greaterThan, lessThan } from '../src/consumables.js';
 
-describe.only('Consumables', () => {
+describe('Consumables', () => {
   it('createConsumable', async () => {
     const cons = createConsumable(2);
     expect(cons.value).toEqual(2);
