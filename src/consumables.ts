@@ -8,9 +8,14 @@ import type { IConsumable } from './types';
  */
 export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   private _value: T;
+  private _prev: T;
 
   get value(): T {
     return this._value;
+  }
+
+  get prev(): T {
+    return this._prev;
   }
 
   /** Set the value, and dispatch to all listeners. */
@@ -21,6 +26,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   constructor(val?: T) {
     super();
     this._value = val;
+    this._prev = val;
   }
 
   valueOf() {
@@ -34,7 +40,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   /**
    * Add a listener for when this Consumable changes.
    */
-  changed(callback: (newValue: T) => void) {
+  changed(callback: (val: T) => void) {
     this.listen(callback);
   }
 
@@ -45,6 +51,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   dispatch(val: T) {
     // Make sure assining the value is before the dispatch call,
     // otherwise Consumable value is not update when the listeners are called
+    this._prev = val;
     this._value = val;
     super.dispatch(val);
   }
@@ -62,7 +69,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
    * // > isGreater == true;
    * ```
    */
-  intersect<K>(intersector: (ogVal: T) => K) {
+  intersect<K>(intersector: (val: T) => K) {
     return intersect(this, intersector);
   }
 }
@@ -95,10 +102,10 @@ export function createConsumable<T>(val: T): Consumable<T> {
  */
 export function intersect<T, K>(
   other: IConsumable<T>,
-  intersector: (ogVal: T) => K,
+  intersector: (val: T) => K,
 ): Consumable<K> {
   const consumable = createConsumable<K>(intersector(other.value));
-  other.changed((newVal) => consumable.dispatch(intersector(newVal)));
+  other.changed((val) => consumable.dispatch(intersector(val)));
   return consumable as any;
 }
 
