@@ -1,10 +1,13 @@
 import * as tween_1 from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
 export { tween_1 as tween };
 import * as TWEEN from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
+/**
+ * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
+ */
 export function makeTween(opts) {
     var _a, _b;
     // This is done to remove flickering the first time the tween is run
-    // This will set properties to the initial value. 
+    // This will set properties to the initial value.
     // This way when the tween is run, it will start with the correct properties.
     if (opts.update)
         opts.update(opts.from, this);
@@ -17,6 +20,9 @@ export function makeTween(opts) {
     })
         .easing((_b = opts.easing) !== null && _b !== void 0 ? _b : TWEEN.Easing.Quadratic.InOut);
 }
+/**
+ * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
+ */
 export function tweenTag(tag, tween, onComplete) {
     const tweenInstance = tween(tag);
     tweenInstance.start();
@@ -32,6 +38,9 @@ export function tweenTag(tag, tween, onComplete) {
     requestAnimationFrame(animate);
     return tag;
 }
+/**
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
+ */
 export function tweenTagAsync(tag, tween) {
     return new Promise((resolve) => tweenTag(tag, tween, () => resolve(tag)));
 }

@@ -1,6 +1,6 @@
 import { removeFromList } from './util.js';
 /**
- * As the name indicates, it's an implementation of an event listener/emitter (single events, for multiple events use {@link}). Listen to, and trigger, events.
+ * Single event listener/emitter, listen to, and trigger events. (for mapped events use {@link CMappedEvent}).
  *
  * @example
  * ```ts
@@ -16,16 +16,25 @@ export class CEvent {
     }
     listen(fn) {
         this._listeners.push(fn);
-        return this;
     }
     remove(fn) {
         removeFromList(fn, this._listeners);
     }
     dispatch(data) {
         this._listeners.forEach((el) => el(data));
-        return this;
     }
 }
+/**
+ * Mapped event listener/emitter, listen to, and trigger events. (for single events use {@link CEvent}).
+ *
+ * @example
+ * ```ts
+ * const evt = new CMappedEvent<bool>();
+ * evt.listen('evt', listener);
+ * evt.dispatch('evt', true);
+ * evt.remove('evt', listener);
+ * ```
+ */
 export class CMappedEvent {
     constructor() {
         this._listeners = {};

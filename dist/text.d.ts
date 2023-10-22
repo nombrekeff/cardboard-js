@@ -1,4 +1,3 @@
-import type { State } from './types.js';
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
  *
@@ -10,6 +9,8 @@ import type { State } from './types.js';
  *
  * **NOTE** If you're not interpolating, and dont need to change the text, you can directly pass in a string ('string') instead of (`text('string')`).
  *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
+ *
  * @example
  * ```ts
  * const st = state({ count: 0 });
@@ -18,4 +19,4 @@ import type { State } from './types.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export declare function text<T>(textTemplate: string, values?: State<T>): Node;
+export declare function text(textTemplate: string, values?: Record<string, any>): Node;

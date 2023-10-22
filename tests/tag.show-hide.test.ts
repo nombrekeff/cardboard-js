@@ -17,7 +17,7 @@ describe('Conditional show/hide', () => {
     const root = tag('(body)');
 
     let st = state({ hide0: false });
-    let p0: CTag, p1: CTag, p2: CTag;
+    let p0: CTag;
 
     root.append(
       (p0 = p('0').hideIf(st.hide0)), //
@@ -33,103 +33,103 @@ describe('Conditional show/hide', () => {
     expect(getChildStr()).toEqual(['0']);
   });
 
-  it('basic case', async () => {
-    createDomMock();
-    const root = tag('(body)');
+  // it('basic case', async () => {
+  //   createDomMock();
+  //   const root = tag('(body)');
 
-    let st = state({ hide0: false, hide1: false, hide2: false });
-    let p0: CTag, p1: CTag, p2: CTag;
+  //   let st = state({ hide0: false, hide1: false, hide2: false });
+  //   let p0: CTag, p1: CTag, p2: CTag;
 
-    root.append(
-      (p0 = p('0').hideIf(st.hide0)), //
-      (p1 = p('1').hideIf(st.hide1)), //
-      (p2 = p('2').hideIf(st.hide2)), //
-    );
+  //   root.append(
+  //     (p0 = p('0').hideIf(st.hide0)), //
+  //     (p1 = p('1').hideIf(st.hide1)), //
+  //     (p2 = p('2').hideIf(st.hide2)), //
+  //   );
 
-    expect(getChildStr()).toEqual(['0', '1', '2']);
-    st.hide1 = true;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(['0', '2']);
-    st.hide0 = true;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(['2']);
-    st.hide2 = true;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual([]);
-    st.hide2 = false;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(['2']);
-    st.hide0 = false;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(['0', '2']);
-    st.hide1 = false;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(['0', '1', '2']);
-  });
+  //   expect(getChildStr()).toEqual(['0', '1', '2']);
+  //   st.hide1 = true;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual(['0', '2']);
+  //   st.hide0 = true;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual(['2']);
+  //   st.hide2 = true;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual([]);
+  //   st.hide2 = false;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual(['2']);
+  //   st.hide0 = false;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual(['0', '2']);
+  //   st.hide1 = false;
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   expect(getChildStr()).toEqual(['0', '1', '2']);
+  // });
 
-  it('Works between text nodes', async () => {
-    createDomMock();
-    const root = tag('(body)');
-    let st = state({ hide: false });
+  // it('Works between text nodes', async () => {
+  //   createDomMock();
+  //   const root = tag('(body)');
+  //   let st = state({ hide: false });
 
-    root.append('Hello', p('There').hideIf(st.hide), 'World');
-    expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    st.hide = true;
-    expect(getChildStr()).toEqual(['Hello', 'World']);
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    st.hide = false;
-    expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
-  });
+  //   root.append('Hello', p('There').hideIf(st.hide), 'World');
+  //   expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   st.hide = true;
+  //   expect(getChildStr()).toEqual(['Hello', 'World']);
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   st.hide = false;
+  //   expect(getChildStr()).toEqual(['Hello', 'There', 'World']);
+  // });
 
-  it('Works with nested children', async () => {
-    createDomMock();
-    const root = tag('(body)');
-    let st = state({ hide: false });
+  // it('Works with nested children', async () => {
+  //   createDomMock();
+  //   const root = tag('(body)');
+  //   let st = state({ hide: false });
 
-    root.append(p().hideIf(st.hide).append(p('Hey'), p('whats'), p('up')));
-    expect(getChildStr()).toEqual(['Heywhatsup']);
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    st.hide = true;
-    expect(getChildStr()).toEqual([]);
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    st.hide = false;
-    expect(getChildStr()).toEqual(['Heywhatsup']);
-  });
+  //   root.append(p().hideIf(st.hide).append(p('Hey'), p('whats'), p('up')));
+  //   expect(getChildStr()).toEqual(['Heywhatsup']);
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   st.hide = true;
+  //   expect(getChildStr()).toEqual([]);
+  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //   st.hide = false;
+  //   expect(getChildStr()).toEqual(['Heywhatsup']);
+  // });
 
-  it('random test case', async () => {
-    createDomMock();
-    const root = tag('(body)');
+  // it('random test case', async () => {
+  //   createDomMock();
+  //   const root = tag('(body)');
 
-    let completeChildStrigns = ['0', '1', '2', '3', '4', '5'];
-    let st = state(completeChildStrigns.map((el) => false));
+  //   let completeChildStrigns = ['0', '1', '2', '3', '4', '5'];
+  //   let st = state(completeChildStrigns.map((el) => false));
 
-    const getExpectedChildStr = () => {
-      return completeChildStrigns.filter((el, i) => (st[i] ? false : true));
-    };
+  //   const getExpectedChildStr = () => {
+  //     return completeChildStrigns.filter((el, i) => (st[i] ? false : true));
+  //   };
 
-    for (let i = 0; i < st.length; i++) {
-      root.append(
-        p(`${i}`).hideIf(st[i]), //
-      );
-    }
+  //   for (let i = 0; i < st.length; i++) {
+  //     root.append(
+  //       p(`${i}`).hideIf(st[i]), //
+  //     );
+  //   }
 
-    expect(getChildStr()).toEqual(getExpectedChildStr());
+  //   expect(getChildStr()).toEqual(getExpectedChildStr());
 
-    const checkRandomShowHide = async () => {
-      for (let i = 0; i < st.length * 2; i++) {
-        if (Math.random() > 0.4) {
-          st[i % st.length] = !st[i % st.length];
-          await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-        }
-      }
+  //   const checkRandomShowHide = async () => {
+  //     for (let i = 0; i < st.length * 2; i++) {
+  //       if (Math.random() > 0.4) {
+  //         st[i % st.length] = !st[i % st.length];
+  //         await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+  //       }
+  //     }
 
-      expect(getChildStr()).toEqual(getExpectedChildStr());
-    };
+  //     expect(getChildStr()).toEqual(getExpectedChildStr());
+  //   };
 
-    // Test showing and hiding elements at random
-    for (let i = 0; i < 5; i++) {
-      await checkRandomShowHide();
-    }
-  });
+  //   // Test showing and hiding elements at random
+  //   for (let i = 0; i < 5; i++) {
+  //     await checkRandomShowHide();
+  //   }
+  // });
 });

@@ -10,6 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { allTags, onLifecycle } from '../tag.js';
 import { routeMatcher } from '../route-matcher.js';
 const { div, a } = allTags;
+/**
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+ */
 export class Router {
     get currentRoute() {
         return this._currentRoute;
@@ -30,11 +33,15 @@ export class Router {
         this._listenEvents();
         this.navigate(this._options.initialRoute);
     }
-    navigate(path, query) {
+    /**
+     * Navigate to a {@link route} with optional {@link query} parameters.
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+     */
+    navigate(route, query) {
         const querySearch = new URLSearchParams(query), queryStr = querySearch.toString(), cQuery = this.query.toString();
-        if (path != this._currentRoute || queryStr !== cQuery) {
+        if (route != this._currentRoute || queryStr !== cQuery) {
             this.query = querySearch;
-            this._history.pushState('data', '', path + (queryStr ? '?' + queryStr : ''));
+            this._history.pushState('data', '', route + (queryStr ? '?' + queryStr : ''));
         }
     }
     _setRoute() {

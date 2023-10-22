@@ -1,7 +1,7 @@
 import { CTag } from '../tag.js';
-type RouteBuilder = (router: Router<any>) => CTag;
-type Route = RouteBuilder | string;
-type RouterOptions<T extends Record<string, Route> = {}> = {
+export type RouteBuilder = (router: Router<any>) => CTag;
+export type Route = RouteBuilder | string;
+export type RouterOptions<T extends Record<string, Route> = {}> = {
     rootParent: CTag;
     routes: T;
     initialRoute: string;
@@ -12,6 +12,9 @@ type RouterOptions<T extends Record<string, Route> = {}> = {
     remove?: (route: CTag) => Promise<boolean> | boolean;
     beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
 };
+/**
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+ */
 export declare class Router<T extends Record<string, Route> = {}> {
     private _options;
     private _routes;
@@ -26,7 +29,11 @@ export declare class Router<T extends Record<string, Route> = {}> {
     query: URLSearchParams;
     get currentRoute(): string;
     constructor(options: RouterOptions<T>);
-    navigate(path: string, query?: Record<string, string>): void;
+    /**
+     * Navigate to a {@link route} with optional {@link query} parameters.
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
+     */
+    navigate(route: string, query?: Record<string, string>): void;
     private _setRoute;
     private _hookLifecycle;
     private _getEffectiveRoute;
@@ -39,4 +46,3 @@ export declare class Router<T extends Record<string, Route> = {}> {
 export declare let router: Router<any> | undefined;
 export declare function makeRouter<T extends Record<string, Route> = {}>(opts: RouterOptions<T>): Router<T>;
 export declare function Link(child: string | CTag, path: any, query?: Record<string, string>): CTag;
-export {};

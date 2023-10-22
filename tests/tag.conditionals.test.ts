@@ -39,7 +39,6 @@ describe('Tag conditionals', () => {
       pp2,
     );
 
-    console.log('raw', dom.serialize());
     expect(pp.element.parentElement).toBeTruthy();
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
 

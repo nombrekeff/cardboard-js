@@ -1,6 +1,6 @@
 import { fromJson, state, toJson } from '../../dist/cardboard.js';
 
-export default state(
+export const appState = state(
   [...(toJson(localStorage.getItem('TODOS')) || [])],
   (newState) => {
     localStorage.setItem('TODOS', fromJson([...newState]));

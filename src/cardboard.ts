@@ -5,6 +5,7 @@ export * from './util.js';
 export * from './text.js';
 export * from './events.js';
 export * from './ext/routing.js';
+export type * from './types';
 
 
 import * as _tag from './tag.js';

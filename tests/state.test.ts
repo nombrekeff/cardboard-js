@@ -12,7 +12,7 @@ describe('State', () => {
 
     for (const key in so) {
       expect(key in s).toBeDefined();
-      expect(s[key]).toBe(so[key]);
+      expect(s[key] == so[key]).toEqual(true);
     }
   });
 

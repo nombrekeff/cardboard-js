@@ -1,4 +1,5 @@
-import type { State } from './types.js';
+import { isConsumable } from './consumables.js';
+import type { State } from './types';
 
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
@@ -11,6 +12,8 @@ import type { State } from './types.js';
  *
  * **NOTE** If you're not interpolating, and dont need to change the text, you can directly pass in a string ('string') instead of (`text('string')`).
  *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
+ *
  * @example
  * ```ts
  * const st = state({ count: 0 });
@@ -19,7 +22,7 @@ import type { State } from './types.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text<T>(textTemplate: string, values?: State<T>): Node {
+export function text(textTemplate: string, values?: Record<string, any>): Node {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
@@ -27,16 +30,15 @@ export function text<T>(textTemplate: string, values?: State<T>): Node {
     node.nodeValue = !values
       ? textTemplate
       : textTemplate.replace(interpolatePattern, (m, g1) =>
-          values[g1] != null ? values[g1].toString() : m,
+          values[g1] != null ? values[g1] : m,
         );
   };
 
-  if (values && 'changed' in values) {
+  if (values) {
     for (let key of Object.getOwnPropertyNames(values)) {
       // We're just interested in listening to the values that are references in the text.
-      if (textTemplate.includes(`$${key}`)) {
-        const item = values[key];
-        item.changed(updateNode);
+      if (textTemplate.includes(`$${key}`) && isConsumable(values[key])) {
+        values[key].changed(updateNode);
       }
     }
   }

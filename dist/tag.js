@@ -7,13 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { CssGenerator } from './css-generator.js';
+import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
+import { createConsumable, isConsumable } from './consumables.js';
 let context = {
     attached: null,
     stack: [],
-    css: new CssGenerator(),
 };
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
@@ -118,7 +118,7 @@ export class CTag {
     /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         consumable.changed((newValue) => consumer(this, newValue));
-        consumer(this, consumable);
+        consumer(this, consumable.value);
         return this;
     }
     /**
@@ -185,7 +185,7 @@ export class CTag {
                 ifFalse(value);
         };
         consumable.changed(callback);
-        callback(consumable);
+        callback(consumable.value);
         return this;
     }
     /**
@@ -211,7 +211,7 @@ export class CTag {
                 this.hide();
         };
         consumable.changed(handleHide);
-        handleHide(consumable);
+        handleHide(consumable.value);
         return this;
     }
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
@@ -320,7 +320,8 @@ export class CTag {
      * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
      * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
      *
-     * If no argument is provided, it returns the `textContent` of the element
+     * If no argument is provided, it returns the `textContent` of the element.
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
     text(newText, st) {
         if (newText == null) {
@@ -352,7 +353,7 @@ export class CTag {
         if (c.children)
             this.append(...c.children);
         if (c.on) {
-            for (const key in c.on) {
+            for (const key of Object.keys(c.on)) {
                 this.on(key, c.on[key]);
             }
         }
@@ -458,22 +459,19 @@ export class CTag {
         return this.element.attributes[attr];
     }
     /**
-     * Returns a {@link Consumable} that fires when the Event {@param evtName} is fired in this element
+     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
      */
     when(evtName, fn) {
-        return {
-            changed: (listener) => {
-                this.on(evtName, () => listener(fn(this)));
-            },
-        };
+        const cons = createConsumable({});
+        this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
+        return cons;
     }
     /** Add an event listener for a particular event */
     on(evtName, fn) {
-        this.element.addEventListener(evtName, (evt) => {
-            return fn(this, evt);
-        });
+        if (fn)
+            this.element.addEventListener(evtName, (evt) => fn(this, evt));
         return this;
     }
     /** Add an event listener for a particular event that will only fire once */
@@ -571,6 +569,9 @@ export class CTag {
     _getElementForChild(cl) {
         if (typeof cl === 'string')
             return document.createTextNode(cl);
+        if (isConsumable(cl)) {
+            return text('$val', { val: cl });
+        }
         if (cl instanceof CTag)
             return cl.element;
         if (cl instanceof Node)
@@ -753,7 +754,7 @@ const interceptors = {
         }));
     },
     style: (styles, attach = false) => {
-        return tag('style', [context.css.genCss(styles)], attach);
+        return tag('style', [genCss(styles)], attach);
     },
 };
 /**
