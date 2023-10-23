@@ -137,6 +137,7 @@ describe('Routing', () => {
       initialRoute: '/home',
     });
 
+    await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(Array.from(document.body.children)).toContain(home.element);
     router.navigate('/not-exists');
 

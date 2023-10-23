@@ -43,7 +43,7 @@ export class CMappedEvent {
         if (!(evt in this._listeners)) {
             this._listeners[evt] = [fn];
         }
-        else {
+        else if (this._listeners[evt]) {
             this._listeners[evt].push(fn);
         }
     }
@@ -62,3 +62,4 @@ export function singleEvent() {
 export function mappedEvent() {
     return new CMappedEvent();
 }
+//# sourceMappingURL=events.js.map

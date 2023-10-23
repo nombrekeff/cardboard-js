@@ -152,7 +152,7 @@ describe('Tag functions', () => {
     expect(attached()).toBe(c);
 
     detach();
-    expect(attached()).toBe(null);
+    expect(attached()).toBe(undefined);
   });
 
   it('attached', async () => {

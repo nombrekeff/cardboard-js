@@ -206,4 +206,5 @@ export type CssProperty =
   | 'wordWrap'
   | 'writingMode'
   | 'zIndex'
+  // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {});

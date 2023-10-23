@@ -11,8 +11,8 @@ import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createConsumable, isConsumable } from './consumables.js';
-let context = {
-    attached: null,
+const context = {
+    attached: undefined,
     stack: [],
 };
 /**
@@ -67,8 +67,6 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
-        /** @param parent Reference to the parent @type {CTag} of this element */
-        this._parent = null;
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         this._cachedChildren = [];
@@ -79,11 +77,20 @@ export class CTag {
             nextSiblingID: null,
         };
         this._attachable = false;
-        const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
+        const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
         if (isSelector) {
-            this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
+            const match = arg0.match(/\((.+)\)/);
+            const selector = match ? match[1] : null;
+            if (!selector) {
+                throw new Error('Invalid selector: ' + arg0);
+            }
+            const element = document.querySelector(selector);
+            if (!element) {
+                throw new Error("Can't find element for selector: " + arg0);
+            }
+            this.element = element;
         }
-        else if (typeof arg0 == 'string') {
+        else if (typeof arg0 === 'string') {
             this._attachable = attachable;
             this.element = document.createElement(arg0);
         }
@@ -115,28 +122,22 @@ export class CTag {
         this._children.unshift(...children);
         return this;
     }
-    /** Whenever the consumable changes, it will call the consumer */
-    consume(consumable, consumer) {
-        consumable.changed((newValue) => consumer(this, newValue));
-        consumer(this, consumable.value);
-        return this;
-    }
     /**
      * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
      * I will be placed exactly in the correct position, even if there are other elements hidden.
      */
     show() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.parent.children.includes(this.element)) {
+            if (this.parent && !this.parent.children.includes(this.element)) {
                 const parentEl = this.parent.element;
                 // Get's the position of the element if all the children are visible
                 const expectedIndex = this.parent._children.indexOf(this);
                 // If the element should be the first child in the parent
-                if (expectedIndex == 0) {
+                if (expectedIndex === 0) {
                     parentEl.prepend(this.element);
                 }
                 // If the element should be the last child in the parent
-                else if (expectedIndex == this.parent._children.length - 1) {
+                else if (expectedIndex === this.parent._children.length - 1) {
                     parentEl.append(this.element);
                 }
                 // If the element should be the nth child in the parent
@@ -162,11 +163,24 @@ export class CTag {
     /** Hide this element (removed from DOM) */
     hide() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.parent.children.includes(this.element)) {
+            if (this.parent && this.parent.children.includes(this.element)) {
                 yield this.remove();
                 this._meta.isHidden = true;
             }
         });
+    }
+    /** Whenever the consumable changes, it will call the consumer */
+    consume(consumable, consumer) {
+        if (consumable.changed) {
+            consumable.changed((newValue) => {
+                consumer(this, newValue);
+            });
+        }
+        else {
+            console.warn('An invalid Consumable was supplied to `tag.consume`');
+        }
+        consumer(this, ('value' in consumable) ? consumable.value : consumable);
+        return this;
     }
     /**
      * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
@@ -174,19 +188,17 @@ export class CTag {
      */
     doIf(consumable, ifTrue, ifFalse, invert = false) {
         if (invert) {
-            let temp = ifTrue;
+            const temp = ifTrue;
             ifTrue = ifFalse;
             ifFalse = temp;
         }
-        const callback = (value) => {
+        const callback = (_, value) => {
             if (value)
                 ifTrue(value);
             else
                 ifFalse(value);
         };
-        consumable.changed(callback);
-        callback(consumable.value);
-        return this;
+        return this.consume(consumable, callback);
     }
     /**
      * The oposite of {this.doIf}
@@ -200,19 +212,17 @@ export class CTag {
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
     hideIf(consumable, invert = false) {
-        const handleHide = (value) => {
+        const handleHide = (_, value) => {
             const correctedValue = invert ? !value : !!value;
             this._meta.isHidden = correctedValue;
             if (!this.parent)
                 return;
             if (!correctedValue)
-                this.show();
+                void this.show();
             else
-                this.hide();
+                void this.hide();
         };
-        consumable.changed(handleHide);
-        handleHide(consumable.value);
-        return this;
+        return this.consume(consumable, handleHide);
     }
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
     hideIfNot(consumable) {
@@ -313,7 +323,9 @@ export class CTag {
      * Listen to an event on the element. Like addEventListener.
      */
     listen(tag, evt, consumer) {
-        return tag.on(evt, (other, evt) => consumer(this, other, evt));
+        return tag.on(evt, (other, evt) => {
+            consumer(this, other, evt);
+        });
     }
     /**
      * If {newText} is provided, it sets the `textContent` of the element.
@@ -371,14 +383,14 @@ export class CTag {
     }
     /** Remove classes from class list */
     rmClass(...classes) {
-        for (let key of classes) {
+        for (const key of classes) {
             this.classList.remove(key);
         }
         return this;
     }
     /** Check if classes are present in this element */
     hasClass(...classes) {
-        for (let key of classes) {
+        for (const key of classes) {
             if (!this.classList.contains(key)) {
                 return false;
             }
@@ -392,9 +404,7 @@ export class CTag {
     }
     /** Toggle a class. If it's present it's removed, if it's not present its added. */
     toggleClass(targetClass) {
-        return this.hasClass(targetClass)
-            ? this.rmClass(targetClass)
-            : this.addClass(targetClass);
+        return this.hasClass(targetClass) ? this.rmClass(targetClass) : this.addClass(targetClass);
     }
     /** Add a single style */
     addStyle(property, value) {
@@ -403,21 +413,22 @@ export class CTag {
     }
     /** Set multiple styles at once */
     setStyle(styles) {
-        for (let key in styles) {
-            this.addStyle(key, styles[key]);
+        var _a;
+        for (const key in styles) {
+            this.addStyle(key, (_a = styles[key]) !== null && _a !== void 0 ? _a : '');
         }
         return this;
     }
     /** Remove styles */
     rmStyle(...styleNames) {
-        for (let key of styleNames) {
+        for (const key of styleNames) {
             this.style.removeProperty(key);
         }
         return this;
     }
     /** Check if this element has styles */
     hasStyle(...styles) {
-        for (let key of styles) {
+        for (const key of styles) {
             if (!this.style.getPropertyValue(camelToDash(key))) {
                 return false;
             }
@@ -426,7 +437,7 @@ export class CTag {
     }
     /** Adds a set of attributes to the element */
     setAttrs(attrs) {
-        for (let key in attrs) {
+        for (const key in attrs) {
             this.addAttr(key, attrs[key]);
         }
         return this;
@@ -439,7 +450,7 @@ export class CTag {
     }
     /** Remove attributes from the element */
     rmAttr(...attrs) {
-        for (let key of attrs) {
+        for (const key of attrs) {
             this.element.removeAttribute(key);
             delete this.element.attributes[key];
         }
@@ -447,7 +458,7 @@ export class CTag {
     }
     /** Check if this element has attributes */
     hasAttr(...attr) {
-        for (let key of attr) {
+        for (const key of attr) {
             if (!(key in this.element.attributes)) {
                 return false;
             }
@@ -465,13 +476,18 @@ export class CTag {
      */
     when(evtName, fn) {
         const cons = createConsumable({});
-        this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
+        this.on(evtName, (t, evt) => {
+            cons.dispatch(fn(t, evt));
+        });
         return cons;
     }
     /** Add an event listener for a particular event */
     on(evtName, fn) {
-        if (fn)
-            this.element.addEventListener(evtName, (evt) => fn(this, evt));
+        if (fn) {
+            this.element.addEventListener(evtName, (evt) => {
+                fn(this, evt);
+            });
+        }
         return this;
     }
     /** Add an event listener for a particular event that will only fire once */
@@ -491,7 +507,7 @@ export class CTag {
     keyPressed(fn, key) {
         if (key) {
             return this.on('keypress', (_, evt) => {
-                if (evt.code == key || evt.key == key) {
+                if (evt.code === key || evt.key === key) {
                     fn(this, evt);
                 }
             });
@@ -509,6 +525,11 @@ export class CTag {
     /** Remove element from the DOM */
     remove() {
         return __awaiter(this, void 0, void 0, function* () {
+            // Might be a promise (it's overriden by `withLifecycle`)
+            const result = this.element.remove();
+            if (result instanceof Promise) {
+                yield result;
+            }
             yield this.element.remove();
             return this;
         });
@@ -588,9 +609,10 @@ export class CTag {
         }
     }
     _cacheChildren(element) {
-        let nodes = element.childNodes, children = [], i = nodes.length;
+        const nodes = element.childNodes, children = [];
+        let i = nodes.length;
         while (i--) {
-            if (nodes[i].nodeType == 1) {
+            if (nodes[i].nodeType === 1) {
                 children.unshift(nodes[i]);
             }
         }
@@ -600,7 +622,8 @@ export class CTag {
         return children
             .map(this._setChildrenParent.bind(this))
             .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild);
+            .map(this._getElementForChild)
+            .filter(el => el != null);
     }
 }
 /**
@@ -632,12 +655,13 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     let observingParent = false;
     if (beforeRemove) {
         const tempElRemove = tag.element.remove;
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
             const result = beforeRemove(tag);
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.element);
             }
-            return result;
+            return result.valueOf();
         });
     }
     if (onStart) {
@@ -650,9 +674,10 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             return result;
         });
     }
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     const observer = new MutationObserver((mutations, observer) => __awaiter(this, void 0, void 0, function* () {
         let hasBeenAdded = false, hasBeenRemoved = false;
-        for (let mut of mutations) {
+        for (const mut of mutations) {
             if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
                 hasBeenAdded = true;
             }
@@ -667,7 +692,7 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             }
             // When element is added, change observer to observe parent instead of body
             // Improve performance, as we just need to know if it's added or removed from the parent!
-            if (!observingParent) {
+            if (!observingParent && tag.element.parentElement) {
                 observer.disconnect();
                 observer.observe(tag.element.parentElement, { childList: true });
                 observingParent = true;
@@ -727,14 +752,14 @@ export function detach() {
         context.attached = context.stack.pop();
     }
     else {
-        context.attached = null;
+        context.attached = undefined;
     }
 }
 /**
  * Detaches all attached tags. There will be no attached tag after calling this function.
  */
 export function detachAll() {
-    context.attached = null;
+    context.attached = undefined;
     context.stack = [];
 }
 /**
@@ -789,3 +814,4 @@ export const allTags = new Proxy({}, {
         return fn;
     },
 });
+//# sourceMappingURL=tag.js.map

@@ -14,16 +14,16 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
     return this._value;
   }
 
-  get prev(): T {
-    return this._prev;
-  }
-
   /** Set the value, and dispatch to all listeners. */
   set value(val: T) {
     this.dispatch(val);
   }
 
-  constructor(val?: T) {
+  get prev(): T {
+    return this._prev;
+  }
+
+  constructor(val: T) {
     super();
     this._value = val;
     this._prev = val;
@@ -34,7 +34,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
   }
 
   toString() {
-    return this._value.toString();
+    return (this._value as any).toString();
   }
 
   /**
@@ -109,32 +109,32 @@ export function intersect<T, K>(
   return consumable as any;
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
 export function greaterThan(consumable: IConsumable<number>, val: number) {
   return intersect(consumable, (newVal) => newVal > val);
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
 export function greaterThanOr(consumable: IConsumable<number>, val: number) {
   return intersect(consumable, (newVal) => newVal >= val);
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
 export function lessThan(consumable: IConsumable<number>, val: number) {
   return intersect(consumable, (newVal) => newVal < val);
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
 export function lessThanOr(consumable: IConsumable<number>, val: number) {
   return intersect(consumable, (newVal) => newVal <= val);
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
 export function equalTo<T>(consumable: IConsumable<T>, val: T) {
   return intersect(consumable, (newVal) => newVal === val);
 }
 
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
 export function notEqualTo<T>(consumable: IConsumable<T>, val: T) {
   return intersect(consumable, (newVal) => newVal !== val);
 }

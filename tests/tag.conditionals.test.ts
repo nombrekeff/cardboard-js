@@ -12,7 +12,7 @@ function getElementIndex(node) {
 }
 
 describe('Tag conditionals', () => {
-  it('tag.showIf', async () => {
+  it('tag.hideIfNot', async () => {
     createDomMock();
     const st = state({ show: true });
     const pp = tag('p', ["I'm here"]);

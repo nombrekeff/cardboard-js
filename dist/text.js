@@ -26,10 +26,10 @@ export function text(textTemplate, values) {
     const updateNode = () => {
         node.nodeValue = !values
             ? textTemplate
-            : textTemplate.replace(interpolatePattern, (m, g1) => values[g1] != null ? values[g1] : m);
+            : textTemplate.replace(interpolatePattern, (m, g1) => { var _a; return (_a = values[g1]) !== null && _a !== void 0 ? _a : m; });
     };
     if (values) {
-        for (let key of Object.getOwnPropertyNames(values)) {
+        for (const key of Object.getOwnPropertyNames(values)) {
             // We're just interested in listening to the values that are references in the text.
             if (textTemplate.includes(`$${key}`) && isConsumable(values[key])) {
                 values[key].changed(updateNode);
@@ -39,3 +39,4 @@ export function text(textTemplate, values) {
     updateNode();
     return node;
 }
+//# sourceMappingURL=text.js.map

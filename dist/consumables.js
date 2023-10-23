@@ -12,9 +12,13 @@ export class Consumable extends CEvent {
     set value(val) {
         this.dispatch(val);
     }
+    get prev() {
+        return this._prev;
+    }
     constructor(val) {
         super();
         this._value = val;
+        this._prev = val;
     }
     valueOf() {
         return this._value;
@@ -35,6 +39,7 @@ export class Consumable extends CEvent {
     dispatch(val) {
         // Make sure assining the value is before the dispatch call,
         // otherwise Consumable value is not update when the listeners are called
+        this._prev = val;
         this._value = val;
         super.dispatch(val);
     }
@@ -81,30 +86,31 @@ export function createConsumable(val) {
  */
 export function intersect(other, intersector) {
     const consumable = createConsumable(intersector(other.value));
-    other.changed((newVal) => consumable.dispatch(intersector(newVal)));
+    other.changed((val) => consumable.dispatch(intersector(val)));
     return consumable;
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
 export function greaterThan(consumable, val) {
     return intersect(consumable, (newVal) => newVal > val);
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
 export function greaterThanOr(consumable, val) {
     return intersect(consumable, (newVal) => newVal >= val);
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
 export function lessThan(consumable, val) {
     return intersect(consumable, (newVal) => newVal < val);
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
 export function lessThanOr(consumable, val) {
     return intersect(consumable, (newVal) => newVal <= val);
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
 export function equalTo(consumable, val) {
     return intersect(consumable, (newVal) => newVal === val);
 }
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val}*/
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
 export function notEqualTo(consumable, val) {
     return intersect(consumable, (newVal) => newVal !== val);
 }
+//# sourceMappingURL=consumables.js.map

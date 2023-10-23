@@ -3,10 +3,10 @@ import { camelToDash, isObject } from './util.js';
 
 export function genCss(
   styleSheet:
-    | { [key: string]: NestedStyleMap }
-    | { [key: string]: NestedStyleMap }[],
+    | Record<string, NestedStyleMap>
+    | Array<Record<string, NestedStyleMap>>,
 ) {
-  let stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
+  const stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
   let generatedCss = '';
 
   for (const sheet of stylesheets) {
@@ -17,8 +17,8 @@ export function genCss(
   return generatedCss;
 }
 
-export function genBlock(selector: string, style: NestedStyleMap) {
-  let blocks = genBlockContent(selector, style);
+export function genBlock(selector: string, style: NestedStyleMap): string {
+  const blocks = genBlockContent(selector, style);
   return blocks.join('');
 }
 
@@ -27,12 +27,13 @@ export function genBlockContent(
   style: NestedStyleMap,
 ): string[] {
   let inside = '';
-  let blocks = [];
+  const blocks: string[] = [];
 
   for (const key in style) {
     if (isObject(style[key])) {
-      blocks.push(genBlockContent(selector + key, style[key]));
-    } else if (style[key]) {
+      blocks.push(...genBlockContent(selector + key, style[key] as any));
+    }
+    else if (style[key]) {
       inside += genStyle(key, style[key] as string);
     }
   }
@@ -42,6 +43,6 @@ export function genBlockContent(
   return blocks;
 }
 
-export function genStyle(name: string, value: string) {
+export function genStyle(name: string, value: string): string {
   return `${camelToDash(name)}:${value};`;
 }

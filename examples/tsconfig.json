@@ -16,13 +16,15 @@
         ],
         "types": [
             "@tweenjs/tween.js",
-            "../dist/cardboard.d.ts",
+            "../dist/cardboard.d.ts"
         ]
     },
     "include": [
         "./**/*.ts"
     ],
     "exclude": [
-        "./dist/"
+        "./dist/",
+        "./routes/",
+        "../src"
     ]
 }

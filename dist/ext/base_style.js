@@ -33,3 +33,4 @@ const baseStyles = {
 export function BaseStyle(attach = true) {
     return attach ? style.attach(baseStyles) : style(baseStyles);
 }
+//# sourceMappingURL=base_style.js.map

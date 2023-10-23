@@ -4,9 +4,10 @@
         "module": "ES2015",
         "outDir": "dist",
         "moduleResolution": "node",
-        "sourceMap": false,
+        "sourceMap": true,
         "declaration": true,
         "esModuleInterop": true,
+        "strictNullChecks": true,
         "lib": [
             "dom",
             "ES2016"
@@ -20,6 +21,8 @@
         "./src/**/*.ts"
     ],
     "exclude": [
-        "./dist"
+        "./dist",
+        "./examples",
+        "./tests"
     ]
 }

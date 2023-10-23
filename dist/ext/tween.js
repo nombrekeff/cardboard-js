@@ -1,6 +1,15 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import * as TWEEN from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
 import * as tween_1 from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
 export { tween_1 as tween };
-import * as TWEEN from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
@@ -42,5 +51,10 @@ export function tweenTag(tag, tween, onComplete) {
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
  */
 export function tweenTagAsync(tag, tween) {
-    return new Promise((resolve) => tweenTag(tag, tween, () => resolve(tag)));
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield new Promise((resolve) => tweenTag(tag, tween, () => {
+            resolve(tag);
+        }));
+    });
 }
+//# sourceMappingURL=tween.js.map

@@ -44,6 +44,7 @@ export type PrimitiveConsumable = StateConsumable<string | number | boolean>;
 export type State<T extends Record<string, any>> = T extends any[]
   ? T & {
       changed: (callback: (newValue: T) => void) => void;
+      update: (newValue: T) => void;
       length: StateConsumable<number>;
     }
   : {
@@ -52,6 +53,7 @@ export type State<T extends Record<string, any>> = T extends any[]
         : StateConsumable<T[K]>;
     } & {
       changed: (callback: (newValue: T) => void) => void;
+      update: (newValue: T) => void;
     };
 export type TagConfig = {
   style?: StyleMap;

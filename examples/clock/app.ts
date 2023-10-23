@@ -22,7 +22,7 @@ const Clock = () => {
     st.hours = currentDate.getHours().toString().padStart(2, '0');
   };
 
-  let interval: number;
+  let interval: any;
 
   return withLifecycle(
     div(

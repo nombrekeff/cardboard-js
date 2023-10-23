@@ -274,9 +274,10 @@ describe('Tags', () => {
   it('tag.consume', async () => {
     createDomMock();
     const callback = jest.fn();
-    const s = state({ count: 0 });
-    tag('div').consume(s.count, callback);
-    s.count++;
+    let st = state({ count: 0 });
+
+    tag('div').consume(st.count, callback);
+    st.count++;
 
     expect(callback).toBeCalled();
   });

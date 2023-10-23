@@ -2,14 +2,14 @@ import { allTags } from '../cardboard.js';
 const { input } = allTags;
 export function Input(options = {}) {
     var _a;
-    const el = options.attach == true ? input.attach() : input();
+    const el = options.attach ? input.attach() : input();
     el.config({
         attr: { tooltip: options.tooltip, placeholder: options.placeholder },
         on: {
             input: options.input,
             submit: options.submit,
             keypress: (tag, evt) => {
-                if (evt.key == 'Enter') {
+                if (evt.key === 'Enter' && options.submit) {
                     options.submit(el, evt);
                 }
             },
@@ -18,3 +18,4 @@ export function Input(options = {}) {
     });
     return el;
 }
+//# sourceMappingURL=components.js.map

@@ -12,7 +12,7 @@
 
 // Characters to be escaped with \. RegExp borrowed from the Backbone router
 // but escaped (note: unnecessarily) to keep JSHint from complaining.
-const reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
+const reEscape = /[-[\]{}()+?.,\\^$|#\s]/g;
 // Match named :param or *splat placeholders.
 const reParam = /([:*])(\w+)/g;
 
@@ -24,33 +24,34 @@ function validateRule(rule, value) {
   // getting .toString from a new object {} or Object.prototype, I'm assuming
   // that exports will always be an object, and using its .toString method.
   // Bad idea? Let me know by filing an issue
-  var type = rule.toString.call(rule).charAt(8);
+  const type = rule.toString(rule).charAt(8);
   // If regexp, match. If function, invoke. Otherwise, compare. Note that ==
   // is used because type coercion is needed, as `value` will always be a
   // string, but `rule` might not.
   return type === 'R'
     ? rule.test(value)
     : type === 'F'
-    ? rule(value)
-    : rule == value;
+      ? rule(value)
+      // eslint-disable-next-line eqeqeq
+      : rule == value;
 }
 
-export type RouteMatcher = {
-  parse(str: any): Record<string, string> | null;
-  stringify(obj: object): string;
-};
+export interface RouteMatcher {
+  parse: (str: any) => Record<string, string> | null;
+  stringify: (obj: object) => string;
+}
 
 // Pass in a route string (or RegExp) plus an optional map of rules, and get
 // back an object with .parse and .stringify methods.
 export const routeMatcher = (
   route: string | RegExp,
-  rules: { [k: string]: RegExp | ((value) => boolean) } = {},
+  rules: Record<string, RegExp | ((value) => boolean)> = {},
 ): RouteMatcher => {
   // Object to be returned. The public API.
-  let self: Partial<RouteMatcher> = {};
+  const self: Partial<RouteMatcher> = {};
 
   // Matched param or splat names, in order
-  let names = [];
+  const names: any[] = [];
   // Route matching RegExp.
   let re = route;
 
@@ -73,8 +74,8 @@ export const routeMatcher = (
     self.parse = function (url) {
       let i = 0;
       let param, value;
-      let params = {};
-      let matches = url.match(re);
+      const params = {};
+      const matches = url.match(re);
       // If no matches, return null.
       if (!matches) {
         return null;
@@ -106,10 +107,11 @@ export const routeMatcher = (
       // Missing params should be replaced with empty string.
       return result.replace(reParam, '');
     };
-  } else {
+  }
+  else {
     // RegExp route was passed. This is super-simple.
     self.parse = function (url) {
-      let matches = url.match(re);
+      const matches = url.match(re);
       return matches && { captures: matches.slice(1) };
     };
     // There's no meaningful way to stringify based on a RegExp route, so

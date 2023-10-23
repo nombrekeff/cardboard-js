@@ -6,6 +6,7 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import type {
   AllTags,
+  AnyConsumable,
   IConsumable,
   State,
   StyleMap,
@@ -17,11 +18,11 @@ import type {
 } from './types';
 import { createConsumable, isConsumable } from './consumables.js';
 
-let context: {
-  attached: CTag;
+const context: {
+  attached?: CTag;
   stack: CTag[];
 } = {
-  attached: null,
+  attached: undefined,
   stack: [],
 };
 
@@ -39,13 +40,15 @@ export function attached() {
  */
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
-  element: HTMLElement;
+  element: HTMLElement & { remove: () => (Promise<boolean> | any) };
 
   /** @param parent Reference to the parent @type {CTag} of this element */
-  private _parent: CTag = null;
-  get parent() {
+  private _parent?: CTag;
+
+  get parent(): CTag | undefined {
     return this._parent;
   }
+
   set parent(newParent: CTag) {
     this._parent = newParent;
   }
@@ -60,8 +63,9 @@ export class CTag {
   }
 
   /** If set to true, it be appended to the attached tag */
-  private _attachable: boolean = false;
-  private _meta = {
+  private readonly _attachable: boolean = false;
+
+  private readonly _meta = {
     isHidden: false,
     nextSiblingID: null,
   };
@@ -103,22 +107,33 @@ export class CTag {
     return this;
   }
 
-  constructor(
-    arg0: TagName | HTMLElement,
-    children: TagChildren = [],
-    attachable: boolean = false,
-  ) {
+  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
     this._attachable = false;
-    const isSelector = typeof arg0 == 'string' && arg0.match(/\(.+\)/);
+    const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
 
     if (isSelector) {
-      this.element = document.querySelector(arg0.match(/\((.+)\)/)[1]);
-    } else if (typeof arg0 == 'string') {
+      const match = arg0.match(/\((.+)\)/);
+      const selector = match ? match[1] : null;
+      if (!selector) {
+        throw new Error('Invalid selector: ' + arg0);
+      }
+
+      const element = document.querySelector(selector);
+
+      if (!element) {
+        throw new Error("Can't find element for selector: " + arg0);
+      }
+
+      this.element = element as HTMLElement;
+    }
+    else if (typeof arg0 === 'string') {
       this._attachable = attachable;
       this.element = document.createElement(arg0);
-    } else if (arg0 instanceof HTMLElement) {
+    }
+    else if (arg0 instanceof HTMLElement) {
       this.element = arg0;
-    } else {
+    }
+    else {
       throw new Error('Invalid argument 0');
     }
 
@@ -148,32 +163,22 @@ export class CTag {
     return this;
   }
 
-  /** Whenever the consumable changes, it will call the consumer */
-  consume<T>(
-    consumable: IConsumable<T>,
-    consumer: (self: CTag, newValue: T) => void,
-  ) {
-    consumable.changed((newValue) => consumer(this, newValue));
-    consumer(this, consumable.value);
-    return this;
-  }
-
   /**
    * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
    * I will be placed exactly in the correct position, even if there are other elements hidden.
    */
   async show() {
-    if (!this.parent.children.includes(this.element)) {
+    if (this.parent && !this.parent.children.includes(this.element)) {
       const parentEl = this.parent.element;
       // Get's the position of the element if all the children are visible
       const expectedIndex = this.parent._children.indexOf(this);
 
       // If the element should be the first child in the parent
-      if (expectedIndex == 0) {
+      if (expectedIndex === 0) {
         parentEl.prepend(this.element);
       }
       // If the element should be the last child in the parent
-      else if (expectedIndex == this.parent._children.length - 1) {
+      else if (expectedIndex === this.parent._children.length - 1) {
         parentEl.append(this.element);
       }
       // If the element should be the nth child in the parent
@@ -199,47 +204,51 @@ export class CTag {
 
   /** Hide this element (removed from DOM) */
   async hide() {
-    if (this.parent.children.includes(this.element)) {
+    if (this.parent && this.parent.children.includes(this.element)) {
       await this.remove();
       this._meta.isHidden = true;
     }
+  }
+
+  /** Whenever the consumable changes, it will call the consumer */
+  consume<T>(consumable: AnyConsumable<T>, consumer: (self: CTag, newValue?: T) => void) {
+    if (consumable.changed) {
+      consumable.changed((newValue) => {
+        consumer(this, newValue);
+      });
+    }
+    else {
+      console.warn('An invalid Consumable was supplied to `tag.consume`');
+    }
+
+    consumer(this, ('value' in consumable) ? consumable.value : consumable);
+    return this;
   }
 
   /**
    * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
    */
-  doIf(
-    consumable: IConsumable<any>,
-    ifTrue: (value: any) => void,
-    ifFalse: (value: any) => void,
-    invert = false,
-  ) {
+  doIf<T>(consumable: AnyConsumable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert = false) {
     if (invert) {
-      let temp = ifTrue;
+      const temp = ifTrue;
       ifTrue = ifFalse;
       ifFalse = temp;
     }
 
-    const callback = (value) => {
+    const callback = (_, value) => {
       if (value) ifTrue(value);
       else ifFalse(value);
     };
 
-    consumable.changed(callback);
-    callback(consumable.value);
-    return this;
+    return this.consume(consumable, callback);
   }
 
   /**
    * The oposite of {this.doIf}
    * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
    */
-  doIfNot(
-    consumable: IConsumable<any>,
-    ifTrue: (value: any) => void,
-    ifFalse: (value: any) => void,
-  ) {
+  doIfNot<T>(consumable: AnyConsumable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void) {
     return this.doIf(consumable, ifTrue, ifFalse, true);
   }
 
@@ -247,26 +256,21 @@ export class CTag {
    * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
    */
-  hideIf(
-    consumable: IConsumable<boolean> | IConsumable<number>,
-    invert = false,
-  ) {
-    const handleHide = (value: any) => {
+  hideIf<T>(consumable: AnyConsumable<T>, invert = false) {
+    const handleHide = (_, value: any) => {
       const correctedValue = invert ? !value : !!value;
       this._meta.isHidden = correctedValue;
 
       if (!this.parent) return;
-      if (!correctedValue) this.show();
-      else this.hide();
+      if (!correctedValue) void this.show();
+      else void this.hide();
     };
 
-    consumable.changed(handleHide);
-    handleHide(consumable.value);
-    return this;
+    return this.consume(consumable, handleHide);
   }
 
   /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-  hideIfNot(consumable: IConsumable<boolean> | IConsumable<number>) {
+  hideIfNot<T>(consumable: AnyConsumable<T>) {
     return this.hideIf(consumable, true);
   }
 
@@ -275,11 +279,7 @@ export class CTag {
    * You can pass in an array of classes, or a function that returns a list of classes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
    */
-  classIf(
-    consumable: IConsumable<any>,
-    classes: string[] | ((self: CTag) => string[]),
-    invert = false,
-  ) {
+  classIf<T>(consumable: AnyConsumable<T>, classes: string[] | ((self: CTag) => string[]), invert = false) {
     return this.doIf(
       consumable,
       () => this.addClass(...val(classes, this)),
@@ -293,10 +293,7 @@ export class CTag {
    * You can pass in an array of classes, or a function that returns a list of classes.
    * For the oposite you can also use {@link classIf}
    */
-  classIfNot(
-    consumable: IConsumable<any>,
-    classes: string[] | ((self: CTag) => string[]),
-  ) {
+  classIfNot<T>(consumable: AnyConsumable<T>, classes: string[] | ((self: CTag) => string[])) {
     return this.classIf(consumable, classes, true);
   }
 
@@ -306,8 +303,8 @@ export class CTag {
    * Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
    */
-  textIf(
-    consumable: IConsumable<any>,
+  textIf<T>(
+    consumable: AnyConsumable<T>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
     invert = false,
@@ -325,8 +322,8 @@ export class CTag {
    * Both {text} and {elseText} can be a string or a function that returns a string.
    * Updates whenever the consumable changes.
    */
-  textIfNot(
-    consumable: IConsumable<any>,
+  textIfNot<T>(
+    consumable: AnyConsumable<T>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
   ) {
@@ -338,12 +335,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
    */
-  attrIf(
-    consumable: IConsumable<any>,
-    attr: string,
-    value: string | ((self: CTag) => string) = '',
-    invert = false,
-  ) {
+  attrIf<T>(consumable: AnyConsumable<T>, attr: string, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       consumable,
       () => this.addAttr(attr, val(value, this)),
@@ -357,11 +349,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed
    */
-  attrIfNot(
-    consumable: IConsumable<any>,
-    attr: string,
-    value: string | ((self: CTag) => string) = '',
-  ) {
+  attrIfNot<T>(consumable: AnyConsumable<T>, attr: string, value: string | ((self: CTag) => string) = '') {
     return this.attrIf(consumable, attr, value, true);
   }
 
@@ -369,12 +357,12 @@ export class CTag {
    * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
    */
-  disableIf(consumable: IConsumable<any>, invert = false) {
+  disableIf<T>(consumable: AnyConsumable<T>, invert = false) {
     return this.attrIf(consumable, 'disabled', '', invert);
   }
 
   /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-  disableIfNot(consumable: IConsumable<any>) {
+  disableIfNot<T>(consumable: AnyConsumable<T>) {
     return this.disableIf(consumable, true);
   }
 
@@ -383,12 +371,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
    * {value} can be a string or a function that returns a string.
    */
-  styleIf(
-    consumable: IConsumable<any>,
-    style: string,
-    value: string | ((self: CTag) => string) = '',
-    invert = false,
-  ) {
+  styleIf<T>(consumable: AnyConsumable<T>, style: string, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       consumable,
       () => this.addStyle(style, val(value, this)),
@@ -401,11 +384,7 @@ export class CTag {
    * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
    * {value} can be a string or a function that returns a string.
    */
-  styleIfNot(
-    consumable: IConsumable<any>,
-    style: string,
-    value: string | ((self: CTag) => string) = '',
-  ) {
+  styleIfNot<T>(consumable: AnyConsumable<T>, style: string, value: string | ((self: CTag) => string) = '') {
     return this.styleIf(consumable, style, value, true);
   }
 
@@ -414,11 +393,7 @@ export class CTag {
    * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
    */
-  stylesIf(
-    consumable: IConsumable<any>,
-    styles: StyleMap | ((self: CTag) => StyleMap),
-    invert = false,
-  ) {
+  stylesIf<T>(consumable: AnyConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert = false) {
     return this.doIf(
       consumable,
       () => this.setStyle(val(styles, this)),
@@ -432,10 +407,7 @@ export class CTag {
    * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
    * For the oposite use  {@link stylesIf}
    */
-  stylesIfNot(
-    consumable: IConsumable<any>,
-    styles: StyleMap | ((self: CTag) => StyleMap),
-  ) {
+  stylesIfNot<T>(consumable: AnyConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) {
     return this.stylesIf(consumable, styles, true);
   }
 
@@ -447,7 +419,9 @@ export class CTag {
     evt: K,
     consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void,
   ) {
-    return tag.on(evt, (other, evt) => consumer(this, other, evt));
+    return tag.on(evt, (other, evt) => {
+      consumer(this, other, evt);
+    });
   }
 
   /**
@@ -458,10 +432,7 @@ export class CTag {
    * If no argument is provided, it returns the `textContent` of the element.
    * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
    */
-  text<T = string | null>(
-    newText?: T,
-    st?: State<any>,
-  ): T extends string ? CTag : string {
+  text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string {
     if (newText == null) {
       return this.element.textContent as any;
     }
@@ -510,7 +481,7 @@ export class CTag {
 
   /** Remove classes from class list */
   rmClass(...classes: string[]) {
-    for (let key of classes) {
+    for (const key of classes) {
       this.classList.remove(key);
     }
     return this;
@@ -518,7 +489,7 @@ export class CTag {
 
   /** Check if classes are present in this element */
   hasClass(...classes: string[]) {
-    for (let key of classes) {
+    for (const key of classes) {
       if (!this.classList.contains(key)) {
         return false;
       }
@@ -534,9 +505,7 @@ export class CTag {
 
   /** Toggle a class. If it's present it's removed, if it's not present its added. */
   toggleClass(targetClass: string): CTag {
-    return this.hasClass(targetClass)
-      ? this.rmClass(targetClass)
-      : this.addClass(targetClass);
+    return this.hasClass(targetClass) ? this.rmClass(targetClass) : this.addClass(targetClass);
   }
 
   /** Add a single style */
@@ -547,15 +516,15 @@ export class CTag {
 
   /** Set multiple styles at once */
   setStyle(styles: StyleMap) {
-    for (let key in styles) {
-      this.addStyle(key, styles[key]);
+    for (const key in styles) {
+      this.addStyle(key, styles[key] ?? '');
     }
     return this;
   }
 
   /** Remove styles */
   rmStyle(...styleNames: string[]) {
-    for (let key of styleNames) {
+    for (const key of styleNames) {
       this.style.removeProperty(key);
     }
     return this;
@@ -563,7 +532,7 @@ export class CTag {
 
   /** Check if this element has styles */
   hasStyle<K extends CssProperty>(...styles: K[]) {
-    for (let key of styles) {
+    for (const key of styles) {
       if (!this.style.getPropertyValue(camelToDash(key))) {
         return false;
       }
@@ -572,8 +541,8 @@ export class CTag {
   }
 
   /** Adds a set of attributes to the element */
-  setAttrs(attrs: { [k: string]: string }) {
-    for (let key in attrs) {
+  setAttrs(attrs: Record<string, string | undefined>) {
+    for (const key in attrs) {
       this.addAttr(key, attrs[key]);
     }
     return this;
@@ -588,7 +557,7 @@ export class CTag {
 
   /** Remove attributes from the element */
   rmAttr(...attrs: string[]) {
-    for (let key of attrs) {
+    for (const key of attrs) {
       this.element.removeAttribute(key);
       delete this.element.attributes[key];
     }
@@ -597,7 +566,7 @@ export class CTag {
 
   /** Check if this element has attributes */
   hasAttr(...attr: string[]) {
-    for (let key of attr) {
+    for (const key of attr) {
       if (!(key in this.element.attributes)) {
         return false;
       }
@@ -620,24 +589,24 @@ export class CTag {
     fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
   ): IConsumable<any> {
     const cons = createConsumable<any>({});
-    this.on(evtName, (t, evt) => cons.dispatch(fn(t, evt)));
+    this.on(evtName, (t, evt) => {
+      cons.dispatch(fn(t, evt));
+    });
     return cons;
   }
 
   /** Add an event listener for a particular event */
-  on<K extends keyof HTMLElementEventMap>(
-    evtName: K | string,
-    fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
-  ) {
-    if (fn) this.element.addEventListener(evtName, (evt: any) => fn(this, evt));
+  on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
+    if (fn) {
+      this.element.addEventListener(evtName, (evt: any) => {
+        fn(this, evt);
+      });
+    }
     return this;
   }
 
   /** Add an event listener for a particular event that will only fire once */
-  once<K extends keyof HTMLElementEventMap>(
-    evtName: K | string,
-    fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
-  ) {
+  once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     const listener = (evt) => {
       fn(this, evt);
       this.element.removeEventListener(evtName, listener);
@@ -655,7 +624,7 @@ export class CTag {
   keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string) {
     if (key) {
       return this.on('keypress', (_, evt) => {
-        if (evt.code == key || evt.key == key) {
+        if (evt.code === key || evt.key === key) {
           fn(this, evt);
         }
       });
@@ -676,7 +645,13 @@ export class CTag {
 
   /** Remove element from the DOM */
   async remove() {
-    await this.element.remove();
+    // Might be a promise (it's overriden by `withLifecycle`)
+    const result: any = this.element.remove();
+    if (result instanceof Promise) {
+      await result;
+    }
+
+    await (this.element as any).remove();
     return this;
   }
 
@@ -740,7 +715,7 @@ export class CTag {
     return true;
   }
 
-  private _getElementForChild(cl: TagChild): Node {
+  private _getElementForChild(cl: TagChild): Node | null {
     if (typeof cl === 'string') return document.createTextNode(cl);
     if (isConsumable(cl)) {
       return text('$val', { val: cl });
@@ -765,12 +740,12 @@ export class CTag {
   }
 
   private _cacheChildren(element: HTMLElement) {
-    let nodes = element.childNodes,
-      children = [],
-      i = nodes.length;
+    const nodes = element.childNodes,
+      children: Node[] = [];
+    let i = nodes.length;
 
     while (i--) {
-      if (nodes[i].nodeType == 1) {
+      if (nodes[i].nodeType === 1) {
         children.unshift(nodes[i]);
       }
     }
@@ -778,11 +753,12 @@ export class CTag {
     this._cachedChildren = children;
   }
 
-  private _mapChildren(children: TagChildren) {
+  private _mapChildren(children: TagChildren): Node[] {
     return children
       .map(this._setChildrenParent.bind(this))
       .filter(this._childrenFilterPredicate.bind(this))
-      .map(this._getElementForChild);
+      .map(this._getElementForChild)
+      .filter(el => el != null) as Node[];
   }
 }
 
@@ -803,11 +779,7 @@ export class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export function tag(
-  arg0: string | HTMLElement,
-  children: TagChildren = [],
-  attach: boolean = false,
-) {
+export function tag(arg0: string | HTMLElement, children: TagChildren = [], attach: boolean = false) {
   return new CTag(arg0, children, attach);
 }
 
@@ -825,12 +797,13 @@ export function onLifecycle(
 
   if (beforeRemove) {
     const tempElRemove = tag.element.remove;
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     tag.element.remove = async () => {
       const result = beforeRemove(tag);
       if (!result || (result instanceof Promise && (await result))) {
         tempElRemove.call(tag.element);
       }
-      return result;
+      return result.valueOf();
     };
   }
 
@@ -845,11 +818,12 @@ export function onLifecycle(
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const observer = new MutationObserver(async (mutations, observer) => {
     let hasBeenAdded = false,
       hasBeenRemoved = false;
 
-    for (let mut of mutations) {
+    for (const mut of mutations) {
       if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
         hasBeenAdded = true;
       }
@@ -866,7 +840,7 @@ export function onLifecycle(
 
       // When element is added, change observer to observe parent instead of body
       // Improve performance, as we just need to know if it's added or removed from the parent!
-      if (!observingParent) {
+      if (!observingParent && tag.element.parentElement) {
         observer.disconnect();
         observer.observe(tag.element.parentElement, { childList: true });
         observingParent = true;
@@ -937,8 +911,9 @@ export function attach(tag: CTag) {
 export function detach() {
   if (context.stack.length > 0) {
     context.attached = context.stack.pop();
-  } else {
-    context.attached = null;
+  }
+  else {
+    context.attached = undefined;
   }
 }
 
@@ -946,7 +921,7 @@ export function detach() {
  * Detaches all attached tags. There will be no attached tag after calling this function.
  */
 export function detachAll() {
-  context.attached = null;
+  context.attached = undefined;
   context.stack = [];
 }
 
@@ -961,9 +936,7 @@ export function init(options: { root: string } = { root: 'body' }) {
 }
 
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
-const interceptors: {
-  [k: string]: TagBuilder | ((styles: StyleSet[]) => CTag);
-} = {
+const interceptors: Record<string, TagBuilder | ((styles: StyleSet[]) => CTag)> = {
   ul: (children: TagChildren, attach: boolean = false) => {
     return tag(
       'ul',
