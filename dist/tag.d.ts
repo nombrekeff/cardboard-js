@@ -28,10 +28,12 @@ export declare class CTag {
     private readonly _attachable;
     private readonly _meta;
     get value(): any;
+    setValue(newValue: string): this;
+    get checked(): any;
+    setChecked(checked: boolean): this;
     get style(): CSSStyleDeclaration;
     get className(): string;
     get classList(): DOMTokenList;
-    setValue(newValue: string): this;
     /** Gets the value of the element and clears the value */
     get consumeValue(): any;
     get id(): string;

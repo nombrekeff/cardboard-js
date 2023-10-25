@@ -1,4 +1,6 @@
 import { isConsumable } from './consumables.js';
+import type { IConsumable, Primitive } from './types.js';
+import { isObject } from './util.js';
 
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
@@ -21,27 +23,32 @@ import { isConsumable } from './consumables.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text(textTemplate: string, values?: Record<string, any>): Node {
+export function text(textTemplate: string, obj: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): Node {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
-  const updateNode = () => {
-    node.nodeValue = !values
+  const updateNode = (data: Record<string, Primitive>) => {
+     node.nodeValue = !data
       ? textTemplate
       : textTemplate.replace(interpolatePattern, (m, g1) =>
-        values[g1] ?? m,
+        (data[g1] ?? m).toString(),
       );
   };
 
-  if (values) {
-    for (const key of Object.getOwnPropertyNames(values)) {
-      // We're just interested in listening to the values that are references in the text.
-      if (textTemplate.includes(`$${key}`) && isConsumable(values[key])) {
-        values[key].changed(updateNode);
+  if (isConsumable(obj)) {
+    (obj as IConsumable<Record<string, any>>).changed((val) => updateNode(val));
+    updateNode((obj as IConsumable).value);
+  }
+  else if (isObject(obj)) {
+    for (const key of Object.getOwnPropertyNames(obj)) {
+      // We're just interested in listening to the obj that are references in the text.
+      if (textTemplate.includes(`$${key}`) && isConsumable(obj[key])) {
+        obj[key].changed(() => updateNode(obj as any));
       }
     }
+
+    updateNode(obj as any);
   }
 
-  updateNode();
   return node;
 }

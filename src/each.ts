@@ -1,6 +1,6 @@
 import { type Consumable, isConsumable } from './consumables.js';
 import type { CTag } from './tag.js';
-import type { State } from './types.js';
+import type { IConsumable, State } from './types.js';
 import { arraysEqual, swapItems } from './util.js';
 
 enum DiffState {
@@ -26,7 +26,7 @@ interface DiffEntry<T = unknown> {
  * ```
  */
 export function each<T>(
-  consumable: State<T[]> | Consumable<T[]>,
+  consumable: IConsumable<T[]>,
   consumer: (val: T) => CTag,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
@@ -95,14 +95,13 @@ export function each<T>(
     elementsCopy.splice(index, 1);
   };
 
-  const updateList = (newData) => {
+  const updateList = (newData: T[]) => {
     if (!node.parentElement) {
-      setTimeout(() => updateList(consumable), 1);
+      setTimeout(() => updateList(newData), 1);
       return;
     }
 
     const start = performance.now();
-    newData = Array.from(newData);
 
     if (newData.length === oldData.length && arraysEqual(oldData, newData)) {
       const diff = performance.now() - start;
@@ -115,10 +114,10 @@ export function each<T>(
     if (!nodeParentIndex) nodeParentIndex = children.indexOf(node);
 
     if (!oldData.length) {
-      newData.forEach((data, index) => {
-        add(data, index);
-      });
-    } //
+      for (let i = 0; i < newData.length; i++) {
+        add(newData[i], i);
+      }
+    }
     else {
       const dataDiff: Array<DiffEntry<T>> = [];
       let removed = 0;
@@ -142,7 +141,7 @@ export function each<T>(
           removed--;
           added++;
         }
-        else if (newData.indexOf(oldEntry) < 0 || (oldIndex === undefined && oldEntry !== undefined && (newEntry == null || newEntry !== oldEntry))) {
+        else if (!newData.includes(oldEntry) || (oldIndex === undefined && oldEntry !== undefined && (newEntry == null || newEntry !== oldEntry))) {
           dataDiff.push({
             entry: oldEntry,
             state: DiffState.removed,
@@ -217,13 +216,13 @@ export function each<T>(
     console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
   };
 
-  setTimeout(() => updateList(consumable), 1);
+  setTimeout(() => updateList(consumable.value), 1);
   consumable.changed(updateList);
   return node;
 }
 
 export function eachSlow<T>(
-  consumable: State<T[]> | Consumable<T[]>,
+  consumable: State<T[]> | IConsumable<T[]>,
   consumer: (val: T) => CTag,
 ): Node {
   const node = document.createTextNode('');

@@ -2,7 +2,7 @@ import { genCss } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import { val, camelToDash } from './util.js';
+import { val, camelToDash, dashToCamel } from './util.js';
 import { text } from './text.js';
 import type {
   AllTags,
@@ -74,6 +74,20 @@ export class CTag {
     return (this.element as any).value;
   }
 
+  setValue(newValue: string) {
+    (this.element as any).value = newValue;
+    return this;
+  }
+
+  get checked() {
+    return (this.element as any).checked;
+  }
+
+  setChecked(checked: boolean) {
+    (this.element as any).checked = checked;
+    return this;
+  }
+
   get style() {
     return this.element.style;
   }
@@ -84,11 +98,6 @@ export class CTag {
 
   get classList() {
     return this.element.classList;
-  }
-
-  setValue(newValue: string) {
-    (this.element as any).value = newValue;
-    return this;
   }
 
   /** Gets the value of the element and clears the value */
@@ -237,7 +246,8 @@ export class CTag {
     }
 
     const callback = (_, value) => {
-      if (value) ifTrue(value);
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!!value) ifTrue(value);
       else ifFalse(value);
     };
 
@@ -525,7 +535,7 @@ export class CTag {
   /** Remove styles */
   rmStyle(...styleNames: string[]) {
     for (const key of styleNames) {
-      this.style.removeProperty(key);
+      this.style.removeProperty(camelToDash(key));
     }
     return this;
   }

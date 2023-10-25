@@ -18,12 +18,12 @@ export declare class Consumable<T> extends CEvent<T> implements IConsumable<T> {
     /**
      * Add a listener for when this Consumable changes.
      */
-    changed(callback: (val: T) => void): void;
+    changed(callback: (val: T) => void): this;
     /**
      * Set's the new value, and calls all the listeners.
      * You can additionaly set the {@link value} directly.
      */
-    dispatch(val: T): void;
+    dispatch(val: T): this;
     /**
      * Create a new {@link Consumable} that intersects this {@link Consumable}.
      * The new Consumable updates its value based on this {@link Consumable}.
@@ -37,7 +37,7 @@ export declare class Consumable<T> extends CEvent<T> implements IConsumable<T> {
      * // > isGreater == true;
      * ```
      */
-    intersect<K>(intersector: (val: T) => K): Consumable<K>;
+    intersect<K>(intersector: (val: T) => K): any;
 }
 /** Check if a given object {@link obj} is a {@link Consumable}  */
 export declare function isConsumable(obj: any): boolean;

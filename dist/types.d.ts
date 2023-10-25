@@ -9,7 +9,7 @@ export type Suffix<K extends string, T extends string> = `${T}${K}`;
 export type Suffixer<K, T extends string> = {
   [P in keyof K as Suffix<T, string & P>]: K[P];
 };
-
+export type Primitive = number | string | boolean | symbol | bigint;
 export type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | StyleMap;
 };
@@ -24,13 +24,22 @@ export type EventMap = {
   [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export interface IConsumable<T> {
-  changed: (callback: (newValue: T) => void) => any;
-  dispatch: (newValue: T) => any;
+export interface IConsumable<T = any> {
+  changed: (callback: (newValue: T) => void) => IConsumable<T>;
+  dispatch: (newValue: T) => IConsumable<T>;
+  intersect: <K>(intersector: (val: T) => K) => IConsumable<K>;
   value: T;
+  prev?: T;
 }
 export type StateConsumable<T> = T & Partial<IConsumable<T>>;
 export type AnyConsumable<T> = IConsumable<T> | StateConsumable<T>;
+export type Consumify<T> = IConsumable<
+  T extends Record<string, any> ?
+  {
+    [P in keyof T]: IConsumable<T[P]>;
+  } :
+  T extends any[] ? any[] : T
+>;
 
 export type TagChild = string | CTag | HTMLElement | Node | AnyConsumable<any>;
 export type State<T extends Record<string, any>> = T extends any[]
@@ -47,6 +56,9 @@ export type State<T extends Record<string, any>> = T extends any[]
   & {
     changed: (callback: (newValue: T) => void) => State<T>;
   };
+
+export type State2<T extends Record<string, any>> = Record<string, IConsumable<T>>;
+
 export interface TagConfig {
   style?: StyleMap;
   attr?: Record<string, string | undefined>;

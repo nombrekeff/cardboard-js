@@ -28,5 +28,5 @@ export function Input(options: HInputOptions = {}): CTag {
     value: options.value ?? '',
   });
 
-  return el;
+  return el.addClass('CInput');
 }

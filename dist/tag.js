@@ -40,6 +40,17 @@ export class CTag {
     get value() {
         return this.element.value;
     }
+    setValue(newValue) {
+        this.element.value = newValue;
+        return this;
+    }
+    get checked() {
+        return this.element.checked;
+    }
+    setChecked(checked) {
+        this.element.checked = checked;
+        return this;
+    }
     get style() {
         return this.element.style;
     }
@@ -48,10 +59,6 @@ export class CTag {
     }
     get classList() {
         return this.element.classList;
-    }
-    setValue(newValue) {
-        this.element.value = newValue;
-        return this;
     }
     /** Gets the value of the element and clears the value */
     get consumeValue() {
@@ -193,7 +200,8 @@ export class CTag {
             ifFalse = temp;
         }
         const callback = (_, value) => {
-            if (value)
+            // eslint-disable-next-line no-extra-boolean-cast
+            if (!!value)
                 ifTrue(value);
             else
                 ifFalse(value);
@@ -422,7 +430,7 @@ export class CTag {
     /** Remove styles */
     rmStyle(...styleNames) {
         for (const key of styleNames) {
-            this.style.removeProperty(key);
+            this.style.removeProperty(camelToDash(key));
         }
         return this;
     }

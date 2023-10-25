@@ -37,14 +37,14 @@ const bounceIn = (tag: CTag) =>
   });
 
 const Counter = () => {
-  let counter = state({ count: 0 });
+  let count = state(0);
 
   return button()
-    .text(`Clicked $count times`, counter)
+    .text(`Clicked $count times`, { count })
     .addStyle('color', 'red')
     .addClass('clicker')
     .clicked((self) => {
-      counter.count++;
+      count.value++;
       tweenTag(self, bounceIn, () => {
         tweenTag(self, bounceOut);
       });

@@ -4,7 +4,7 @@ const { style } = allTags;
 const flexCenterCenter = { display: 'flex', alignItems: 'center', justifyContent: 'center' };
 
 export default function styles() {
- return style.attach({
+  return style.attach({
     '*': {
       fontFamily: "'Montserrat', sans-serif !important;",
       scrollbarGutter: 'stable',
@@ -33,7 +33,7 @@ export default function styles() {
       margin: '0 32px',
       color: '#efd7e1',
     },
-    input: {
+    '.CInput': {
       width: '100%',
       height: '30px',
       border: 'none',
@@ -84,6 +84,10 @@ export default function styles() {
       borderBottom: '1px solid rgba(255,255,255,.3)',
       padding: '12px 8px',
       borderRadius: '3px',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     '.btn-remove': {
       minWidth: '30px',
@@ -94,16 +98,13 @@ export default function styles() {
       borderRadius: '50px',
       border: 'none',
       margin: '0',
-      right: '0',
-      top: '50%',
-      transform: 'translateY(-50%)',
       fontSize: '22px',
       color: 'white',
-      position: 'absolute',
       background: 'rgba(255,255,255,.2)',
       ':hover': {
         background: 'rgba(255,255,255,.35)',
       },
     },
+    h4: { margin: '0', padding: '0' }
   });
 }

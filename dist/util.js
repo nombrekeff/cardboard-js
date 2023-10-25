@@ -9,7 +9,8 @@ export function removeFromList(item, list) {
     }
     return false;
 }
-export const camelToDash = (str) => str.replace(/([A-Z])/g, (val) => `-${val.toLowerCase()}`);
+export const camelToDash = str => str.replace(/([A-Z])/g, val => `-${val.toLowerCase()}`);
+export const dashToCamel = str => str.replace(/(-[a-z])/g, val => val.toUpperCase().replace('-', ''));
 export function isObject(obj) {
     return typeof obj === 'object' && !(obj instanceof Array);
 }
@@ -46,5 +47,11 @@ export function arraysEqual(a, b) {
             return false;
     }
     return true;
+}
+export function isNumeric(str) {
+    if (typeof str !== 'string')
+        return false; // we only process strings!
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(str)); // ...and ensure strings of whitespace fail
 }
 //# sourceMappingURL=util.js.map

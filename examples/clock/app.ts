@@ -9,28 +9,26 @@ import {
 const { div, style, span, button, p } = allTags;
 
 const Clock = () => {
-  const st = state({
-    seconds: '00',
-    minutes: '00',
-    hours: '00',
-  });
+  const seconds = state('00');
+  const minutes = state('00');
+  const hours = state('00');
 
   const setTime = () => {
     const currentDate = new Date();
-    st.seconds = currentDate.getSeconds().toString().padStart(2, '0');
-    st.minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    st.hours = currentDate.getHours().toString().padStart(2, '0');
+    seconds.value = currentDate.getSeconds().toString().padStart(2, '0');
+    minutes.value = currentDate.getMinutes().toString().padStart(2, '0');
+    hours.value = currentDate.getHours().toString().padStart(2, '0');
   };
 
   let interval: any;
 
   return withLifecycle(
     div(
-      span().text('$hours', st),
+      span(hours),
       ':',
-      span().text('$minutes', st),
+      span(minutes),
       ':',
-      span().text('$seconds', st),
+      span(seconds),
     ),
     {
       start() {

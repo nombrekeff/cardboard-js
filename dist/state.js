@@ -1,87 +1,46 @@
 import { createConsumable } from './consumables.js';
-import { CEvent } from './events.js';
-import { isArray, isObject } from './util.js';
 /**
- * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
- * {@link content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
- * In arrays, length will also be reactive.
- * *
- * Additionally you can listen to it after creating it: `state().changed(() => { })`
+ * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/State
  *
  * @example
  * ```ts
- * const st = state({ count: 0 });
- * st.changed(() => { ... });
- * st.count.changed(() => { ... });
+ * const count = state(0);
+ * count.changed(() => { ... });
+ * count.dispatch(2);
+ * count.value++;
  *
- * st.count++;
- * st.count = 3;
- *
- * div().hideIf(st.count);
- * div().disableIf(st.count);
- * div(template('Count is: $count', st));
+ * div().hideIf(count);
+ * div().disableIf(count);
+ * div(template('Count is: $count', { count: count }));
  * ```
  */
-export function state(content) {
-    const _stateEvt = new CEvent();
-    const _consumables = {};
-    const emit = (target, prop, value) => {
-        content[prop] = value;
-        if (Number.isInteger(+prop.toString()) ||
-            (prop === 'changed' && !content[prop])) {
-            return;
-        }
-        if (_consumables[prop] != null) {
-            _consumables[prop].dispatch(value);
-        }
-        _stateEvt.dispatch(content);
+export function state(initialValue) {
+    return createConsumable(initialValue);
+}
+export function listState(initialData) {
+    const _list = state(initialData.map((d) => createConsumable(d)));
+    const length = _list.intersect((_list) => _list.length);
+    const add = (item, complete = false) => {
+        _list.value = [..._list.value, createConsumable(item)];
     };
-    const makeConsumable = (target, prop) => {
-        return (_consumables[prop] = createConsumable(content[prop]));
+    const addAt = (item, index) => {
+        const newData = [..._list.value];
+        newData.splice(index, 0, createConsumable(item));
+        _list.value = newData;
     };
-    // TODO: Think if having nested states is worth it or not.
-    // It might be better to not make nested objects/arrays into states
-    for (const prop of Object.getOwnPropertyNames(content)) {
-        const val = content[prop];
-        if (isObject(val) || isArray(val)) {
-            content[prop] = state(val);
-            content[prop].changed(emit.bind(this, content, prop));
-        }
-        else if (!(typeof val === 'function') && !Number.isInteger(+prop)) {
-            makeConsumable(content, prop);
-        }
-    }
-    const proxy = new Proxy(content, {
-        deleteProperty: function (target, prop) {
-            emit(content, prop, content[prop]);
-            delete content[prop];
-            return true;
+    const remove = (item) => {
+        _list.value = _list.value.filter(todo => todo !== item);
+    };
+    return {
+        get list() {
+            return _list;
         },
-        get: (target, prop) => {
-            var _a;
-            if (typeof target[prop] === 'function') {
-                return target[prop];
-            }
-            return (_a = _consumables[prop]) !== null && _a !== void 0 ? _a : content[prop];
-        },
-        set: (target, prop, value) => {
-            emit(content, prop, value);
-            return true;
-        },
-    });
-    proxy.changed = (callback) => {
-        _stateEvt.listen(callback);
-        return proxy;
+        add,
+        addAt,
+        remove,
+        length,
     };
-    proxy.update = (newValue) => {
-        content = newValue;
-        if (content instanceof Array)
-            emit(content, 'length', content.length);
-        emit(content, '', null);
-        return proxy;
-    };
-    return proxy;
 }
 //# sourceMappingURL=state.js.map

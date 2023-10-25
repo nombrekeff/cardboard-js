@@ -3,16 +3,13 @@ import {
   tag,
   allTags,
   attach,
-  text,
   each,
-  eachSlow,
 } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
-import { appState } from './state.js';
-console.log({ appState });
+import { todos, todoCount, addTodo, removeTodo, addTodoAt } from './state.js';
 
 const { div, button, h3, link, p } = allTags;
 
@@ -30,7 +27,7 @@ styles();
 
 attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO - count: ', appState.length).setStyle({
+h3.attach('Cardboard TODO - count: ', todoCount).setStyle({
   textAlign: 'center',
   margin: '40px 0',
 });
@@ -45,75 +42,27 @@ const addItemBtn = button('+')
   .disableIf(itemInput.when('input', (el) => !el.value))
   .clicked(addItemFromInput);
 
-div.attach(
-  button('Insert at 2').clicked(() => {
-    appState.splice(2, 0, 'abababa');
-  }),
-  button('Sort').clicked(() => {
-    // let newState = swap([...appState], 2, 7);
-    // newState = swap([...appState], 1, 5);
-    // let temp = newState[1];
-    // newState[1] = newState[4];
-    // newState[4] = temp;
-    console.log(appState);
-
-    appState.update(
-      [...appState].sort((a, b) => {
-        return a.localeCompare(b);
-        // if (a.loca < b) {
-        //   return -1;
-        // }
-        // if (a > b) {
-        //   return 1;
-        // }
-        // return 0;
-      }),
-    );
-  }),
-);
+// button('Insert at 2').clicked(() => {
+//   addTodoAt('abababa', 2);
+// }),
 
 div.attach(itemInput, addItemBtn).addClass('header');
-let test;
 div
   .attach(
-    div
-      .attach(
-        "Slow",
-        p('There are no items').addClass('list-empty').hideIf(appState.length),
-        eachSlow(appState, (item) => {
-          return TodoItem(item, {
-            remove: (s, c) => {
-              const index = appState.indexOf(c);
-              appState.splice(index, 1);
-            },
-          });
-        }),
-      )
-      .addClass('todo-list'),
-    test = div
-      .attach(
-        "Fast",
-        p('There are no items').addClass('list-empty').hideIf(appState.length),
-        each(appState, (item) => {
-          return TodoItem(item, {
-            remove: (s, c) => {
-              const index = appState.indexOf(c);
-              appState.splice(index, 1);
-            },
-          });
-        }),
-      )
-      .addClass('todo-list'),
+    p('There are no items').addClass('list-empty').hideIf(todoCount),
+    each(todos, (item) => {
+      return TodoItem(item, {
+        remove: (s, c) => removeTodo(c),
+      });
+    }),
   )
-  .setStyle({ display: 'flex', flexDirection: 'row', overflowY: 'auto' });
-
-console.log(test);
+  .addClass('todo-list');
 
 /* Adds a new TODO, from input field, adds to state */
 function addItemFromInput() {
   const value = itemInput.consumeValue;
 
   if (value) {
-    appState.push(value);
+    addTodo(value);
   }
 }

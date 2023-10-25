@@ -1,25 +1,26 @@
-import type { State } from './types';
+import type { IConsumable } from './types';
 /**
- * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
- * {@link content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
- * In arrays, length will also be reactive.
- * *
- * Additionally you can listen to it after creating it: `state().changed(() => { })`
+ * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/State
  *
  * @example
  * ```ts
- * const st = state({ count: 0 });
- * st.changed(() => { ... });
- * st.count.changed(() => { ... });
+ * const count = state(0);
+ * count.changed(() => { ... });
+ * count.dispatch(2);
+ * count.value++;
  *
- * st.count++;
- * st.count = 3;
- *
- * div().hideIf(st.count);
- * div().disableIf(st.count);
- * div(template('Count is: $count', st));
+ * div().hideIf(count);
+ * div().disableIf(count);
+ * div(template('Count is: $count', { count: count }));
  * ```
  */
-export declare function state<T extends object | any[]>(content: T): State<T>;
+export declare function state<T>(initialValue: T): IConsumable<T>;
+export declare function listState<T>(initialData: T[]): {
+    readonly list: IConsumable<IConsumable<T>[]>;
+    add: (item: T, complete?: boolean) => void;
+    addAt: (item: T, index: number) => void;
+    remove: (item: IConsumable<T>) => void;
+    length: IConsumable<number>;
+};

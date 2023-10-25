@@ -73,11 +73,10 @@ export function each(consumable, consumer) {
     const updateList = (newData) => {
         var _a, _b, _c, _d;
         if (!node.parentElement) {
-            setTimeout(() => updateList(consumable), 1);
+            setTimeout(() => updateList(newData), 1);
             return;
         }
         const start = performance.now();
-        newData = Array.from(newData);
         if (newData.length === oldData.length && arraysEqual(oldData, newData)) {
             const diff = performance.now() - start;
             console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
@@ -87,10 +86,10 @@ export function each(consumable, consumer) {
         if (!nodeParentIndex)
             nodeParentIndex = children.indexOf(node);
         if (!oldData.length) {
-            newData.forEach((data, index) => {
-                add(data, index);
-            });
-        } //
+            for (let i = 0; i < newData.length; i++) {
+                add(newData[i], i);
+            }
+        }
         else {
             const dataDiff = [];
             let removed = 0;
@@ -112,7 +111,7 @@ export function each(consumable, consumer) {
                     removed--;
                     added++;
                 }
-                else if (newData.indexOf(oldEntry) < 0 || (oldIndex === undefined && oldEntry !== undefined && (newEntry == null || newEntry !== oldEntry))) {
+                else if (!newData.includes(oldEntry) || (oldIndex === undefined && oldEntry !== undefined && (newEntry == null || newEntry !== oldEntry))) {
                     dataDiff.push({
                         entry: oldEntry,
                         state: DiffState.removed,
@@ -182,7 +181,7 @@ export function each(consumable, consumer) {
         const diff = performance.now() - start;
         console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
     };
-    setTimeout(() => updateList(consumable), 1);
+    setTimeout(() => updateList(consumable.value), 1);
     consumable.changed(updateList);
     return node;
 }

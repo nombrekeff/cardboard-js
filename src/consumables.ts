@@ -1,5 +1,6 @@
 import { CEvent } from './events.js';
 import type { IConsumable } from './types';
+import { isArray, isObject } from './util.js';
 
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
@@ -25,6 +26,27 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
 
   constructor(val: T) {
     super();
+
+    if (isObject(val) || isArray(val)) {
+      val = new Proxy((val as any), {
+        get(target, p, receiver) {
+          return target[p];
+        },
+        set: (target, p, newValue, receiver) => {
+          if (target[p] === newValue) return true;
+
+          target[p] = newValue;
+          super.dispatch(target);
+          return true;
+        },
+        deleteProperty: (target, p) => {
+          delete target[p];
+          super.dispatch(target);
+          return true;
+        },
+      });
+    }
+
     this._value = val;
     this._prev = val;
   }
@@ -42,6 +64,7 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
    */
   changed(callback: (val: T) => void) {
     this.listen(callback);
+    return this;
   }
 
   /**
@@ -49,11 +72,15 @@ export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
    * You can additionaly set the {@link value} directly.
    */
   dispatch(val: T) {
+    if (val === this._value) {
+      return this;
+    }
     // Make sure assining the value is before the dispatch call,
     // otherwise Consumable value is not update when the listeners are called
     this._prev = val;
     this._value = val;
     super.dispatch(val);
+    return this;
   }
 
   /**

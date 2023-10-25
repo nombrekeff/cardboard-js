@@ -16,6 +16,6 @@ export function Input(options = {}) {
         },
         value: (_a = options.value) !== null && _a !== void 0 ? _a : '',
     });
-    return el;
+    return el.addClass('CInput');
 }
 //# sourceMappingURL=components.js.map
