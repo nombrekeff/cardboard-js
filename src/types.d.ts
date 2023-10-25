@@ -32,10 +32,11 @@ export interface IConsumable<T> {
 export type StateConsumable<T> = T & Partial<IConsumable<T>>;
 export type AnyConsumable<T> = IConsumable<T> | StateConsumable<T>;
 
-export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
+export type TagChild = string | CTag | HTMLElement | Node | AnyConsumable<any>;
 export type State<T extends Record<string, any>> = T extends any[]
   ? T & {
-    changed: (callback: (newValue: T) => void) => void;
+    changed: (callback: (newValue: T) => void) => State<T>;
+    update: (newValue: T) => void;
     length: StateConsumable<number>;
   }
   : {
@@ -44,7 +45,7 @@ export type State<T extends Record<string, any>> = T extends any[]
     : StateConsumable<T[K]>;
   }
   & {
-    changed: (callback: (newValue: T) => void) => void;
+    changed: (callback: (newValue: T) => void) => State<T>;
   };
 export interface TagConfig {
   style?: StyleMap;

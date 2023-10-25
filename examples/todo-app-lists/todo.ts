@@ -12,6 +12,7 @@ import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import { appState } from './state.js';
+console.log({ appState });
 
 const { div, button, h3, link, p } = allTags;
 
@@ -49,21 +50,30 @@ div.attach(
     appState.splice(2, 0, 'abababa');
   }),
   button('Sort').clicked(() => {
+    // let newState = swap([...appState], 2, 7);
+    // newState = swap([...appState], 1, 5);
+    // let temp = newState[1];
+    // newState[1] = newState[4];
+    // newState[4] = temp;
+    console.log(appState);
+
     appState.update(
-      appState.sort((a, b) => {
-        if (a < b) {
-          return -1;
-        }
-        if (a > b) {
-          return 1;
-        }
-        return 0;
+      [...appState].sort((a, b) => {
+        return a.localeCompare(b);
+        // if (a.loca < b) {
+        //   return -1;
+        // }
+        // if (a > b) {
+        //   return 1;
+        // }
+        // return 0;
       }),
     );
   }),
 );
 
 div.attach(itemInput, addItemBtn).addClass('header');
+let test;
 div
   .attach(
     div
@@ -80,7 +90,7 @@ div
         }),
       )
       .addClass('todo-list'),
-    div
+    test = div
       .attach(
         "Fast",
         p('There are no items').addClass('list-empty').hideIf(appState.length),
@@ -96,6 +106,8 @@ div
       .addClass('todo-list'),
   )
   .setStyle({ display: 'flex', flexDirection: 'row', overflowY: 'auto' });
+
+console.log(test);
 
 /* Adds a new TODO, from input field, adds to state */
 function addItemFromInput() {

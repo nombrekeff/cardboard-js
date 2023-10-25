@@ -31,10 +31,10 @@ export function state<T extends object | any[]>(content: T): State<T> {
   const _consumables: Record<string | symbol, IConsumable<any>> = {};
 
   const emit = (target, prop, value) => {
-    target[prop] = value;
+    content[prop] = value;
     if (
       Number.isInteger(+prop.toString()) ||
-      (prop === 'changed' && !target[prop])
+      (prop === 'changed' && !content[prop])
     ) {
       return;
     }
@@ -42,11 +42,11 @@ export function state<T extends object | any[]>(content: T): State<T> {
     if (_consumables[prop] != null) {
       _consumables[prop].dispatch(value);
     }
-    _stateEvt.dispatch(target);
+    _stateEvt.dispatch(content);
   };
 
   const makeConsumable = (target, prop) => {
-    return (_consumables[prop] = createConsumable(target[prop]));
+    return (_consumables[prop] = createConsumable(content[prop]));
   };
 
   // TODO: Think if having nested states is worth it or not.
@@ -65,21 +65,33 @@ export function state<T extends object | any[]>(content: T): State<T> {
 
   const proxy = new Proxy(content, {
     deleteProperty: function (target, prop) {
-      emit(target, prop, target[prop]);
-      delete target[prop];
+      emit(content, prop, content[prop]);
+      delete content[prop];
       return true;
     },
     get: (target, prop) => {
-      return _consumables[prop] ?? target[prop];
+      if (typeof target[prop] === 'function') {
+        return target[prop];
+      }
+      return _consumables[prop] ?? content[prop];
     },
     set: (target, prop, value) => {
-      emit(target, prop, value);
+      emit(content, prop, value);
       return true;
     },
   }) as any;
 
-  proxy.changed = (callback: (newValue: T) => void) =>
+  proxy.changed = (callback: (newValue: T) => void) => {
     _stateEvt.listen(callback);
+    return proxy;
+  };
+
+  proxy.update = (newValue: T) => {
+    content = newValue;
+    if (content instanceof Array) emit(content, 'length', content.length);
+    emit(content, '', null);
+    return proxy;
+  };
 
   return proxy as State<T>;
 }

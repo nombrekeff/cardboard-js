@@ -28,18 +28,18 @@ export function state(content) {
     const _stateEvt = new CEvent();
     const _consumables = {};
     const emit = (target, prop, value) => {
-        target[prop] = value;
+        content[prop] = value;
         if (Number.isInteger(+prop.toString()) ||
-            (prop === 'changed' && !target[prop])) {
+            (prop === 'changed' && !content[prop])) {
             return;
         }
         if (_consumables[prop] != null) {
             _consumables[prop].dispatch(value);
         }
-        _stateEvt.dispatch(target);
+        _stateEvt.dispatch(content);
     };
     const makeConsumable = (target, prop) => {
-        return (_consumables[prop] = createConsumable(target[prop]));
+        return (_consumables[prop] = createConsumable(content[prop]));
     };
     // TODO: Think if having nested states is worth it or not.
     // It might be better to not make nested objects/arrays into states
@@ -55,20 +55,33 @@ export function state(content) {
     }
     const proxy = new Proxy(content, {
         deleteProperty: function (target, prop) {
-            emit(target, prop, target[prop]);
-            delete target[prop];
+            emit(content, prop, content[prop]);
+            delete content[prop];
             return true;
         },
         get: (target, prop) => {
             var _a;
-            return (_a = _consumables[prop]) !== null && _a !== void 0 ? _a : target[prop];
+            if (typeof target[prop] === 'function') {
+                return target[prop];
+            }
+            return (_a = _consumables[prop]) !== null && _a !== void 0 ? _a : content[prop];
         },
         set: (target, prop, value) => {
-            emit(target, prop, value);
+            emit(content, prop, value);
             return true;
         },
     });
-    proxy.changed = (callback) => _stateEvt.listen(callback);
+    proxy.changed = (callback) => {
+        _stateEvt.listen(callback);
+        return proxy;
+    };
+    proxy.update = (newValue) => {
+        content = newValue;
+        if (content instanceof Array)
+            emit(content, 'length', content.length);
+        emit(content, '', null);
+        return proxy;
+    };
     return proxy;
 }
 //# sourceMappingURL=state.js.map

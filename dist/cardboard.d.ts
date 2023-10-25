@@ -23,15 +23,17 @@ export declare const Cardboard: {
     removeFromList<T_3>(item: T_3, list: T_3[]): boolean;
     isObject(obj: any): boolean;
     isArray(obj: any): boolean;
+    arraysEqual(a: any[], b: any[]): boolean;
     camelToDash: (str: any) => any;
     toJson: (possiblyJsonString: any) => any;
     fromJson: (possiblyJson: any) => string;
     val: <T_4>(val: T_4 | ((...args: any) => T_4), ...args: any[]) => T_4;
+    swapItems: (array: any[], from: number, to: number) => any[];
     genCss(styleSheet: Record<string, import("./types").NestedStyleMap> | Record<string, import("./types").NestedStyleMap>[]): string;
     genBlock(selector: string, style: import("./types").NestedStyleMap): string;
     genBlockContent(selector: string, style: import("./types").NestedStyleMap): string[];
     genStyle(name: string, value: string): string;
-    state<T_4 extends object | any[]>(content: T_4): import("./types").State<T_4>;
+    state<T_5 extends object | any[]>(content: T_5): import("./types").State<T_5>;
     attached(): _tag.CTag | undefined;
     tag(arg0: string | HTMLElement, children?: import("./types").TagChildren, attach?: boolean): _tag.CTag;
     onLifecycle(tag: _tag.CTag, onStart?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onRemove?: ((tag: _tag.CTag) => void) | undefined, beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined): MutationObserver;
