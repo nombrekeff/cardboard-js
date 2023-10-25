@@ -478,9 +478,9 @@ export class CTag {
         return this.element.attributes[attr];
     }
     /**
-     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
+     * Returns a {@link Consumable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
      */
     when(evtName, fn) {
         const cons = createConsumable({});

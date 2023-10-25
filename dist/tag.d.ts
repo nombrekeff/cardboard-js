@@ -1,7 +1,7 @@
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import type { AllTags, AnyConsumable, IConsumable, State, StyleMap, TagChild, TagChildren, TagConfig } from './types';
+import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig } from './types';
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
@@ -51,91 +51,91 @@ export declare class CTag {
     /** Hide this element (removed from DOM) */
     hide(): Promise<void>;
     /** Whenever the consumable changes, it will call the consumer */
-    consume<T>(consumable: AnyConsumable<T>, consumer: (self: CTag, newValue?: T) => void): this;
+    consume<T>(consumable: IConsumable<T>, consumer: (self: CTag, newValue?: T) => void): this;
     /**
      * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
      */
-    doIf<T>(consumable: AnyConsumable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
+    doIf<T>(consumable: IConsumable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
     /**
      * The oposite of {this.doIf}
      * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
      */
-    doIfNot<T>(consumable: AnyConsumable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
+    doIfNot<T>(consumable: IConsumable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
     /**
      * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
-    hideIf<T>(consumable: AnyConsumable<T>, invert?: boolean): this;
+    hideIf<T>(consumable: IConsumable<T>, invert?: boolean): this;
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-    hideIfNot<T>(consumable: AnyConsumable<T>): this;
+    hideIfNot<T>(consumable: IConsumable<T>): this;
     /**
      * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
      */
-    classIf<T>(consumable: AnyConsumable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
+    classIf<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
     /**
      * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * For the oposite you can also use {@link classIf}
      */
-    classIfNot<T>(consumable: AnyConsumable<T>, classes: string[] | ((self: CTag) => string[])): this;
+    classIfNot<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[])): this;
     /**
      * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
      * Both {text} and {elseText} can be a string or a function that returns a string.
      * Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
      */
-    textIf<T>(consumable: AnyConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
+    textIf<T>(consumable: IConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
      * Both {text} and {elseText} can be a string or a function that returns a string.
      * Updates whenever the consumable changes.
      */
-    textIfNot<T>(consumable: AnyConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
+    textIfNot<T>(consumable: IConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
     /**
      * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
-    attrIf<T>(consumable: AnyConsumable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    attrIf<T>(consumable: IConsumable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
-    attrIfNot<T>(consumable: AnyConsumable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
+    attrIfNot<T>(consumable: IConsumable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
     /**
      * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
      */
-    disableIf<T>(consumable: AnyConsumable<T>, invert?: boolean): this;
+    disableIf<T>(consumable: IConsumable<T>, invert?: boolean): this;
     /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-    disableIfNot<T>(consumable: AnyConsumable<T>): this;
+    disableIfNot<T>(consumable: IConsumable<T>): this;
     /**
      * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
      * {value} can be a string or a function that returns a string.
      */
-    styleIf<T>(consumable: AnyConsumable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    styleIf<T>(consumable: IConsumable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      */
-    styleIfNot<T>(consumable: AnyConsumable<T>, style: string, value?: string | ((self: CTag) => string)): this;
+    styleIfNot<T>(consumable: IConsumable<T>, style: string, value?: string | ((self: CTag) => string)): this;
     /**
      * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
-    stylesIf<T>(consumable: AnyConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
+    stylesIf<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
     /**
      * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
-    stylesIfNot<T>(consumable: AnyConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+    stylesIfNot<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
     /**
      * Listen to an event on the element. Like addEventListener.
      */
@@ -148,7 +148,7 @@ export declare class CTag {
      * If no argument is provided, it returns the `textContent` of the element.
      * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
-    text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string;
+    text<T = string | null>(newText?: T, st?: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): T extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} c
      * instead of having to call a method for each property you want to changes
@@ -185,9 +185,9 @@ export declare class CTag {
     /** Get an attributes value */
     getAttr(attr: string): any;
     /**
-     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
+     * Returns a {@link Consumable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
      */
     when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag, evt: HTMLElementEventMap[K]) => any): IConsumable<any>;
     /** Add an event listener for a particular event */
@@ -217,7 +217,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): any;
+    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IConsumable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _setChildrenParent;
     private _childrenFilterPredicate;

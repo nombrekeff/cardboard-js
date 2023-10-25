@@ -138,4 +138,12 @@ export function equalTo(consumable, val) {
 export function notEqualTo(consumable, val) {
     return intersect(consumable, (newVal) => newVal !== val);
 }
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export function isEmpty(consumable) {
+    return intersect(consumable, (newVal) => newVal.length <= 0);
+}
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export function notEmpty(consumable) {
+    return intersect(consumable, (newVal) => newVal.length > 0);
+}
 //# sourceMappingURL=consumables.js.map

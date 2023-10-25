@@ -4,12 +4,13 @@ import {
   allTags,
   attach,
   each,
+  isEmpty,
 } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
-import { todos, todoCount, addTodo, removeTodo, addTodoAt } from './state.js';
+import { todos, todoCount, addTodo, removeTodo, newTodo } from './state.js';
 
 const { div, button, h3, link, p } = allTags;
 
@@ -35,16 +36,13 @@ h3.attach('Cardboard TODO - count: ', todoCount).setStyle({
 const itemInput = Input({
   placeholder: 'Enter item content',
   submit: addItemFromInput,
+  value: newTodo,
 });
 
 const addItemBtn = button('+')
   .addClass('btn-add')
-  .disableIf(itemInput.when('input', (el) => !el.value))
+  .disableIf(isEmpty(newTodo))
   .clicked(addItemFromInput);
-
-// button('Insert at 2').clicked(() => {
-//   addTodoAt('abababa', 2);
-// }),
 
 div.attach(itemInput, addItemBtn).addClass('header');
 div

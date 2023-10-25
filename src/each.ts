@@ -1,7 +1,7 @@
-import { type Consumable, isConsumable } from './consumables.js';
+import { isConsumable } from './consumables.js';
 import type { CTag } from './tag.js';
-import type { IConsumable, State } from './types.js';
-import { arraysEqual, swapItems } from './util.js';
+import { IConsumable } from './types.js';
+import { arraysEqual } from './util.js';
 
 enum DiffState {
   unchanged = 'unchanged',
@@ -45,14 +45,8 @@ export function each<T>(
   };
 
   const move = (from: number, to: number) => {
-    if (from >= 0 && to >= 0) {
-      const elementFrom = elements[from].element;
-      const elementTo = elements[to].element;
-      // console.log({ from, to, elementTo, elementFrom });
-
-      // node.parentElement?.insertBefore(elementFrom.element, elementTo.element);
-      // node.parentElement?.insertBefore(elementTo.element, elements[from].element);
-    }
+    // if (from >= 0 && to >= 0) {
+    // }
   };
 
   const swap = (from: number, to: number) => {
@@ -217,43 +211,6 @@ export function each<T>(
   };
 
   setTimeout(() => updateList(consumable.value), 1);
-  consumable.changed(updateList);
-  return node;
-}
-
-export function eachSlow<T>(
-  consumable: State<T[]> | IConsumable<T[]>,
-  consumer: (val: T) => CTag,
-): Node {
-  const node = document.createTextNode('');
-
-  let elements: CTag[] = [];
-
-  const updateList = (newVal) => {
-    if (!node.parentElement) {
-      setTimeout(() => updateList(consumable), 1);
-      return;
-    }
-
-    const start = performance.now();
-
-    newVal = Array.from(isConsumable(newVal) ? newVal.value : newVal);
-
-    elements.forEach((el, i) => {
-      node.parentElement?.removeChild(el.element);
-    });
-    elements = [];
-
-    newVal.forEach((item, i) => {
-      elements[i] = consumer(item);
-      node.parentElement?.insertBefore(elements[i].element, node);
-    });
-
-    const diff = performance.now() - start;
-    console.log('eachSlow took: ' + diff.toFixed(2) + 'ms');
-  };
-
-  setTimeout(() => updateList(consumable), 1);
   consumable.changed(updateList);
   return node;
 }

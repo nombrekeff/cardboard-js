@@ -1,5 +1,5 @@
 import { CEvent } from './events.js';
-import type { IConsumable } from './types';
+import { IConsumable } from './types.js';
 import { isArray, isObject } from './util.js';
 
 /**
@@ -7,7 +7,7 @@ import { isArray, isObject } from './util.js';
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export class Consumable<T> extends CEvent<T> implements IConsumable<T> {
+export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
   private _value: T;
   private _prev: T;
 
@@ -130,7 +130,7 @@ export function createConsumable<T>(val: T): Consumable<T> {
 export function intersect<T, K>(
   other: IConsumable<T>,
   intersector: (val: T) => K,
-): Consumable<K> {
+): IConsumable<K> {
   const consumable = createConsumable<K>(intersector(other.value));
   other.changed((val) => consumable.dispatch(intersector(val)));
   return consumable as any;
@@ -164,4 +164,13 @@ export function equalTo<T>(consumable: IConsumable<T>, val: T) {
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
 export function notEqualTo<T>(consumable: IConsumable<T>, val: T) {
   return intersect(consumable, (newVal) => newVal !== val);
+}
+
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export function isEmpty(consumable: IConsumable<string | any[]>) {
+  return intersect(consumable, (newVal) => newVal.length <= 0);
+}
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export function notEmpty(consumable: IConsumable<string | any[]>) {
+  return intersect(consumable, (newVal) => newVal.length > 0);
 }

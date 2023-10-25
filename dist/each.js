@@ -1,4 +1,3 @@
-import { isConsumable } from './consumables.js';
 import { arraysEqual } from './util.js';
 var DiffState;
 (function (DiffState) {
@@ -27,13 +26,8 @@ export function each(consumable, consumer) {
         }
     };
     const move = (from, to) => {
-        if (from >= 0 && to >= 0) {
-            const elementFrom = elements[from].element;
-            const elementTo = elements[to].element;
-            // console.log({ from, to, elementTo, elementFrom });
-            // node.parentElement?.insertBefore(elementFrom.element, elementTo.element);
-            // node.parentElement?.insertBefore(elementTo.element, elements[from].element);
-        }
+        // if (from >= 0 && to >= 0) {
+        // }
     };
     const swap = (from, to) => {
         if (from >= 0 && to >= 0) {
@@ -182,33 +176,6 @@ export function each(consumable, consumer) {
         console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
     };
     setTimeout(() => updateList(consumable.value), 1);
-    consumable.changed(updateList);
-    return node;
-}
-export function eachSlow(consumable, consumer) {
-    const node = document.createTextNode('');
-    let elements = [];
-    const updateList = (newVal) => {
-        if (!node.parentElement) {
-            setTimeout(() => updateList(consumable), 1);
-            return;
-        }
-        const start = performance.now();
-        newVal = Array.from(isConsumable(newVal) ? newVal.value : newVal);
-        elements.forEach((el, i) => {
-            var _a;
-            (_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(el.element);
-        });
-        elements = [];
-        newVal.forEach((item, i) => {
-            var _a;
-            elements[i] = consumer(item);
-            (_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.insertBefore(elements[i].element, node);
-        });
-        const diff = performance.now() - start;
-        console.log('eachSlow took: ' + diff.toFixed(2) + 'ms');
-    };
-    setTimeout(() => updateList(consumable), 1);
     consumable.changed(updateList);
     return node;
 }

@@ -10,7 +10,7 @@ const appState = listState<TodoItem>(
     .map((_, index) => ({ item: `Item ${index}`, complete: false }))
     .sort(() => Math.random() > .5 ? 1 : -1)
 );
-
+export const newTodo = state('');
 export const todos = appState.list;
 export const todoCount = appState.length;
 export const addTodo = (item: string, complete = false) => {

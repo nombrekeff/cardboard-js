@@ -28,7 +28,7 @@ export function text(textTemplate: string, obj: IConsumable<Record<string, Primi
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
   const updateNode = (data: Record<string, Primitive>) => {
-     node.nodeValue = !data
+    node.nodeValue = !data
       ? textTemplate
       : textTemplate.replace(interpolatePattern, (m, g1) =>
         (data[g1] ?? m).toString(),
