@@ -16,10 +16,10 @@ export declare const Cardboard: {
     isConsumable(obj: any): boolean;
     createConsumable<T>(val: T): _consumables.Consumable<T>;
     intersect<T_1, K>(other: import("./types").IConsumable<T_1>, intersector: (val: T_1) => K): import("./types").IConsumable<K>;
-    greaterThan(consumable: import("./types").IConsumable<number>, val: number): import("./types").IConsumable<boolean>;
-    greaterThanOr(consumable: import("./types").IConsumable<number>, val: number): import("./types").IConsumable<boolean>;
-    lessThan(consumable: import("./types").IConsumable<number>, val: number): import("./types").IConsumable<boolean>;
-    lessThanOr(consumable: import("./types").IConsumable<number>, val: number): import("./types").IConsumable<boolean>;
+    greaterThan(consumable: import("./types").IConsumable<number>, val?: number): import("./types").IConsumable<boolean>;
+    greaterThanOr(consumable: import("./types").IConsumable<number>, val?: number): import("./types").IConsumable<boolean>;
+    lessThan(consumable: import("./types").IConsumable<number>, val?: number): import("./types").IConsumable<boolean>;
+    lessThanOr(consumable: import("./types").IConsumable<number>, val?: number): import("./types").IConsumable<boolean>;
     equalTo<T_2>(consumable: import("./types").IConsumable<T_2>, val: T_2): import("./types").IConsumable<boolean>;
     notEqualTo<T_3>(consumable: import("./types").IConsumable<T_3>, val: T_3): import("./types").IConsumable<boolean>;
     isEmpty(consumable: import("./types").IConsumable<string | any[]>): import("./types").IConsumable<boolean>;

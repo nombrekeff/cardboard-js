@@ -137,22 +137,22 @@ export function intersect<T, K>(
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
-export function greaterThan(consumable: IConsumable<number>, val: number) {
+export function greaterThan(consumable: IConsumable<number>, val: number = 0) {
   return intersect(consumable, (newVal) => newVal > val);
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
-export function greaterThanOr(consumable: IConsumable<number>, val: number) {
+export function greaterThanOr(consumable: IConsumable<number>, val: number = 0) {
   return intersect(consumable, (newVal) => newVal >= val);
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
-export function lessThan(consumable: IConsumable<number>, val: number) {
+export function lessThan(consumable: IConsumable<number>, val: number = 0) {
   return intersect(consumable, (newVal) => newVal < val);
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
-export function lessThanOr(consumable: IConsumable<number>, val: number) {
+export function lessThanOr(consumable: IConsumable<number>, val: number = 0) {
   return intersect(consumable, (newVal) => newVal <= val);
 }
 
@@ -170,6 +170,7 @@ export function notEqualTo<T>(consumable: IConsumable<T>, val: T) {
 export function isEmpty(consumable: IConsumable<string | any[]>) {
   return intersect(consumable, (newVal) => newVal.length <= 0);
 }
+
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
 export function notEmpty(consumable: IConsumable<string | any[]>) {
   return intersect(consumable, (newVal) => newVal.length > 0);

@@ -6,25 +6,23 @@
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
 [![Project Status](https://img.shields.io/badge/Project_Status-Semi_Stable-orange)](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)
 
+Welcome to Cardboard. An **extremely light**, **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like, managing reactive state, full control over the elements, logic, and much more. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
 
-Welcome to Cardboard. A very simple, yet powerful reactive framework, to create web applications. 
-All of this with, **no HTML**, **no build** (_unless you use TS or decide to build_), **no compile**, **no JSX**. 
-It works out of the box, it's extremely lightweight and very performant. See **[What Does It Do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
+It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with many more features. And a more flexible and intuitive API.
 
-It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with another flavour, a bit heavier and with a few differences.
-
-> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), so use it with caution. You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
+> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
+> You can check the [project](https://github.com/users/nombrekeff/projects/2) for a vision of what's coming for v1.0.0 - help is much appreciated! 
 
 
 ```ts
 const Counter = () => {
-  let counter = state({ count: 0 });
+  const count = state(0);
 
   return button()
-    .text(`Clicked $count times`, counter)
+    .text(`Clicked $count times`, { count })
     .addStyle('color', 'gray')
-    .stylesIf(counter.count, { color: 'black' }) // If count > 0, it will make the color black
-    .clicked((_) => counter.count++);
+    .stylesIf(count, { color: 'black' }) // If count > 0, it will make the color black
+    .clicked((_) => count.value++);
 };
 
 // Counter will be added to the body
@@ -67,17 +65,19 @@ const { div, p } = Carboard.allTags;
 
 ### What does it do?
 
-Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process (_unless you use TS_). **Everything is plain JS**. It's very lightweight and performant. By design, there's very little additional computation on top of interacting directly with JS. As you interact with the elements directly, without needing complex stuff like diffing virtual doms and such. 
+Cardboard allows you to create reactive web apps without needing to write any **HTML**. It works without using **JSX** or having a build/compile process (_unless you use TS_). **Everything is plain JS**. It's very lightweight and extremely performan by design. 
 
-The idea is that instead of writing **HTML** and then creating JS that interacts with the **HTML**. You directly write JS that represents both the **HTML** and the logic.
-It also offers a **[state](#state) management** solution to make reactive apps. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
+The philosophy is to be able to create fully functional and performat web apps using just JS. No HTML, no CSS, no JSX, nothing. Just JS or TS. Instead of writing **HTML** and then creating JS that interacts with the **HTML**, and adding CSS to style. You directly write JS that represents both the **HTML**, CSS, state, and logic. 
+
+It offers a **[state](#state) management** solution out of the box. The concept is similar to react. You create a state, then use the state as a value, and whenever the state changes it automatically updates that value. 
 
 Here is a list of some of the features it offers (_there are more though_):
 * **[NO HTML](https://github.com/nombrekeff/cardboard-js/wiki/Tags)**: You don't need to write those nifty little angle brackets anymore! You can create any HTML with Cardboard.
 * **[State](https://github.com/nombrekeff/cardboard-js/wiki/State)**: Out-of-the-box reactive state.
-* **[Tag Manipulation](https://github.com/nombrekeff/cardboard-js/wiki/Manipulating-Tags)**: Manipulate any HTML properties of any element, manually and based on state. i.e. adding classes, showing/hiding elements, removing styles, listening to events, and much more...  
-* **[Built-in Text Templates](https://github.com/nombrekeff/cardboard-js/wiki/Text-Templates)**: Easy text and template manipulation when working with states.
-* **[Reusable Components](https://github.com/nombrekeff/cardboard-js/wiki/Reusable-Component)**: You can create reusable components, like in any other framework.
+* **[Manipulation](https://github.com/nombrekeff/cardboard-js/wiki/Manipulating-Tags)**: Manipulate any HTML properties of any element, manually and based on state. i.e. adding classes, showing/hiding elements, removing styles, listening to events, and much more...  
+* **[Logic](https://github.com/nombrekeff/cardboard-js/wiki/Logic)**: Add logic in a very ergonomic and simple way.
+* **[Text Templates](https://github.com/nombrekeff/cardboard-js/wiki/Text-Templates)**: Easy text and template manipulation when working with states.
+* **[Components](https://github.com/nombrekeff/cardboard-js/wiki/Reusable-Component)**: You can create reusable components, like in any other framework.
 * **[Tweening](https://github.com/nombrekeff/cardboard-js/wiki/Tweening)**: Extremely simple tweening out of the box.
 * **[Routing](https://github.com/nombrekeff/cardboard-js/wiki/Routing)**: Create single page apps like a breeze.
 * **[CSS in JS](#css-in-js)**: You can create `style` tags, and write the CSS directly as a JS object.
@@ -94,10 +94,9 @@ Cardboard offers all of this in a very small package with a very simple API. As 
 
 ### Who's this for?
 
-If you don't like writing HTML, like me. Or need a simple and lightweight framework that can do most things that bigger frameworks can do with a smaller footprint, Cardboard might be for you!
-Cardboard can be used to build anything from a static page to more advanced apps like dashboards.
+If you don't like writing HTML, CSS or JSX, like me. Or need a simple and lightweight framework that can do most things that bigger frameworks can do with a smaller footprint, while being very performant, Cardboard might be for you! Cardboard can be used to build anything from a static page to more advanced apps, like dashboards. It should be able to do most things!
 
-It's perfect for when you want to create a very small page where you need a reactive framework and you need to create it fast. But it should be able to create anything.
+But it's perfect for when you want to create a very small page where you need a reactive framework and you need to create it fast. 
 
 ### Backstory
 

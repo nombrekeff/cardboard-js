@@ -115,19 +115,19 @@ export function intersect(other, intersector) {
     return consumable;
 }
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
-export function greaterThan(consumable, val) {
+export function greaterThan(consumable, val = 0) {
     return intersect(consumable, (newVal) => newVal > val);
 }
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
-export function greaterThanOr(consumable, val) {
+export function greaterThanOr(consumable, val = 0) {
     return intersect(consumable, (newVal) => newVal >= val);
 }
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
-export function lessThan(consumable, val) {
+export function lessThan(consumable, val = 0) {
     return intersect(consumable, (newVal) => newVal < val);
 }
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
-export function lessThanOr(consumable, val) {
+export function lessThanOr(consumable, val = 0) {
     return intersect(consumable, (newVal) => newVal <= val);
 }
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
