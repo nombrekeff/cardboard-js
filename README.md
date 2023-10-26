@@ -6,7 +6,7 @@
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
 [![Project Status](https://img.shields.io/badge/Project_Status-Semi_Stable-orange)](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)
 
-Welcome to Cardboard. An **extremely light**, **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like, managing reactive state, full control over the elements, logic, and much more. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
+Welcome to Cardboard. An **extremely light** (_around **18kb**_), **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like, managing reactive state, full control over the elements, logic, and much more. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with many more features. And a more flexible and intuitive API.
 
