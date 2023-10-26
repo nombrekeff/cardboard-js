@@ -44,5 +44,5 @@ export declare class Router<T extends Record<string, Route> = Record<string, Rou
     private _initRouteMatchers;
 }
 export declare let router: Router<any> | undefined;
-export declare function makeRouter<T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>): Router<T>;
-export declare function Link(child: string | CTag, path: any, query?: Record<string, string>): CTag;
+export declare const makeRouter: <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => Router<T>;
+export declare const Link: (child: string | CTag, path: any, query?: Record<string, string>) => CTag;

@@ -1,12 +1,9 @@
 /** Removes an item from an array if it exists. It returns whether it was removed or not */
-export declare function removeFromList<T>(item: T, list: T[]): boolean;
+export declare const removeFromList: <T>(item: T, list?: T[] | undefined) => boolean;
 export declare const camelToDash: (str: any) => any;
-export declare const dashToCamel: (str: any) => any;
-export declare function isObject(obj: any): boolean;
-export declare function isArray(obj: any): boolean;
-export declare const toJson: (possiblyJsonString: any) => any;
-export declare const fromJson: (possiblyJson: any) => string;
+export declare const isObject: (obj: any) => boolean;
+export declare const isArray: (obj: any) => boolean;
 export declare const val: <T>(val: T | ((...args: any) => T), ...args: any[]) => T;
 export declare const swapItems: (array: any[], from: number, to: number) => any[];
-export declare function arraysEqual(a: any[], b: any[]): boolean;
-export declare function isNumeric(str: any): boolean;
+export declare const arraysEqual: (a?: any[], b?: any[]) => boolean;
+export declare const deepEquals: (a: any, b: any) => boolean;

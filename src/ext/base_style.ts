@@ -33,6 +33,6 @@ const baseStyles: StyleSet = {
     },
   },
 };
-export function BaseStyle(attach: boolean = true): CTag {
+export const BaseStyle = (attach: boolean = true): CTag => {
   return attach ? style.attach(baseStyles) : style(baseStyles);
-}
+};

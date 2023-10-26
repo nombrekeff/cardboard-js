@@ -20,7 +20,7 @@
 <div class="tsd-comment tsd-typography"><p>Single event listener/emitter, listen to, and trigger events. (for mapped events use <a href="../variables/cardboard.Cardboard.html#__type.CMappedEvent" class="tsd-kind-class">CMappedEvent</a>).</p>
 </div>
 <div class="tsd-comment tsd-typography">
-<h4>Example</h4><pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-9">evt</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-2">CEvent</span><span class="hl-1">&lt;</span><span class="hl-15">bool</span><span class="hl-1">&gt;();</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">listen</span><span class="hl-1">(</span><span class="hl-3">listener</span><span class="hl-1">);</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">dispatch</span><span class="hl-1">(</span><span class="hl-0">true</span><span class="hl-1">);</span><br/><span class="hl-3">evt</span><span class="hl-1">.</span><span class="hl-2">remove</span><span class="hl-1">(</span><span class="hl-3">listener</span><span class="hl-1">);</span>
+<h4>Example</h4><pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">evt</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-2">CEvent</span><span class="hl-1">&lt;</span><span class="hl-15">bool</span><span class="hl-1">&gt;();</span><br/><span class="hl-7">evt</span><span class="hl-1">.</span><span class="hl-2">listen</span><span class="hl-1">(</span><span class="hl-7">listener</span><span class="hl-1">);</span><br/><span class="hl-7">evt</span><span class="hl-1">.</span><span class="hl-2">dispatch</span><span class="hl-1">(</span><span class="hl-0">true</span><span class="hl-1">);</span><br/><span class="hl-7">evt</span><span class="hl-1">.</span><span class="hl-2">remove</span><span class="hl-1">(</span><span class="hl-7">listener</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
 </div></section> 
 <section class="tsd-panel">
@@ -33,7 +33,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">CEvent</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/09b48d1/src/events.ts#L15">events.ts:15</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/56a1cc5/src/events.ts#L14">events.ts:14</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -69,7 +69,7 @@
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_listeners" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_listeners</span><a href="#_listeners" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_listeners</span><a href="#_listeners" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_listeners</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
@@ -82,10 +82,10 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/09b48d1/src/events.ts#L16">events.ts:16</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/56a1cc5/src/events.ts#L15">events.ts:15</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="dispatch" class="tsd-anchor"></a>
@@ -100,7 +100,7 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/09b48d1/src/events.ts#L26">events.ts:26</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/56a1cc5/src/events.ts#L25">events.ts:25</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="listen" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>listen</span><a href="#listen" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -110,21 +110,21 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">fn</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-parameter">fn</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/09b48d1/src/events.ts#L18">events.ts:18</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/56a1cc5/src/events.ts#L17">events.ts:17</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="remove" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>remove</span><a href="#remove" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -134,21 +134,21 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">fn</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-parameter">fn</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/09b48d1/src/events.ts#L22">events.ts:22</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/56a1cc5/src/events.ts#L21">events.ts:21</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -182,6 +182,7 @@
 <li><a href="../modules/css_generator.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-generator</a></li>
 <li><a href="../modules/css_properties.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-properties</a></li>
 <li><a href="../modules/css_property_values.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-property-values</a></li>
+<li><a href="../modules/each.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>each</a></li>
 <li><a href="../modules/events.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>events</a></li>
 <li><a href="../modules/route_matcher.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>route-matcher</a></li>
 <li><a href="../modules/state.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>state</a></li>

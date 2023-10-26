@@ -1,11 +1,11 @@
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig } from './types';
+import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
-export declare function attached(): CTag | undefined;
+export declare const attached: () => CTag | undefined;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -13,7 +13,7 @@ export declare function attached(): CTag | undefined;
  */
 export declare class CTag {
     /** Reference to the HTMLElement that this @type {CTag} represents */
-    element: HTMLElement & {
+    el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
     /** @param parent Reference to the parent @type {CTag} of this element */
@@ -148,7 +148,7 @@ export declare class CTag {
      * If no argument is provided, it returns the `textContent` of the element.
      * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
-    text<T = string | null>(newText?: T, st?: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): T extends string ? CTag : string;
+    text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IConsumable<T> | K): J extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} c
      * instead of having to call a method for each property you want to changes
@@ -217,7 +217,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | IConsumable<any> | CTag | Node | undefined;
+    find(predicate: (el: TagChild) => boolean): string | Node | CTag | IConsumable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _setChildrenParent;
     private _childrenFilterPredicate;
@@ -244,12 +244,12 @@ export declare class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
+export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, attach?: boolean) => CTag;
 /**
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export declare function onLifecycle(tag: CTag, onStart?: (tag: CTag) => Promise<boolean> | boolean, onRemove?: (tag: CTag) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | boolean): MutationObserver;
+export declare const onLifecycle: (tag: CTag, onStart?: ((tag: CTag) => Promise<boolean> | boolean) | undefined, onRemove?: ((tag: CTag) => void) | undefined, beforeRemove?: ((tag: CTag) => Promise<boolean> | boolean) | undefined) => MutationObserver;
 /**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.
@@ -279,23 +279,23 @@ export declare const withLifecycle: (tag: CTag, handler: {
  * detach();      // No attached tag
  * ```
  */
-export declare function attach(tag: CTag): CTag;
+export declare const attach: (tag: CTag) => CTag;
 /**
  * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
  * If there are no previous attached tags, it will clear the attached tag.
  */
-export declare function detach(): void;
+export declare const detach: () => void;
 /**
  * Detaches all attached tags. There will be no attached tag after calling this function.
  */
-export declare function detachAll(): void;
+export declare const detachAll: () => void;
 /**
  * It makes the body the attached tag ({@link attach}).
  * You can pass in a selector for an element you want to be the default attached tag.
  */
-export declare function init(options?: {
+export declare const init: (options?: {
     root: string;
-}): CTag;
+}) => CTag;
 /**
  * List of all HTML tag functions. From `div` to `abbr` :)
  * If you want to create any other tag, use the {@link tag} function.

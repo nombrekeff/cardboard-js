@@ -21,7 +21,7 @@ import { isObject } from './util.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text(textTemplate, obj) {
+export const text = (textTemplate, obj) => {
     const node = document.createTextNode('');
     const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
     const updateNode = (data) => {
@@ -29,7 +29,10 @@ export function text(textTemplate, obj) {
             ? textTemplate
             : textTemplate.replace(interpolatePattern, (m, g1) => { var _a; return ((_a = data[g1]) !== null && _a !== void 0 ? _a : m).toString(); });
     };
-    if (isConsumable(obj)) {
+    if (!obj) {
+        node.nodeValue = textTemplate;
+    }
+    else if (isConsumable(obj)) {
         obj.changed((val) => updateNode(val));
         updateNode(obj.value);
     }
@@ -43,5 +46,5 @@ export function text(textTemplate, obj) {
         updateNode(obj);
     }
     return node;
-}
+};
 //# sourceMappingURL=text.js.map

@@ -1,4 +1,4 @@
-import type { IConsumable, Primitive } from './types.js';
+import type { IConsumable, Primitive, TextObj } from './types.js';
 /**
  * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
  *
@@ -20,4 +20,4 @@ import type { IConsumable, Primitive } from './types.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export declare function text(textTemplate: string, obj: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): Node;
+export declare const text: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: K | IConsumable<T> | undefined) => Node;

@@ -1,12 +1,11 @@
 import { isConsumable } from './consumables.js';
+import { deepEquals } from './util.js';
 import type { CTag } from './tag.js';
-import { IConsumable } from './types.js';
-import { arraysEqual } from './util.js';
+import type { IConsumable, IConsumableOr } from './types.js';
 
 enum DiffState {
   unchanged = 'unchanged',
   added = 'added',
-  moved = 'moved',
   removed = 'removed',
   swap = 'swap',
 }
@@ -26,7 +25,7 @@ interface DiffEntry<T = unknown> {
  * ```
  */
 export function each<T>(
-  consumable: IConsumable<T[]>,
+  consumable: IConsumableOr<T[]>,
   consumer: (val: T) => CTag,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
@@ -39,8 +38,9 @@ export function each<T>(
   const add = (item: T, index: number) => {
     if (index >= 0) {
       const el = consumer(item);
+      const elAt = elements[index];
       elements.splice(index, 0, el);
-      node.parentElement?.insertBefore(el.element, children[nodeParentIndex + index] ?? node);
+      node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
     }
   };
 
@@ -54,22 +54,22 @@ export function each<T>(
       const elementFrom = elementsCopy[from];
       const elementTo = elementsCopy[to];
 
-      const parentY = elementFrom.element.parentNode;
-      const nextY = elementFrom.element.nextSibling;
+      const parentY = elementFrom.el.parentNode;
+      const nextY = elementFrom.el.nextSibling;
       // console.log(elements.map((t, i) => (t.text() as any).replace('-', '')).join(', '));
       // console.log('Swaping', (elementFrom.text() as any).replace('-', ''), (elementTo.text() as any).replace('-', ''));
       // console.log('Swaping', (elementFrom.text() as any).replace('-', ''), (elementTo.text() as any).replace('-', ''));
 
-      if (parentY && nextY === elementTo.element) {
-        parentY.insertBefore(elementTo.element, elementFrom.element);
+      if (parentY && nextY === elementTo.el) {
+        parentY.insertBefore(elementTo.el, elementFrom.el);
       }
-      else if (elementTo.element.parentNode) {
-        elementTo.element.parentNode.insertBefore(elementFrom.element, elementTo.element);
+      else if (elementTo.el.parentNode) {
+        elementTo.el.parentNode.insertBefore(elementFrom.el, elementTo.el);
         if (nextY && parentY) {
-          parentY.insertBefore(elementTo.element, nextY);
+          parentY.insertBefore(elementTo.el, nextY);
         }
         else if (parentY) {
-          parentY.appendChild(elementTo.element);
+          parentY.appendChild(elementTo.el);
         }
       }
 
@@ -84,7 +84,7 @@ export function each<T>(
   };
 
   const remove = (index: number) => {
-    node.parentElement?.removeChild(elements[index].element);
+    node.parentElement?.removeChild(elements[index].el);
     elements.splice(index, 1);
     elementsCopy.splice(index, 1);
   };
@@ -97,9 +97,9 @@ export function each<T>(
 
     const start = performance.now();
 
-    if (newData.length === oldData.length && arraysEqual(oldData, newData)) {
+    if (newData.length === oldData.length && deepEquals(oldData, newData)) {
       const diff = performance.now() - start;
-      console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
+      console.log('Each Fast skip took: ' + diff.toFixed(2) + 'ms');
       return;
     }
 
@@ -122,7 +122,6 @@ export function each<T>(
         const oldEntry = oldData[oi];
         const oldIndex = oldData.indexOf(newEntry);
 
-        // console.log({ newEntry, oldEntry, });
         if (oldEntry === newEntry) {
           continue;
         }
@@ -158,14 +157,6 @@ export function each<T>(
             oldData[oi] = newData[oi - removed];
             oldData[oldIndex] = temp;
           }
-          else {
-            dataDiff.push({
-              entry: newEntry,
-              state: DiffState.moved,
-              index: oldIndex,
-              targetIndex: oi,
-            });
-          }
         }
       }
 
@@ -189,28 +180,25 @@ export function each<T>(
             add(data.entry, data.index); break;
           case DiffState.removed:
             remove(data.index); break;
-          case DiffState.moved:
-            move(data.index, data.targetIndex ?? -1);
           case DiffState.swap:
             swap(data.index, data.targetIndex ?? -1);
             if (nextState === DiffState.swap && nextIndex === data.targetIndex) {
               index++;
             }
             break;
-          case DiffState.unchanged:
           default:
         }
       }
     }
 
-    oldData = newData;
+    oldData = newData.slice(0);
     elementsCopy = elements.slice(0);
 
     const diff = performance.now() - start;
     console.log('Each Fast took: ' + diff.toFixed(2) + 'ms');
   };
 
-  setTimeout(() => updateList(consumable.value), 1);
-  consumable.changed(updateList);
+  setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
+  if (isConsumable(consumable)) (consumable as IConsumable).changed(updateList);
   return node;
 }

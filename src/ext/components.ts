@@ -13,7 +13,7 @@ export interface HInputOptions<T = string> {
   submit?: (tag: CTag, evt: Event) => void;
 }
 
-export function Input<T>(options: HInputOptions<T> = {}): CTag {
+export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
   const el = options.attach ? input.attach() : input();
   el.config({
     attr: {
@@ -45,11 +45,11 @@ export function Input<T>(options: HInputOptions<T> = {}): CTag {
   }
 
   return el.addClass('CInput');
-}
+};
 
-export function Checkbox(options: HInputOptions<boolean> = {}) {
+export const Checkbox = (options: HInputOptions<boolean> = {}) => {
   return Input({
     ...options,
     type: 'checkbox',
   });
-}
+};

@@ -52,7 +52,7 @@ let box: CTag;
 init()
   .append((box = Box()), br())
   .clicked((_) => {
-    if (box.element.parentElement) box.hide();
+    if (box.el.parentElement) box.hide();
     else box.show();
   })
   .setStyle({

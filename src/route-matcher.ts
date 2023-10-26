@@ -74,8 +74,7 @@ export const routeMatcher = (
     // Match the passed url against the route, returning an object of params
     // and values.
     self.parse = function (url) {
-      let i = 0;
-      let param, value;
+      let i = 0, param, value;
       const params = {};
       const matches = url.match(re);
       // If no matches, return null.
@@ -97,8 +96,7 @@ export const routeMatcher = (
 
     // Build path by inserting the given params into the route.
     self.stringify = function (params) {
-      let param, re;
-      let result = route as string;
+      let param, re, result = route as string;
       // Insert each passed param into the route string. Note that this loop
       // doesn't check .hasOwnProperty because this script doesn't support
       // modifications to Object.prototype.

@@ -40,15 +40,15 @@ export function makeTween<T extends Record<string, unknown>>(opts: TweenOptions<
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
-export function tweenTag(
+export const tweenTag = (
   tag: CTag,
   tween: (tag: CTag) => Tween<any>,
   onComplete?: () => void,
-): CTag {
+): CTag => {
   const tweenInstance = tween(tag);
   tweenInstance.start();
 
-  function animate(time) {
+  const animate = (time) => {
     const id = requestAnimationFrame(animate);
     const result = tweenInstance.update(time);
 
@@ -56,20 +56,20 @@ export function tweenTag(
       cancelAnimationFrame(id);
       if (onComplete) onComplete();
     }
-  }
+  };
   requestAnimationFrame(animate);
 
   return tag as any;
-}
+};
 
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
  */
-export async function tweenTagAsync(
+export const tweenTagAsync = async (
   tag: CTag,
   tween: (tag: CTag) => Tween<any>,
-): Promise<CTag> {
+): Promise<CTag> => {
   return await new Promise((resolve) => tweenTag(tag, tween, () => {
     resolve(tag);
   }));
-}
+};

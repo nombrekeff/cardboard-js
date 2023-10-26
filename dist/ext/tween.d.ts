@@ -18,8 +18,8 @@ export declare function makeTween<T extends Record<string, unknown>>(opts: Tween
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
-export declare function tweenTag(tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void): CTag;
+export declare const tweenTag: (tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void) => CTag;
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
  */
-export declare function tweenTagAsync(tag: CTag, tween: (tag: CTag) => Tween<any>): Promise<CTag>;
+export declare const tweenTagAsync: (tag: CTag, tween: (tag: CTag) => Tween<any>) => Promise<CTag>;

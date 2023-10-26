@@ -1,5 +1,5 @@
 import type { CTag } from './tag.js';
-import { IConsumable } from './types.js';
+import type { IConsumableOr } from './types.js';
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -7,4 +7,4 @@ import { IConsumable } from './types.js';
  * ```ts
  * ```
  */
-export declare function each<T>(consumable: IConsumable<T[]>, consumer: (val: T) => CTag): Node;
+export declare function each<T>(consumable: IConsumableOr<T[]>, consumer: (val: T) => CTag): Node;

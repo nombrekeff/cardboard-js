@@ -202,17 +202,15 @@ export class Router<T extends Record<string, Route> = Record<string, Route>> {
 
 export let router: Router<any> | undefined;
 
-export function makeRouter<
-  T extends Record<string, Route> = Record<string, Route>,
->(opts: RouterOptions<T>) {
+export const makeRouter = <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => {
   return (router = new Router<T>(opts));
-}
+};
 
-export function Link(
+export const Link = (
   child: string | CTag,
   path,
   query?: Record<string, string>,
-) {
+) => {
   return a(child)
     .addAttr('href', 'javascript:;')
     .setStyle({ margin: '0 8px 0 0' })
@@ -223,4 +221,4 @@ export function Link(
 
       router.navigate(path, query);
     });
-}
+};

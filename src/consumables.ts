@@ -102,17 +102,17 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
 }
 
 /** Check if a given object {@link obj} is a {@link Consumable}  */
-export function isConsumable(obj: any) {
+export const isConsumable = (obj: any) => {
   return obj instanceof Consumable;
-}
+};
 
 /**
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export function createConsumable<T>(val: T): Consumable<T> {
+export const createConsumable = <T>(val: T): Consumable<T> => {
   return new Consumable<T>(val);
-}
+};
 
 /**
  * Creates a new {@link Consumable} that intersects another {@link Consumable}.
@@ -127,72 +127,72 @@ export function createConsumable<T>(val: T): Consumable<T> {
  * // > isGreater == true;
  * ```
  */
-export function intersect<T, K>(
+export const intersect = <T, K>(
   other: IConsumable<T>,
   intersector: (val: T) => K,
-): IConsumable<K> {
-  const consumable = createConsumable<K>(intersector(other.value));
-  other.changed((val) => consumable.dispatch(intersector(val)));
-  return consumable as any;
-}
+): IConsumable<K> => {
+  const cons = createConsumable<K>(intersector(other.value));
+  other.changed((val) => cons.dispatch(intersector(val)));
+  return cons as any;
+};
 
 export type ExtractValue<T extends Array<IConsumable<any>>> =
   { [K in keyof T]: T[K] extends IConsumable<infer V> ? V : never };
 
-export function intersectMulti<T extends IConsumable[], K>(
+export const intersectMulti = <T extends IConsumable[], K>(
   consumables: [...T],
-  intersector: (...values: [...ExtractValue<T>]) => K,
-): IConsumable<K> {
-  const consumable = createConsumable<K>(intersector(...(consumables.map(c => c.value) as any)));
+  intersector: (...v: [...ExtractValue<T>]) => K,
+): IConsumable<K> => {
+  const cons = createConsumable<K>(intersector(...(consumables.map(c => c.value) as any)));
 
-  for (const cons of consumables) {
-    cons.changed(() => consumable.dispatch(
+  for (const other of consumables) {
+    other.changed(() => cons.dispatch(
       intersector(...(consumables.map(c => c.value) as any))
     ));
   }
-  return consumable as any;
-}
+  return cons as any;
+};
 
-export function getValue<T>(val: IConsumableOr<T>): T {
+export const getValue = <T>(val: IConsumableOr<T>): T => {
   return isConsumable(val) ? (val as IConsumable<T>).value : val as T;
-}
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
-export function greaterThan(consumable: IConsumable<number>, val: IConsumable<number> | number = 0) {
-  return intersect(consumable, (newVal) => newVal > getValue(val));
-}
+export const greaterThan = (cons: IConsumable<number>, val: IConsumable<number> | number = 0) => {
+  return intersect(cons, (newVal) => newVal > getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
-export function greaterThanOr(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
-  return intersect(consumable, (newVal) => newVal >= getValue(val));
-}
+export const greaterThanOr = (cons: IConsumable<number>, val: IConsumableOr<number> = 0) => {
+  return intersect(cons, (newVal) => newVal >= getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
-export function lessThan(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
-  return intersect(consumable, (newVal) => newVal < getValue(val));
-}
+export const lessThan = (cons: IConsumable<number>, val: IConsumableOr<number> = 0) => {
+  return intersect(cons, (newVal) => newVal < getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
-export function lessThanOr(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
-  return intersect(consumable, (newVal) => newVal <= getValue(val));
-}
+export const lessThanOr = (cons: IConsumable<number>, val: IConsumableOr<number> = 0) => {
+  return intersect(cons, (newVal) => newVal <= getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
-export function equalTo<T>(consumable: IConsumable<T>, val: IConsumableOr<T>) {
-  return intersect(consumable, (newVal) => newVal === getValue(val));
-}
+export const equalTo = <T>(cons: IConsumable<T>, val: IConsumableOr<T>) => {
+  return intersect(cons, (newVal) => newVal === getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
-export function notEqualTo<T>(consumable: IConsumable<T>, val: IConsumableOr<T>) {
-  return intersect(consumable, (newVal) => newVal !== getValue(val));
-}
+export const notEqualTo = <T>(cons: IConsumable<T>, val: IConsumableOr<T>) => {
+  return intersect(cons, (newVal) => newVal !== getValue(val));
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export function isEmpty<T extends WithLength>(consumable: IConsumable<T>) {
-  return intersect(consumable, (newVal) => newVal.length <= 0);
-}
+export const isEmpty = <T extends WithLength>(cons: IConsumable<T>) => {
+  return intersect(cons, (newVal) => newVal.length <= 0);
+};
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export function notEmpty<T extends WithLength>(consumable: IConsumable<T>) {
-  return intersect(consumable, (newVal) => newVal.length > 0);
-}
+export const notEmpty = <T extends WithLength>(cons: IConsumable<T>) => {
+  return intersect(cons, (newVal) => newVal.length > 0);
+};

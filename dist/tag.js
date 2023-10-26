@@ -18,9 +18,9 @@ const context = {
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
-export function attached() {
+export const attached = () => {
     return context.attached;
-}
+};
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -34,31 +34,31 @@ export class CTag {
         this._parent = newParent;
     }
     get children() {
-        this._getChildren(this.element);
+        this._getChildren(this.el);
         return this._cachedChildren;
     }
     get value() {
-        return this.element.value;
+        return this.el.value;
     }
     setValue(newValue) {
-        this.element.value = newValue;
+        this.el.value = newValue;
         return this;
     }
     get checked() {
-        return this.element.checked;
+        return this.el.checked;
     }
     setChecked(checked) {
-        this.element.checked = checked;
+        this.el.checked = checked;
         return this;
     }
     get style() {
-        return this.element.style;
+        return this.el.style;
     }
     get className() {
-        return this.element.className;
+        return this.el.className;
     }
     get classList() {
-        return this.element.classList;
+        return this.el.classList;
     }
     /** Gets the value of the element and clears the value */
     get consumeValue() {
@@ -67,10 +67,10 @@ export class CTag {
         return value;
     }
     get id() {
-        return this.element.id;
+        return this.el.id;
     }
     setId(id) {
-        this.element.id = id;
+        this.el.id = id;
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
@@ -95,14 +95,14 @@ export class CTag {
             if (!element) {
                 throw new Error("Can't find element for selector: " + arg0);
             }
-            this.element = element;
+            this.el = element;
         }
         else if (typeof arg0 === 'string') {
             this._attachable = attachable;
-            this.element = document.createElement(arg0);
+            this.el = document.createElement(arg0);
         }
         else if (arg0 instanceof HTMLElement) {
-            this.element = arg0;
+            this.el = arg0;
         }
         else {
             throw new Error('Invalid argument 0');
@@ -115,17 +115,17 @@ export class CTag {
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
-        this.element.replaceChildren(...this._mapChildren(children));
+        this.el.replaceChildren(...this._mapChildren(children));
         this._children = children;
         return this;
     }
     append(...children) {
-        this.element.append(...this._mapChildren(children));
+        this.el.append(...this._mapChildren(children));
         this._children.push(...children);
         return this;
     }
     prepend(...children) {
-        this.element.prepend(...this._mapChildren(children));
+        this.el.prepend(...this._mapChildren(children));
         this._children.unshift(...children);
         return this;
     }
@@ -135,17 +135,17 @@ export class CTag {
      */
     show() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.parent && !this.parent.children.includes(this.element)) {
-                const parentEl = this.parent.element;
+            if (this.parent && !this.parent.children.includes(this.el)) {
+                const parentEl = this.parent.el;
                 // Get's the position of the element if all the children are visible
                 const expectedIndex = this.parent._children.indexOf(this);
                 // If the element should be the first child in the parent
                 if (expectedIndex === 0) {
-                    parentEl.prepend(this.element);
+                    parentEl.prepend(this.el);
                 }
                 // If the element should be the last child in the parent
                 else if (expectedIndex === this.parent._children.length - 1) {
-                    parentEl.append(this.element);
+                    parentEl.append(this.el);
                 }
                 // If the element should be the nth child in the parent
                 else {
@@ -160,7 +160,7 @@ export class CTag {
                     // Get the "real" children in the dom.
                     // The index takes into account the items that are hidden
                     const nextEl = parentEl.childNodes[expectedIndex - hiddenBefore];
-                    parentEl.insertBefore(this.element, nextEl);
+                    parentEl.insertBefore(this.el, nextEl);
                 }
             }
             this._meta.isHidden = false;
@@ -170,7 +170,7 @@ export class CTag {
     /** Hide this element (removed from DOM) */
     hide() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.parent && this.parent.children.includes(this.element)) {
+            if (this.parent && this.parent.children.includes(this.el)) {
                 yield this.remove();
                 this._meta.isHidden = true;
             }
@@ -343,14 +343,14 @@ export class CTag {
      * If no argument is provided, it returns the `textContent` of the element.
      * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
-    text(newText, st) {
-        if (newText == null) {
-            return this.element.textContent;
+    text(textTemplate, obj) {
+        if (textTemplate == null) {
+            return this.el.textContent;
         }
-        if (st && newText) {
-            return this.setChildren([text(newText, st)]);
+        if (obj && textTemplate) {
+            return this.setChildren([text(textTemplate, obj)]);
         }
-        this.element.textContent = newText;
+        this.el.textContent = textTemplate;
         return this;
     }
     /**
@@ -386,7 +386,7 @@ export class CTag {
     }
     /** Set the elements class name */
     setClassName(className) {
-        this.element.className = className;
+        this.el.className = className;
         return this;
     }
     /** Remove classes from class list */
@@ -416,7 +416,7 @@ export class CTag {
     }
     /** Add a single style */
     addStyle(property, value) {
-        this.element.style[property] = value;
+        this.el.style[property] = value;
         return this;
     }
     /** Set multiple styles at once */
@@ -452,22 +452,22 @@ export class CTag {
     }
     /** Adds a single attribute to the element */
     addAttr(key, value = '') {
-        this.element.attributes[key] = value;
-        this.element.setAttribute(key, value);
+        this.el.attributes[key] = value;
+        this.el.setAttribute(key, value);
         return this;
     }
     /** Remove attributes from the element */
     rmAttr(...attrs) {
         for (const key of attrs) {
-            this.element.removeAttribute(key);
-            delete this.element.attributes[key];
+            this.el.removeAttribute(key);
+            delete this.el.attributes[key];
         }
         return this;
     }
     /** Check if this element has attributes */
     hasAttr(...attr) {
         for (const key of attr) {
-            if (!(key in this.element.attributes)) {
+            if (!(key in this.el.attributes)) {
                 return false;
             }
         }
@@ -475,7 +475,7 @@ export class CTag {
     }
     /** Get an attributes value */
     getAttr(attr) {
-        return this.element.attributes[attr];
+        return this.el.attributes[attr];
     }
     /**
      * Returns a {@link Consumable} that fires when the Event {@link evtName} is fired in this element
@@ -492,7 +492,7 @@ export class CTag {
     /** Add an event listener for a particular event */
     on(evtName, fn) {
         if (fn) {
-            this.element.addEventListener(evtName, (evt) => {
+            this.el.addEventListener(evtName, (evt) => {
                 fn(this, evt);
             });
         }
@@ -502,9 +502,9 @@ export class CTag {
     once(evtName, fn) {
         const listener = (evt) => {
             fn(this, evt);
-            this.element.removeEventListener(evtName, listener);
+            this.el.removeEventListener(evtName, listener);
         };
-        this.element.addEventListener(evtName, listener);
+        this.el.addEventListener(evtName, listener);
         return this;
     }
     /** Add a **click** event listener */
@@ -534,11 +534,11 @@ export class CTag {
     remove() {
         return __awaiter(this, void 0, void 0, function* () {
             // Might be a promise (it's overriden by `withLifecycle`)
-            const result = this.element.remove();
+            const result = this.el.remove();
             if (result instanceof Promise) {
                 yield result;
             }
-            yield this.element.remove();
+            yield this.el.remove();
             return this;
         });
     }
@@ -546,9 +546,9 @@ export class CTag {
      * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
      */
     clear() {
-        this.element.value = '';
+        this.el.value = '';
         // Trigger input event, so clearing is treated as input!
-        this.element.dispatchEvent(new InputEvent('input'));
+        this.el.dispatchEvent(new InputEvent('input'));
         return this;
     }
     /** Disable the element */
@@ -565,7 +565,7 @@ export class CTag {
     }
     /** Query a child in this element (in the DOM) */
     q(selector) {
-        const element = this.element.querySelector(selector);
+        const element = this.el.querySelector(selector);
         if (element)
             return new CTag(element);
     }
@@ -602,7 +602,7 @@ export class CTag {
             return text('$val', { val: cl });
         }
         if (cl instanceof CTag)
-            return cl.element;
+            return cl.el;
         if (cl instanceof Node)
             return cl;
         return null;
@@ -612,7 +612,7 @@ export class CTag {
             this._observer = new MutationObserver(() => {
                 this._cacheChildren(element);
             });
-            this._observer.observe(this.element, { childList: true });
+            this._observer.observe(this.el, { childList: true });
             this._cacheChildren(element);
         }
     }
@@ -651,30 +651,30 @@ export class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export function tag(arg0, children = [], attach = false) {
+export const tag = (arg0, children = [], attach = false) => {
     return new CTag(arg0, children, attach);
-}
+};
 /**
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
+export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
     var _a, _b;
     let observingParent = false;
     if (beforeRemove) {
-        const tempElRemove = tag.element.remove;
+        const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        tag.element.remove = () => __awaiter(this, void 0, void 0, function* () {
+        tag.el.remove = () => __awaiter(void 0, void 0, void 0, function* () {
             const result = beforeRemove(tag);
             if (!result || (result instanceof Promise && (yield result))) {
-                tempElRemove.call(tag.element);
+                tempElRemove.call(tag.el);
             }
             return result.valueOf();
         });
     }
     if (onStart) {
         const tempOnStart = tag.show;
-        tag.show = () => __awaiter(this, void 0, void 0, function* () {
+        tag.show = () => __awaiter(void 0, void 0, void 0, function* () {
             const result = tempOnStart.call(tag);
             if (result instanceof Promise) {
                 return yield result;
@@ -683,13 +683,13 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
         });
     }
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    const observer = new MutationObserver((mutations, observer) => __awaiter(this, void 0, void 0, function* () {
+    const observer = new MutationObserver((mutations, observer) => __awaiter(void 0, void 0, void 0, function* () {
         let hasBeenAdded = false, hasBeenRemoved = false;
         for (const mut of mutations) {
-            if (onStart && Array.from(mut.addedNodes).includes(tag.element)) {
+            if (onStart && Array.from(mut.addedNodes).includes(tag.el)) {
                 hasBeenAdded = true;
             }
-            if (onRemove && Array.from(mut.removedNodes).includes(tag.element)) {
+            if (onRemove && Array.from(mut.removedNodes).includes(tag.el)) {
                 hasBeenRemoved = true;
             }
         }
@@ -700,9 +700,9 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             }
             // When element is added, change observer to observe parent instead of body
             // Improve performance, as we just need to know if it's added or removed from the parent!
-            if (!observingParent && tag.element.parentElement) {
+            if (!observingParent && tag.el.parentElement) {
                 observer.disconnect();
-                observer.observe(tag.element.parentElement, { childList: true });
+                observer.observe(tag.el.parentElement, { childList: true });
                 observingParent = true;
             }
         }
@@ -710,12 +710,12 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             onRemove(tag);
         }
     }));
-    observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.element) !== null && _b !== void 0 ? _b : document.body, {
+    observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.el) !== null && _b !== void 0 ? _b : document.body, {
         childList: true,
         subtree: true,
     });
     return observer;
-}
+};
 /**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.
@@ -744,41 +744,41 @@ export const withLifecycle = (tag, handler) => {
  * detach();      // No attached tag
  * ```
  */
-export function attach(tag) {
+export const attach = (tag) => {
     if (context.attached) {
         context.stack.push(context.attached);
     }
     context.attached = tag;
     return tag;
-}
+};
 /**
  * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
  * If there are no previous attached tags, it will clear the attached tag.
  */
-export function detach() {
+export const detach = () => {
     if (context.stack.length > 0) {
         context.attached = context.stack.pop();
     }
     else {
         context.attached = undefined;
     }
-}
+};
 /**
  * Detaches all attached tags. There will be no attached tag after calling this function.
  */
-export function detachAll() {
+export const detachAll = () => {
     context.attached = undefined;
     context.stack = [];
-}
+};
 /**
  * It makes the body the attached tag ({@link attach}).
  * You can pass in a selector for an element you want to be the default attached tag.
  */
-export function init(options = { root: 'body' }) {
+export const init = (options = { root: 'body' }) => {
     const root = new CTag(`(${options.root})`);
     attach(root);
     return root;
-}
+};
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
     ul: (children, attach = false) => {

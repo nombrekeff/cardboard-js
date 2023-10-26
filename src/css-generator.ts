@@ -1,11 +1,11 @@
 import type { NestedStyleMap } from './types';
 import { camelToDash, isObject } from './util.js';
 
-export function genCss(
+export const genCss = (
   styleSheet:
     | Record<string, NestedStyleMap>
     | Array<Record<string, NestedStyleMap>>,
-) {
+) => {
   const stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
   let generatedCss = '';
 
@@ -15,17 +15,17 @@ export function genCss(
     }
   }
   return generatedCss;
-}
+};
 
-export function genBlock(selector: string, style: NestedStyleMap): string {
+export const genBlock = (selector: string, style: NestedStyleMap): string => {
   const blocks = genBlockContent(selector, style);
   return blocks.join('');
-}
+};
 
-export function genBlockContent(
+export const genBlockContent = (
   selector: string,
   style: NestedStyleMap,
-): string[] {
+): string[] => {
   let inside = '';
   const blocks: string[] = [];
 
@@ -41,8 +41,8 @@ export function genBlockContent(
   blocks.unshift(`${selector}{${inside}}`);
 
   return blocks;
-}
+};
 
-export function genStyle(name: string, value: string): string {
+export const genStyle = (name: string, value: string): string => {
   return `${camelToDash(name)}:${value};`;
-}
+};

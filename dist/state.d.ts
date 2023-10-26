@@ -16,11 +16,13 @@ import type { IConsumable } from './types';
  * div(template('Count is: $count', { count: count }));
  * ```
  */
-export declare function state<T>(initialValue: T): IConsumable<T>;
-export declare function listState<T>(initialData: T[]): {
+export declare const state: <T>(initialValue: T) => IConsumable<T>;
+export declare const listState: <T>(initialData: T[]) => {
     readonly list: IConsumable<IConsumable<T>[]>;
+    readonly listValue: IConsumable<T>[];
     add: (item: T, complete?: boolean) => void;
     addAt: (item: T, index: number) => void;
-    remove: (item: IConsumable<T>) => void;
+    remove: (item: T | IConsumable<T>) => void;
+    removeWhere: (cb: (item: IConsumable<T>) => boolean) => void;
     length: IConsumable<number>;
 };

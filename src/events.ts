@@ -62,10 +62,10 @@ export class CMappedEvent<T> {
   }
 }
 
-export function singleEvent<T>() {
+export const singleEvent = <T>() => {
   return new CEvent<T>();
-}
+};
 
-export function mappedEvent<T>() {
+export const mappedEvent = <T>() => {
   return new CMappedEvent<T>();
-}
+};

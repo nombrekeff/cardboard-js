@@ -32,5 +32,5 @@ export declare class CMappedEvent<T> {
     remove(evt: string, fn: (data?: T) => void): void;
     dispatch(evt: string, data?: T): void;
 }
-export declare function singleEvent<T>(): CEvent<T>;
-export declare function mappedEvent<T>(): CMappedEvent<T>;
+export declare const singleEvent: <T>() => CEvent<T>;
+export declare const mappedEvent: <T>() => CMappedEvent<T>;

@@ -1,5 +1,5 @@
 import { CEvent } from './events.js';
-import { IConsumable } from './types.js';
+import type { IConsumable, IConsumableOr, WithLength } from './types';
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
  *
@@ -40,12 +40,12 @@ export declare class Consumable<T = any> extends CEvent<T> implements IConsumabl
     intersect<K>(intersector: (val: T) => K): any;
 }
 /** Check if a given object {@link obj} is a {@link Consumable}  */
-export declare function isConsumable(obj: any): boolean;
+export declare const isConsumable: (obj: any) => boolean;
 /**
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export declare function createConsumable<T>(val: T): Consumable<T>;
+export declare const createConsumable: <T>(val: T) => Consumable<T>;
 /**
  * Creates a new {@link Consumable} that intersects another {@link Consumable}.
  * The new {@link Consumable} updates and dispatches whenever the other {@link Consumable} changes.
@@ -59,20 +59,25 @@ export declare function createConsumable<T>(val: T): Consumable<T>;
  * // > isGreater == true;
  * ```
  */
-export declare function intersect<T, K>(other: IConsumable<T>, intersector: (val: T) => K): IConsumable<K>;
+export declare const intersect: <T, K>(other: IConsumable<T>, intersector: (val: T) => K) => IConsumable<K>;
+export type ExtractValue<T extends Array<IConsumable<any>>> = {
+    [K in keyof T]: T[K] extends IConsumable<infer V> ? V : never;
+};
+export declare const intersectMulti: <T extends IConsumable<any>[], K>(consumables: [...T], intersector: (...v_0: ExtractValue<T>) => K) => IConsumable<K>;
+export declare const getValue: <T>(val: IConsumableOr<T>) => T;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
-export declare function greaterThan(consumable: IConsumable<number>, val?: number): IConsumable<boolean>;
+export declare const greaterThan: (cons: IConsumable<number>, val?: IConsumable<number> | number) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
-export declare function greaterThanOr(consumable: IConsumable<number>, val?: number): IConsumable<boolean>;
+export declare const greaterThanOr: (cons: IConsumable<number>, val?: IConsumableOr<number>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
-export declare function lessThan(consumable: IConsumable<number>, val?: number): IConsumable<boolean>;
+export declare const lessThan: (cons: IConsumable<number>, val?: IConsumableOr<number>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
-export declare function lessThanOr(consumable: IConsumable<number>, val?: number): IConsumable<boolean>;
+export declare const lessThanOr: (cons: IConsumable<number>, val?: IConsumableOr<number>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
-export declare function equalTo<T>(consumable: IConsumable<T>, val: T): IConsumable<boolean>;
+export declare const equalTo: <T>(cons: IConsumable<T>, val: IConsumableOr<T>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
-export declare function notEqualTo<T>(consumable: IConsumable<T>, val: T): IConsumable<boolean>;
+export declare const notEqualTo: <T>(cons: IConsumable<T>, val: IConsumableOr<T>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export declare function isEmpty(consumable: IConsumable<string | any[]>): IConsumable<boolean>;
+export declare const isEmpty: <T extends WithLength>(cons: IConsumable<T>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export declare function notEmpty(consumable: IConsumable<string | any[]>): IConsumable<boolean>;
+export declare const notEmpty: <T extends WithLength>(cons: IConsumable<T>) => IConsumable<boolean>;

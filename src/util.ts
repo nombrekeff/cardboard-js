@@ -1,5 +1,5 @@
 /** Removes an item from an array if it exists. It returns whether it was removed or not */
-export function removeFromList<T>(item: T, list?: T[]) {
+export const removeFromList = <T>(item: T, list?: T[]) => {
   if (!list) return false;
 
   const index = list.indexOf(item);
@@ -10,16 +10,16 @@ export function removeFromList<T>(item: T, list?: T[]) {
   }
 
   return false;
-}
+};
 
 export const camelToDash = str => str.replace(/([A-Z])/g, val => `-${val.toLowerCase()}`);
 
-export function isObject(obj: any): boolean {
+export const isObject = (obj: any): boolean => {
   return typeof obj === 'object' && !(obj instanceof Array);
-}
-export function isArray(obj) {
+};
+export const isArray = (obj) => {
   return Object.prototype.toString.call(obj) === '[object Array]';
-}
+};
 export const val = <T>(val: T | ((...args: any) => T), ...args): T => {
   if (typeof val === 'function') {
     return (val as any)(...args);
@@ -32,7 +32,7 @@ export const swapItems = (array: any[], from: number, to: number) => {
   array[to] = temp;
   return array;
 };
-export function arraysEqual(a?: any[], b?: any[]) {
+export const arraysEqual = (a?: any[], b?: any[]) => {
   if (a === b) return true;
   if (a == null || b == null) return false;
   if (a.length !== b.length) return false;
@@ -46,11 +46,11 @@ export function arraysEqual(a?: any[], b?: any[]) {
     if (a[i] !== b[i]) return false;
   }
   return true;
-}
+};
 
 /* eslint-disable  */
 /* istanbul ignore next */
-export function deepEquals(a, b) {
+export const deepEquals = (a, b) => {
   if (a === b) return true;
 
   if (a && b && typeof a == 'object' && typeof b == 'object') {

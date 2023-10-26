@@ -1,6 +1,6 @@
 import { allTags, isConsumable } from '../cardboard.js';
 const { input } = allTags;
-export function Input(options = {}) {
+export const Input = (options = {}) => {
     var _a;
     const el = options.attach ? input.attach() : input();
     el.config({
@@ -28,8 +28,8 @@ export function Input(options = {}) {
         });
     }
     return el.addClass('CInput');
-}
-export function Checkbox(options = {}) {
+};
+export const Checkbox = (options = {}) => {
     return Input(Object.assign(Object.assign({}, options), { type: 'checkbox' }));
-}
+};
 //# sourceMappingURL=components.js.map

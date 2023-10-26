@@ -31,34 +31,12 @@ export interface IConsumable<T = any> {
   value: T;
   prev?: T;
 }
-export type StateConsumable<T> = T & Partial<IConsumable<T>>;
-export type AnyConsumable<T> = IConsumable<T> | StateConsumable<T>;
-export type Consumify<T> = IConsumable<
-  T extends Record<string, any> ?
-  {
-    [P in keyof T]: IConsumable<T[P]>;
-  } :
-  T extends any[] ? any[] : T
->;
-
-export type TagChild = string | CTag | HTMLElement | Node | AnyConsumable<any>;
-export type State<T extends Record<string, any>> = T extends any[]
-  ? T & {
-    changed: (callback: (newValue: T) => void) => State<T>;
-    update: (newValue: T) => void;
-    length: StateConsumable<number>;
-  }
-  : {
-    [K in keyof T]: T[K] extends Record<string, any>
-    ? State<T[K]>
-    : StateConsumable<T[K]>;
-  }
-  & {
-    changed: (callback: (newValue: T) => void) => State<T>;
-  };
-
-export type State2<T extends Record<string, any>> = Record<string, IConsumable<T>>;
-
+export type IConsumableOr<T = any> = IConsumable<T> | T;
+export interface WithLength {
+  length: number;
+}
+export type TextObj<T extends IConsumable<Primitive> = any> = Record<string, T>;
+export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export interface TagConfig {
   style?: StyleMap;
   attr?: Record<string, string | undefined>;

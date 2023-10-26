@@ -19,11 +19,11 @@ import { deepEquals } from './util.js';
  * div(template('Count is: $count', { count: count }));
  * ```
  */
-export function state<T>(initialValue: T): IConsumable<T> {
+export const state = <T>(initialValue: T): IConsumable<T> => {
   return createConsumable(initialValue);
-}
+};
 
-export function listState<T>(initialData: T[]) {
+export const listState = <T>(initialData: T[]) => {
   const _list = state<Array<IConsumable<T>>>(
     initialData.map((d) => createConsumable(d)),
   );
@@ -62,4 +62,4 @@ export function listState<T>(initialData: T[]) {
     removeWhere,
     length,
   };
-}
+};

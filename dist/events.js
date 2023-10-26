@@ -56,10 +56,10 @@ export class CMappedEvent {
         }
     }
 }
-export function singleEvent() {
+export const singleEvent = () => {
     return new CEvent();
-}
-export function mappedEvent() {
+};
+export const mappedEvent = () => {
     return new CMappedEvent();
-}
+};
 //# sourceMappingURL=events.js.map

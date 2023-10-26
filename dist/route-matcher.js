@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /*
  * JavaScript Route Matcher
  * http://benalman.com/
@@ -9,6 +10,7 @@
  *
  * translated to TS by @nombrekeff
  */
+/* eslint-disable  */
 // Characters to be escaped with \. RegExp borrowed from the Backbone router
 // but escaped (note: unnecessarily) to keep JSHint from complaining.
 const reEscape = /[-[\]{}()+?.,\\^$|#\s]/g;
@@ -58,8 +60,7 @@ export const routeMatcher = (route, rules = {}) => {
         // Match the passed url against the route, returning an object of params
         // and values.
         self.parse = function (url) {
-            let i = 0;
-            let param, value;
+            let i = 0, param, value;
             const params = {};
             const matches = url.match(re);
             // If no matches, return null.
@@ -80,8 +81,7 @@ export const routeMatcher = (route, rules = {}) => {
         };
         // Build path by inserting the given params into the route.
         self.stringify = function (params) {
-            let param, re;
-            let result = route;
+            let param, re, result = route;
             // Insert each passed param into the route string. Note that this loop
             // doesn't check .hasOwnProperty because this script doesn't support
             // modifications to Object.prototype.

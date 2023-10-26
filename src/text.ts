@@ -23,7 +23,7 @@ import { isObject } from './util.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text<T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IConsumable<T> | K): Node {
+export const text = <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IConsumable<T> | K): Node => {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
@@ -54,4 +54,4 @@ export function text<T extends Record<string, Primitive>, K extends TextObj>(tex
   }
 
   return node;
-}
+};

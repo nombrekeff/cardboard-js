@@ -32,10 +32,10 @@ export function makeTween(opts) {
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
-export function tweenTag(tag, tween, onComplete) {
+export const tweenTag = (tag, tween, onComplete) => {
     const tweenInstance = tween(tag);
     tweenInstance.start();
-    function animate(time) {
+    const animate = (time) => {
         const id = requestAnimationFrame(animate);
         const result = tweenInstance.update(time);
         if (!result) {
@@ -43,18 +43,16 @@ export function tweenTag(tag, tween, onComplete) {
             if (onComplete)
                 onComplete();
         }
-    }
+    };
     requestAnimationFrame(animate);
     return tag;
-}
+};
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
  */
-export function tweenTagAsync(tag, tween) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield new Promise((resolve) => tweenTag(tag, tween, () => {
-            resolve(tag);
-        }));
-    });
-}
+export const tweenTagAsync = (tag, tween) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield new Promise((resolve) => tweenTag(tag, tween, () => {
+        resolve(tag);
+    }));
+});
 //# sourceMappingURL=tween.js.map

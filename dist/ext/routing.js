@@ -142,10 +142,10 @@ export class Router {
     }
 }
 export let router;
-export function makeRouter(opts) {
+export const makeRouter = (opts) => {
     return (router = new Router(opts));
-}
-export function Link(child, path, query) {
+};
+export const Link = (child, path, query) => {
     return a(child)
         .addAttr('href', 'javascript:;')
         .setStyle({ margin: '0 8px 0 0' })
@@ -155,5 +155,5 @@ export function Link(child, path, query) {
         }
         router.navigate(path, query);
     });
-}
+};
 //# sourceMappingURL=routing.js.map

@@ -10,5 +10,5 @@ export interface HInputOptions<T = string> {
     input?: EventCallback<'input'>;
     submit?: (tag: CTag, evt: Event) => void;
 }
-export declare function Input<T>(options?: HInputOptions<T>): CTag;
-export declare function Checkbox(options?: HInputOptions<boolean>): CTag;
+export declare const Input: <T>(options?: HInputOptions<T>) => CTag;
+export declare const Checkbox: (options?: HInputOptions<boolean>) => CTag;
