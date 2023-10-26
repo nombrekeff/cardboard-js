@@ -12,7 +12,7 @@ import { removeFromList } from './util.js';
  * ```
  */
 export class CEvent<T> {
-  private readonly _listeners: Array<(data: T | undefined) => void> = [];
+  protected readonly _listeners: Array<(data: T | undefined) => void> = [];
 
   listen(fn: (data?: T) => void) {
     this._listeners.push(fn);

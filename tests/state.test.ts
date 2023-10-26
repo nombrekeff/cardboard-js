@@ -93,9 +93,16 @@ describe('List State', () => {
         expect(s.listValue.length).toEqual(0);
     });
 
+    it('remove removes only one', async () => {
+        const s = listState<string>(['hey', 'hey']);
+        s.remove('hey');
+
+        expect(s.listValue.length).toEqual(1);
+    });
+
     it('remove works with objects', async () => {
         const s = listState([{ val: 'hey' }]);
-        s.remove({ val: 'hey' });
+        s.remove(s.listValue[0]);
 
         expect(s.listValue.length).toEqual(0);
     });

@@ -10,7 +10,7 @@
  * ```
  */
 export declare class CEvent<T> {
-    private readonly _listeners;
+    protected readonly _listeners: Array<(data: T | undefined) => void>;
     listen(fn: (data?: T) => void): void;
     remove(fn: (data?: T) => void): void;
     dispatch(data?: T): void;

@@ -11,7 +11,8 @@ import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createConsumable, isConsumable } from './consumables.js';
-const context = {
+import { createGlobalObserver } from './lifecycle.js';
+export const context = {
     attached: undefined,
     stack: [],
 };
@@ -655,76 +656,6 @@ export const tag = (arg0, children = [], attach = false) => {
     return new CTag(arg0, children, attach);
 };
 /**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
- */
-export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
-    var _a, _b;
-    let observingParent = false;
-    if (beforeRemove) {
-        const tempElRemove = tag.el.remove;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        tag.el.remove = () => __awaiter(void 0, void 0, void 0, function* () {
-            const result = beforeRemove(tag);
-            if (!result || (result instanceof Promise && (yield result))) {
-                tempElRemove.call(tag.el);
-            }
-            return result.valueOf();
-        });
-    }
-    if (onStart) {
-        const tempOnStart = tag.show;
-        tag.show = () => __awaiter(void 0, void 0, void 0, function* () {
-            const result = tempOnStart.call(tag);
-            if (result instanceof Promise) {
-                return yield result;
-            }
-            return result;
-        });
-    }
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    const observer = new MutationObserver((mutations, observer) => __awaiter(void 0, void 0, void 0, function* () {
-        let hasBeenAdded = false, hasBeenRemoved = false;
-        for (const mut of mutations) {
-            if (onStart && Array.from(mut.addedNodes).includes(tag.el)) {
-                hasBeenAdded = true;
-            }
-            if (onRemove && Array.from(mut.removedNodes).includes(tag.el)) {
-                hasBeenRemoved = true;
-            }
-        }
-        if (hasBeenAdded && onStart) {
-            const result = onStart(tag);
-            if (result instanceof Promise) {
-                yield result;
-            }
-            // When element is added, change observer to observe parent instead of body
-            // Improve performance, as we just need to know if it's added or removed from the parent!
-            if (!observingParent && tag.el.parentElement) {
-                observer.disconnect();
-                observer.observe(tag.el.parentElement, { childList: true });
-                observingParent = true;
-            }
-        }
-        if (hasBeenRemoved && onRemove) {
-            onRemove(tag);
-        }
-    }));
-    observer.observe((_b = (_a = tag.parent) === null || _a === void 0 ? void 0 : _a.el) !== null && _b !== void 0 ? _b : document.body, {
-        childList: true,
-        subtree: true,
-    });
-    return observer;
-};
-/**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
- */
-export const withLifecycle = (tag, handler) => {
-    onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
-    return tag;
-};
-/**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
  * You can call attach multiple times, and the last attach tag will be used.
@@ -777,6 +708,7 @@ export const detachAll = () => {
 export const init = (options = { root: 'body' }) => {
     const root = new CTag(`(${options.root})`);
     attach(root);
+    context.observer = createGlobalObserver();
     return root;
 };
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */

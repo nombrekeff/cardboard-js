@@ -54,6 +54,13 @@ export class Consumable extends CEvent {
         return this;
     }
     /**
+    * Remove a listener for when this Consumable changes.
+    */
+    remove(callback) {
+        super.remove(callback);
+        return this;
+    }
+    /**
      * Set's the new value, and calls all the listeners.
      * You can additionaly set the {@link value} directly.
      */

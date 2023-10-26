@@ -29,6 +29,7 @@ export type EventMap = {
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
 export interface IConsumable<T = any> {
   changed: (callback: (newValue: T) => void) => IConsumable<T>;
+  remove: (callback: (newValue: T) => void) => IConsumable<T>;
   dispatch: (newValue: T) => IConsumable<T>;
   intersect: <K>(intersector: (val: T) => K) => IConsumable<K>;
   value: T;

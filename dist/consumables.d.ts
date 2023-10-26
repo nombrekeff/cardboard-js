@@ -20,6 +20,10 @@ export declare class Consumable<T = any> extends CEvent<T> implements IConsumabl
      */
     changed(callback: (val: T) => void): this;
     /**
+    * Remove a listener for when this Consumable changes.
+    */
+    remove(callback: (val: T) => void): this;
+    /**
      * Set's the new value, and calls all the listeners.
      * You can additionaly set the {@link value} directly.
      */

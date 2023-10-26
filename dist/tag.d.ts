@@ -1,7 +1,16 @@
+import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
+import { type CEvent } from './events.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
+export declare const context: {
+    attached?: CTag;
+    stack: CTag[];
+    observer?: {
+        onAdded: CEvent<Node>;
+        onRemoved: CEvent<Node>;
+    };
+};
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
@@ -217,7 +226,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | Node | CTag | IConsumable<any> | undefined;
+    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IConsumable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _setChildrenParent;
     private _childrenFilterPredicate;
@@ -245,20 +254,6 @@ export declare class CTag {
  * ```
  */
 export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, attach?: boolean) => CTag;
-/**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
- */
-export declare const onLifecycle: (tag: CTag, onStart?: ((tag: CTag) => Promise<boolean> | boolean) | undefined, onRemove?: ((tag: CTag) => void) | undefined, beforeRemove?: ((tag: CTag) => Promise<boolean> | boolean) | undefined) => MutationObserver;
-/**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
- */
-export declare const withLifecycle: (tag: CTag, handler: {
-    start?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
-    removed?: ((tag: CTag) => void) | undefined;
-    beforeRemove?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
-}) => CTag;
 /**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.

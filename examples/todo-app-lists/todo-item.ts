@@ -1,23 +1,36 @@
-import { CTag, type IConsumable, allTags, text, grab } from '../../dist/cardboard.js';
+import { type CTag, type IConsumable, allTags, grab, withLifecycle } from '../../dist/cardboard.js';
 import { type TodoItem } from './state.js';
 
 const { div, button, input, h4 } = allTags;
 
-export default function TodoItem(content: IConsumable<TodoItem>, opts: { remove: (self: typeof CTag, content: IConsumable<TodoItem>) => void }) {
-  const removeItem = (self) => {
-    if (opts.remove) {
-      opts.remove(self, content);
-    }
-  };
+export default function TodoItem(
+  content: IConsumable<TodoItem>,
+  remove: (self: CTag, content: IConsumable<TodoItem>) => void
+) {
+  let isComplete = grab(content, 'complete', false);
+  let todoItem = grab(content, 'item', 'Empty TODO');
 
-  return div(
-    input().setAttrs({ type: 'checkbox' }).on('change', (self, evt) => {
-      content.value.complete = self.checked;
-    }),
-    h4(text('$item', content))
-      .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
-    button('-')
-      .addClass('btn-remove')
-      .clicked((self) => removeItem(self.parent)), // self.parent will be div
-  ).addClass('todo-item');
+  return withLifecycle(
+    div(
+      input()
+        .setAttrs({ type: 'checkbox', name: 'todo-complete' })
+        .on('change', (self, evt) => {
+          content.value.complete = self.checked;
+        }),
+      h4(todoItem)
+        .stylesIf(isComplete, { textDecoration: 'line-through' }),
+      button('-').addClass('btn-remove')
+        .clicked((self) => {
+          if (remove) remove(self, content);
+        }), // self.parent will be div
+    ).addClass('todo-item'),
+    {
+      removed(tag) {
+        // isComplete.
+        // console.log('aaaa');
+        // isComplete.destroy();
+        // todoItem.destroy();
+      },
+    }
+  );
 }

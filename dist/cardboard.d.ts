@@ -9,10 +9,21 @@ export * from './util.js';
 export * from './text.js';
 export * from './events.js';
 export * from './each.js';
+export * from './lifecycle.js';
 export * from './consumables.js';
 export * from './ext/routing.js';
 export type * from './types';
 export declare const Cardboard: {
+    createGlobalObserver: () => {
+        onAdded: _events.CEvent<Node>;
+        onRemoved: _events.CEvent<Node>;
+    };
+    onLifecycle: (tag: _tag.CTag, onStart?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onRemove?: ((tag: _tag.CTag) => void) | undefined, beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined) => void;
+    withLifecycle: (tag: _tag.CTag, handler: {
+        start?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
+        removed?: ((tag: _tag.CTag) => void) | undefined;
+        beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
+    }) => _tag.CTag;
     Consumable: typeof _consumables.Consumable;
     isConsumable: (obj: any) => boolean;
     createConsumable: <T>(val: T) => _consumables.Consumable<T>;
@@ -53,21 +64,27 @@ export declare const Cardboard: {
     listState: <T_15>(initialData: T_15[]) => {
         readonly list: import("./types").IConsumable<import("./types").IConsumable<T_15>[]>;
         readonly listValue: import("./types").IConsumable<T_15>[];
-        add: (item: T_15, complete?: boolean) => void;
+        add: (item: T_15) => void;
         addAt: (item: T_15, index: number) => void;
-        remove: (item: T_15 | import("./types").IConsumable<T_15>) => void;
-        removeWhere: (cb: (item: import("./types").IConsumable<T_15>) => boolean) => void;
+        remove: any;
+        removeWhere: any;
         length: import("./types").IConsumable<number>;
+    };
+    stateAdd: <T_16>(cons: import("./types").IConsumable<T_16[]>, item: T_16) => void;
+    stateAddAt: <T_17>(cons: import("./types").IConsumable<T_17[]>, item: T_17, index: number) => void;
+    stateRemoveWhere: <T_18>(cons: import("./types").IConsumable<T_18[]>, cb: (item: T_18, index: number) => boolean) => void;
+    stateRemove: <T_19>(cons: import("./types").IConsumable<T_19[]>, item: T_19) => void;
+    context: {
+        attached?: _tag.CTag | undefined;
+        stack: _tag.CTag[];
+        observer?: {
+            onAdded: _events.CEvent<Node>;
+            onRemoved: _events.CEvent<Node>;
+        } | undefined;
     };
     attached: () => _tag.CTag | undefined;
     CTag: typeof _tag.CTag;
     tag: (arg0: string | HTMLElement, children?: import("./types").TagChildren, attach?: boolean) => _tag.CTag;
-    onLifecycle: (tag: _tag.CTag, onStart?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onRemove?: ((tag: _tag.CTag) => void) | undefined, beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined) => MutationObserver;
-    withLifecycle: (tag: _tag.CTag, handler: {
-        start?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
-        removed?: ((tag: _tag.CTag) => void) | undefined;
-        beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
-    }) => _tag.CTag;
     attach: (tag: _tag.CTag) => _tag.CTag;
     detach: () => void;
     detachAll: () => void;

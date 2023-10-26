@@ -1,5 +1,5 @@
-import { createConsumable, getValue, isConsumable } from './consumables.js';
 import type { IConsumable } from './types';
+import { createConsumable, getValue } from './consumables.js';
 import { deepEquals } from './util.js';
 
 /**
@@ -23,30 +23,39 @@ export const state = <T>(initialValue: T): IConsumable<T> => {
   return createConsumable(initialValue);
 };
 
+/**
+ * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
+ *
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
+ *
+ * @example
+ * ```javascript
+ * const myList = listState([1, 2, 3]);
+ *
+ * myList.add(4);
+ * myList.addAt(0, 0);
+ * myList.remove(2);
+ * myList.removeWhere(item => item === 3);
+ * const listValues = myList.listValue;
+ * const listLength = myList.length;
+ *
+ * // Listen to changes in the list
+ * myList.list.changed(() => {
+ *   // List has changed
+ * });
+ * ```
+ */
 export const listState = <T>(initialData: T[]) => {
   const _list = state<Array<IConsumable<T>>>(
     initialData.map((d) => createConsumable(d)),
   );
-  const length = _list.intersect((_list) => _list.length);
 
-  const add = (item: T, complete = false) => {
-    _list.value = [..._list.value, createConsumable(item)];
+  const add = (item: T) => {
+    stateAdd(_list, createConsumable(item));
   };
 
   const addAt = (item: T, index: number) => {
-    const newData = [..._list.value];
-    newData.splice(index, 0, createConsumable(item));
-    _list.value = newData;
-  };
-
-  const removeWhere = (cb: (item: IConsumable<T>) => boolean) => {
-    _list.value = _list.value.filter(cb);
-  };
-
-  const remove = (item: IConsumable<T> | T) => {
-    removeWhere(val => {
-      return !deepEquals(getValue(val), getValue(item));
-    });
+    stateAddAt(_list, createConsumable(item), index);
   };
 
   return {
@@ -58,8 +67,29 @@ export const listState = <T>(initialData: T[]) => {
     },
     add,
     addAt,
-    remove,
-    removeWhere,
-    length,
+    remove: stateRemove.bind({}, _list),
+    removeWhere: stateRemoveWhere.bind({}, _list),
+    length: _list.intersect((_list) => _list.length),
   };
+};
+
+export const stateAdd = <T>(cons: IConsumable<T[]>, item: T) => {
+  cons.value = [...cons.value, item];
+};
+
+export const stateAddAt = <T>(cons: IConsumable<T[]>, item: T, index: number) => {
+  const newData = [...cons.value];
+  newData.splice(index, 0, item);
+  cons.value = newData;
+};
+
+export const stateRemoveWhere = <T>(cons: IConsumable<T[]>, cb: (item: T, index: number) => boolean) => {
+  cons.value = cons.value.filter((el, i) => !cb(el, i));
+};
+
+export const stateRemove = <T>(cons: IConsumable<T[]>, item: T) => {
+  const index = cons.value.findIndex(cons => getValue(cons) === getValue(item));
+  stateRemoveWhere(cons, (_, i) => {
+    return index === i;
+  });
 };

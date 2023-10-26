@@ -168,7 +168,7 @@ export function each<T>(
           index: i,
         });
       }
-      // console.table(dataDiff);
+      console.log(dataDiff);
 
       for (let index = 0; index < dataDiff.length; index++) {
         const nextIndex = dataDiff[index + 1] ? dataDiff[index + 1].index : null;

@@ -1,6 +1,6 @@
 import { CEvent } from './events.js';
 import { isArray, isObject } from './util.js';
-import type { IConsumable, IConsumableOr, KeysOf, Primitive, WithLength } from './types';
+import type { IConsumable, IConsumableOr, WithLength } from './types';
 
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
@@ -64,6 +64,14 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
    */
   changed(callback: (val: T) => void) {
     this.listen(callback);
+    return this;
+  }
+
+  /**
+  * Remove a listener for when this Consumable changes.
+  */
+  remove(callback: (val: T) => void) {
+    super.remove(callback);
     return this;
   }
 

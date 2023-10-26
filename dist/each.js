@@ -137,7 +137,7 @@ export function each(consumable, consumer) {
                     index: i,
                 });
             }
-            // console.table(dataDiff);
+            console.log(dataDiff);
             for (let index = 0; index < dataDiff.length; index++) {
                 const nextIndex = dataDiff[index + 1] ? dataDiff[index + 1].index : null;
                 const nextState = dataDiff[index + 1] ? dataDiff[index + 1].state : null;
