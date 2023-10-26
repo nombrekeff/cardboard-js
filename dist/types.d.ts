@@ -5,6 +5,9 @@ import type { ValidTagName } from './tag-names.js';
 
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
 export type NoOp = () => void;
+// eslint-disable-next-line @typescript-eslint/array-type, @typescript-eslint/ban-types
+export type KeysOf<T extends Record<string, unknown>> = keyof T;
+
 export type Suffix<K extends string, T extends string> = `${T}${K}`;
 export type Suffixer<K, T extends string> = {
   [P in keyof K as Suffix<T, string & P>]: K[P];

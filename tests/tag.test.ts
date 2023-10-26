@@ -7,25 +7,25 @@ describe('Tags', () => {
     createDomMock();
     const t = tag('custom', ['child']);
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.textContent).toEqual('child');
+    expect(t.el.textContent).toEqual('child');
   });
 
   it('tag queries correctly', async () => {
     createDomMock('<div id="test"></div>');
     const t = tag('(#test)');
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.tagName.toLowerCase()).toEqual('div');
-    expect(t.element.id).toEqual('test');
+    expect(t.el.tagName.toLowerCase()).toEqual('div');
+    expect(t.el.id).toEqual('test');
   });
 
-  it('tag receives element correctly', async () => {
+  it('tag receives el correctly', async () => {
     createDomMock('<div id="test"></div>');
 
     const t = tag(document.querySelector('#test') as HTMLElement);
 
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.tagName.toLowerCase()).toEqual('div');
-    expect(t.element.id).toEqual('test');
+    expect(t.el.tagName.toLowerCase()).toEqual('div');
+    expect(t.el.id).toEqual('test');
   });
 
   it('tag attaches correctly', async () => {
@@ -36,7 +36,7 @@ describe('Tags', () => {
     const d = tag('div', ['Hey!'], true);
 
     expect(test.children.length).toEqual(1);
-    expect(test.children[0]).toEqual(d.element);
+    expect(test.children[0]).toEqual(d.el);
   });
 
   it('tag appends correctly', async () => {
@@ -46,7 +46,7 @@ describe('Tags', () => {
     const p = tag('p');
     d.append(p);
 
-    expect(d.children).toEqual([s.element, p.element]);
+    expect(d.children).toEqual([s.el, p.el]);
   });
 
   it('tag prepends correctly', async () => {
@@ -56,21 +56,21 @@ describe('Tags', () => {
     const p = tag('p');
     d.prepend(p);
 
-    expect(d.children).toEqual([p.element, s.element]);
+    expect(d.children).toEqual([p.el, s.el]);
   });
 
   it('tag.text works correctly', async () => {
     createDomMock();
     const t = tag('custom').text('child');
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.textContent).toEqual('child');
+    expect(t.el.textContent).toEqual('child');
   });
 
   it('tag.text works with template correctly', async () => {
     createDomMock();
     const t = tag('custom').text('$a', { a: state('123') });
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.textContent).toEqual('123');
+    expect(t.el.textContent).toEqual('123');
   });
 
 
@@ -86,7 +86,7 @@ describe('Tags', () => {
     expect('changed' in tw).toEqual(true);
 
     expect(clickChange).not.toHaveBeenCalled();
-    t.element.dispatchEvent(new window.Event('click'));
+    t.el.dispatchEvent(new window.Event('click'));
     expect(clickChange).toHaveBeenCalled();
   });
 
@@ -107,7 +107,7 @@ describe('Tags', () => {
     expect(t.hasStyle('color')).toEqual(true);
     expect(t.hasStyle('background')).toEqual(false);
 
-    expect(t.element.textContent).toEqual('child');
+    expect(t.el.textContent).toEqual('child');
   });
 
   it('tag.config children', async () => {
@@ -117,7 +117,7 @@ describe('Tags', () => {
       children: [c],
     });
 
-    expect(t.children).toEqual([c.element]);
+    expect(t.children).toEqual([c.el]);
   });
 
   it('tag.config value', async () => {
@@ -138,7 +138,7 @@ describe('Tags', () => {
         click: clickCallback,
       },
     });
-    t.element.dispatchEvent(new window.Event('click'));
+    t.el.dispatchEvent(new window.Event('click'));
 
     expect(clickCallback).toHaveBeenCalled();
   });
@@ -154,7 +154,7 @@ describe('Tags', () => {
     const t = tag('custom').config({
       className: 'test box',
     });
-    expect(t.element.className).toBe('test box');
+    expect(t.el.className).toBe('test box');
   });
 
   it('tag.rmClass', async () => {
@@ -164,7 +164,7 @@ describe('Tags', () => {
     });
     t.rmClass('test');
     expect(t).toBeInstanceOf(CTag);
-    expect(t.element.className).toBe('box');
+    expect(t.el.className).toBe('box');
   });
 
   it('tag.hasClass', async () => {

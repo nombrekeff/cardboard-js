@@ -69,16 +69,16 @@ describe('Tag conditionals', () => {
       pp2,
     );
 
-    expect(pp.element.parentElement).toBeTruthy();
+    expect(pp.el.parentElement).toBeTruthy();
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
 
     show.value = false;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.element.parentElement).toBeFalsy();
+    expect(pp.el.parentElement).toBeFalsy();
 
     show.value = true;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.element.parentElement).toBeTruthy();
+    expect(pp.el.parentElement).toBeTruthy();
   });
 
   it('tag.hideIf', async () => {

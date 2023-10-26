@@ -1,4 +1,4 @@
-import { createConsumable, getValue } from './consumables.js';
+import { createConsumable, getValue, isConsumable } from './consumables.js';
 import type { IConsumable } from './types';
 import { deepEquals } from './util.js';
 

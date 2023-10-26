@@ -22,16 +22,16 @@ describe('Routing', () => {
       initialRoute: '/home',
     });
 
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
     router.navigate('/about');
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).not.toContain(home.element);
-    expect(Array.from(document.body.children)).toContain(about.element);
+    expect(Array.from(document.body.children)).not.toContain(home.el);
+    expect(Array.from(document.body.children)).toContain(about.el);
 
     router.navigate('/home');
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).toContain(home.element);
-    expect(Array.from(document.body.children)).not.toContain(about.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
+    expect(Array.from(document.body.children)).not.toContain(about.el);
     expect(HomeRoute).toBeCalledTimes(1);
   });
 
@@ -54,7 +54,7 @@ describe('Routing', () => {
       initialRoute: '/home',
     });
 
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
   });
 
   it('router shows fallback route', async () => {
@@ -79,13 +79,13 @@ describe('Routing', () => {
       fallbackRoute: '/fallback',
     });
 
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
     router.navigate('/not-exists');
 
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).not.toContain(home.element);
-    expect(Array.from(document.body.children)).not.toContain(about.element);
-    expect(Array.from(document.body.children)).toContain(fallback.element);
+    expect(Array.from(document.body.children)).not.toContain(home.el);
+    expect(Array.from(document.body.children)).not.toContain(about.el);
+    expect(Array.from(document.body.children)).toContain(fallback.el);
   });
 
   it('router shows noRouteBuilder if no route and no fallback', async () => {
@@ -110,13 +110,13 @@ describe('Routing', () => {
       initialRoute: '/home',
     });
 
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
     router.navigate('/not-exists');
 
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).not.toContain(home.element);
-    expect(Array.from(document.body.children)).not.toContain(about.element);
-    expect(Array.from(document.body.children)).toContain(fallback.element);
+    expect(Array.from(document.body.children)).not.toContain(home.el);
+    expect(Array.from(document.body.children)).not.toContain(about.el);
+    expect(Array.from(document.body.children)).toContain(fallback.el);
   });
 
   it('router shows error if it has no fallback or noRouteBuilder defined', async () => {
@@ -138,12 +138,12 @@ describe('Routing', () => {
     });
 
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
     router.navigate('/not-exists');
 
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).not.toContain(home.element);
-    expect(Array.from(document.body.children)).not.toContain(about.element);
+    expect(Array.from(document.body.children)).not.toContain(home.el);
+    expect(Array.from(document.body.children)).not.toContain(about.el);
     expect(Array.from(document.body.children)[0].textContent).toEqual(
       'No route found for: /not-exists',
     );
@@ -170,10 +170,10 @@ describe('Routing', () => {
     const link = Link('Test', '/about');
     init().append(link);
 
-    link.element.dispatchEvent(new window.Event('click'));
+    link.el.dispatchEvent(new window.Event('click'));
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
 
-    expect(Array.from(document.body.children)).toContain(about.element);
+    expect(Array.from(document.body.children)).toContain(about.el);
   });
 
   it('router params work', async () => {
@@ -194,7 +194,7 @@ describe('Routing', () => {
     });
 
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(Array.from(document.body.children)).toContain(home.element);
+    expect(Array.from(document.body.children)).toContain(home.el);
   });
 
   it('query params work', async () => {

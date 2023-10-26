@@ -1,6 +1,6 @@
 import { CEvent } from './events.js';
 import { isArray, isObject } from './util.js';
-import type { IConsumable, IConsumableOr, WithLength } from './types';
+import type { IConsumable, IConsumableOr, KeysOf, Primitive, WithLength } from './types';
 
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
@@ -195,4 +195,9 @@ export const isEmpty = <T extends WithLength>(cons: IConsumable<T>) => {
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
 export const notEmpty = <T extends WithLength>(cons: IConsumable<T>) => {
   return intersect(cons, (newVal) => newVal.length > 0);
+};
+
+/** {@link intersect} a consumable and return a new {@link Consumable} that is equal to some property of the original {@link Consumable} */
+export const grab = <T, K extends keyof T>(cons: IConsumable<T>, key: K, defaultVal?: T[K]) => {
+  return intersect(cons, (newVal) => newVal ? (newVal[key] ?? defaultVal) : defaultVal);
 };

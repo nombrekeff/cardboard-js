@@ -11,7 +11,7 @@ import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import { todos, todoCount, addTodo, removeTodo, newTodo } from './state.js';
-
+console.log(todos);
 const { div, button, h3, link, p } = allTags;
 
 const pageLinks = [

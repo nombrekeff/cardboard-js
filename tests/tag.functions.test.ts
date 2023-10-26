@@ -168,7 +168,7 @@ describe('Tag functions', () => {
     init();
 
     expect(attached()).toBeInstanceOf(CTag);
-    expect(attached().element.tagName).toBe('BODY');
+    expect(attached()?.el.tagName).toBe('BODY');
   });
 
   it('init with root', async () => {
@@ -176,8 +176,8 @@ describe('Tag functions', () => {
     init({ root: '#root' });
 
     expect(attached()).toBeInstanceOf(CTag);
-    expect(attached().element.tagName).toBe('DIV');
-    expect(attached().element.id).toBe('root');
+    expect(attached()?.el.tagName).toBe('DIV');
+    expect(attached()?.el.id).toBe('root');
   });
 
   it('allTags', async () => {

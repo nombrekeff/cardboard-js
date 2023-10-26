@@ -156,4 +156,8 @@ export const isEmpty = (cons) => {
 export const notEmpty = (cons) => {
     return intersect(cons, (newVal) => newVal.length > 0);
 };
+/** {@link intersect} a consumable and return a new {@link Consumable} that is equal to some property of the original {@link Consumable} */
+export const grab = (cons, key, defaultVal) => {
+    return intersect(cons, (newVal) => { var _a; return newVal ? ((_a = newVal[key]) !== null && _a !== void 0 ? _a : defaultVal) : defaultVal; });
+};
 //# sourceMappingURL=consumables.js.map

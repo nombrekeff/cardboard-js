@@ -81,3 +81,5 @@ export declare const notEqualTo: <T>(cons: IConsumable<T>, val: IConsumableOr<T>
 export declare const isEmpty: <T extends WithLength>(cons: IConsumable<T>) => IConsumable<boolean>;
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
 export declare const notEmpty: <T extends WithLength>(cons: IConsumable<T>) => IConsumable<boolean>;
+/** {@link intersect} a consumable and return a new {@link Consumable} that is equal to some property of the original {@link Consumable} */
+export declare const grab: <T, K extends keyof T>(cons: IConsumable<T>, key: K, defaultVal?: T[K] | undefined) => IConsumable<T[K] | undefined>;

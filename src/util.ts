@@ -52,6 +52,7 @@ export const arraysEqual = (a?: any[], b?: any[]) => {
 /* istanbul ignore next */
 export const deepEquals = (a, b) => {
   if (a === b) return true;
+  if (a && b && a.length !== b.length) return false;
 
   if (a && b && typeof a == 'object' && typeof b == 'object') {
     if (a.constructor !== b.constructor) return false;
