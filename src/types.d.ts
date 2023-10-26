@@ -31,6 +31,8 @@ export interface IConsumable<T = any> {
   value: T;
   prev?: T;
 }
+export type IConsumableOr<T = any> = IConsumable<T> | T;
+
 export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export interface TagConfig {
   style?: StyleMap;

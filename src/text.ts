@@ -23,7 +23,7 @@ import { isObject } from './util.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text(textTemplate: string, obj: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): Node {
+export function text<T extends Record<string, Primitive>>(textTemplate: string, obj?: IConsumable<T> | Record<string, IConsumable<Primitive>>): Node {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
@@ -35,7 +35,10 @@ export function text(textTemplate: string, obj: IConsumable<Record<string, Primi
       );
   };
 
-  if (isConsumable(obj)) {
+  if (!obj) {
+    node.nodeValue = textTemplate;
+  }
+  else if (isConsumable(obj)) {
     (obj as IConsumable<Record<string, any>>).changed((val) => updateNode(val));
     updateNode((obj as IConsumable).value);
   }

@@ -136,34 +136,38 @@ export function intersect<T, K>(
   return consumable as any;
 }
 
+export function getValue<T>(val: IConsumable<T> | T): T {
+  return isConsumable(val) ? (val as IConsumable<T>).value : val as T;
+}
+
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
-export function greaterThan(consumable: IConsumable<number>, val: number = 0) {
-  return intersect(consumable, (newVal) => newVal > val);
+export function greaterThan(consumable: IConsumable<number>, val: IConsumable<number> | number = 0) {
+  return intersect(consumable, (newVal) => newVal > getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
 export function greaterThanOr(consumable: IConsumable<number>, val: number = 0) {
-  return intersect(consumable, (newVal) => newVal >= val);
+  return intersect(consumable, (newVal) => newVal >= getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
 export function lessThan(consumable: IConsumable<number>, val: number = 0) {
-  return intersect(consumable, (newVal) => newVal < val);
+  return intersect(consumable, (newVal) => newVal < getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
 export function lessThanOr(consumable: IConsumable<number>, val: number = 0) {
-  return intersect(consumable, (newVal) => newVal <= val);
+  return intersect(consumable, (newVal) => newVal <= getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
 export function equalTo<T>(consumable: IConsumable<T>, val: T) {
-  return intersect(consumable, (newVal) => newVal === val);
+  return intersect(consumable, (newVal) => newVal === getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
 export function notEqualTo<T>(consumable: IConsumable<T>, val: T) {
-  return intersect(consumable, (newVal) => newVal !== val);
+  return intersect(consumable, (newVal) => newVal !== getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
