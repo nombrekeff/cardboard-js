@@ -32,6 +32,9 @@ export interface IConsumable<T = any> {
   prev?: T;
 }
 export type IConsumableOr<T = any> = IConsumable<T> | T;
+export interface WithLength {
+  length: number;
+}
 
 export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export interface TagConfig {

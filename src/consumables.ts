@@ -1,6 +1,6 @@
 import { CEvent } from './events.js';
-import { IConsumable } from './types.js';
 import { isArray, isObject } from './util.js';
+import type { IConsumable, IConsumableOr, WithLength } from './types';
 
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
@@ -136,7 +136,24 @@ export function intersect<T, K>(
   return consumable as any;
 }
 
-export function getValue<T>(val: IConsumable<T> | T): T {
+export type ExtractValue<T extends Array<IConsumable<any>>> =
+  { [K in keyof T]: T[K] extends IConsumable<infer V> ? V : never };
+
+export function intersectMulti<T extends IConsumable[], K>(
+  consumables: [...T],
+  intersector: (...values: [...ExtractValue<T>]) => K,
+): IConsumable<K> {
+  const consumable = createConsumable<K>(intersector(...(consumables.map(c => c.value) as any)));
+
+  for (const cons of consumables) {
+    cons.changed(() => consumable.dispatch(
+      intersector(...(consumables.map(c => c.value) as any))
+    ));
+  }
+  return consumable as any;
+}
+
+export function getValue<T>(val: IConsumableOr<T>): T {
   return isConsumable(val) ? (val as IConsumable<T>).value : val as T;
 }
 
@@ -146,36 +163,36 @@ export function greaterThan(consumable: IConsumable<number>, val: IConsumable<nu
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
-export function greaterThanOr(consumable: IConsumable<number>, val: number = 0) {
+export function greaterThanOr(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
   return intersect(consumable, (newVal) => newVal >= getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
-export function lessThan(consumable: IConsumable<number>, val: number = 0) {
+export function lessThan(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
   return intersect(consumable, (newVal) => newVal < getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
-export function lessThanOr(consumable: IConsumable<number>, val: number = 0) {
+export function lessThanOr(consumable: IConsumable<number>, val: IConsumableOr<number> = 0) {
   return intersect(consumable, (newVal) => newVal <= getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
-export function equalTo<T>(consumable: IConsumable<T>, val: T) {
+export function equalTo<T>(consumable: IConsumable<T>, val: IConsumableOr<T>) {
   return intersect(consumable, (newVal) => newVal === getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
-export function notEqualTo<T>(consumable: IConsumable<T>, val: T) {
+export function notEqualTo<T>(consumable: IConsumable<T>, val: IConsumableOr<T>) {
   return intersect(consumable, (newVal) => newVal !== getValue(val));
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export function isEmpty(consumable: IConsumable<string | any[]>) {
+export function isEmpty<T extends WithLength>(consumable: IConsumable<T>) {
   return intersect(consumable, (newVal) => newVal.length <= 0);
 }
 
 /** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
-export function notEmpty(consumable: IConsumable<string | any[]>) {
+export function notEmpty<T extends WithLength>(consumable: IConsumable<T>) {
   return intersect(consumable, (newVal) => newVal.length > 0);
 }
