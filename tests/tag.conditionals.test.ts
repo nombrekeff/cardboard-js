@@ -26,6 +26,36 @@ describe('Tag conditionals', () => {
     expect(body.q('p')).toBeFalsy();
   });
 
+  it('tag.doIfNot', async () => {
+    createDomMock();
+    let done = false;
+    const show = state(true);
+    const pp = tag('p', ["I'm here"]);
+
+    const body = tag('(body)').append(
+      pp.doIfNot(show, () => done = true, () => done = false), //
+    );
+
+    expect(done).toEqual(false);
+    show.value = !show.value;
+    expect(done).toEqual(true);
+  });
+  it('tag.attrIfNot', async () => {
+    createDomMock();
+    let done = false;
+    const show = state(true);
+    const pp = tag('p', ["I'm here"]);
+
+    const body = tag('(body)').append(
+      pp.attrIfNot(show, 'disabled', 'true'), //
+    );
+
+    expect(pp.hasAttr('disabled')).toEqual(false);
+    show.value = !show.value;
+    expect(pp.hasAttr('disabled')).toEqual(true);
+  });
+
+
   it('tag.hideIfNot appends item at correct position', async () => {
     const dom = createDomMock();
     const show = state(true);

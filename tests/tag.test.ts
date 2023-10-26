@@ -66,6 +66,14 @@ describe('Tags', () => {
     expect(t.element.textContent).toEqual('child');
   });
 
+  it('tag.text works with template correctly', async () => {
+    createDomMock();
+    const t = tag('custom').text('$a', { a: state('123') });
+    expect(t).toBeInstanceOf(CTag);
+    expect(t.element.textContent).toEqual('123');
+  });
+
+
   it('tag.when', async () => {
     createDomMock();
     const clickCallback = jest.fn();
@@ -133,6 +141,12 @@ describe('Tags', () => {
     t.element.dispatchEvent(new window.Event('click'));
 
     expect(clickCallback).toHaveBeenCalled();
+  });
+
+  it('tag.className', async () => {
+    createDomMock();
+    const t = tag('custom').setClassName('true false');
+    expect(t.className).toBe('true false');
   });
 
   it('tag.config className', async () => {
@@ -222,6 +236,14 @@ describe('Tags', () => {
 
     expect(t.consumeValue).toBe('hey');
     expect(t.value).toBe('');
+  });
+
+  it('tag.checked', async () => {
+    createDomMock();
+    const t = tag('custom').setChecked(true);
+    expect(t.checked).toBe(true);
+    t.setChecked(false);
+    expect(t.checked).toBe(false);
   });
 
   it('tag.clear', async () => {

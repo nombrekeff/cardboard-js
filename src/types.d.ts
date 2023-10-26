@@ -35,7 +35,7 @@ export type IConsumableOr<T = any> = IConsumable<T> | T;
 export interface WithLength {
   length: number;
 }
-
+export type TextObj<T extends IConsumable<Primitive> = any> = Record<string, T>;
 export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
 export interface TagConfig {
   style?: StyleMap;

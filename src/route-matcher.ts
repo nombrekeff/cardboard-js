@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /*
  * JavaScript Route Matcher
  * http://benalman.com/
@@ -9,6 +10,7 @@
  *
  * translated to TS by @nombrekeff
  */
+/* eslint-disable  */
 
 // Characters to be escaped with \. RegExp borrowed from the Backbone router
 // but escaped (note: unnecessarily) to keep JSHint from complaining.

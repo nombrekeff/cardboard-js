@@ -27,7 +27,7 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
   constructor(val: T) {
     super();
 
-    if (isObject(val) || isArray(val)) {
+    if (val && (isObject(val) || isArray(val))) {
       val = new Proxy((val as any), {
         get(target, p, receiver) {
           return target[p];
@@ -77,7 +77,7 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
     }
     // Make sure assining the value is before the dispatch call,
     // otherwise Consumable value is not update when the listeners are called
-    this._prev = val;
+    this._prev = this._value;
     this._value = val;
     super.dispatch(val);
     return this;

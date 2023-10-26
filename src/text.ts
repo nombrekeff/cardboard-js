@@ -1,5 +1,5 @@
 import { isConsumable } from './consumables.js';
-import type { IConsumable, Primitive } from './types.js';
+import type { IConsumable, Primitive, TextObj } from './types.js';
 import { isObject } from './util.js';
 
 /**
@@ -23,7 +23,7 @@ import { isObject } from './util.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export function text<T extends Record<string, Primitive>>(textTemplate: string, obj?: IConsumable<T> | Record<string, IConsumable<Primitive>>): Node {
+export function text<T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IConsumable<T> | K): Node {
   const node = document.createTextNode('');
   const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 

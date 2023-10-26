@@ -14,6 +14,7 @@ import type {
   TagChild,
   TagChildren,
   TagConfig,
+  TextObj,
 } from './types';
 import { createConsumable, isConsumable } from './consumables.js';
 
@@ -441,16 +442,16 @@ export class CTag {
    * If no argument is provided, it returns the `textContent` of the element.
    * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
    */
-  text<T = string | null>(newText?: T, st?: IConsumable<Record<string, Primitive>> | Record<string, IConsumable<Primitive>>): T extends string ? CTag : string {
-    if (newText == null) {
+  text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IConsumable<T> | K): J extends string ? CTag : string {
+    if (textTemplate == null) {
       return this.element.textContent as any;
     }
 
-    if (st && newText) {
-      return this.setChildren([text(newText as string, st)]) as any;
+    if (obj && textTemplate) {
+      return this.setChildren([text(textTemplate, obj)]) as any;
     }
 
-    this.element.textContent = newText as string;
+    this.element.textContent = textTemplate;
 
     return this as any;
   }

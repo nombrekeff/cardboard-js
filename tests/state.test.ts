@@ -1,4 +1,5 @@
-import { state } from '../src/state';
+import { Consumable } from '../src/consumables';
+import { listState, state } from '../src/state';
 
 describe('State', () => {
     it('basic state', async () => {
@@ -53,10 +54,49 @@ describe('State', () => {
         expect(fn1).toHaveBeenCalled();
         expect(fn2).toHaveBeenCalled();
     });
+});
 
-    // it('state not', async () => {
-    //   const fn1 = jest.fn();
-    //   let testState = state({ hide: true });
-    //   expect(fn1).toHaveBeenCalledWith(false);
-    // });
+describe('List State', () => {
+    it('listState', async () => {
+        const s = listState([]);
+        expect(s).toBeDefined();
+        expect(s.list).toBeDefined();
+        expect(s.add).toBeInstanceOf(Function);
+        expect(s.remove).toBeInstanceOf(Function);
+        expect(s.addAt).toBeInstanceOf(Function);
+        expect(s.length).toBeInstanceOf(Consumable);
+    });
+
+    it('listState inits with data', async () => {
+        const s = listState(['hey']);
+        expect(s.listValue[0].value).toBe('hey');
+    });
+
+    it('add works', async () => {
+        const s = listState<string>([]);
+        s.add('hey');
+
+        expect(s.listValue[0].value).toBe('hey');
+    });
+
+    it('addAt works', async () => {
+        const s = listState<string>(['0', '2']);
+        s.addAt('1', 1);
+
+        expect(s.listValue[1].value).toEqual('1');
+    });
+
+    it('remove works', async () => {
+        const s = listState<string>(['hey']);
+        s.remove('hey');
+
+        expect(s.listValue.length).toEqual(0);
+    });
+
+    it('remove works with objects', async () => {
+        const s = listState([{ val: 'hey' }]);
+        s.remove({ val: 'hey' });
+
+        expect(s.listValue.length).toEqual(0);
+    });
 });
