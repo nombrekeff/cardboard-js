@@ -25,6 +25,7 @@ export declare class CTag {
     el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
+    private readonly _listeners;
     /** @param parent Reference to the parent @type {CTag} of this element */
     private _parent?;
     get parent(): CTag | undefined;
@@ -202,7 +203,7 @@ export declare class CTag {
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */
-    once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add a **click** event listener */
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
     /** Add a **keypress** event listener */
@@ -211,8 +212,15 @@ export declare class CTag {
     changed(fn: (tag: CTag, evt: Event) => void): this;
     /** Add a **submit** event listener */
     submited(fn: (tag: CTag, evt: SubmitEvent) => void): this;
-    /** Remove element from the DOM */
+    /**
+     * Remove element from the DOM, but keep data as is. Can then be added again.
+     * To fully remove the element use {@link destroy}
+     */
     remove(): Promise<this>;
+    /**
+     * Destroy the element, should not be used afterwards
+     */
+    destroy(): void;
     /**
      * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
      */

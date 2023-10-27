@@ -7,7 +7,7 @@ export declare const createGlobalObserver: () => {
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export declare const onLifecycle: (tag: CTag, onStart?: ((tag: CTag) => Promise<boolean> | boolean) | undefined, onRemove?: ((tag: CTag) => void) | undefined, beforeRemove?: ((tag: CTag) => Promise<boolean> | boolean) | undefined) => void;
+export declare function onLifecycle(tag: CTag, onStart?: (tag: CTag) => Promise<boolean> | boolean, onRemove?: (tag: CTag) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | boolean): void;
 /**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.

@@ -7,12 +7,11 @@ import type { IConsumable, IConsumableOr, WithLength } from './types';
  */
 export declare class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
     private _value;
-    private _prev;
+    private readonly _destroyer?;
     get value(): T;
     /** Set the value, and dispatch to all listeners. */
     set value(val: T);
-    get prev(): T;
-    constructor(val: T);
+    constructor(val: T, destroyer?: () => void);
     valueOf(): T;
     toString(): any;
     /**
@@ -28,6 +27,7 @@ export declare class Consumable<T = any> extends CEvent<T> implements IConsumabl
      * You can additionaly set the {@link value} directly.
      */
     dispatch(val: T): this;
+    destroy(): void;
     /**
      * Create a new {@link Consumable} that intersects this {@link Consumable}.
      * The new Consumable updates its value based on this {@link Consumable}.
@@ -49,7 +49,7 @@ export declare const isConsumable: (obj: any) => boolean;
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export declare const createConsumable: <T>(val: T) => Consumable<T>;
+export declare const createConsumable: <T>(val: T, destroyer?: () => void) => Consumable<T>;
 /**
  * Creates a new {@link Consumable} that intersects another {@link Consumable}.
  * The new {@link Consumable} updates and dispatches whenever the other {@link Consumable} changes.

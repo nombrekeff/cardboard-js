@@ -5,13 +5,13 @@ import {
   attach,
   each,
   isEmpty,
+  eachOld,
 } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import { todos, todoCount, addTodo, removeTodo, newTodo, removeAll, addAll } from './state.js';
-console.log(todos);
 const { div, button, h3, link, p } = allTags;
 
 const pageLinks = [
@@ -44,12 +44,18 @@ const addItemBtn = button('+')
   .disableIf(isEmpty(newTodo))
   .clicked(addItemFromInput);
 
-
+div.attach(
+  button('remove').clicked(() => removeAll()),
+  button('add').clicked(() => addAll()),
+);
 div.attach(itemInput, addItemBtn).addClass('header');
 div
   .attach(
-    p('There are no items').addClass('list-empty').hideIf(todoCount),
+    p('There are no items: ', todoCount).addClass('list-empty').hideIf(todoCount),
     each(todos, (item) => {
+      return TodoItem(item, (s, c) => removeTodo(c));
+    }),
+    eachOld(todos, (item) => {
       return TodoItem(item, (s, c) => removeTodo(c));
     }),
   )

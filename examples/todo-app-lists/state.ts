@@ -5,12 +5,12 @@ export interface TodoItem {
 }
 
 const appState = listState<TodoItem>(
-  new Array(500).fill('')
+  new Array(50).fill('')
     .map((_, index) => ({ item: `Item ${index}`, complete: false }))
-    .sort(() => Math.random() > .5 ? 1 : -1)
+    // .sort(() => Math.random() > .5 ? 1 : -1)
 );
 export const addAll = () => {
-  appState.list.value = new Array(500).fill('')
+  appState.list.value = new Array(50).fill('')
     .map((_, index) => (createConsumable({ item: `Item ${index}`, complete: false })))
     .sort(() => Math.random() > .5 ? 1 : -1);
 }
@@ -26,4 +26,6 @@ export const addTodo = (item: string, complete = false) => {
 export const addTodoAt = (item: string, index: number, complete = false) => {
   appState.addAt({ item, complete: complete }, index);
 };
-export const removeTodo = appState.remove;
+export const removeTodo = (item) => {
+  appState.remove(item);
+};

@@ -13,10 +13,7 @@ export class Consumable extends CEvent {
     set value(val) {
         this.dispatch(val);
     }
-    get prev() {
-        return this._prev;
-    }
-    constructor(val) {
+    constructor(val, destroyer) {
         super();
         if (val && (isObject(val) || isArray(val))) {
             val = new Proxy(val, {
@@ -38,7 +35,7 @@ export class Consumable extends CEvent {
             });
         }
         this._value = val;
-        this._prev = val;
+        this._destroyer = destroyer;
     }
     valueOf() {
         return this._value;
@@ -68,12 +65,15 @@ export class Consumable extends CEvent {
         if (val === this._value) {
             return this;
         }
-        // Make sure assining the value is before the dispatch call,
-        // otherwise Consumable value is not update when the listeners are called
-        this._prev = this._value;
         this._value = val;
         super.dispatch(val);
         return this;
+    }
+    destroy() {
+        if (this._destroyer)
+            this._destroyer();
+        this._value = null;
+        super.destroy();
     }
     /**
      * Create a new {@link Consumable} that intersects this {@link Consumable}.
@@ -100,8 +100,8 @@ export const isConsumable = (obj) => {
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export const createConsumable = (val) => {
-    return new Consumable(val);
+export const createConsumable = (val, destroyer) => {
+    return new Consumable(val, destroyer);
 };
 /**
  * Creates a new {@link Consumable} that intersects another {@link Consumable}.
@@ -117,8 +117,17 @@ export const createConsumable = (val) => {
  * ```
  */
 export const intersect = (other, intersector) => {
-    const cons = createConsumable(intersector(other.value));
-    other.changed((val) => cons.dispatch(intersector(val)));
+    // eslint-disable-next-line prefer-const
+    let cons;
+    const cb = (val) => cons === null || cons === void 0 ? void 0 : cons.dispatch(intersector(val));
+    cons = createConsumable(intersector(other.value), () => {
+        // remove callback in other consumable when destroyed
+        // remove references, free memory
+        other.remove(cb);
+        cons = null;
+        other = null;
+    });
+    other.changed(cb);
     return cons;
 };
 export const intersectMulti = (consumables, intersector) => {

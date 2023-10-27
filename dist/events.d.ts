@@ -10,10 +10,11 @@
  * ```
  */
 export declare class CEvent<T> {
-    protected readonly _listeners: Array<(data: T | undefined) => void>;
+    protected _listeners: Array<(data: T | undefined) => void>;
     listen(fn: (data?: T) => void): void;
     remove(fn: (data?: T) => void): void;
     dispatch(data?: T): void;
+    destroy(): void;
 }
 /**
  * Mapped event listener/emitter, listen to, and trigger events. (for single events use {@link CEvent}).
@@ -31,6 +32,7 @@ export declare class CMappedEvent<T> {
     listen(evt: string, fn: (data?: T) => void): void;
     remove(evt: string, fn: (data?: T) => void): void;
     dispatch(evt: string, data?: T): void;
+    destroy(): void;
 }
 export declare const singleEvent: <T>() => CEvent<T>;
 export declare const mappedEvent: <T>() => CMappedEvent<T>;

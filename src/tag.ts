@@ -1,6 +1,7 @@
 import type {
   AllTags,
   IConsumable,
+  NoOp,
   Primitive,
   StyleMap,
   StyleSet,
@@ -47,6 +48,8 @@ export const attached = () => {
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
+
+  private readonly _listeners: NoOp[] = [];
 
   /** @param parent Reference to the parent @type {CTag} of this element */
   private _parent?: CTag;
@@ -228,8 +231,13 @@ export class CTag {
   /** Whenever the consumable changes, it will call the consumer */
   consume<T>(consumable: IConsumable<T>, consumer: (self: CTag, newValue?: T) => void) {
     if (consumable.changed) {
-      consumable.changed((newValue) => {
-        consumer(this, newValue);
+      const cb = (newValue) => consumer(this, newValue);
+      consumable.changed(cb);
+
+      this._listeners.push(() => {
+        // Destroy reference to the consumable, we don't need it anymore
+        consumable.remove(cb);
+        (consumable as any) = null;
       });
     }
     else {
@@ -614,15 +622,17 @@ export class CTag {
   /** Add an event listener for a particular event */
   on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     if (fn) {
-      this.el.addEventListener(evtName, (evt: any) => {
-        fn(this, evt);
+      const cb = (evt: any) => fn(this, evt);
+      this.el.addEventListener(evtName, cb);
+      this._listeners.push(() => {
+        this.el.removeEventListener(evtName, cb);
       });
     }
     return this;
   }
 
   /** Add an event listener for a particular event that will only fire once */
-  once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
+  once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void) {
     const listener = (evt) => {
       fn(this, evt);
       this.el.removeEventListener(evtName, listener);
@@ -659,7 +669,10 @@ export class CTag {
     return this.on('submit', fn);
   }
 
-  /** Remove element from the DOM */
+  /**
+   * Remove element from the DOM, but keep data as is. Can then be added again.
+   * To fully remove the element use {@link destroy}
+   */
   async remove() {
     // Might be a promise (it's overriden by `withLifecycle`)
     const result: any = this.el.remove();
@@ -669,6 +682,22 @@ export class CTag {
 
     await (this.el as any).remove();
     return this;
+  }
+
+  /**
+   * Destroy the element, should not be used afterwards
+   */
+  destroy() {
+    this._children.forEach((cl) => {
+      if (cl instanceof CTag) {
+        cl.destroy();
+      }
+    });
+
+    this._listeners.forEach(listener => listener());
+    this._children = [];
+    this._cachedChildren = [];
+    void this.remove();
   }
 
   /**
@@ -770,11 +799,18 @@ export class CTag {
   }
 
   private _mapChildren(children: TagChildren): Node[] {
-    return children
-      .map(this._setChildrenParent.bind(this))
-      .filter(this._childrenFilterPredicate.bind(this))
-      .map(this._getElementForChild)
-      .filter(el => el != null) as Node[];
+    const mapped: Node[] = [];
+    for (const child of children) {
+      if (child instanceof CTag) {
+        child.parent = this;
+      }
+
+      if (this._childrenFilterPredicate(child)) {
+        const element = this._getElementForChild(child);
+        if (element != null) mapped.push(element);
+      }
+    }
+    return mapped;
   }
 }
 

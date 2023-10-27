@@ -9,7 +9,7 @@ import type { IConsumable, IConsumableOr, WithLength } from './types';
  */
 export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
   private _value: T;
-  private _prev: T;
+  private readonly _destroyer?: () => void;
 
   get value(): T {
     return this._value;
@@ -20,11 +20,7 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
     this.dispatch(val);
   }
 
-  get prev(): T {
-    return this._prev;
-  }
-
-  constructor(val: T) {
+  constructor(val: T, destroyer?: () => void) {
     super();
 
     if (val && (isObject(val) || isArray(val))) {
@@ -48,7 +44,7 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
     }
 
     this._value = val;
-    this._prev = val;
+    this._destroyer = destroyer;
   }
 
   valueOf() {
@@ -83,12 +79,15 @@ export class Consumable<T = any> extends CEvent<T> implements IConsumable<T> {
     if (val === this._value) {
       return this;
     }
-    // Make sure assining the value is before the dispatch call,
-    // otherwise Consumable value is not update when the listeners are called
-    this._prev = this._value;
     this._value = val;
     super.dispatch(val);
     return this;
+  }
+
+  destroy() {
+    if (this._destroyer) this._destroyer();
+    (this._value as any) = null;
+    super.destroy();
   }
 
   /**
@@ -118,8 +117,8 @@ export const isConsumable = (obj: any) => {
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export const createConsumable = <T>(val: T): Consumable<T> => {
-  return new Consumable<T>(val);
+export const createConsumable = <T>(val: T, destroyer?: () => void): Consumable<T> => {
+  return new Consumable<T>(val, destroyer);
 };
 
 /**
@@ -139,8 +138,21 @@ export const intersect = <T, K>(
   other: IConsumable<T>,
   intersector: (val: T) => K,
 ): IConsumable<K> => {
-  const cons = createConsumable<K>(intersector(other.value));
-  other.changed((val) => cons.dispatch(intersector(val)));
+  // eslint-disable-next-line prefer-const
+  let cons: IConsumable<K> | null;
+
+  const cb = (val) => cons?.dispatch(intersector(val));
+
+  cons = createConsumable<K>(intersector(other.value), () => {
+    // remove callback in other consumable when destroyed
+    // remove references, free memory
+    other.remove(cb);
+    cons = null;
+    (other as any) = null;
+  });
+
+  other.changed(cb);
+
   return cons as any;
 };
 

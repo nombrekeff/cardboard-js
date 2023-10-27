@@ -12,7 +12,7 @@ import { removeFromList } from './util.js';
  * ```
  */
 export class CEvent<T> {
-  protected readonly _listeners: Array<(data: T | undefined) => void> = [];
+  protected _listeners: Array<(data: T | undefined) => void> = [];
 
   listen(fn: (data?: T) => void) {
     this._listeners.push(fn);
@@ -20,10 +20,15 @@ export class CEvent<T> {
 
   remove(fn: (data?: T) => void) {
     removeFromList(fn, this._listeners);
+    // console.log(fn, this._listeners, removed);
   }
 
   dispatch(data?: T) {
     this._listeners.forEach((el) => el(data));
+  }
+
+  destroy() {
+    this._listeners = [];
   }
 }
 
@@ -59,6 +64,10 @@ export class CMappedEvent<T> {
     if (evt in this._listeners) {
       this._listeners[evt].forEach((el) => el(data));
     }
+  }
+
+  destroy() {
+    this._listeners = {};
   }
 }
 

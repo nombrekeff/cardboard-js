@@ -75,6 +75,7 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
+        this._listeners = [];
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         this._cachedChildren = [];
@@ -180,8 +181,12 @@ export class CTag {
     /** Whenever the consumable changes, it will call the consumer */
     consume(consumable, consumer) {
         if (consumable.changed) {
-            consumable.changed((newValue) => {
-                consumer(this, newValue);
+            const cb = (newValue) => consumer(this, newValue);
+            consumable.changed(cb);
+            this._listeners.push(() => {
+                // Destroy reference to the consumable, we don't need it anymore
+                consumable.remove(cb);
+                consumable = null;
             });
         }
         else {
@@ -493,8 +498,10 @@ export class CTag {
     /** Add an event listener for a particular event */
     on(evtName, fn) {
         if (fn) {
-            this.el.addEventListener(evtName, (evt) => {
-                fn(this, evt);
+            const cb = (evt) => fn(this, evt);
+            this.el.addEventListener(evtName, cb);
+            this._listeners.push(() => {
+                this.el.removeEventListener(evtName, cb);
             });
         }
         return this;
@@ -531,7 +538,10 @@ export class CTag {
     submited(fn) {
         return this.on('submit', fn);
     }
-    /** Remove element from the DOM */
+    /**
+     * Remove element from the DOM, but keep data as is. Can then be added again.
+     * To fully remove the element use {@link destroy}
+     */
     remove() {
         return __awaiter(this, void 0, void 0, function* () {
             // Might be a promise (it's overriden by `withLifecycle`)
@@ -542,6 +552,20 @@ export class CTag {
             yield this.el.remove();
             return this;
         });
+    }
+    /**
+     * Destroy the element, should not be used afterwards
+     */
+    destroy() {
+        this._children.forEach((cl) => {
+            if (cl instanceof CTag) {
+                cl.destroy();
+            }
+        });
+        this._listeners.forEach(listener => listener());
+        this._children = [];
+        this._cachedChildren = [];
+        void this.remove();
     }
     /**
      * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
@@ -628,11 +652,18 @@ export class CTag {
         this._cachedChildren = children;
     }
     _mapChildren(children) {
-        return children
-            .map(this._setChildrenParent.bind(this))
-            .filter(this._childrenFilterPredicate.bind(this))
-            .map(this._getElementForChild)
-            .filter(el => el != null);
+        const mapped = [];
+        for (const child of children) {
+            if (child instanceof CTag) {
+                child.parent = this;
+            }
+            if (this._childrenFilterPredicate(child)) {
+                const element = this._getElementForChild(child);
+                if (element != null)
+                    mapped.push(element);
+            }
+        }
+        return mapped;
     }
 }
 /**

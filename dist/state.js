@@ -67,9 +67,10 @@ export const stateAdd = (cons, item) => {
     cons.value = [...cons.value, item];
 };
 export const stateAddAt = (cons, item, index) => {
-    const newData = [...cons.value];
+    let newData = [...cons.value];
     newData.splice(index, 0, item);
     cons.value = newData;
+    newData = [];
 };
 export const stateRemoveWhere = (cons, cb) => {
     cons.value = cons.value.filter((el, i) => !cb(el, i));

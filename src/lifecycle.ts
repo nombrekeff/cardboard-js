@@ -1,6 +1,7 @@
 import { singleEvent } from './events.js';
 import { context, type CTag } from './tag.js';
 
+// TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
 export const createGlobalObserver = () => {
     const _addedEvt = singleEvent<Node>();
     const _removedEvt = singleEvent<Node>();
@@ -31,12 +32,12 @@ export const createGlobalObserver = () => {
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export const onLifecycle = (
+export function onLifecycle(
     tag: CTag,
     onStart?: (tag: CTag) => Promise<boolean> | boolean,
     onRemove?: (tag: CTag) => void,
     beforeRemove?: (tag: CTag) => Promise<boolean> | boolean,
-) => {
+) {
     if (beforeRemove) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -64,8 +65,9 @@ export const onLifecycle = (
         context.observer = createGlobalObserver();
     }
 
+    let cb1, cb2;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    context.observer.onAdded.listen(async (node: Node) => {
+    context.observer.onAdded.listen(cb1 = async (node: Node) => {
         if (node === tag.el && onStart) {
             const result = onStart(tag);
             if (result instanceof Promise) {
@@ -73,10 +75,17 @@ export const onLifecycle = (
             }
         }
     });
-    context.observer.onRemoved.listen((node: Node) => {
+    context.observer.onRemoved.listen(cb2 = (node: Node) => {
         if (node === tag.el && onRemove) {
             onRemove(tag);
         }
+    });
+    (tag as any)._listeners.push(() => {
+        // Remove listeners and references (clear memory)
+        context.observer?.onRemoved.remove(cb2);
+        context.observer?.onAdded.remove(cb1);
+        onRemove = undefined;
+        onStart = undefined;
     });
 };
 

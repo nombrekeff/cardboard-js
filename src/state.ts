@@ -1,6 +1,5 @@
 import type { IConsumable } from './types';
 import { createConsumable, getValue } from './consumables.js';
-import { deepEquals } from './util.js';
 
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
@@ -78,9 +77,10 @@ export const stateAdd = <T>(cons: IConsumable<T[]>, item: T) => {
 };
 
 export const stateAddAt = <T>(cons: IConsumable<T[]>, item: T, index: number) => {
-  const newData = [...cons.value];
+  let newData: any = [...cons.value];
   newData.splice(index, 0, item);
   cons.value = newData;
+  newData = [];
 };
 
 export const stateRemoveWhere = <T>(cons: IConsumable<T[]>, cb: (item: T, index: number) => boolean) => {

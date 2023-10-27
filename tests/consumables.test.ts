@@ -6,14 +6,6 @@ describe('Consumables', () => {
     expect(cons.value).toEqual(2);
   });
 
-  it('prev works', async () => {
-    const cons = createConsumable(2);
-    cons.value = 123;
-
-    expect(cons.value).toEqual(123);
-    expect(cons.prev).toEqual(2);
-  });
-
   it('valueOf works', async () => {
     const cons = createConsumable(2);
 

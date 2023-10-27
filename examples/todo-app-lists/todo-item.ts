@@ -7,8 +7,8 @@ export default function TodoItem(
   content: IConsumable<TodoItem>,
   remove: (self: CTag, content: IConsumable<TodoItem>) => void
 ) {
-  let isComplete = grab(content, 'complete', false);
-  let todoItem = grab(content, 'item', 'Empty TODO');
+  // let isComplete = grab(content, 'complete', false);
+  // let todoItem = grab(content, 'item', 'Empty TODO');
 
   return withLifecycle(
     div(
@@ -17,8 +17,11 @@ export default function TodoItem(
         .on('change', (self, evt) => {
           content.value.complete = self.checked;
         }),
-      h4(todoItem)
-        .stylesIf(isComplete, { textDecoration: 'line-through' }),
+      h4(content.value.item)
+        // .consume(content, (tag, con) => {
+        //   tag.setStyle({ textDecoration: con.complete ? 'line-through' : '' });
+        // }),
+        .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
       button('-').addClass('btn-remove')
         .clicked((self) => {
           if (remove) remove(self, content);
@@ -29,7 +32,10 @@ export default function TodoItem(
         // isComplete.
         // console.log('aaaa');
         // isComplete.destroy();
+        // isComplete = null;
         // todoItem.destroy();
+        // content.destroy();
+        // content = null;
       },
     }
   );

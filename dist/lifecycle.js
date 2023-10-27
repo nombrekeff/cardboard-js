@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { singleEvent } from './events.js';
 import { context } from './tag.js';
+// TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
 export const createGlobalObserver = () => {
     const _addedEvt = singleEvent();
     const _removedEvt = singleEvent();
@@ -35,11 +36,11 @@ export const createGlobalObserver = () => {
  * Will call {onStart} when the element is added to the DOM.
  * And will call {onRemove} when the element is removed from the DOM.
  */
-export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
+export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     if (beforeRemove) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        tag.el.remove = () => __awaiter(void 0, void 0, void 0, function* () {
+        tag.el.remove = () => __awaiter(this, void 0, void 0, function* () {
             const result = beforeRemove(tag);
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.el);
@@ -49,7 +50,7 @@ export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
     }
     if (onStart) {
         const tempOnStart = tag.show;
-        tag.show = () => __awaiter(void 0, void 0, void 0, function* () {
+        tag.show = () => __awaiter(this, void 0, void 0, function* () {
             const result = tempOnStart.call(tag);
             if (result instanceof Promise) {
                 return yield result;
@@ -60,8 +61,9 @@ export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
     if (!context.observer) {
         context.observer = createGlobalObserver();
     }
+    let cb1, cb2;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    context.observer.onAdded.listen((node) => __awaiter(void 0, void 0, void 0, function* () {
+    context.observer.onAdded.listen(cb1 = (node) => __awaiter(this, void 0, void 0, function* () {
         if (node === tag.el && onStart) {
             const result = onStart(tag);
             if (result instanceof Promise) {
@@ -69,12 +71,21 @@ export const onLifecycle = (tag, onStart, onRemove, beforeRemove) => {
             }
         }
     }));
-    context.observer.onRemoved.listen((node) => {
+    context.observer.onRemoved.listen(cb2 = (node) => {
         if (node === tag.el && onRemove) {
             onRemove(tag);
         }
     });
-};
+    tag._listeners.push(() => {
+        var _a, _b;
+        // Remove listeners and references (clear memory)
+        (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(cb2);
+        (_b = context.observer) === null || _b === void 0 ? void 0 : _b.onAdded.remove(cb1);
+        onRemove = undefined;
+        onStart = undefined;
+    });
+}
+;
 /**
  * Will call {handler.onStart} when the element is added to the DOM.
  * And will call {handler.onRemove} when the element is removed from the DOM.

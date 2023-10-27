@@ -14,11 +14,11 @@ export * from './consumables.js';
 export * from './ext/routing.js';
 export type * from './types';
 export declare const Cardboard: {
+    onLifecycle(tag: _tag.CTag, onStart?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onRemove?: ((tag: _tag.CTag) => void) | undefined, beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined): void;
     createGlobalObserver: () => {
         onAdded: _events.CEvent<Node>;
         onRemoved: _events.CEvent<Node>;
     };
-    onLifecycle: (tag: _tag.CTag, onStart?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onRemove?: ((tag: _tag.CTag) => void) | undefined, beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined) => void;
     withLifecycle: (tag: _tag.CTag, handler: {
         start?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
         removed?: ((tag: _tag.CTag) => void) | undefined;
@@ -26,7 +26,7 @@ export declare const Cardboard: {
     }) => _tag.CTag;
     Consumable: typeof _consumables.Consumable;
     isConsumable: (obj: any) => boolean;
-    createConsumable: <T>(val: T) => _consumables.Consumable<T>;
+    createConsumable: <T>(val: T, destroyer?: (() => void) | undefined) => _consumables.Consumable<T>;
     intersect: <T, K>(other: import("./types").IConsumable<T>, intersector: (val: T) => K) => import("./types").IConsumable<K>;
     intersectMulti: <T_1 extends import("./types").IConsumable<any>[], K_1>(consumables: [...T_1], intersector: (...v_0: _consumables.ExtractValue<T_1>) => K_1) => import("./types").IConsumable<K_1>;
     getValue: <T_2>(val: import("./types").IConsumableOr<T_2>) => T_2;
