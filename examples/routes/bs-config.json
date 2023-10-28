@@ -1,6 +1,0 @@
-{
-  "port": 8000,
-  "files": ["**/*", "node_modules/**/*"],
-  "watchOptions": { "ignored": null },
-  "server": { "baseDir": "./" }
-}

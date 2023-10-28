@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type { NamedColor } from './colors';
 
 // Create script to collect all the values, wherever posible.

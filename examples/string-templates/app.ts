@@ -1,4 +1,4 @@
-import { init, allTags, state, text } from '../../dist/cardboard.js';
+import { init, allTags, text, state } from '../../dist/cardboard.js';
 
 const { button, p } = allTags;
 
@@ -9,4 +9,4 @@ init().append(
   p().text(`Count: $count`, st), //
 );
 
-button.attach('Increase count').clicked(() => st.count++);
+button.attach('Increase count').clicked(() => st.value.count++);

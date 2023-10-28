@@ -1,7 +1,7 @@
 import { CTag } from '../tag.js';
 export type RouteBuilder = (router: Router<any>) => CTag;
 export type Route = RouteBuilder | string;
-export type RouterOptions<T extends Record<string, Route> = {}> = {
+export interface RouterOptions<T extends Record<string, Route> = Record<string, Route>> {
     rootParent: CTag;
     routes: T;
     initialRoute: string;
@@ -11,23 +11,23 @@ export type RouterOptions<T extends Record<string, Route> = {}> = {
     start?: (route: CTag) => Promise<boolean> | boolean;
     remove?: (route: CTag) => Promise<boolean> | boolean;
     beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
-};
+}
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
  */
-export declare class Router<T extends Record<string, Route> = {}> {
-    private _options;
+export declare class Router<T extends Record<string, Route> = Record<string, Route>> {
+    private readonly _options;
     private _routes;
-    private _window;
-    private _location;
-    private _history;
+    private readonly _window;
+    private readonly _location;
+    private readonly _history;
     private _currentRoute?;
     private _currentTag?;
-    private _rootParent;
-    private _routeMatchers;
+    private readonly _rootParent;
+    private readonly _routeMatchers;
     params: Record<string, string>;
     query: URLSearchParams;
-    get currentRoute(): string;
+    get currentRoute(): string | undefined;
     constructor(options: RouterOptions<T>);
     /**
      * Navigate to a {@link route} with optional {@link query} parameters.
@@ -44,5 +44,5 @@ export declare class Router<T extends Record<string, Route> = {}> {
     private _initRouteMatchers;
 }
 export declare let router: Router<any> | undefined;
-export declare function makeRouter<T extends Record<string, Route> = {}>(opts: RouterOptions<T>): Router<T>;
-export declare function Link(child: string | CTag, path: any, query?: Record<string, string>): CTag;
+export declare const makeRouter: <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => Router<T>;
+export declare const Link: (child: string | CTag, path: any, query?: Record<string, string>) => CTag;

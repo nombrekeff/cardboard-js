@@ -19,9 +19,13 @@ export class CEvent {
     }
     remove(fn) {
         removeFromList(fn, this._listeners);
+        // console.log(fn, this._listeners, removed);
     }
     dispatch(data) {
         this._listeners.forEach((el) => el(data));
+    }
+    destroy() {
+        this._listeners = [];
     }
 }
 /**
@@ -43,7 +47,7 @@ export class CMappedEvent {
         if (!(evt in this._listeners)) {
             this._listeners[evt] = [fn];
         }
-        else {
+        else if (this._listeners[evt]) {
             this._listeners[evt].push(fn);
         }
     }
@@ -55,10 +59,14 @@ export class CMappedEvent {
             this._listeners[evt].forEach((el) => el(data));
         }
     }
+    destroy() {
+        this._listeners = {};
+    }
 }
-export function singleEvent() {
+export const singleEvent = () => {
     return new CEvent();
-}
-export function mappedEvent() {
+};
+export const mappedEvent = () => {
     return new CMappedEvent();
-}
+};
+//# sourceMappingURL=events.js.map

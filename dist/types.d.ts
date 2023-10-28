@@ -4,10 +4,19 @@ import type { CTag } from './tag.js';
 import type { ValidTagName } from './tag-names.js';
 
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
+export type NoOp = () => void;
+// eslint-disable-next-line @typescript-eslint/array-type, @typescript-eslint/ban-types
+export type KeysOf<T extends Record<string, unknown>> = keyof T;
+
+export type Suffix<K extends string, T extends string> = `${T}${K}`;
+export type Suffixer<K, T extends string> = {
+  [P in keyof K as Suffix<T, string & P>]: K[P];
+};
+export type Primitive = number | string | boolean | symbol | bigint;
 export type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | StyleMap;
 };
-export type StyleSet = { [key: string]: NestedStyleMap };
+export type StyleSet = Record<string, NestedStyleMap>;
 export type TagChildren = TagChild[];
 export type EventCallback<T extends EventName> = (
   tag: CTag,
@@ -18,51 +27,31 @@ export type EventMap = {
   [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export interface IConsumable<T> {
-  changed?(callback: (newValue: T) => void);
-  dispatch?(newValue: T);
-  value?: T;
+export interface IConsumable<T = any> {
+  changed: (callback: (newValue: T) => void) => IConsumable<T>;
+  remove: (callback: (newValue: T) => void) => IConsumable<T>;
+  dispatch: (newValue: T) => IConsumable<T>;
+  destroy: () => void;
+  intersect: <K>(intersector: (val: T) => K) => IConsumable<K>;
+  value: T;
+  prev?: T;
 }
-export type StateConsumable<T> = T & Partial<IConsumable<T>>;
+export type IConsumableOr<T = any> = IConsumable<T> | T;
+export interface WithLength {
+  length: number;
+}
+export type TextObj<T extends IConsumable<Primitive> = any> = Record<string, T>;
 export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
-export type ConsumableTypes = string | bigint | number | boolean | object;
-export type PickConsumableType<T extends ConsumableTypes> = T extends string
-  ? string
-  : T extends object
-  ? object
-  : T extends bigint
-  ? string
-  : T extends bigint
-  ? bigint
-  : T extends number
-  ? number
-  : T extends boolean
-  ? boolean
-  : any;
-
-export type PrimitiveConsumable = StateConsumable<string | number | boolean>;
-export type State<T extends Record<string, any>> = T extends any[]
-  ? T & {
-      changed: (callback: (newValue: T) => void) => void;
-      length: StateConsumable<number>;
-    }
-  : {
-      [K in keyof T]: T[K] extends Record<string, any>
-        ? State<T[K]>
-        : StateConsumable<T[K]>;
-    } & {
-      changed: (callback: (newValue: T) => void) => void;
-    };
-export type TagConfig = {
+export interface TagConfig {
   style?: StyleMap;
-  attr?: { [k: string]: string };
+  attr?: Record<string, string | undefined>;
   classList?: string[];
   text?: string;
   children?: TagChildren;
   on?: EventMap;
   value?: string;
   className?: string;
-};
+}
 
 export type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 export type AllTags = {
@@ -73,4 +62,3 @@ export type AllTags = {
     attach: (...children: PickArgType<key>) => CTag;
   };
 };
-export type CEventCallback<T = any> = (data: T) => void;

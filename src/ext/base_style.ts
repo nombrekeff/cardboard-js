@@ -1,5 +1,6 @@
-import { allTags } from '../cardboard.js';
+import { CTag, allTags } from '../cardboard.js';
 import type { StyleSet } from '../types';
+
 const { style } = allTags;
 
 const baseStyles: StyleSet = {
@@ -32,6 +33,6 @@ const baseStyles: StyleSet = {
     },
   },
 };
-export function BaseStyle(attach: boolean = true) {
+export const BaseStyle = (attach: boolean = true): CTag => {
   return attach ? style.attach(baseStyles) : style(baseStyles);
-}
+};

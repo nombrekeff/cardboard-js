@@ -1,4 +1,3 @@
-import type { CEventCallback } from './types';
 import { removeFromList } from './util.js';
 
 /**
@@ -13,18 +12,23 @@ import { removeFromList } from './util.js';
  * ```
  */
 export class CEvent<T> {
-  private _listeners: ((data: T) => void)[] = [];
+  protected _listeners: Array<(data: T | undefined) => void> = [];
 
-  listen(fn: (data: T) => void) {
+  listen(fn: (data?: T) => void) {
     this._listeners.push(fn);
   }
 
-  remove(fn: (data: T) => void) {
+  remove(fn: (data?: T) => void) {
     removeFromList(fn, this._listeners);
+    // console.log(fn, this._listeners, removed);
   }
 
   dispatch(data?: T) {
     this._listeners.forEach((el) => el(data));
+  }
+
+  destroy() {
+    this._listeners = [];
   }
 }
 
@@ -40,32 +44,37 @@ export class CEvent<T> {
  * ```
  */
 
-export class CMappedEvent<K extends string = string, T = any> {
-  private _listeners: { [key in K]?: CEventCallback[] } = {};
+export class CMappedEvent<T> {
+  private _listeners: Record<string, Array<(data?: T) => void>> = {};
 
-  listen(evt: K, fn: CEventCallback<T>) {
+  listen(evt: string, fn: (data?: T) => void) {
     if (!(evt in this._listeners)) {
       this._listeners[evt] = [fn];
-    } else {
+    }
+    else if (this._listeners[evt]) {
       this._listeners[evt].push(fn);
     }
   }
 
-  remove(evt: K, fn: CEventCallback<T>) {
+  remove(evt: string, fn: (data?: T) => void) {
     removeFromList(fn, this._listeners[evt]);
   }
 
-  dispatch(evt: K, data?: T) {
+  dispatch(evt: string, data?: T) {
     if (evt in this._listeners) {
       this._listeners[evt].forEach((el) => el(data));
     }
   }
+
+  destroy() {
+    this._listeners = {};
+  }
 }
 
-export function singleEvent<T>() {
+export const singleEvent = <T>() => {
   return new CEvent<T>();
-}
+};
 
-export function mappedEvent<K extends string, T>() {
-  return new CMappedEvent<K, T>();
-}
+export const mappedEvent = <T>() => {
+  return new CMappedEvent<T>();
+};

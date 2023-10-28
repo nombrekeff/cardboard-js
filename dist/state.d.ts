@@ -1,27 +1,54 @@
-import type { State } from './types';
+import type { IConsumable } from './types';
 /**
- * `state` creates a reactive object that can the be used with tags to create dinamic and reactive apps.
- * {@link content} can be an `object` or an `array`. Objects can be nested, and evey property will be reactive.
- * In arrays, length will also be reactive.
- *
- * You can pass an optional {@link fn}, that will be called anything in the state changes.
- *
- * Additionally you can listen to it after creating it: `state().changed(() => { })`
+ * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/State
  *
  * @example
  * ```ts
- * const st = state({ count: 0 });
- * st.changed(() => { ... });
- * st.count.changed(() => { ... });
+ * const count = state(0);
+ * count.changed(() => { ... });
+ * count.dispatch(2);
+ * count.value++;
  *
- * st.count++;
- * st.count = 3;
- *
- * div().hideIf(st.count);
- * div().disableIf(st.count);
- * div(template('Count is: $count', st));
+ * div().hideIf(count);
+ * div().disableIf(count);
+ * div(template('Count is: $count', { count: count }));
  * ```
  */
-export declare function state<T extends object>(content: T, fn?: (newValue: T) => void): State<T>;
+export declare const state: <T>(initialValue: T) => IConsumable<T>;
+/**
+ * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
+ * It wraps each item with an {@link IConsumable}
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
+ *
+ * @example
+ * ```javascript
+ * const myList = listState([1, 2, 3]);
+ *
+ * myList.add(4);
+ * myList.addAt(0, 0);
+ * myList.remove(2);
+ * myList.removeWhere(item => item === 3);
+ * const listValues = myList.listValue;
+ * const listLength = myList.length;
+ *
+ * // Listen to changes in the list
+ * myList.list.changed(() => {
+ *   // List has changed
+ * });
+ * ```
+ */
+export declare const listState: <T>(initialData: T[]) => {
+    readonly list: IConsumable<IConsumable<T>[]>;
+    readonly listValue: IConsumable<T>[];
+    add: (item: T) => void;
+    addAt: (item: T, index: number) => void;
+    remove: any;
+    removeWhere: any;
+    length: IConsumable<number>;
+};
+export declare const stateAdd: <T>(cons: IConsumable<T[]>, item: T) => void;
+export declare const stateAddAt: <T>(cons: IConsumable<T[]>, item: T, index: number) => void;
+export declare const stateRemoveWhere: <T>(cons: IConsumable<T[]>, cb: (item: T, index: number) => boolean) => void;
+export declare const stateRemove: <T>(cons: IConsumable<T[]>, item: T) => void;

@@ -3,7 +3,7 @@
         "outDir": "./",
         "module": "ES2015",
         "target": "ES2017",
-        "sourceMap": false,
+        "sourceMap": true,
         "allowJs": true,
         "moduleResolution": "Node",
         "lib": [
@@ -16,13 +16,15 @@
         ],
         "types": [
             "@tweenjs/tween.js",
-            "../dist/cardboard.d.ts",
+            "../dist/cardboard.d.ts"
         ]
     },
     "include": [
         "./**/*.ts"
     ],
     "exclude": [
-        "./dist/"
+        "./dist/",
+        "./routes/",
+        "../src"
     ]
 }

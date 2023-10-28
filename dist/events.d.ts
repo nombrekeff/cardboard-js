@@ -1,4 +1,3 @@
-import type { CEventCallback } from './types';
 /**
  * Single event listener/emitter, listen to, and trigger events. (for mapped events use {@link CMappedEvent}).
  *
@@ -11,10 +10,11 @@ import type { CEventCallback } from './types';
  * ```
  */
 export declare class CEvent<T> {
-    private _listeners;
-    listen(fn: (data: T) => void): void;
-    remove(fn: (data: T) => void): void;
+    protected _listeners: Array<(data: T | undefined) => void>;
+    listen(fn: (data?: T) => void): void;
+    remove(fn: (data?: T) => void): void;
     dispatch(data?: T): void;
+    destroy(): void;
 }
 /**
  * Mapped event listener/emitter, listen to, and trigger events. (for single events use {@link CEvent}).
@@ -27,11 +27,12 @@ export declare class CEvent<T> {
  * evt.remove('evt', listener);
  * ```
  */
-export declare class CMappedEvent<K extends string = string, T = any> {
+export declare class CMappedEvent<T> {
     private _listeners;
-    listen(evt: K, fn: CEventCallback<T>): void;
-    remove(evt: K, fn: CEventCallback<T>): void;
-    dispatch(evt: K, data?: T): void;
+    listen(evt: string, fn: (data?: T) => void): void;
+    remove(evt: string, fn: (data?: T) => void): void;
+    dispatch(evt: string, data?: T): void;
+    destroy(): void;
 }
-export declare function singleEvent<T>(): CEvent<T>;
-export declare function mappedEvent<K extends string, T>(): CMappedEvent<K, T>;
+export declare const singleEvent: <T>() => CEvent<T>;
+export declare const mappedEvent: <T>() => CMappedEvent<T>;

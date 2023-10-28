@@ -16,56 +16,59 @@ describe('Conditional show/hide', () => {
     createDomMock();
     const root = tag('(body)');
 
-    let st = state({ hide0: false });
+    let hide = state(false);
     let p0: CTag;
 
     root.append(
-      (p0 = p('0').hideIf(st.hide0)), //
+      (p0 = p('0').hideIf(hide)), //
     );
     expect(getChildStr()).toEqual(['0']);
-    st.hide0 = true;
+    hide.value = true;
 
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual([]);
 
-    st.hide0 = false;
+    hide.value = false;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(getChildStr()).toEqual(['0']);
   });
 
-  // it('basic case', async () => {
-  //   createDomMock();
-  //   const root = tag('(body)');
+  it('basic case', async () => {
+    createDomMock();
+    const root = tag('(body)');
 
-  //   let st = state({ hide0: false, hide1: false, hide2: false });
-  //   let p0: CTag, p1: CTag, p2: CTag;
+    let hide0 = state(false);
+    let hide1 = state(false);
+    let hide2 = state(false);
 
-  //   root.append(
-  //     (p0 = p('0').hideIf(st.hide0)), //
-  //     (p1 = p('1').hideIf(st.hide1)), //
-  //     (p2 = p('2').hideIf(st.hide2)), //
-  //   );
+    let p0: CTag, p1: CTag, p2: CTag;
 
-  //   expect(getChildStr()).toEqual(['0', '1', '2']);
-  //   st.hide1 = true;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual(['0', '2']);
-  //   st.hide0 = true;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual(['2']);
-  //   st.hide2 = true;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual([]);
-  //   st.hide2 = false;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual(['2']);
-  //   st.hide0 = false;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual(['0', '2']);
-  //   st.hide1 = false;
-  //   await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-  //   expect(getChildStr()).toEqual(['0', '1', '2']);
-  // });
+    root.append(
+      (p0 = p('0').hideIf(hide0)), //
+      (p1 = p('1').hideIf(hide1)), //
+      (p2 = p('2').hideIf(hide2)), //
+    );
+
+    expect(getChildStr()).toEqual(['0', '1', '2']);
+    hide1.value = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['0', '2']);
+    hide0.value = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['2']);
+    hide2.value = true;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual([]);
+    hide2.value = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['2']);
+    hide0.value = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['0', '2']);
+    hide1.value = false;
+    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
+    expect(getChildStr()).toEqual(['0', '1', '2']);
+  });
 
   // it('Works between text nodes', async () => {
   //   createDomMock();

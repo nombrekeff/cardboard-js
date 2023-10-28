@@ -7,8 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { allTags, onLifecycle } from '../tag.js';
+import { allTags } from '../tag.js';
 import { routeMatcher } from '../route-matcher.js';
+import { onLifecycle } from '../lifecycle.js';
 const { div, a } = allTags;
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
@@ -39,7 +40,7 @@ export class Router {
      */
     navigate(route, query) {
         const querySearch = new URLSearchParams(query), queryStr = querySearch.toString(), cQuery = this.query.toString();
-        if (route != this._currentRoute || queryStr !== cQuery) {
+        if (route !== this._currentRoute || queryStr !== cQuery) {
             this.query = querySearch;
             this._history.pushState('data', '', route + (queryStr ? '?' + queryStr : ''));
         }
@@ -52,7 +53,7 @@ export class Router {
             const route = this._getRoute();
             if (route.parent) {
                 yield route.show();
-            } //
+            }
             else {
                 this._hookLifecycle(route);
                 this._rootParent.append(route);
@@ -64,10 +65,13 @@ export class Router {
         const options = this._options;
         if (!options.remove && !options.start)
             return;
-        onLifecycle(route, options.start ? options.start : null, options.remove ? options.remove : null, options.beforeRemove ? options.beforeRemove : null);
+        onLifecycle(route, options.start, options.remove, options.beforeRemove);
     }
     // Follow aliases until a valid route is found
     _getEffectiveRoute() {
+        if (!this._currentRoute) {
+            return undefined;
+        }
         let effectiveRoute = this._currentRoute, maxCalls = 10000, alias;
         while (typeof (alias = this._options.routes[effectiveRoute]) === 'string' &&
             maxCalls--) {
@@ -80,10 +84,11 @@ export class Router {
         return effectiveRoute;
     }
     _getRoute() {
-        let navigatedRoute = this._getEffectiveRoute(), route = navigatedRoute, matched = false, opts = this._options;
+        const navigatedRoute = this._getEffectiveRoute(), opts = this._options;
+        let route = navigatedRoute, matched = false;
         this.query = new URLSearchParams(this._location.search);
         // Find matcher
-        for (let { matcher, key } of this._routeMatchers) {
+        for (const { matcher, key } of this._routeMatchers) {
             const params = matcher.parse(route);
             if (params) {
                 this.params = params;
@@ -102,20 +107,20 @@ export class Router {
         }
         // If the route is already built before, just return that
         if (this._routes[route]) {
-            this._routes[route].show();
+            void this._routes[route].show();
             return this._routes[route];
         }
-        let builder = opts.routes[route];
+        const builder = opts.routes[route];
         if (typeof builder !== 'function') {
-            throw new Error('Can find route builder for ' + this._currentRoute);
+            throw new Error('Can\'t find route builder for ' + this._currentRoute);
         }
         return (this._routes[route] = builder(this));
     }
     _setCurrentRoute() {
-        if (this.currentRoute == this._location.pathname)
+        if (this.currentRoute === this._location.pathname)
             return;
         this._currentRoute = this._location.pathname;
-        this._setRoute();
+        void this._setRoute();
     }
     _listenEvents() {
         this._window.addEventListener('popstate', this._setCurrentRoute.bind(this));
@@ -129,7 +134,7 @@ export class Router {
         };
     }
     _initRouteMatchers() {
-        for (let matcherStr in this._options.routes) {
+        for (const matcherStr in this._options.routes) {
             this._routeMatchers.push({
                 key: matcherStr,
                 matcher: routeMatcher(matcherStr),
@@ -138,10 +143,10 @@ export class Router {
     }
 }
 export let router;
-export function makeRouter(opts) {
+export const makeRouter = (opts) => {
     return (router = new Router(opts));
-}
-export function Link(child, path, query) {
+};
+export const Link = (child, path, query) => {
     return a(child)
         .addAttr('href', 'javascript:;')
         .setStyle({ margin: '0 8px 0 0' })
@@ -151,4 +156,5 @@ export function Link(child, path, query) {
         }
         router.navigate(path, query);
     });
-}
+};
+//# sourceMappingURL=routing.js.map

@@ -12,140 +12,169 @@ function getElementIndex(node) {
 }
 
 describe('Tag conditionals', () => {
-  it('tag.showIf', async () => {
+  it('tag.hideIfNot', async () => {
     createDomMock();
-    const st = state({ show: true });
+    const show = state(true);
     const pp = tag('p', ["I'm here"]);
 
     const body = tag('(body)').append(
-      pp.hideIfNot(st.show), //
+      pp.hideIfNot(show), //
     );
 
     expect(body.q('p')).toBeTruthy();
-    st.show = !st.show;
+    show.value = !show.value;
     expect(body.q('p')).toBeFalsy();
   });
 
+  it('tag.doIfNot', async () => {
+    createDomMock();
+    let done = false;
+    const show = state(true);
+    const pp = tag('p', ["I'm here"]);
+
+    const body = tag('(body)').append(
+      pp.doIfNot(show, () => done = true, () => done = false), //
+    );
+
+    expect(done).toEqual(false);
+    show.value = !show.value;
+    expect(done).toEqual(true);
+  });
+  it('tag.attrIfNot', async () => {
+    createDomMock();
+    let done = false;
+    const show = state(true);
+    const pp = tag('p', ["I'm here"]);
+
+    const body = tag('(body)').append(
+      pp.attrIfNot(show, 'disabled', 'true'), //
+    );
+
+    expect(pp.hasAttr('disabled')).toEqual(false);
+    show.value = !show.value;
+    expect(pp.hasAttr('disabled')).toEqual(true);
+  });
+
+
   it('tag.hideIfNot appends item at correct position', async () => {
     const dom = createDomMock();
-    const st = state({ show: true });
+    const show = state(true);
     const pp1 = tag('p', ["I'm here 1"]);
     const pp = tag('p', ["I'm here 2"]);
     const pp2 = tag('p', ["I'm here 3"]);
 
     tag('(body)').append(
       pp1,
-      pp.hideIfNot(st.show), //
+      pp.hideIfNot(show), //
       pp2,
     );
 
-    expect(pp.element.parentElement).toBeTruthy();
+    expect(pp.el.parentElement).toBeTruthy();
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
 
-    st.show = false;
+    show.value = false;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.element.parentElement).toBeFalsy();
-    
-    st.show = true;
+    expect(pp.el.parentElement).toBeFalsy();
+
+    show.value = true;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.element.parentElement).toBeTruthy();
+    expect(pp.el.parentElement).toBeTruthy();
   });
 
   it('tag.hideIf', async () => {
-    const dom = createDomMock();
-    const st = state({ hide: true });
+    createDomMock();
+    const hide = state(true);
     const pp = tag('p', ["I'm here"]);
 
     const body = tag('(body)').append(
-      pp.hideIf(st.hide), //
+      pp.hideIf(hide), //
     );
 
     expect(body.q('p')).toBeFalsy();
-    st.hide = false;
+    hide.value = false;
     expect(body.q('p')).toBeTruthy();
   });
 
   it('tag.disableIf', async () => {
     createDomMock();
-    const st = state({ disable: true });
+    const disable = state(true);
     const pp = tag('p', ["I'm here"]);
 
     tag('(body)').append(
-      pp.disableIf(st.disable), //
+      pp.disableIf(disable), //
     );
 
     expect(pp.hasAttr('disabled')).toBeTruthy();
-    st.disable = !st.disable;
+    disable.value = !disable.value;
     expect(pp.hasAttr('disabled')).toBeFalsy();
   });
 
   it('tag.disableIfNot', async () => {
     createDomMock();
-    const st = state({ enable: true });
+    const enable = state(true);
     const pp = tag('p', ["I'm here"]);
 
     tag('(body)').append(
-      pp.disableIfNot(st.enable), //
+      pp.disableIfNot(enable), //
     );
 
     expect(pp.hasAttr('disabled')).toBeFalsy();
-    st.enable = !st.enable;
+    enable.value = !enable.value;
     expect(pp.hasAttr('disabled')).toBeTruthy();
   });
 
   it('tag.classIf', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').classIf(st.enable, ['test-class']);
+    const enable = state(false);
+    const pp = tag('p').classIf(enable, ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasClass('test-class')).toBeTruthy();
   });
 
   it('tag.classIf function', async () => {
-    createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').classIf(st.enable, () => ['test-class']);
+    const enable = state(false);
+    const pp = tag('p').classIf(enable, () => ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasClass('test-class')).toBeTruthy();
   });
 
   it('tag.classIfNot', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').classIfNot(st.enable, ['test-class']);
+    const enable = state(false);
+    const pp = tag('p').classIfNot(enable, ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeTruthy();
-    st.enable = true;
+    enable.value = true;
     expect(pp.hasClass('test-class')).toBeFalsy();
   });
 
   it('tag.classIfNot function', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').classIfNot(st.enable, () => ['test-class']);
+    const enable = state(false);
+    const pp = tag('p').classIfNot(enable, () => ['test-class']);
 
     expect(pp.hasClass('test-class')).toBeTruthy();
-    st.enable = true;
+    enable.value = true;
     expect(pp.hasClass('test-class')).toBeFalsy();
   });
 
   it('tag.stylesIf', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').stylesIf(st.enable, {
+    const enable = state(false);
+    const pp = tag('p').stylesIf(enable, {
       color: 'red',
       backgroundColor: 'blue',
     });
 
     expect(pp.hasStyle('color')).toBeFalsy();
     expect(pp.hasStyle('backgroundColor')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeTruthy();
     expect(pp.hasStyle('backgroundColor')).toBeTruthy();
@@ -153,15 +182,15 @@ describe('Tag conditionals', () => {
 
   it('tag.stylesIf function', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').stylesIf(st.enable, () => ({
+    const enable = state(false);
+    const pp = tag('p').stylesIf(enable, () => ({
       color: 'red',
       backgroundColor: 'blue',
     }));
 
     expect(pp.hasStyle('color')).toBeFalsy();
     expect(pp.hasStyle('backgroundColor')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeTruthy();
     expect(pp.hasStyle('backgroundColor')).toBeTruthy();
@@ -169,97 +198,97 @@ describe('Tag conditionals', () => {
 
   it('tag.stylesIfNot', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').stylesIfNot(st.enable, { color: 'red' });
+    const enable = state(false);
+    const pp = tag('p').stylesIfNot(enable, { color: 'red' });
 
     expect(pp.hasStyle('color')).toBeTruthy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeFalsy();
   });
 
   it('tag.styleIf', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').styleIf(st.enable, 'color', 'red');
+    const enable = state(false);
+    const pp = tag('p').styleIf(enable, 'color', 'red');
 
     expect(pp.hasStyle('color')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeTruthy();
   });
 
   it('tag.styleIf function', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').styleIf(st.enable, 'color', () => 'red');
+    const enable = state(false);
+    const pp = tag('p').styleIf(enable, 'color', () => 'red');
 
     expect(pp.hasStyle('color')).toBeFalsy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeTruthy();
   });
 
   it('tag.styleIfNot', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').styleIfNot(st.enable, 'color', 'red');
+    const enable = state(false);
+    const pp = tag('p').styleIfNot(enable, 'color', 'red');
 
     expect(pp.hasStyle('color')).toBeTruthy();
-    st.enable = true;
+    enable.value = true;
 
     expect(pp.hasStyle('color')).toBeFalsy();
   });
 
   it('tag.textIf', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').textIf(st.enable, 'yes', 'no');
+    const enable = state(false);
+    const pp = tag('p').textIf(enable, 'yes', 'no');
 
     expect(pp.text()).toEqual('no');
-    st.enable = true;
+    enable.value = true;
     expect(pp.text()).toEqual('yes');
-    st.enable = false;
+    enable.value = false;
     expect(pp.text()).toEqual('no');
   });
 
   it('tag.textIf without else', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').textIf(st.enable, 'yes');
+    const enable = state(false);
+    const pp = tag('p').textIf(enable, 'yes');
 
     expect(pp.text()).toEqual('');
-    st.enable = true;
+    enable.value = true;
     expect(pp.text()).toEqual('yes');
-    st.enable = false;
+    enable.value = false;
     expect(pp.text()).toEqual('');
   });
 
   it('tag.textIf with functions', async () => {
     createDomMock();
-    const st = state({ enable: false });
+    const enable = state(false);
     const pp = tag('p').textIf(
-      st.enable,
+      enable,
       () => 'yes',
       () => 'no',
     );
 
     expect(pp.text()).toEqual('no');
-    st.enable = true;
+    enable.value = true;
     expect(pp.text()).toEqual('yes');
-    st.enable = false;
+    enable.value = false;
     expect(pp.text()).toEqual('no');
   });
 
   it('tag.textIfNot', async () => {
     createDomMock();
-    const st = state({ enable: false });
-    const pp = tag('p').textIfNot(st.enable, 'yes', 'no');
+    const enable = state(false);
+    const pp = tag('p').textIfNot(enable, 'yes', 'no');
 
     expect(pp.text()).toEqual('yes');
-    st.enable = true;
+    enable.value = true;
     expect(pp.text()).toEqual('no');
-    st.enable = false;
+    enable.value = false;
     expect(pp.text()).toEqual('yes');
   });
 });

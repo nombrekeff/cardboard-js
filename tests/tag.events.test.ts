@@ -6,7 +6,7 @@ describe('Tags', () => {
     createDomMock();
     const clickCallback = jest.fn();
     const t = tag('custom').clicked(clickCallback);
-    t.element.dispatchEvent(new window.Event('click'));
+    t.el.dispatchEvent(new window.Event('click'));
     expect(clickCallback).toHaveBeenCalled();
   });
 
@@ -14,7 +14,7 @@ describe('Tags', () => {
     createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback);
-    t.element.dispatchEvent(new window.KeyboardEvent('keypress'));
+    t.el.dispatchEvent(new window.KeyboardEvent('keypress'));
     expect(callback).toHaveBeenCalled();
   });
 
@@ -22,7 +22,7 @@ describe('Tags', () => {
     createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback, 'Enter');
-    t.element.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
+    t.el.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
     expect(callback).toHaveBeenCalled();
   });
 
@@ -30,7 +30,7 @@ describe('Tags', () => {
     createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback, 'Shift');
-    t.element.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
+    t.el.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
     expect(callback).not.toHaveBeenCalled();
   });
 
@@ -38,7 +38,7 @@ describe('Tags', () => {
     createDomMock();
     const callback = jest.fn();
     const t = tag('custom').changed(callback);
-    t.element.dispatchEvent(new window.Event('change'));
+    t.el.dispatchEvent(new window.Event('change'));
     expect(callback).toHaveBeenCalled();
   });
 
@@ -46,7 +46,7 @@ describe('Tags', () => {
     createDomMock();
     const callback = jest.fn();
     const t = tag('test').submited(callback);
-    t.element.dispatchEvent(new window.SubmitEvent('submit'));
+    t.el.dispatchEvent(new window.SubmitEvent('submit'));
     expect(callback).toHaveBeenCalled();
   });
 
@@ -56,7 +56,7 @@ describe('Tags', () => {
     const c = tag('child');
     tag('test').listen(c, 'click', callback);
 
-    c.element.dispatchEvent(new window.Event('click'));
+    c.el.dispatchEvent(new window.Event('click'));
     expect(callback).toHaveBeenCalled();
   });
 
@@ -66,8 +66,8 @@ describe('Tags', () => {
     const callback = jest.fn();
     const c = tag('child');
     c.once('click', callback);
-    c.element.dispatchEvent(new window.Event('click'));
-    c.element.dispatchEvent(new window.Event('click'));
+    c.el.dispatchEvent(new window.Event('click'));
+    c.el.dispatchEvent(new window.Event('click'));
 
     expect(callback).toHaveBeenCalledTimes(1);
   });

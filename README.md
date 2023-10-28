@@ -4,9 +4,10 @@
 ![](./header-img.png)
 
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
-[![Project Status](https://img.shields.io/badge/Project_Status-Semi_Stable-orange)](https://github.com/nombrekeff/cardboard-js/milestone/1)
+[![Project Status](https://img.shields.io/badge/Project_Status-WIP-orange)](https://github.com/nombrekeff/cardboard-js/milestone/1)
 
 Welcome to Cardboard. An **extremely light** (_around **18kb**_), **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like managing state, components, logic, and the rest. But with a twist, **you don't need to write any HTML, CSS, or JSX** if you don't want to. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
+
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with many more features, and a more extensive API.
 
@@ -57,6 +58,7 @@ root.append(div(p('Hello world!')));
 
 If you want to add it to your site and start using Cardboard, you can import the bundle file:
 
+
 ```html
 <script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
 <script>
@@ -70,6 +72,7 @@ The philosophy is to be able to create fully functional and performat web apps w
 
 
 You also don't need to have a build/compile process (_unless you use TS or want to_). Given that cardboard is so lightweight, you can write your app as an es6 module (_check [this example](./examples/clock) to see an example setup_), so there's no need for any build process, at least for development. 
+
 
 It offers a robust **[state](#state) management** solution out of the box. The concept is similar to react. You create a state, then use the state in your app, and whenever the state changes it automatically updates wherever you've used it. 
 
@@ -92,6 +95,7 @@ Here is a list of some of the features it offers (_there are more though_):
 ----
 
 ### Who's this for?
+
 
 If you don't like writing HTML, CSS or JSX, like me. Or need a simple and lightweight framework that can do most things that bigger frameworks can do with a smaller footprint while being very performant, Cardboard might be for you! Cardboard can be used to build anything from a static page to more advanced apps, like dashboards. It should be able to do most things!
 

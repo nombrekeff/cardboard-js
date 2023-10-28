@@ -1,12 +1,12 @@
 import type { NestedStyleMap } from './types';
 import { camelToDash, isObject } from './util.js';
 
-export function genCss(
+export const genCss = (
   styleSheet:
-    | { [key: string]: NestedStyleMap }
-    | { [key: string]: NestedStyleMap }[],
-) {
-  let stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
+    | Record<string, NestedStyleMap>
+    | Array<Record<string, NestedStyleMap>>,
+) => {
+  const stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
   let generatedCss = '';
 
   for (const sheet of stylesheets) {
@@ -15,33 +15,29 @@ export function genCss(
     }
   }
   return generatedCss;
-}
+};
 
-export function genBlock(selector: string, style: NestedStyleMap) {
-  let blocks = genBlockContent(selector, style);
-  return blocks.join('');
-}
+export const genBlock = (selector: string, style: NestedStyleMap): string => {
+  return genBlockContent(selector, style).join('');
+};
 
-export function genBlockContent(
+export const genBlockContent = (
   selector: string,
   style: NestedStyleMap,
-): string[] {
+): string[] => {
   let inside = '';
-  let blocks = [];
+  const blocks: string[] = [];
 
   for (const key in style) {
     if (isObject(style[key])) {
-      blocks.push(genBlockContent(selector + key, style[key]));
-    } else if (style[key]) {
-      inside += genStyle(key, style[key] as string);
+      blocks.push(...genBlockContent(selector + key, style[key] as any));
+    }
+    else if (style[key]) {
+      inside += `${camelToDash(key)}:${style[key] as string};`;
     }
   }
 
   blocks.unshift(`${selector}{${inside}}`);
 
   return blocks;
-}
-
-export function genStyle(name: string, value: string) {
-  return `${camelToDash(name)}:${value};`;
-}
+};

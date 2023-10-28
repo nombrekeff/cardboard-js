@@ -1,11 +1,20 @@
+import type { AllTags, IConsumable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
+import { type CEvent } from './events.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import type { AllTags, IConsumable, State, StyleMap, TagChild, TagChildren, TagConfig } from './types';
+export declare const context: {
+    attached?: CTag;
+    stack: CTag[];
+    observer?: {
+        onAdded: CEvent<Node>;
+        onRemoved: CEvent<Node>;
+    };
+};
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
-export declare function attached(): CTag;
+export declare const attached: () => CTag | undefined;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -13,23 +22,32 @@ export declare function attached(): CTag;
  */
 export declare class CTag {
     /** Reference to the HTMLElement that this @type {CTag} represents */
-    element: HTMLElement;
+    el: HTMLElement & {
+        remove: () => (Promise<boolean> | any);
+    };
+    /**
+     * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
+     * Used to remove HTML Event Listeners and Consumable listeners
+     */
+    private readonly _destroyers;
     /** @param parent Reference to the parent @type {CTag} of this element */
-    private _parent;
-    get parent(): CTag;
+    private _parent?;
+    get parent(): CTag | undefined;
     set parent(newParent: CTag);
     /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
     private _children;
     private _cachedChildren;
     get children(): Node[];
     /** If set to true, it be appended to the attached tag */
-    private _attachable;
-    private _meta;
+    private readonly _attachable;
+    private readonly _meta;
     get value(): any;
+    setValue(newValue: string): this;
+    get checked(): any;
+    setChecked(checked: boolean): this;
     get style(): CSSStyleDeclaration;
     get className(): string;
     get classList(): DOMTokenList;
-    setValue(newValue: string): this;
     /** Gets the value of the element and clears the value */
     get consumeValue(): any;
     get id(): string;
@@ -39,8 +57,6 @@ export declare class CTag {
     setChildren(children: TagChildren): this;
     append(...children: TagChildren): this;
     prepend(...children: TagChildren): this;
-    /** Whenever the consumable changes, it will call the consumer */
-    consume<T>(consumable: IConsumable<T>, consumer: (self: CTag, newValue: T) => void): this;
     /**
      * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
      * I will be placed exactly in the correct position, even if there are other elements hidden.
@@ -48,90 +64,92 @@ export declare class CTag {
     show(): Promise<boolean>;
     /** Hide this element (removed from DOM) */
     hide(): Promise<void>;
+    /** Whenever the consumable changes, it will call the consumer */
+    consume<T>(consumable: IConsumable<T>, consumer: (self: CTag, newValue?: T) => void): this;
     /**
      * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
      */
-    doIf(consumable: IConsumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void, invert?: boolean): this;
+    doIf<T>(consumable: IConsumable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
     /**
      * The oposite of {this.doIf}
      * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
      */
-    doIfNot(consumable: IConsumable<any>, ifTrue: (value: any) => void, ifFalse: (value: any) => void): this;
+    doIfNot<T>(consumable: IConsumable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
     /**
      * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
-    hideIf(consumable: IConsumable<boolean> | IConsumable<number>, invert?: boolean): this;
+    hideIf<T>(consumable: IConsumable<T>, invert?: boolean): this;
     /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-    hideIfNot(consumable: IConsumable<boolean> | IConsumable<number>): this;
+    hideIfNot<T>(consumable: IConsumable<T>): this;
     /**
      * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
      */
-    classIf(consumable: IConsumable<any>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
+    classIf<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
     /**
      * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * For the oposite you can also use {@link classIf}
      */
-    classIfNot(consumable: IConsumable<any>, classes: string[] | ((self: CTag) => string[])): this;
+    classIfNot<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[])): this;
     /**
      * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
      * Both {text} and {elseText} can be a string or a function that returns a string.
      * Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
      */
-    textIf(consumable: IConsumable<any>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
+    textIf<T>(consumable: IConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
      * Both {text} and {elseText} can be a string or a function that returns a string.
      * Updates whenever the consumable changes.
      */
-    textIfNot(consumable: IConsumable<any>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
+    textIfNot<T>(consumable: IConsumable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
     /**
      * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
-    attrIf(consumable: IConsumable<any>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    attrIf<T>(consumable: IConsumable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
-    attrIfNot(consumable: IConsumable<any>, attr: string, value?: string | ((self: CTag) => string)): this;
+    attrIfNot<T>(consumable: IConsumable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
     /**
      * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
      */
-    disableIf(consumable: IConsumable<any>, invert?: boolean): this;
+    disableIf<T>(consumable: IConsumable<T>, invert?: boolean): this;
     /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-    disableIfNot(consumable: IConsumable<any>): this;
+    disableIfNot<T>(consumable: IConsumable<T>): this;
     /**
      * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
      * {value} can be a string or a function that returns a string.
      */
-    styleIf(consumable: IConsumable<any>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    styleIf<T>(consumable: IConsumable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {value} can be a string or a function that returns a string.
      */
-    styleIfNot(consumable: IConsumable<any>, style: string, value?: string | ((self: CTag) => string)): this;
+    styleIfNot<T>(consumable: IConsumable<T>, style: string, value?: string | ((self: CTag) => string)): this;
     /**
      * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
-    stylesIf(consumable: IConsumable<any>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
+    stylesIf<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
     /**
      * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
-    stylesIfNot(consumable: IConsumable<any>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+    stylesIfNot<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
     /**
      * Listen to an event on the element. Like addEventListener.
      */
@@ -144,7 +162,7 @@ export declare class CTag {
      * If no argument is provided, it returns the `textContent` of the element.
      * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
      */
-    text<T = string | null>(newText?: T, st?: State<any>): T extends string ? CTag : string;
+    text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IConsumable<T> | K): J extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} c
      * instead of having to call a method for each property you want to changes
@@ -171,9 +189,7 @@ export declare class CTag {
     /** Check if this element has styles */
     hasStyle<K extends CssProperty>(...styles: K[]): boolean;
     /** Adds a set of attributes to the element */
-    setAttrs(attrs: {
-        [k: string]: string;
-    }): this;
+    setAttrs(attrs: Record<string, string | undefined>): this;
     /** Adds a single attribute to the element */
     addAttr(key: string, value?: string): this;
     /** Remove attributes from the element */
@@ -191,7 +207,7 @@ export declare class CTag {
     /** Add an event listener for a particular event */
     on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add an event listener for a particular event that will only fire once */
-    once<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
     /** Add a **click** event listener */
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
     /** Add a **keypress** event listener */
@@ -200,8 +216,15 @@ export declare class CTag {
     changed(fn: (tag: CTag, evt: Event) => void): this;
     /** Add a **submit** event listener */
     submited(fn: (tag: CTag, evt: SubmitEvent) => void): this;
-    /** Remove element from the DOM */
+    /**
+     * Remove element from the DOM, but keep data as is. Can then be added again.
+     * To fully remove the element use {@link destroy}
+     */
     remove(): Promise<this>;
+    /**
+     * Destroy the element, should not be used afterwards
+     */
+    destroy(): void;
     /**
      * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
      */
@@ -215,9 +238,8 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): TagChild;
-    findTag(predicate: (el: CTag) => boolean): CTag;
-    private _setChildrenParent;
+    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IConsumable<any> | undefined;
+    findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;
     private _observer;
@@ -242,21 +264,7 @@ export declare class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export declare function tag(arg0: string | HTMLElement, children?: TagChildren, attach?: boolean): CTag;
-/**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
- */
-export declare function onLifecycle(tag: CTag, onStart?: (tag: CTag) => Promise<boolean> | boolean, onRemove?: (tag: CTag) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | boolean): MutationObserver;
-/**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
- */
-export declare const withLifecycle: (tag: CTag, handler: {
-    start?: (tag: CTag) => Promise<boolean> | boolean;
-    removed?: (tag: CTag) => void;
-    beforeRemove?: (tag: CTag) => Promise<boolean> | boolean;
-}) => CTag;
+export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, attach?: boolean) => CTag;
 /**
  * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
@@ -277,23 +285,23 @@ export declare const withLifecycle: (tag: CTag, handler: {
  * detach();      // No attached tag
  * ```
  */
-export declare function attach(tag: CTag): CTag;
+export declare const attach: (tag: CTag) => CTag;
 /**
  * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
  * If there are no previous attached tags, it will clear the attached tag.
  */
-export declare function detach(): void;
+export declare const detach: () => void;
 /**
  * Detaches all attached tags. There will be no attached tag after calling this function.
  */
-export declare function detachAll(): void;
+export declare const detachAll: () => void;
 /**
  * It makes the body the attached tag ({@link attach}).
  * You can pass in a selector for an element you want to be the default attached tag.
  */
-export declare function init(options?: {
+export declare const init: (options?: {
     root: string;
-}): CTag;
+}) => CTag;
 /**
  * List of all HTML tag functions. From `div` to `abbr` :)
  * If you want to create any other tag, use the {@link tag} function.

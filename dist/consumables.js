@@ -1,4 +1,5 @@
 import { CEvent } from './events.js';
+import { isArray, isObject } from './util.js';
 /**
  * A class that holds a value. Listeners can be attached and whenever a new value is dispatched, the listeners are called.
  *
@@ -12,9 +13,29 @@ export class Consumable extends CEvent {
     set value(val) {
         this.dispatch(val);
     }
-    constructor(val) {
+    constructor(val, destroyer) {
         super();
+        if (val && (isObject(val) || isArray(val))) {
+            val = new Proxy(val, {
+                get(target, p, receiver) {
+                    return target[p];
+                },
+                set: (target, p, newValue, receiver) => {
+                    if (target[p] === newValue)
+                        return true;
+                    target[p] = newValue;
+                    super.dispatch(target);
+                    return true;
+                },
+                deleteProperty: (target, p) => {
+                    delete target[p];
+                    super.dispatch(target);
+                    return true;
+                },
+            });
+        }
         this._value = val;
+        this._destroyer = destroyer;
     }
     valueOf() {
         return this._value;
@@ -27,16 +48,32 @@ export class Consumable extends CEvent {
      */
     changed(callback) {
         this.listen(callback);
+        return this;
+    }
+    /**
+    * Remove a listener for when this Consumable changes.
+    */
+    remove(callback) {
+        super.remove(callback);
+        return this;
     }
     /**
      * Set's the new value, and calls all the listeners.
      * You can additionaly set the {@link value} directly.
      */
     dispatch(val) {
-        // Make sure assining the value is before the dispatch call,
-        // otherwise Consumable value is not update when the listeners are called
+        if (val === this._value) {
+            return this;
+        }
         this._value = val;
         super.dispatch(val);
+        return this;
+    }
+    destroy() {
+        if (this._destroyer)
+            this._destroyer();
+        this._value = null;
+        super.destroy();
     }
     /**
      * Create a new {@link Consumable} that intersects this {@link Consumable}.
@@ -56,16 +93,16 @@ export class Consumable extends CEvent {
     }
 }
 /** Check if a given object {@link obj} is a {@link Consumable}  */
-export function isConsumable(obj) {
+export const isConsumable = (obj) => {
     return obj instanceof Consumable;
-}
+};
 /**
  * Create a new {@link Consumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Consumables
  */
-export function createConsumable(val) {
-    return new Consumable(val);
-}
+export const createConsumable = (val, destroyer) => {
+    return new Consumable(val, destroyer);
+};
 /**
  * Creates a new {@link Consumable} that intersects another {@link Consumable}.
  * The new {@link Consumable} updates and dispatches whenever the other {@link Consumable} changes.
@@ -79,32 +116,64 @@ export function createConsumable(val) {
  * // > isGreater == true;
  * ```
  */
-export function intersect(other, intersector) {
-    const consumable = createConsumable(intersector(other.value));
-    other.changed((newVal) => consumable.dispatch(intersector(newVal)));
-    return consumable;
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val}*/
-export function greaterThan(consumable, val) {
-    return intersect(consumable, (newVal) => newVal > val);
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val}*/
-export function greaterThanOr(consumable, val) {
-    return intersect(consumable, (newVal) => newVal >= val);
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val}*/
-export function lessThan(consumable, val) {
-    return intersect(consumable, (newVal) => newVal < val);
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val}*/
-export function lessThanOr(consumable, val) {
-    return intersect(consumable, (newVal) => newVal <= val);
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val}*/
-export function equalTo(consumable, val) {
-    return intersect(consumable, (newVal) => newVal === val);
-}
-/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val}*/
-export function notEqualTo(consumable, val) {
-    return intersect(consumable, (newVal) => newVal !== val);
-}
+export const intersect = (other, intersector) => {
+    // eslint-disable-next-line prefer-const
+    let cons;
+    const cb = (val) => cons === null || cons === void 0 ? void 0 : cons.dispatch(intersector(val));
+    cons = createConsumable(intersector(other.value), () => {
+        // remove callback in other consumable when destroyed
+        // remove references, free memory
+        other.remove(cb);
+        cons = null;
+        other = null;
+    });
+    other.changed(cb);
+    return cons;
+};
+export const intersectMulti = (consumables, intersector) => {
+    const cons = createConsumable(intersector(...consumables.map(c => c.value)));
+    for (const other of consumables) {
+        other.changed(() => cons.dispatch(intersector(...consumables.map(c => c.value))));
+    }
+    return cons;
+};
+export const getValue = (val) => {
+    return isConsumable(val) ? val.value : val;
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than {@link val} */
+export const greaterThan = (cons, val = 0) => {
+    return intersect(cons, (newVal) => newVal > getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is greater than or equal {@link val} */
+export const greaterThanOr = (cons, val = 0) => {
+    return intersect(cons, (newVal) => newVal >= getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than {@link val} */
+export const lessThan = (cons, val = 0) => {
+    return intersect(cons, (newVal) => newVal < getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is less than or equal {@link val} */
+export const lessThanOr = (cons, val = 0) => {
+    return intersect(cons, (newVal) => newVal <= getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is equal to {@link val} */
+export const equalTo = (cons, val) => {
+    return intersect(cons, (newVal) => newVal === getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT equal to {@link val} */
+export const notEqualTo = (cons, val) => {
+    return intersect(cons, (newVal) => newVal !== getValue(val));
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export const isEmpty = (cons) => {
+    return intersect(cons, (newVal) => newVal.length <= 0);
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} indicating if the value is NOT empty */
+export const notEmpty = (cons) => {
+    return intersect(cons, (newVal) => newVal.length > 0);
+};
+/** {@link intersect} a consumable and return a new {@link Consumable} that is equal to some property of the original {@link Consumable} */
+export const grab = (cons, key, defaultVal) => {
+    return intersect(cons, (newVal) => { var _a; return newVal ? ((_a = newVal[key]) !== null && _a !== void 0 ? _a : defaultVal) : defaultVal; });
+};
+//# sourceMappingURL=consumables.js.map

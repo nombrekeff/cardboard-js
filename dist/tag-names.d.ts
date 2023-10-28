@@ -1,4 +1,5 @@
 /** @export @type {TagName} */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type TagName = ValidTagName | (string & {});
 /** @type {ValidTagName} */
 export type ValidTagName =

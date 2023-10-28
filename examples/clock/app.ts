@@ -1,36 +1,31 @@
-import {
-  CTag,
-  allTags,
-  init,
-  state,
-  withLifecycle,
-} from '../../dist/cardboard.js';
+// Importing from individual modules will help with tree shaking if building with esbuild
+import { state } from '../../dist/state.js';
+import { withLifecycle } from '../../dist/lifecycle.js';
+import { allTags, init } from '../../dist/tag.js';
 
-const { div, style, span, button, p } = allTags;
+const { div, style, span } = allTags;
 
 const Clock = () => {
-  const st = state({
-    seconds: '00',
-    minutes: '00',
-    hours: '00',
-  });
+  const seconds = state('00');
+  const minutes = state('00');
+  const hours = state('00');
 
   const setTime = () => {
     const currentDate = new Date();
-    st.seconds = currentDate.getSeconds().toString().padStart(2, '0');
-    st.minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    st.hours = currentDate.getHours().toString().padStart(2, '0');
+    seconds.value = currentDate.getSeconds().toString().padStart(2, '0');
+    minutes.value = currentDate.getMinutes().toString().padStart(2, '0');
+    hours.value = currentDate.getHours().toString().padStart(2, '0');
   };
 
-  let interval: number;
+  let interval: any;
 
   return withLifecycle(
     div(
-      span().text('$hours', st),
+      span(hours),
       ':',
-      span().text('$minutes', st),
+      span(minutes),
       ':',
-      span().text('$seconds', st),
+      span(seconds),
     ),
     {
       start() {
@@ -47,7 +42,6 @@ const Clock = () => {
   );
 };
 
-let clock: CTag;
 init().append(
   style({
     body: {
@@ -62,17 +56,5 @@ init().append(
       fontSize: '5rem',
     },
   }),
-  (clock = Clock()),
+  Clock(),
 );
-
-setTimeout(() => {
-  clock.hide();
-}, 3000);
-
-setTimeout(() => {
-  clock.show();
-}, 6000);
-
-const list = div.attach();
-
-button.attach('Add item').clicked(() => list.append(p('Item')));

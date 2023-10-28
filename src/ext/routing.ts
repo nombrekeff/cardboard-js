@@ -1,12 +1,15 @@
-import { allTags, CTag, onLifecycle } from '../tag.js';
+import { allTags, CTag } from '../tag.js';
 import { RouteMatcher, routeMatcher } from '../route-matcher.js';
+import { onLifecycle } from '../lifecycle.js';
 
 const { div, a } = allTags;
 
 export type RouteBuilder = (router: Router<any>) => CTag;
 export type Route = RouteBuilder | string;
 
-export type RouterOptions<T extends Record<string, Route> = {}> = {
+export interface RouterOptions<
+  T extends Record<string, Route> = Record<string, Route>,
+> {
   rootParent: CTag;
   routes: T;
   initialRoute: string;
@@ -16,26 +19,29 @@ export type RouterOptions<T extends Record<string, Route> = {}> = {
   start?: (route: CTag) => Promise<boolean> | boolean;
   remove?: (route: CTag) => Promise<boolean> | boolean;
   beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
-};
+}
 
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
  */
-export class Router<T extends Record<string, Route> = {}> {
-  private _options: RouterOptions<T>;
+export class Router<T extends Record<string, Route> = Record<string, Route>> {
+  private readonly _options: RouterOptions<T>;
   private _routes: Record<string, CTag> = {};
-  private _window: Window & typeof globalThis;
-  private _location: Location;
-  private _history: History;
+  private readonly _window: Window & typeof globalThis;
+  private readonly _location: Location;
+  private readonly _history: History;
   private _currentRoute?: string;
   private _currentTag?: CTag;
-  private _rootParent: CTag;
-  private _routeMatchers: { matcher: RouteMatcher; key: string }[] = [];
+  private readonly _rootParent: CTag;
+  private readonly _routeMatchers: Array<{
+    matcher: RouteMatcher;
+    key: string;
+  }> = [];
 
   public params: Record<string, string> = {};
   public query: URLSearchParams = new URLSearchParams();
 
-  public get currentRoute(): string {
+  public get currentRoute(): string | undefined {
     return this._currentRoute;
   }
 
@@ -62,7 +68,7 @@ export class Router<T extends Record<string, Route> = {}> {
       queryStr = querySearch.toString(),
       cQuery = this.query.toString();
 
-    if (route != this._currentRoute || queryStr !== cQuery) {
+    if (route !== this._currentRoute || queryStr !== cQuery) {
       this.query = querySearch;
       this._history.pushState(
         'data',
@@ -81,7 +87,7 @@ export class Router<T extends Record<string, Route> = {}> {
 
     if (route.parent) {
       await route.show();
-    } //
+    }
     else {
       this._hookLifecycle(route);
       this._rootParent.append(route);
@@ -94,16 +100,15 @@ export class Router<T extends Record<string, Route> = {}> {
     const options = this._options;
     if (!options.remove && !options.start) return;
 
-    onLifecycle(
-      route,
-      options.start ? options.start : null,
-      options.remove ? options.remove : null,
-      options.beforeRemove ? options.beforeRemove : null,
-    );
+    onLifecycle(route, options.start, options.remove, options.beforeRemove);
   }
 
   // Follow aliases until a valid route is found
   private _getEffectiveRoute() {
+    if (!this._currentRoute) {
+      return undefined;
+    }
+
     let effectiveRoute = this._currentRoute,
       maxCalls = 10000,
       alias;
@@ -114,22 +119,23 @@ export class Router<T extends Record<string, Route> = {}> {
     ) {
       if (typeof alias === 'string') {
         effectiveRoute = alias;
-      } else break;
+      }
+      else break;
     }
 
     return effectiveRoute;
   }
 
   private _getRoute() {
-    let navigatedRoute = this._getEffectiveRoute(),
-      route = navigatedRoute,
-      matched = false,
+    const navigatedRoute = this._getEffectiveRoute(),
       opts = this._options;
+    let route: any = navigatedRoute,
+      matched = false;
 
     this.query = new URLSearchParams(this._location.search);
 
     // Find matcher
-    for (let { matcher, key } of this._routeMatchers) {
+    for (const { matcher, key } of this._routeMatchers) {
       const params = matcher.parse(route);
       if (params) {
         this.params = params;
@@ -151,22 +157,22 @@ export class Router<T extends Record<string, Route> = {}> {
 
     // If the route is already built before, just return that
     if (this._routes[route]) {
-      this._routes[route].show();
+      void this._routes[route].show();
       return this._routes[route];
     }
 
-    let builder = opts.routes[route];
+    const builder = opts.routes[route];
     if (typeof builder !== 'function') {
-      throw new Error('Can find route builder for ' + this._currentRoute);
+      throw new Error('Can\'t find route builder for ' + this._currentRoute);
     }
+
     return (this._routes[route] = builder(this));
   }
 
   private _setCurrentRoute() {
-    if (this.currentRoute == this._location.pathname) return;
-
+    if (this.currentRoute === this._location.pathname) return;
     this._currentRoute = this._location.pathname;
-    this._setRoute();
+    void this._setRoute();
   }
 
   private _listenEvents() {
@@ -186,7 +192,7 @@ export class Router<T extends Record<string, Route> = {}> {
   }
 
   private _initRouteMatchers() {
-    for (let matcherStr in this._options.routes) {
+    for (const matcherStr in this._options.routes) {
       this._routeMatchers.push({
         key: matcherStr,
         matcher: routeMatcher(matcherStr),
@@ -197,17 +203,15 @@ export class Router<T extends Record<string, Route> = {}> {
 
 export let router: Router<any> | undefined;
 
-export function makeRouter<T extends Record<string, Route> = {}>(
-  opts: RouterOptions<T>,
-) {
+export const makeRouter = <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => {
   return (router = new Router<T>(opts));
-}
+};
 
-export function Link(
+export const Link = (
   child: string | CTag,
   path,
   query?: Record<string, string>,
-) {
+) => {
   return a(child)
     .addAttr('href', 'javascript:;')
     .setStyle({ margin: '0 8px 0 0' })
@@ -218,4 +222,4 @@ export function Link(
 
       router.navigate(path, query);
     });
-}
+};

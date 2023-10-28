@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /*
  * JavaScript Route Matcher
  * http://benalman.com/
@@ -9,9 +10,10 @@
  *
  * translated to TS by @nombrekeff
  */
+/* eslint-disable  */
 // Characters to be escaped with \. RegExp borrowed from the Backbone router
 // but escaped (note: unnecessarily) to keep JSHint from complaining.
-const reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
+const reEscape = /[-[\]{}()+?.,\\^$|#\s]/g;
 // Match named :param or *splat placeholders.
 const reParam = /([:*])(\w+)/g;
 // Test to see if a value matches the corresponding rule.
@@ -22,7 +24,7 @@ function validateRule(rule, value) {
     // getting .toString from a new object {} or Object.prototype, I'm assuming
     // that exports will always be an object, and using its .toString method.
     // Bad idea? Let me know by filing an issue
-    var type = rule.toString.call(rule).charAt(8);
+    const type = rule.toString(rule).charAt(8);
     // If regexp, match. If function, invoke. Otherwise, compare. Note that ==
     // is used because type coercion is needed, as `value` will always be a
     // string, but `rule` might not.
@@ -30,15 +32,16 @@ function validateRule(rule, value) {
         ? rule.test(value)
         : type === 'F'
             ? rule(value)
+            // eslint-disable-next-line eqeqeq
             : rule == value;
 }
 // Pass in a route string (or RegExp) plus an optional map of rules, and get
 // back an object with .parse and .stringify methods.
 export const routeMatcher = (route, rules = {}) => {
     // Object to be returned. The public API.
-    let self = {};
+    const self = {};
     // Matched param or splat names, in order
-    let names = [];
+    const names = [];
     // Route matching RegExp.
     let re = route;
     // Build route RegExp from passed string.
@@ -57,10 +60,9 @@ export const routeMatcher = (route, rules = {}) => {
         // Match the passed url against the route, returning an object of params
         // and values.
         self.parse = function (url) {
-            let i = 0;
-            let param, value;
-            let params = {};
-            let matches = url.match(re);
+            let i = 0, param, value;
+            const params = {};
+            const matches = url.match(re);
             // If no matches, return null.
             if (!matches) {
                 return null;
@@ -79,8 +81,7 @@ export const routeMatcher = (route, rules = {}) => {
         };
         // Build path by inserting the given params into the route.
         self.stringify = function (params) {
-            let param, re;
-            let result = route;
+            let param, re, result = route;
             // Insert each passed param into the route string. Note that this loop
             // doesn't check .hasOwnProperty because this script doesn't support
             // modifications to Object.prototype.
@@ -95,7 +96,7 @@ export const routeMatcher = (route, rules = {}) => {
     else {
         // RegExp route was passed. This is super-simple.
         self.parse = function (url) {
-            let matches = url.match(re);
+            const matches = url.match(re);
             return matches && { captures: matches.slice(1) };
         };
         // There's no meaningful way to stringify based on a RegExp route, so
@@ -106,3 +107,4 @@ export const routeMatcher = (route, rules = {}) => {
     }
     return self;
 };
+//# sourceMappingURL=route-matcher.js.map
