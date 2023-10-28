@@ -35,8 +35,7 @@ export class CTag {
         this._parent = newParent;
     }
     get children() {
-        this._getChildren(this.el);
-        return this._cachedChildren;
+        return this._getChildren(this.el);
     }
     get value() {
         return this.el.value;
@@ -75,7 +74,11 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], attachable = false) {
-        this._listeners = [];
+        /**
+         * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
+         * Used to remove HTML Event Listeners and Consumable listeners
+         */
+        this._destroyers = [];
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         this._cachedChildren = [];
@@ -183,7 +186,7 @@ export class CTag {
         if (consumable.changed) {
             const cb = (newValue) => consumer(this, newValue);
             consumable.changed(cb);
-            this._listeners.push(() => {
+            this._destroyers.push(() => {
                 // Destroy reference to the consumable, we don't need it anymore
                 consumable.remove(cb);
                 consumable = null;
@@ -500,7 +503,7 @@ export class CTag {
         if (fn) {
             const cb = (evt) => fn(this, evt);
             this.el.addEventListener(evtName, cb);
-            this._listeners.push(() => {
+            this._destroyers.push(() => {
                 this.el.removeEventListener(evtName, cb);
             });
         }
@@ -562,7 +565,7 @@ export class CTag {
                 cl.destroy();
             }
         });
-        this._listeners.forEach(listener => listener());
+        this._destroyers.forEach(listener => listener());
         this._children = [];
         this._cachedChildren = [];
         void this.remove();
@@ -635,6 +638,7 @@ export class CTag {
             this._observer.observe(this.el, { childList: true });
             this._cacheChildren(element);
         }
+        return this._cachedChildren;
     }
     _cacheChildren(element) {
         const nodes = element.childNodes, children = [];
@@ -728,9 +732,8 @@ export const detachAll = () => {
  */
 export const init = (options = { root: 'body' }) => {
     const root = new CTag(`(${options.root})`);
-    attach(root);
     context.observer = createGlobalObserver();
-    return root;
+    return attach(root);
 };
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
@@ -757,18 +760,12 @@ export const allTags = new Proxy({}, {
     get: (t, p, r) => {
         const tagName = p.toString();
         const fn = (...children) => {
-            if (interceptors[tagName]) {
-                return interceptors[tagName](children, false);
-            }
-            return tag(tagName, children);
+            return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
         };
         Object.defineProperty(fn, 'attach', {
             get: () => {
                 return (...children) => {
-                    if (interceptors[tagName]) {
-                        return interceptors[tagName](children, true);
-                    }
-                    return tag(tagName, children, true);
+                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children);
                 };
             },
         });

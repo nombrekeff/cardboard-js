@@ -22,17 +22,17 @@ import { isObject } from './util.js';
  * ```
  */
 export const text = (textTemplate, obj) => {
-    const node = document.createTextNode('');
-    const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
+    const node = document.createTextNode(''), interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
+    if (!obj) {
+        node.nodeValue = textTemplate;
+        return node;
+    }
     const updateNode = (data) => {
         node.nodeValue = !data
             ? textTemplate
             : textTemplate.replace(interpolatePattern, (m, g1) => { var _a; return ((_a = data[g1]) !== null && _a !== void 0 ? _a : m).toString(); });
     };
-    if (!obj) {
-        node.nodeValue = textTemplate;
-    }
-    else if (isConsumable(obj)) {
+    if (isConsumable(obj)) {
         obj.changed((val) => updateNode(val));
         updateNode(obj.value);
     }

@@ -25,7 +25,11 @@ export declare class CTag {
     el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
-    private readonly _listeners;
+    /**
+     * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
+     * Used to remove HTML Event Listeners and Consumable listeners
+     */
+    private readonly _destroyers;
     /** @param parent Reference to the parent @type {CTag} of this element */
     private _parent?;
     get parent(): CTag | undefined;

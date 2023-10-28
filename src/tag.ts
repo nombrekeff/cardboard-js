@@ -49,7 +49,11 @@ export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
 
-  private readonly _listeners: NoOp[] = [];
+  /**
+   * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
+   * Used to remove HTML Event Listeners and Consumable listeners
+   */
+  private readonly _destroyers: NoOp[] = [];
 
   /** @param parent Reference to the parent @type {CTag} of this element */
   private _parent?: CTag;
@@ -67,8 +71,7 @@ export class CTag {
 
   private _cachedChildren: Node[] = [];
   get children() {
-    this._getChildren(this.el);
-    return this._cachedChildren;
+    return this._getChildren(this.el);
   }
 
   /** If set to true, it be appended to the attached tag */
@@ -234,7 +237,7 @@ export class CTag {
       const cb = (newValue) => consumer(this, newValue);
       consumable.changed(cb);
 
-      this._listeners.push(() => {
+      this._destroyers.push(() => {
         // Destroy reference to the consumable, we don't need it anymore
         consumable.remove(cb);
         (consumable as any) = null;
@@ -624,7 +627,7 @@ export class CTag {
     if (fn) {
       const cb = (evt: any) => fn(this, evt);
       this.el.addEventListener(evtName, cb);
-      this._listeners.push(() => {
+      this._destroyers.push(() => {
         this.el.removeEventListener(evtName, cb);
       });
     }
@@ -694,7 +697,7 @@ export class CTag {
       }
     });
 
-    this._listeners.forEach(listener => listener());
+    this._destroyers.forEach(listener => listener());
     this._children = [];
     this._cachedChildren = [];
     void this.remove();
@@ -777,6 +780,7 @@ export class CTag {
       this._observer.observe(this.el, { childList: true });
       this._cacheChildren(element);
     }
+    return this._cachedChildren;
   }
 
   private _cacheChildren(element: HTMLElement) {
@@ -880,10 +884,8 @@ export const detachAll = () => {
  */
 export const init = (options: { root: string } = { root: 'body' }) => {
   const root = new CTag(`(${options.root})`);
-  attach(root);
   context.observer = createGlobalObserver();
-
-  return root;
+  return attach(root);
 };
 
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
