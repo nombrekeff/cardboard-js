@@ -234,9 +234,8 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IConsumable<any> | undefined;
+    find(predicate: (el: TagChild) => boolean): string | Node | CTag | IConsumable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
-    private _setChildrenParent;
     private _childrenFilterPredicate;
     private _getElementForChild;
     private _observer;

@@ -1,5 +1,5 @@
-import { isConsumable } from './consumables.js';
 import type { IConsumable, Primitive, TextObj } from './types.js';
+import { isConsumable } from './consumables.js';
 import { isObject } from './util.js';
 
 /**
@@ -24,8 +24,13 @@ import { isObject } from './util.js';
  * ```
  */
 export const text = <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IConsumable<T> | K): Node => {
-  const node = document.createTextNode('');
-  const interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
+  const node = document.createTextNode(''),
+    interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
+
+  if (!obj) {
+    node.nodeValue = textTemplate;
+    return node;
+  }
 
   const updateNode = (data: Record<string, Primitive>) => {
     node.nodeValue = !data
@@ -35,10 +40,7 @@ export const text = <T extends Record<string, Primitive>, K extends TextObj>(tex
       );
   };
 
-  if (!obj) {
-    node.nodeValue = textTemplate;
-  }
-  else if (isConsumable(obj)) {
+  if (isConsumable(obj)) {
     (obj as IConsumable<Record<string, any>>).changed((val) => updateNode(val));
     updateNode((obj as IConsumable).value);
   }

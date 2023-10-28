@@ -748,11 +748,6 @@ export class CTag {
     }
   }
 
-  private _setChildrenParent(item) {
-    if (item instanceof CTag) item.parent = this;
-    return item;
-  }
-
   private _childrenFilterPredicate(item) {
     if (item instanceof CTag && item._meta.isHidden) {
       return false;
@@ -868,12 +863,7 @@ export const attach = (tag: CTag) => {
  * If there are no previous attached tags, it will clear the attached tag.
  */
 export const detach = () => {
-  if (context.stack.length > 0) {
-    context.attached = context.stack.pop();
-  }
-  else {
-    context.attached = undefined;
-  }
+  context.attached = context.stack.pop();
 };
 
 /**
@@ -927,19 +917,13 @@ export const allTags: AllTags = new Proxy(
     get: (t, p, r) => {
       const tagName = p.toString();
       const fn = (...children: any[]) => {
-        if (interceptors[tagName]) {
-          return interceptors[tagName](children, false);
-        }
-        return tag(tagName, children);
+        return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
       };
 
       Object.defineProperty(fn, 'attach', {
         get: () => {
           return (...children: any[]) => {
-            if (interceptors[tagName]) {
-              return interceptors[tagName](children, true);
-            }
-            return tag(tagName, children, true);
+            return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children);
           };
         },
       });

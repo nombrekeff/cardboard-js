@@ -21,7 +21,7 @@ export const state = (initialValue) => {
 };
 /**
  * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
- *
+ * It wraps each item with an {@link IConsumable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
  *
  * @example

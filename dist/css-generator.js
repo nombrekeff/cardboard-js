@@ -10,8 +10,7 @@ export const genCss = (styleSheet) => {
     return generatedCss;
 };
 export const genBlock = (selector, style) => {
-    const blocks = genBlockContent(selector, style);
-    return blocks.join('');
+    return genBlockContent(selector, style).join('');
 };
 export const genBlockContent = (selector, style) => {
     let inside = '';
@@ -21,13 +20,10 @@ export const genBlockContent = (selector, style) => {
             blocks.push(...genBlockContent(selector + key, style[key]));
         }
         else if (style[key]) {
-            inside += genStyle(key, style[key]);
+            inside += `${camelToDash(key)}:${style[key]};`;
         }
     }
     blocks.unshift(`${selector}{${inside}}`);
     return blocks;
-};
-export const genStyle = (name, value) => {
-    return `${camelToDash(name)}:${value};`;
 };
 //# sourceMappingURL=css-generator.js.map

@@ -18,8 +18,7 @@ export const genCss = (
 };
 
 export const genBlock = (selector: string, style: NestedStyleMap): string => {
-  const blocks = genBlockContent(selector, style);
-  return blocks.join('');
+  return genBlockContent(selector, style).join('');
 };
 
 export const genBlockContent = (
@@ -34,15 +33,11 @@ export const genBlockContent = (
       blocks.push(...genBlockContent(selector + key, style[key] as any));
     }
     else if (style[key]) {
-      inside += genStyle(key, style[key] as string);
+      inside += `${camelToDash(key)}:${style[key] as string};`;
     }
   }
 
   blocks.unshift(`${selector}{${inside}}`);
 
   return blocks;
-};
-
-export const genStyle = (name: string, value: string): string => {
-  return `${camelToDash(name)}:${value};`;
 };

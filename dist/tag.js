@@ -609,11 +609,6 @@ export class CTag {
             }
         }
     }
-    _setChildrenParent(item) {
-        if (item instanceof CTag)
-            item.parent = this;
-        return item;
-    }
     _childrenFilterPredicate(item) {
         if (item instanceof CTag && item._meta.isHidden) {
             return false;
@@ -718,12 +713,7 @@ export const attach = (tag) => {
  * If there are no previous attached tags, it will clear the attached tag.
  */
 export const detach = () => {
-    if (context.stack.length > 0) {
-        context.attached = context.stack.pop();
-    }
-    else {
-        context.attached = undefined;
-    }
+    context.attached = context.stack.pop();
 };
 /**
  * Detaches all attached tags. There will be no attached tag after calling this function.

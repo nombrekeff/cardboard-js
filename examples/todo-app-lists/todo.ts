@@ -5,7 +5,6 @@ import {
   attach,
   each,
   isEmpty,
-  eachOld,
 } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
@@ -53,9 +52,6 @@ div
   .attach(
     p('There are no items: ', todoCount).addClass('list-empty').hideIf(todoCount),
     each(todos, (item) => {
-      return TodoItem(item, (s, c) => removeTodo(c));
-    }),
-    eachOld(todos, (item) => {
       return TodoItem(item, (s, c) => removeTodo(c));
     }),
   )
