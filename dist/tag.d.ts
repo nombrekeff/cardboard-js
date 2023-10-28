@@ -199,9 +199,9 @@ export declare class CTag {
     /** Get an attributes value */
     getAttr(attr: string): any;
     /**
-     * Returns a {@link Consumable} that fires when the Event {@link evtName} is fired in this element
+     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link Consumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
      */
     when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag, evt: HTMLElementEventMap[K]) => any): IConsumable<any>;
     /** Add an event listener for a particular event */
@@ -238,7 +238,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | Node | CTag | IConsumable<any> | undefined;
+    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IConsumable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;

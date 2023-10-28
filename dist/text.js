@@ -1,9 +1,9 @@
 import { isConsumable } from './consumables.js';
 import { isObject } from './util.js';
 /**
- * Create a **TextNode** from text, and optionally reacts to a {@link State}, interpolating the defined variables in the text each time the state changes.
+ * Create a **TextNode** from text, and optionally reacts to a {@link IConsumable}, interpolating the defined variables in the text each time the state changes.
  *
- * If you provide a {@link State} as the second argument, the text will act as a template
+ * If you provide a {@link IConsumable} as the second argument, the text will act as a template
  * and can reference properties in the state: `$count`, `$someValue`.
  *
  * When the state properties changes, the text node will be automatically updated with the new text.

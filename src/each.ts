@@ -22,7 +22,7 @@ export interface DiffEntry<T = unknown> {
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link Consumable}.
+ * `each` can work with a goold old array, or with a {@link IConsumable}.
  * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
