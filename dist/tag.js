@@ -765,7 +765,7 @@ export const allTags = new Proxy({}, {
         Object.defineProperty(fn, 'attach', {
             get: () => {
                 return (...children) => {
-                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children);
+                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
                 };
             },
         });
