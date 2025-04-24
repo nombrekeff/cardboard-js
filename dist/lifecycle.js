@@ -76,7 +76,7 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
             onRemove(tag);
         }
     });
-    tag._listeners.push(() => {
+    tag._destroyers.push(() => {
         var _a, _b;
         // Remove listeners and references (clear memory)
         (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(cb2);

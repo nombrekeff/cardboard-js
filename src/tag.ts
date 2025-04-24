@@ -47,7 +47,7 @@ export const attached = () => {
  */
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
-  el: HTMLElement & { remove: () => (Promise<boolean> | any) };
+  el: HTMLElement & { remove: () => Promise<boolean> | any };
 
   /**
    * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
@@ -247,7 +247,7 @@ export class CTag {
       console.warn('An invalid Consumable was supplied to `tag.consume`');
     }
 
-    consumer(this, ('value' in consumable) ? consumable.value : consumable);
+    consumer(this, 'value' in consumable ? consumable.value : consumable);
     return this;
   }
 
@@ -459,7 +459,10 @@ export class CTag {
    * If no argument is provided, it returns the `textContent` of the element.
    * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
    */
-  text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IConsumable<T> | K): J extends string ? CTag : string {
+  text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(
+    textTemplate?: string,
+    obj?: IConsumable<T> | K,
+  ): J extends string ? CTag : string {
     if (textTemplate == null) {
       return this.el.textContent as any;
     }
@@ -697,7 +700,7 @@ export class CTag {
       }
     });
 
-    this._destroyers.forEach(listener => listener());
+    this._destroyers.forEach((listener) => listener());
     this._children = [];
     this._cachedChildren = [];
     void this.remove();
@@ -761,7 +764,7 @@ export class CTag {
   private _getElementForChild(cl: TagChild): Node | null {
     if (typeof cl === 'string') return document.createTextNode(cl);
     if (isConsumable(cl)) {
-      return text('$val', { val: (cl as IConsumable) });
+      return text('$val', { val: cl as IConsumable });
     }
     if (cl instanceof CTag) return cl.el;
     if (cl instanceof Node) return cl;
@@ -925,7 +928,7 @@ export const allTags: AllTags = new Proxy(
       Object.defineProperty(fn, 'attach', {
         get: () => {
           return (...children: any[]) => {
-            return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children);
+            return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
           };
         },
       });

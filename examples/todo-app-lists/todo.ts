@@ -19,7 +19,7 @@ const pageLinks = [
   'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,600;0,700;1,100;1,300&display=swap',
 ];
 const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
-
+console.log('Loads');
 init();
 BaseStyle();
 tag('(head)').append(...makeLinks());

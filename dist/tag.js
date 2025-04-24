@@ -195,7 +195,7 @@ export class CTag {
         else {
             console.warn('An invalid Consumable was supplied to `tag.consume`');
         }
-        consumer(this, ('value' in consumable) ? consumable.value : consumable);
+        consumer(this, 'value' in consumable ? consumable.value : consumable);
         return this;
     }
     /**
@@ -565,7 +565,7 @@ export class CTag {
                 cl.destroy();
             }
         });
-        this._destroyers.forEach(listener => listener());
+        this._destroyers.forEach((listener) => listener());
         this._children = [];
         this._cachedChildren = [];
         void this.remove();
@@ -765,7 +765,7 @@ export const allTags = new Proxy({}, {
         Object.defineProperty(fn, 'attach', {
             get: () => {
                 return (...children) => {
-                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children);
+                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
                 };
             },
         });

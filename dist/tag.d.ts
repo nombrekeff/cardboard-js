@@ -23,7 +23,7 @@ export declare const attached: () => CTag | undefined;
 export declare class CTag {
     /** Reference to the HTMLElement that this @type {CTag} represents */
     el: HTMLElement & {
-        remove: () => (Promise<boolean> | any);
+        remove: () => Promise<boolean> | any;
     };
     /**
      * Any function inside this array, will be called whenever the CTag is {@link destroy}ed

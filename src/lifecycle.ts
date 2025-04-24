@@ -80,12 +80,12 @@ export function onLifecycle(
             onRemove(tag);
         }
     });
-    (tag as any)._listeners.push(() => {
-        // Remove listeners and references (clear memory)
-        context.observer?.onRemoved.remove(cb2);
-        context.observer?.onAdded.remove(cb1);
-        onRemove = undefined;
-        onStart = undefined;
+    (tag as any)._destroyers.push(() => {
+      // Remove listeners and references (clear memory)
+      context.observer?.onRemoved.remove(cb2);
+      context.observer?.onAdded.remove(cb1);
+      onRemove = undefined;
+      onStart = undefined;
     });
 };
 

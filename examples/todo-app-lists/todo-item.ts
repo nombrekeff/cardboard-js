@@ -18,9 +18,6 @@ export default function TodoItem(
           content.value.complete = self.checked;
         }),
       h4(content.value.item)
-        // .consume(content, (tag, con) => {
-        //   tag.setStyle({ textDecoration: con.complete ? 'line-through' : '' });
-        // }),
         .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
       button('-').addClass('btn-remove')
         .clicked((self) => {
