@@ -18,7 +18,7 @@ describe('text', () => {
   });
 
 
-  it('template text works with Consumable', async () => {
+  it('template text works with Observable', async () => {
     createDomMock();
     const st = state({ count: 0, count2: 0 });
     const t1 = tag('p', [text('Count is: $count, $count2', st)]);

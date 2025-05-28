@@ -46,7 +46,7 @@ export interface DiffEntry<T = unknown> {
  *  );
  * ```
  */
-export declare function each<T>(consumable: IObservableOr<T[]>, consumer: (val: T) => CTag, key?: (val: T) => any): Node;
+export declare function each<T>(observable: IObservableOr<T[]>, transform: (val: T) => CTag, key?: (val: T) => any): Node;
 /**
  * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the {@link oldData} to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned

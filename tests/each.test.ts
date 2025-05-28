@@ -3,7 +3,7 @@ import { allTags, each, init, state } from '../src/cardboard.js';
 const { div, p } = allTags;
 
 describe('each', () => {
-    it('works with non-consumable', async () => {
+    it('works with non-observable', async () => {
         let dom = createDomMock();
         init();
 
@@ -18,7 +18,7 @@ describe('each', () => {
         expect(t.text()).toEqual('c123d');
     });
 
-    it('works with consumable', async () => {
+    it('works with observable', async () => {
         let dom = createDomMock();
         init();
 
@@ -34,7 +34,7 @@ describe('each', () => {
     });
 
 
-    it('works with consumable same data', async () => {
+    it('works with observable same data', async () => {
         createDomMock();
         init();
 
@@ -54,7 +54,7 @@ describe('each', () => {
     });
 
 
-    it('item added works with consumable', async () => {
+    it('item added works with observable', async () => {
         createDomMock();
         init();
 
@@ -72,7 +72,7 @@ describe('each', () => {
         expect(t.text()).toEqual('c1234d');
     });
 
-    it('item removed works with consumable', async () => {
+    it('item removed works with observable', async () => {
         createDomMock();
         init();
 
@@ -92,7 +92,7 @@ describe('each', () => {
         expect(t.text()).toEqual('c13d');
     });
 
-    it('item swap works with consumable', async () => {
+    it('item swap works with observable', async () => {
         createDomMock();
         init();
 
@@ -110,7 +110,7 @@ describe('each', () => {
         expect(t.text()).toEqual('c213d');
     });
 
-    it('item moved works with consumable', async () => {
+    it('item moved works with observable', async () => {
         createDomMock();
         init();
 

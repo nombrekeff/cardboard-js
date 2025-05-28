@@ -64,92 +64,92 @@ export declare class CTag {
     show(): Promise<boolean>;
     /** Hide this element (removed from DOM) */
     hide(): Promise<void>;
-    /** Whenever the consumable changes, it will call the consumer */
-    consume<T>(consumable: IObservable<T>, consumer: (self: CTag, newValue?: T) => void): this;
+    /** Whenever the observable changes, it will call the consumer */
+    consume<T>(observable: IObservable<T>, consumer: (self: CTag, newValue?: T) => void): this;
     /**
-     * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
+     * When the observable changes, it will call {ifTrue} when the observable is true. Or {ifFalse} when the observable is false.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
      */
-    doIf<T>(consumable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
+    doIf<T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
     /**
      * The oposite of {this.doIf}
-     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+     * When the observable changes, it will call {ifTrue} if the observable is false. Or {ifFalse} if the observable is true.
      */
-    doIfNot<T>(consumable: IObservable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
+    doIfNot<T>(observable: IObservable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
     /**
-     * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
+     * Hide this element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
-    hideIf<T>(consumable: IObservable<T>, invert?: boolean): this;
-    /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-    hideIfNot<T>(consumable: IObservable<T>): this;
+    hideIf<T>(observable: IObservable<T>, invert?: boolean): this;
+    /** Hide this element when the consumer is falsy. Updates whenever the observable changes. */
+    hideIfNot<T>(observable: IObservable<T>): this;
     /**
-     * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Adds classes to the element when the consumer is truthy. Updates whenever the observable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
      */
-    classIf<T>(consumable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
+    classIf<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
     /**
-     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Adds classes to the element when the consumer is falsy. Updates whenever the observable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * For the oposite you can also use {@link classIf}
      */
-    classIfNot<T>(consumable: IObservable<T>, classes: string[] | ((self: CTag) => string[])): this;
+    classIfNot<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[])): this;
     /**
      * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
      * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
+     * Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
      */
-    textIf<T>(consumable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
+    textIf<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
      * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
+     * Updates whenever the observable changes.
      */
-    textIfNot<T>(consumable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
+    textIfNot<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
     /**
-     * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add attribute to the element when the consumer is truthy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
-    attrIf<T>(consumable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    attrIf<T>(observable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
-     * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
-    attrIfNot<T>(consumable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
+    attrIfNot<T>(observable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
     /**
-     * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
+     * Disable this element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
      */
-    disableIf<T>(consumable: IObservable<T>, invert?: boolean): this;
-    /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-    disableIfNot<T>(consumable: IObservable<T>): this;
+    disableIf<T>(observable: IObservable<T>, invert?: boolean): this;
+    /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
+    disableIfNot<T>(observable: IObservable<T>): this;
     /**
-     * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
      * {value} can be a string or a function that returns a string.
      */
-    styleIf<T>(consumable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    styleIf<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
-     * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      */
-    styleIfNot<T>(consumable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)): this;
+    styleIfNot<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)): this;
     /**
-     * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
-    stylesIf<T>(consumable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
+    stylesIf<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
     /**
-     * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
-    stylesIfNot<T>(consumable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+    stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
     /**
      * Listen to an event on the element. Like addEventListener.
      */

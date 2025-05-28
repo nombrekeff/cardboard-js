@@ -43,14 +43,14 @@ export class Observable extends CEvent {
         return this._value.toString();
     }
     /**
-     * Add a listener for when this Consumable changes.
+     * Add a listener for when this Observable changes.
      */
     changed(callback) {
         this.listen(callback);
         return this;
     }
     /**
-    * Remove a listener for when this Consumable changes.
+    * Remove a listener for when this Observable changes.
     */
     remove(callback) {
         super.remove(callback);

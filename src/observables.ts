@@ -55,7 +55,7 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
   }
 
   /**
-   * Add a listener for when this Consumable changes.
+   * Add a listener for when this Observable changes.
    */
   changed(callback: (val: T) => void) {
     this.listen(callback);
@@ -63,7 +63,7 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
   }
 
   /**
-  * Remove a listener for when this Consumable changes.
+  * Remove a listener for when this Observable changes.
   */
   remove(callback: (val: T) => void) {
     super.remove(callback);

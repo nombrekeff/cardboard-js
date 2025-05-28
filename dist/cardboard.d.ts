@@ -1,6 +1,6 @@
 import * as _tag from './tag.js';
 import * as _events from './events.js';
-import * as _consumables from './observables.js';
+import * as _observables from './observables.js';
 import * as _routing from './ext/routing.js';
 export * from './tag.js';
 export * from './state.js';
@@ -24,11 +24,11 @@ export declare const Cardboard: {
         removed?: ((tag: _tag.CTag) => void) | undefined;
         beforeRemove?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
     }) => _tag.CTag;
-    Observable: typeof _consumables.Observable;
+    Observable: typeof _observables.Observable;
     isObservable: (obj: any) => boolean;
-    createObservable: <T>(val: T, destroyer?: (() => void) | undefined) => _consumables.Observable<T>;
+    createObservable: <T>(val: T, destroyer?: (() => void) | undefined) => _observables.Observable<T>;
     compute: <T_1, K>(other: import("./types").IObservable<T_1>, transform: (val: T_1) => K) => import("./types").IObservable<K>;
-    computeMultiple: <T_2 extends import("./types").IObservable<any>[], K_1>(observables: [...T_2], transform: (...v_0: _consumables.ExtractValue<T_2>) => K_1) => import("./types").IObservable<K_1>;
+    computeMultiple: <T_2 extends import("./types").IObservable<any>[], K_1>(observables: [...T_2], transform: (...v_0: _observables.ExtractValue<T_2>) => K_1) => import("./types").IObservable<K_1>;
     getValue: <T_3>(val: import("./types").IObservableOr<T_3>) => T_3;
     greaterThan: (cons: import("./types").IObservable<number>, val?: number | import("./types").IObservable<number>) => import("./types").IObservable<boolean>;
     greaterThanOr: (cons: import("./types").IObservable<number>, val?: import("./types").IObservableOr<number>) => import("./types").IObservable<boolean>;

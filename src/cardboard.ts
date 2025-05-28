@@ -5,7 +5,7 @@ import * as _util from './util.js';
 import * as _text from './text.js';
 import * as _events from './events.js';
 import * as _lifecycle from './lifecycle.js';
-import * as _consumables from './observables.js';
+import * as _observables from './observables.js';
 import * as _routing from './ext/routing.js';
 
 export * from './tag.js';
@@ -28,6 +28,6 @@ export const Cardboard = {
   ..._text,
   ..._events,
   ..._routing,
-  ..._consumables,
+  ..._observables,
   ..._lifecycle,
 };

@@ -181,28 +181,28 @@ export class CTag {
             }
         });
     }
-    /** Whenever the consumable changes, it will call the consumer */
-    consume(consumable, consumer) {
-        if (consumable.changed) {
+    /** Whenever the observable changes, it will call the consumer */
+    consume(observable, consumer) {
+        if (observable.changed) {
             const cb = (newValue) => consumer(this, newValue);
-            consumable.changed(cb);
+            observable.changed(cb);
             this._destroyers.push(() => {
-                // Destroy reference to the consumable, we don't need it anymore
-                consumable.remove(cb);
-                consumable = null;
+                // Destroy reference to the observable, we don't need it anymore
+                observable.remove(cb);
+                observable = null;
             });
         }
         else {
             console.warn('An invalid Observable was supplied to `tag.consume`');
         }
-        consumer(this, ('value' in consumable) ? consumable.value : consumable);
+        consumer(this, ('value' in observable) ? observable.value : observable);
         return this;
     }
     /**
-     * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
+     * When the observable changes, it will call {ifTrue} when the observable is true. Or {ifFalse} when the observable is false.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
      */
-    doIf(consumable, ifTrue, ifFalse, invert = false) {
+    doIf(observable, ifTrue, ifFalse, invert = false) {
         if (invert) {
             const temp = ifTrue;
             ifTrue = ifFalse;
@@ -215,20 +215,20 @@ export class CTag {
             else
                 ifFalse(value);
         };
-        return this.consume(consumable, callback);
+        return this.consume(observable, callback);
     }
     /**
      * The oposite of {this.doIf}
-     * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
+     * When the observable changes, it will call {ifTrue} if the observable is false. Or {ifFalse} if the observable is true.
      */
-    doIfNot(consumable, ifTrue, ifFalse) {
-        return this.doIf(consumable, ifTrue, ifFalse, true);
+    doIfNot(observable, ifTrue, ifFalse) {
+        return this.doIf(observable, ifTrue, ifFalse, true);
     }
     /**
-     * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
+     * Hide this element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
      */
-    hideIf(consumable, invert = false) {
+    hideIf(observable, invert = false) {
         const handleHide = (_, value) => {
             const correctedValue = invert ? !value : !!value;
             this._meta.isHidden = correctedValue;
@@ -239,102 +239,102 @@ export class CTag {
             else
                 void this.hide();
         };
-        return this.consume(consumable, handleHide);
+        return this.consume(observable, handleHide);
     }
-    /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-    hideIfNot(consumable) {
-        return this.hideIf(consumable, true);
+    /** Hide this element when the consumer is falsy. Updates whenever the observable changes. */
+    hideIfNot(observable) {
+        return this.hideIf(observable, true);
     }
     /**
-     * Adds classes to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Adds classes to the element when the consumer is truthy. Updates whenever the observable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
      */
-    classIf(consumable, classes, invert = false) {
-        return this.doIf(consumable, () => this.addClass(...val(classes, this)), () => this.rmClass(...val(classes, this)), invert);
+    classIf(observable, classes, invert = false) {
+        return this.doIf(observable, () => this.addClass(...val(classes, this)), () => this.rmClass(...val(classes, this)), invert);
     }
     /**
-     * Adds classes to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Adds classes to the element when the consumer is falsy. Updates whenever the observable changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
      * For the oposite you can also use {@link classIf}
      */
-    classIfNot(consumable, classes) {
-        return this.classIf(consumable, classes, true);
+    classIfNot(observable, classes) {
+        return this.classIf(observable, classes, true);
     }
     /**
      * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
      * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
+     * Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
      */
-    textIf(consumable, text, elseText = '', invert = false) {
-        return this.doIf(consumable, () => this.text(val(text, this)), () => this.text(val(elseText, this)), invert);
+    textIf(observable, text, elseText = '', invert = false) {
+        return this.doIf(observable, () => this.text(val(text, this)), () => this.text(val(elseText, this)), invert);
     }
     /**
      * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
      * Both {text} and {elseText} can be a string or a function that returns a string.
-     * Updates whenever the consumable changes.
+     * Updates whenever the observable changes.
      */
-    textIfNot(consumable, text, elseText = '') {
-        return this.textIf(consumable, text, elseText, true);
+    textIfNot(observable, text, elseText = '') {
+        return this.textIf(observable, text, elseText, true);
     }
     /**
-     * Add attribute to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add attribute to the element when the consumer is truthy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
-    attrIf(consumable, attr, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addAttr(attr, val(value, this)), () => this.rmAttr(attr), invert);
+    attrIf(observable, attr, value = '', invert = false) {
+        return this.doIf(observable, () => this.addAttr(attr, val(value, this)), () => this.rmAttr(attr), invert);
     }
     /**
-     * Add attribute to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
-    attrIfNot(consumable, attr, value = '') {
-        return this.attrIf(consumable, attr, value, true);
+    attrIfNot(observable, attr, value = '') {
+        return this.attrIf(observable, attr, value, true);
     }
     /**
-     * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
+     * Disable this element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
      */
-    disableIf(consumable, invert = false) {
-        return this.attrIf(consumable, 'disabled', '', invert);
+    disableIf(observable, invert = false) {
+        return this.attrIf(observable, 'disabled', '', invert);
     }
-    /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-    disableIfNot(consumable) {
-        return this.disableIf(consumable, true);
+    /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
+    disableIfNot(observable) {
+        return this.disableIf(observable, true);
     }
     /**
-     * Add style to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
      * {value} can be a string or a function that returns a string.
      */
-    styleIf(consumable, style, value = '', invert = false) {
-        return this.doIf(consumable, () => this.addStyle(style, val(value, this)), () => this.rmStyle(style), invert);
+    styleIf(observable, style, value = '', invert = false) {
+        return this.doIf(observable, () => this.addStyle(style, val(value, this)), () => this.rmStyle(style), invert);
     }
     /**
-     * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      */
-    styleIfNot(consumable, style, value = '') {
-        return this.styleIf(consumable, style, value, true);
+    styleIfNot(observable, style, value = '') {
+        return this.styleIf(observable, style, value, true);
     }
     /**
-     * Add multiple styles to the element when the consumer is truthy. Updates whenever the consumable changes.
+     * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
-    stylesIf(consumable, styles, invert = false) {
-        return this.doIf(consumable, () => this.setStyle(val(styles, this)), () => this.rmStyle(...Object.keys(styles)), invert);
+    stylesIf(observable, styles, invert = false) {
+        return this.doIf(observable, () => this.setStyle(val(styles, this)), () => this.rmStyle(...Object.keys(styles)), invert);
     }
     /**
-     * Add multiple styles to the element when the consumer is falsy. Updates whenever the consumable changes.
+     * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
      * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
-    stylesIfNot(consumable, styles) {
-        return this.stylesIf(consumable, styles, true);
+    stylesIfNot(observable, styles) {
+        return this.stylesIf(observable, styles, true);
     }
     /**
      * Listen to an event on the element. Like addEventListener.

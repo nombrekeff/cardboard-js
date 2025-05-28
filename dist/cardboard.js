@@ -5,7 +5,7 @@ import * as _util from './util.js';
 import * as _text from './text.js';
 import * as _events from './events.js';
 import * as _lifecycle from './lifecycle.js';
-import * as _consumables from './observables.js';
+import * as _observables from './observables.js';
 import * as _routing from './ext/routing.js';
 export * from './tag.js';
 export * from './state.js';
@@ -17,5 +17,5 @@ export * from './each.js';
 export * from './lifecycle.js';
 export * from './observables.js';
 export * from './ext/routing.js';
-export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _routing), _consumables), _lifecycle);
+export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _routing), _observables), _lifecycle);
 //# sourceMappingURL=cardboard.js.map

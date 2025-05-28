@@ -53,8 +53,8 @@ export interface DiffEntry<T = unknown> {
  * ```
  */
 export function each<T>(
-  consumable: IObservableOr<T[]>,
-  consumer: (val: T) => CTag,
+  observable: IObservableOr<T[]>,
+  transform: (val: T) => CTag,
   key?: (val: T) => any,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
@@ -65,7 +65,7 @@ export function each<T>(
 
   const add = (entry: DiffEntry<T>) => {
     if (entry.index >= 0) {
-      const el = consumer(entry.entry);
+      const el = transform(entry.entry);
       const elAt = elements[entry.index];
       elements.splice(entry.index, 0, el);
       node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
@@ -156,8 +156,8 @@ export function each<T>(
     console.log('Each Fast took: ' + timeDiff.toFixed(2) + 'ms');
   };
 
-  setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
-  if (isObservable(consumable)) (consumable as IObservable).changed(updateList);
+  setTimeout(() => updateList('value' in observable ? observable.value : observable), 1);
+  if (isObservable(observable)) (observable as IObservable).changed(updateList);
   return node;
 }
 
