@@ -1,4 +1,4 @@
-import { Consumable } from '../src/consumables';
+import { Observable } from '../src/observables';
 import { listState, state } from '../src/state';
 
 describe('State', () => {
@@ -64,7 +64,7 @@ describe('List State', () => {
         expect(s.add).toBeInstanceOf(Function);
         expect(s.remove).toBeInstanceOf(Function);
         expect(s.addAt).toBeInstanceOf(Function);
-        expect(s.length).toBeInstanceOf(Consumable);
+        expect(s.length).toBeInstanceOf(Observable);
     });
 
     it('listState inits with data', async () => {

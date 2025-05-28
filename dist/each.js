@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable eqeqeq */
-import { isConsumable } from './consumables.js';
+import { isObservable } from './observables.js';
 import { deepEquals } from './util.js';
 export var DiffState;
 (function (DiffState) {
@@ -12,8 +12,8 @@ export var DiffState;
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link IConsumable}.
- * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
+ * `each` can work with a goold old array, or with a {@link IObservable}.
+ * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -125,7 +125,7 @@ export function each(consumable, consumer, key) {
         console.log('Each Fast took: ' + timeDiff.toFixed(2) + 'ms');
     };
     setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
-    if (isConsumable(consumable))
+    if (isObservable(consumable))
         consumable.changed(updateList);
     return node;
 }

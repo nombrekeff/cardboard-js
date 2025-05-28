@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
-import { createConsumable, isConsumable } from './consumables.js';
+import { createObservable, isObservable } from './observables.js';
 import { createGlobalObserver } from './lifecycle.js';
 export const context = {
     attached: undefined,
@@ -76,7 +76,7 @@ export class CTag {
     constructor(arg0, children = [], attachable = false) {
         /**
          * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
-         * Used to remove HTML Event Listeners and Consumable listeners
+         * Used to remove HTML Event Listeners and Observable listeners
          */
         this._destroyers = [];
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
@@ -193,7 +193,7 @@ export class CTag {
             });
         }
         else {
-            console.warn('An invalid Consumable was supplied to `tag.consume`');
+            console.warn('An invalid Observable was supplied to `tag.consume`');
         }
         consumer(this, ('value' in consumable) ? consumable.value : consumable);
         return this;
@@ -487,12 +487,12 @@ export class CTag {
         return this.el.attributes[attr];
     }
     /**
-     * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
+     * Returns a {@link IObservable} that fires when the Event {@link evtName} is fired in this element
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
+     * The return value of {@link fn} will be passed to the listeners of the {@link IObservable}
      */
     when(evtName, fn) {
-        const cons = createConsumable({});
+        const cons = createObservable({});
         this.on(evtName, (t, evt) => {
             cons.dispatch(fn(t, evt));
         });
@@ -621,7 +621,7 @@ export class CTag {
     _getElementForChild(cl) {
         if (typeof cl === 'string')
             return document.createTextNode(cl);
-        if (isConsumable(cl)) {
+        if (isObservable(cl)) {
             return text('$val', { val: cl });
         }
         if (cl instanceof CTag)

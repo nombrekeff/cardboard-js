@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable eqeqeq */
-import { isConsumable } from './consumables.js';
+import { isObservable } from './observables.js';
 import { deepEquals } from './util.js';
 import type { CTag } from './tag.js';
-import type { IConsumable, IConsumableOr } from './types.js';
+import type { IObservable, IObservableOr } from './types.js';
 
 export enum DiffState {
   unchanged = 'unchanged',
@@ -22,8 +22,8 @@ export interface DiffEntry<T = unknown> {
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link IConsumable}.
- * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
+ * `each` can work with a goold old array, or with a {@link IObservable}.
+ * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -53,7 +53,7 @@ export interface DiffEntry<T = unknown> {
  * ```
  */
 export function each<T>(
-  consumable: IConsumableOr<T[]>,
+  consumable: IObservableOr<T[]>,
   consumer: (val: T) => CTag,
   key?: (val: T) => any,
 ): Node {
@@ -157,7 +157,7 @@ export function each<T>(
   };
 
   setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
-  if (isConsumable(consumable)) (consumable as IConsumable).changed(updateList);
+  if (isObservable(consumable)) (consumable as IObservable).changed(updateList);
   return node;
 }
 

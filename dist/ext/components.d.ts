@@ -1,7 +1,7 @@
 import { CTag } from '../cardboard.js';
-import type { EventCallback, IConsumable } from '../types';
+import type { EventCallback, IObservable } from '../types';
 export interface HInputOptions<T = string> {
-    value?: T | IConsumable<T>;
+    value?: T | IObservable<T>;
     placeholder?: string;
     tooltip?: string;
     attach?: boolean;

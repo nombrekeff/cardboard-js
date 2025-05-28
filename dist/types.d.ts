@@ -27,21 +27,21 @@ export type EventMap = {
   [k in EventName]?: EventCallback<k>;
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-export interface IConsumable<T = any> {
-  changed: (callback: (newValue: T) => void) => IConsumable<T>;
-  remove: (callback: (newValue: T) => void) => IConsumable<T>;
-  dispatch: (newValue: T) => IConsumable<T>;
+export interface IObservable<T = any> {
+  changed: (callback: (newValue: T) => void) => IObservable<T>;
+  remove: (callback: (newValue: T) => void) => IObservable<T>;
+  dispatch: (newValue: T) => IObservable<T>;
   destroy: () => void;
-  intersect: <K>(intersector: (val: T) => K) => IConsumable<K>;
+  computed: <K>(transform: (val: T) => K) => IObservable<K>;
   value: T;
   prev?: T;
 }
-export type IConsumableOr<T = any> = IConsumable<T> | T;
+export type IObservableOr<T = any> = IObservable<T> | T;
 export interface WithLength {
   length: number;
 }
-export type TextObj<T extends IConsumable<Primitive> = any> = Record<string, T>;
-export type TagChild = string | CTag | HTMLElement | Node | IConsumable<any>;
+export type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
+export type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
 export interface TagConfig {
   style?: StyleMap;
   attr?: Record<string, string | undefined>;

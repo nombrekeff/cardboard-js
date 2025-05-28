@@ -1,6 +1,6 @@
 import type {
   AllTags,
-  IConsumable,
+  IObservable,
   NoOp,
   Primitive,
   StyleMap,
@@ -18,7 +18,7 @@ import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
-import { createConsumable, isConsumable } from './consumables.js';
+import { createObservable, isObservable } from './observables.js';
 import { createGlobalObserver } from './lifecycle.js';
 
 export const context: {
@@ -51,7 +51,7 @@ export class CTag {
 
   /**
    * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
-   * Used to remove HTML Event Listeners and Consumable listeners
+   * Used to remove HTML Event Listeners and Observable listeners
    */
   private readonly _destroyers: NoOp[] = [];
 
@@ -232,7 +232,7 @@ export class CTag {
   }
 
   /** Whenever the consumable changes, it will call the consumer */
-  consume<T>(consumable: IConsumable<T>, consumer: (self: CTag, newValue?: T) => void) {
+  consume<T>(consumable: IObservable<T>, consumer: (self: CTag, newValue?: T) => void) {
     if (consumable.changed) {
       const cb = (newValue) => consumer(this, newValue);
       consumable.changed(cb);
@@ -244,7 +244,7 @@ export class CTag {
       });
     }
     else {
-      console.warn('An invalid Consumable was supplied to `tag.consume`');
+      console.warn('An invalid Observable was supplied to `tag.consume`');
     }
 
     consumer(this, ('value' in consumable) ? consumable.value : consumable);
@@ -255,7 +255,7 @@ export class CTag {
    * When the consumable changes, it will call {ifTrue} when the consumable is true. Or {ifFalse} when the consumable is false.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
    */
-  doIf<T>(consumable: IConsumable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert = false) {
+  doIf<T>(consumable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert = false) {
     if (invert) {
       const temp = ifTrue;
       ifTrue = ifFalse;
@@ -275,7 +275,7 @@ export class CTag {
    * The oposite of {this.doIf}
    * When the consumable changes, it will call {ifTrue} if the consumable is false. Or {ifFalse} if the consumable is true.
    */
-  doIfNot<T>(consumable: IConsumable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void) {
+  doIfNot<T>(consumable: IObservable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void) {
     return this.doIf(consumable, ifTrue, ifFalse, true);
   }
 
@@ -283,7 +283,7 @@ export class CTag {
    * Hide this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
    */
-  hideIf<T>(consumable: IConsumable<T>, invert = false) {
+  hideIf<T>(consumable: IObservable<T>, invert = false) {
     const handleHide = (_, value: any) => {
       const correctedValue = invert ? !value : !!value;
       this._meta.isHidden = correctedValue;
@@ -297,7 +297,7 @@ export class CTag {
   }
 
   /** Hide this element when the consumer is falsy. Updates whenever the consumable changes. */
-  hideIfNot<T>(consumable: IConsumable<T>) {
+  hideIfNot<T>(consumable: IObservable<T>) {
     return this.hideIf(consumable, true);
   }
 
@@ -306,7 +306,7 @@ export class CTag {
    * You can pass in an array of classes, or a function that returns a list of classes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
    */
-  classIf<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[]), invert = false) {
+  classIf<T>(consumable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert = false) {
     return this.doIf(
       consumable,
       () => this.addClass(...val(classes, this)),
@@ -320,7 +320,7 @@ export class CTag {
    * You can pass in an array of classes, or a function that returns a list of classes.
    * For the oposite you can also use {@link classIf}
    */
-  classIfNot<T>(consumable: IConsumable<T>, classes: string[] | ((self: CTag) => string[])) {
+  classIfNot<T>(consumable: IObservable<T>, classes: string[] | ((self: CTag) => string[])) {
     return this.classIf(consumable, classes, true);
   }
 
@@ -331,7 +331,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
    */
   textIf<T>(
-    consumable: IConsumable<T>,
+    consumable: IObservable<T>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
     invert = false,
@@ -350,7 +350,7 @@ export class CTag {
    * Updates whenever the consumable changes.
    */
   textIfNot<T>(
-    consumable: IConsumable<T>,
+    consumable: IObservable<T>,
     text: string | ((self: CTag) => string),
     elseText: string | ((self: CTag) => string) = '',
   ) {
@@ -362,7 +362,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
    */
-  attrIf<T>(consumable: IConsumable<T>, attr: string, value: string | ((self: CTag) => string) = '', invert = false) {
+  attrIf<T>(consumable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       consumable,
       () => this.addAttr(attr, val(value, this)),
@@ -376,7 +376,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed
    */
-  attrIfNot<T>(consumable: IConsumable<T>, attr: string, value: string | ((self: CTag) => string) = '') {
+  attrIfNot<T>(consumable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '') {
     return this.attrIf(consumable, attr, value, true);
   }
 
@@ -384,12 +384,12 @@ export class CTag {
    * Disable this element when the consumer is truthy. Updates whenever the consumable changes.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
    */
-  disableIf<T>(consumable: IConsumable<T>, invert = false) {
+  disableIf<T>(consumable: IObservable<T>, invert = false) {
     return this.attrIf(consumable, 'disabled', '', invert);
   }
 
   /** Disable this element when the consumer is falsy. Updates whenever the consumable changes. */
-  disableIfNot<T>(consumable: IConsumable<T>) {
+  disableIfNot<T>(consumable: IObservable<T>) {
     return this.disableIf(consumable, true);
   }
 
@@ -398,7 +398,7 @@ export class CTag {
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
    * {value} can be a string or a function that returns a string.
    */
-  styleIf<T>(consumable: IConsumable<T>, style: string, value: string | ((self: CTag) => string) = '', invert = false) {
+  styleIf<T>(consumable: IObservable<T>, style: string, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       consumable,
       () => this.addStyle(style, val(value, this)),
@@ -411,7 +411,7 @@ export class CTag {
    * Add style to the element when the consumer is falsy. Updates whenever the consumable changes.
    * {value} can be a string or a function that returns a string.
    */
-  styleIfNot<T>(consumable: IConsumable<T>, style: string, value: string | ((self: CTag) => string) = '') {
+  styleIfNot<T>(consumable: IObservable<T>, style: string, value: string | ((self: CTag) => string) = '') {
     return this.styleIf(consumable, style, value, true);
   }
 
@@ -420,7 +420,7 @@ export class CTag {
    * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
    */
-  stylesIf<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert = false) {
+  stylesIf<T>(consumable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert = false) {
     return this.doIf(
       consumable,
       () => this.setStyle(val(styles, this)),
@@ -434,7 +434,7 @@ export class CTag {
    * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
    * For the oposite use  {@link stylesIf}
    */
-  stylesIfNot<T>(consumable: IConsumable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) {
+  stylesIfNot<T>(consumable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) {
     return this.stylesIf(consumable, styles, true);
   }
 
@@ -459,7 +459,7 @@ export class CTag {
    * If no argument is provided, it returns the `textContent` of the element.
    * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
    */
-  text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IConsumable<T> | K): J extends string ? CTag : string {
+  text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IObservable<T> | K): J extends string ? CTag : string {
     if (textTemplate == null) {
       return this.el.textContent as any;
     }
@@ -607,15 +607,15 @@ export class CTag {
   }
 
   /**
-   * Returns a {@link IConsumable} that fires when the Event {@link evtName} is fired in this element
+   * Returns a {@link IObservable} that fires when the Event {@link evtName} is fired in this element
    *
-   * The return value of {@link fn} will be passed to the listeners of the {@link IConsumable}
+   * The return value of {@link fn} will be passed to the listeners of the {@link IObservable}
    */
   when<K extends keyof HTMLElementEventMap>(
     evtName: K | string,
     fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
-  ): IConsumable<any> {
-    const cons = createConsumable<any>({});
+  ): IObservable<any> {
+    const cons = createObservable<any>({});
     this.on(evtName, (t, evt) => {
       cons.dispatch(fn(t, evt));
     });
@@ -760,8 +760,8 @@ export class CTag {
 
   private _getElementForChild(cl: TagChild): Node | null {
     if (typeof cl === 'string') return document.createTextNode(cl);
-    if (isConsumable(cl)) {
-      return text('$val', { val: (cl as IConsumable) });
+    if (isObservable(cl)) {
+      return text('$val', { val: (cl as IObservable) });
     }
     if (cl instanceof CTag) return cl.el;
     if (cl instanceof Node) return cl;

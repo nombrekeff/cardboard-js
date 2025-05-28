@@ -5,7 +5,7 @@ import * as _util from './util.js';
 import * as _text from './text.js';
 import * as _events from './events.js';
 import * as _lifecycle from './lifecycle.js';
-import * as _consumables from './consumables.js';
+import * as _consumables from './observables.js';
 import * as _routing from './ext/routing.js';
 
 export * from './tag.js';
@@ -16,7 +16,7 @@ export * from './text.js';
 export * from './events.js';
 export * from './each.js';
 export * from './lifecycle.js';
-export * from './consumables.js';
+export * from './observables.js';
 export * from './ext/routing.js';
 export type * from './types';
 

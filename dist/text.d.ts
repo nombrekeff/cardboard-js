@@ -1,8 +1,8 @@
-import type { IConsumable, Primitive, TextObj } from './types.js';
+import type { IObservable, Primitive, TextObj } from './types.js';
 /**
- * Create a **TextNode** from text, and optionally reacts to a {@link IConsumable}, interpolating the defined variables in the text each time the state changes.
+ * Create a **TextNode** from text, and optionally reacts to a {@link IObservable}, interpolating the defined variables in the text each time the state changes.
  *
- * If you provide a {@link IConsumable} as the second argument, the text will act as a template
+ * If you provide a {@link IObservable} as the second argument, the text will act as a template
  * and can reference properties in the state: `$count`, `$someValue`.
  *
  * When the state properties changes, the text node will be automatically updated with the new text.
@@ -20,4 +20,4 @@ import type { IConsumable, Primitive, TextObj } from './types.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export declare const text: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: K | IConsumable<T> | undefined) => Node;
+export declare const text: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: K | IObservable<T> | undefined) => Node;
