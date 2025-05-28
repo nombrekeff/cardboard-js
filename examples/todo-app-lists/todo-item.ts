@@ -1,11 +1,11 @@
-import { type CTag, type IConsumable, allTags, grab, withLifecycle } from '../../dist/cardboard.js';
+import { type CTag, type IObservable, allTags, grab, withLifecycle } from '../../dist/cardboard.js';
 import { type TodoItem } from './state.js';
 
 const { div, button, input, h4 } = allTags;
 
 export default function TodoItem(
-  content: IConsumable<TodoItem>,
-  remove: (self: CTag, content: IConsumable<TodoItem>) => void
+  content: IObservable<TodoItem>,
+  remove: (self: CTag, content: IObservable<TodoItem>) => void
 ) {
   // let isComplete = grab(content, 'complete', false);
   // let todoItem = grab(content, 'item', 'Empty TODO');

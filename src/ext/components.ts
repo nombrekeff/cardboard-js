@@ -1,9 +1,9 @@
-import { allTags, CTag, isConsumable } from '../cardboard.js';
-import type { EventCallback, IConsumable } from '../types';
+import { allTags, CTag, isObservable } from '../cardboard.js';
+import type { EventCallback, IObservable } from '../types';
 const { input } = allTags;
 
 export interface HInputOptions<T = string> {
-  value?: T | IConsumable<T>;
+  value?: T | IObservable<T>;
   placeholder?: string;
   tooltip?: string;
   attach?: boolean;
@@ -25,8 +25,8 @@ export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
     on: {
       input: (self, evt) => {
         if (options.input) options.input(self, evt);
-        if (options.value && isConsumable(options.value)) {
-          (options.value as IConsumable).dispatch(el.value);
+        if (options.value && isObservable(options.value)) {
+          (options.value as IObservable).dispatch(el.value);
         }
       },
       submit: options.submit,
@@ -36,10 +36,10 @@ export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
         }
       },
     },
-    value: isConsumable(options.value) ? (options.value as IConsumable).value : options.value,
+    value: isObservable(options.value) ? (options.value as IObservable).value : options.value,
   });
-  if (options.value && isConsumable(options.value)) {
-    (options.value as IConsumable).changed((newValue) => {
+  if (options.value && isObservable(options.value)) {
+    (options.value as IObservable).changed((newValue) => {
       el.setValue(newValue);
     });
   }

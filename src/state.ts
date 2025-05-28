@@ -1,5 +1,5 @@
-import type { IConsumable } from './types';
-import { createConsumable, getValue } from './consumables.js';
+import type { IObservable } from './types';
+import { createObservable, getValue } from './observables.js';
 
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
@@ -18,13 +18,13 @@ import { createConsumable, getValue } from './consumables.js';
  * div(template('Count is: $count', { count: count }));
  * ```
  */
-export const state = <T>(initialValue: T): IConsumable<T> => {
-  return createConsumable(initialValue);
+export const state = <T>(initialValue: T): IObservable<T> => {
+  return createObservable(initialValue);
 };
 
 /**
  * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
- * It wraps each item with an {@link IConsumable}
+ * It wraps each item with an {@link IObservable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
  *
  * @example
@@ -45,16 +45,16 @@ export const state = <T>(initialValue: T): IConsumable<T> => {
  * ```
  */
 export const listState = <T>(initialData: T[]) => {
-  const _list = state<Array<IConsumable<T>>>(
-    initialData.map((d) => createConsumable(d)),
+  const _list = state<Array<IObservable<T>>>(
+    initialData.map((d) => createObservable(d)),
   );
 
   const add = (item: T) => {
-    stateAdd(_list, createConsumable(item));
+    stateAdd(_list, createObservable(item));
   };
 
   const addAt = (item: T, index: number) => {
-    stateAddAt(_list, createConsumable(item), index);
+    stateAddAt(_list, createObservable(item), index);
   };
 
   return {
@@ -68,26 +68,26 @@ export const listState = <T>(initialData: T[]) => {
     addAt,
     remove: stateRemove.bind({}, _list),
     removeWhere: stateRemoveWhere.bind({}, _list),
-    length: _list.intersect((_list) => _list.length),
+    length: _list.computed((_list) => _list.length),
   };
 };
 
-export const stateAdd = <T>(cons: IConsumable<T[]>, item: T) => {
+export const stateAdd = <T>(cons: IObservable<T[]>, item: T) => {
   cons.value = [...cons.value, item];
 };
 
-export const stateAddAt = <T>(cons: IConsumable<T[]>, item: T, index: number) => {
+export const stateAddAt = <T>(cons: IObservable<T[]>, item: T, index: number) => {
   let newData: any = [...cons.value];
   newData.splice(index, 0, item);
   cons.value = newData;
   newData = [];
 };
 
-export const stateRemoveWhere = <T>(cons: IConsumable<T[]>, cb: (item: T, index: number) => boolean) => {
+export const stateRemoveWhere = <T>(cons: IObservable<T[]>, cb: (item: T, index: number) => boolean) => {
   cons.value = cons.value.filter((el, i) => !cb(el, i));
 };
 
-export const stateRemove = <T>(cons: IConsumable<T[]>, item: T) => {
+export const stateRemove = <T>(cons: IObservable<T[]>, item: T) => {
   const index = cons.value.findIndex(cons => getValue(cons) === getValue(item));
   stateRemoveWhere(cons, (_, i) => {
     return index === i;

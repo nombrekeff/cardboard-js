@@ -1,4 +1,4 @@
-import { createConsumable, getValue } from './consumables.js';
+import { createObservable, getValue } from './observables.js';
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
@@ -17,11 +17,11 @@ import { createConsumable, getValue } from './consumables.js';
  * ```
  */
 export const state = (initialValue) => {
-    return createConsumable(initialValue);
+    return createObservable(initialValue);
 };
 /**
  * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
- * It wraps each item with an {@link IConsumable}
+ * It wraps each item with an {@link IObservable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
  *
  * @example
@@ -42,12 +42,12 @@ export const state = (initialValue) => {
  * ```
  */
 export const listState = (initialData) => {
-    const _list = state(initialData.map((d) => createConsumable(d)));
+    const _list = state(initialData.map((d) => createObservable(d)));
     const add = (item) => {
-        stateAdd(_list, createConsumable(item));
+        stateAdd(_list, createObservable(item));
     };
     const addAt = (item, index) => {
-        stateAddAt(_list, createConsumable(item), index);
+        stateAddAt(_list, createObservable(item), index);
     };
     return {
         get list() {
@@ -60,7 +60,7 @@ export const listState = (initialData) => {
         addAt,
         remove: stateRemove.bind({}, _list),
         removeWhere: stateRemoveWhere.bind({}, _list),
-        length: _list.intersect((_list) => _list.length),
+        length: _list.computed((_list) => _list.length),
     };
 };
 export const stateAdd = (cons, item) => {

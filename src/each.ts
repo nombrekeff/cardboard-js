@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable eqeqeq */
-import { isConsumable } from './consumables.js';
+import { isObservable } from './observables.js';
 import { deepEquals } from './util.js';
 import type { CTag } from './tag.js';
-import type { IConsumable, IConsumableOr } from './types.js';
+import type { IObservable, IObservableOr } from './types.js';
 
 export enum DiffState {
   unchanged = 'unchanged',
@@ -22,8 +22,8 @@ export interface DiffEntry<T = unknown> {
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link IConsumable}.
- * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
+ * `each` can work with a goold old array, or with a {@link IObservable}.
+ * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -53,8 +53,8 @@ export interface DiffEntry<T = unknown> {
  * ```
  */
 export function each<T>(
-  consumable: IConsumableOr<T[]>,
-  consumer: (val: T) => CTag,
+  observable: IObservableOr<T[]>,
+  transform: (val: T) => CTag,
   key?: (val: T) => any,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
@@ -65,7 +65,7 @@ export function each<T>(
 
   const add = (entry: DiffEntry<T>) => {
     if (entry.index >= 0) {
-      const el = consumer(entry.entry);
+      const el = transform(entry.entry);
       const elAt = elements[entry.index];
       elements.splice(entry.index, 0, el);
       node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
@@ -156,8 +156,8 @@ export function each<T>(
     console.log('Each Fast took: ' + timeDiff.toFixed(2) + 'ms');
   };
 
-  setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
-  if (isConsumable(consumable)) (consumable as IConsumable).changed(updateList);
+  setTimeout(() => updateList('value' in observable ? observable.value : observable), 1);
+  if (isObservable(observable)) (observable as IObservable).changed(updateList);
   return node;
 }
 

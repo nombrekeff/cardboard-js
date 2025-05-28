@@ -1,4 +1,4 @@
-import type { IConsumable } from './types';
+import type { IObservable } from './types';
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
@@ -16,10 +16,10 @@ import type { IConsumable } from './types';
  * div(template('Count is: $count', { count: count }));
  * ```
  */
-export declare const state: <T>(initialValue: T) => IConsumable<T>;
+export declare const state: <T>(initialValue: T) => IObservable<T>;
 /**
  * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
- * It wraps each item with an {@link IConsumable}
+ * It wraps each item with an {@link IObservable}
  * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
  *
  * @example
@@ -40,15 +40,15 @@ export declare const state: <T>(initialValue: T) => IConsumable<T>;
  * ```
  */
 export declare const listState: <T>(initialData: T[]) => {
-    readonly list: IConsumable<IConsumable<T>[]>;
-    readonly listValue: IConsumable<T>[];
+    readonly list: IObservable<IObservable<T>[]>;
+    readonly listValue: IObservable<T>[];
     add: (item: T) => void;
     addAt: (item: T, index: number) => void;
     remove: any;
     removeWhere: any;
-    length: IConsumable<number>;
+    length: IObservable<number>;
 };
-export declare const stateAdd: <T>(cons: IConsumable<T[]>, item: T) => void;
-export declare const stateAddAt: <T>(cons: IConsumable<T[]>, item: T, index: number) => void;
-export declare const stateRemoveWhere: <T>(cons: IConsumable<T[]>, cb: (item: T, index: number) => boolean) => void;
-export declare const stateRemove: <T>(cons: IConsumable<T[]>, item: T) => void;
+export declare const stateAdd: <T>(cons: IObservable<T[]>, item: T) => void;
+export declare const stateAddAt: <T>(cons: IObservable<T[]>, item: T, index: number) => void;
+export declare const stateRemoveWhere: <T>(cons: IObservable<T[]>, cb: (item: T, index: number) => boolean) => void;
+export declare const stateRemove: <T>(cons: IObservable<T[]>, item: T) => void;

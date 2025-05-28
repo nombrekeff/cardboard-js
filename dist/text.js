@@ -1,9 +1,9 @@
-import { isConsumable } from './consumables.js';
+import { isObservable } from './observables.js';
 import { isObject } from './util.js';
 /**
- * Create a **TextNode** from text, and optionally reacts to a {@link IConsumable}, interpolating the defined variables in the text each time the state changes.
+ * Create a **TextNode** from text, and optionally reacts to a {@link IObservable}, interpolating the defined variables in the text each time the state changes.
  *
- * If you provide a {@link IConsumable} as the second argument, the text will act as a template
+ * If you provide a {@link IObservable} as the second argument, the text will act as a template
  * and can reference properties in the state: `$count`, `$someValue`.
  *
  * When the state properties changes, the text node will be automatically updated with the new text.
@@ -32,14 +32,14 @@ export const text = (textTemplate, obj) => {
             ? textTemplate
             : textTemplate.replace(interpolatePattern, (m, g1) => { var _a; return ((_a = data[g1]) !== null && _a !== void 0 ? _a : m).toString(); });
     };
-    if (isConsumable(obj)) {
+    if (isObservable(obj)) {
         obj.changed((val) => updateNode(val));
         updateNode(obj.value);
     }
     else if (isObject(obj)) {
         for (const key of Object.getOwnPropertyNames(obj)) {
             // We're just interested in listening to the obj that are references in the text.
-            if (textTemplate.includes(`$${key}`) && isConsumable(obj[key])) {
+            if (textTemplate.includes(`$${key}`) && isObservable(obj[key])) {
                 obj[key].changed(() => updateNode(obj));
             }
         }

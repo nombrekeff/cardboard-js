@@ -1,4 +1,4 @@
-import { type IConsumable, listState, state, createConsumable } from '../../dist/cardboard.js';
+import { type IObservable, listState, state, createObservable } from '../../dist/cardboard.js';
 export interface TodoItem {
   item: string;
   complete: boolean;
@@ -11,7 +11,7 @@ const appState = listState<TodoItem>(
 );
 export const addAll = () => {
   appState.list.value = new Array(50).fill('')
-    .map((_, index) => (createConsumable({ item: `Item ${index}`, complete: false })))
+    .map((_, index) => (createObservable({ item: `Item ${index}`, complete: false })))
     .sort(() => Math.random() > .5 ? 1 : -1);
 }
 export const removeAll = () => {

@@ -1,11 +1,11 @@
-import type { IConsumable, Primitive, TextObj } from './types.js';
-import { isConsumable } from './consumables.js';
+import type { IObservable, Primitive, TextObj } from './types.js';
+import { isObservable } from './observables.js';
 import { isObject } from './util.js';
 
 /**
- * Create a **TextNode** from text, and optionally reacts to a {@link IConsumable}, interpolating the defined variables in the text each time the state changes.
+ * Create a **TextNode** from text, and optionally reacts to a {@link IObservable}, interpolating the defined variables in the text each time the state changes.
  *
- * If you provide a {@link IConsumable} as the second argument, the text will act as a template
+ * If you provide a {@link IObservable} as the second argument, the text will act as a template
  * and can reference properties in the state: `$count`, `$someValue`.
  *
  * When the state properties changes, the text node will be automatically updated with the new text.
@@ -23,7 +23,7 @@ import { isObject } from './util.js';
  * p(text(`Count: $count`, st));
  * ```
  */
-export const text = <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IConsumable<T> | K): Node => {
+export const text = <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IObservable<T> | K): Node => {
   const node = document.createTextNode(''),
     interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
@@ -40,14 +40,14 @@ export const text = <T extends Record<string, Primitive>, K extends TextObj>(tex
       );
   };
 
-  if (isConsumable(obj)) {
-    (obj as IConsumable<Record<string, any>>).changed((val) => updateNode(val));
-    updateNode((obj as IConsumable).value);
+  if (isObservable(obj)) {
+    (obj as IObservable<Record<string, any>>).changed((val) => updateNode(val));
+    updateNode((obj as IObservable).value);
   }
   else if (isObject(obj)) {
     for (const key of Object.getOwnPropertyNames(obj)) {
       // We're just interested in listening to the obj that are references in the text.
-      if (textTemplate.includes(`$${key}`) && isConsumable(obj[key])) {
+      if (textTemplate.includes(`$${key}`) && isObservable(obj[key])) {
         obj[key].changed(() => updateNode(obj as any));
       }
     }

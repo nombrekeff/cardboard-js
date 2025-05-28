@@ -1,4 +1,4 @@
-import { allTags, isConsumable } from '../cardboard.js';
+import { allTags, isObservable } from '../cardboard.js';
 const { input } = allTags;
 export const Input = (options = {}) => {
     var _a;
@@ -9,7 +9,7 @@ export const Input = (options = {}) => {
             input: (self, evt) => {
                 if (options.input)
                     options.input(self, evt);
-                if (options.value && isConsumable(options.value)) {
+                if (options.value && isObservable(options.value)) {
                     options.value.dispatch(el.value);
                 }
             },
@@ -20,9 +20,9 @@ export const Input = (options = {}) => {
                 }
             },
         },
-        value: isConsumable(options.value) ? options.value.value : options.value,
+        value: isObservable(options.value) ? options.value.value : options.value,
     });
-    if (options.value && isConsumable(options.value)) {
+    if (options.value && isObservable(options.value)) {
         options.value.changed((newValue) => {
             el.setValue(newValue);
         });
