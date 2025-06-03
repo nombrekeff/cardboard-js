@@ -19,7 +19,6 @@ export class CEvent {
     }
     remove(fn) {
         removeFromList(fn, this._listeners);
-        // console.log(fn, this._listeners, removed);
     }
     dispatch(data) {
         this._listeners.forEach((el) => el(data));

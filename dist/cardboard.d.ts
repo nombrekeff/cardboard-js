@@ -59,20 +59,20 @@ export declare const Cardboard: {
     genCss: (styleSheet: Record<string, import("./types").NestedStyleMap> | Record<string, import("./types").NestedStyleMap>[]) => string;
     genBlock: (selector: string, style: import("./types").NestedStyleMap) => string;
     genBlockContent: (selector: string, style: import("./types").NestedStyleMap) => string[];
-    state: <T_15>(initialValue: T_15) => import("./types").IObservable<T_15>;
+    state: <T_15>(initialValue: T_15) => import("./types").State<T_15>;
     listState: <T_16>(initialData: T_16[]) => {
-        readonly list: import("./types").IObservable<import("./types").IObservable<T_16>[]>;
-        readonly listValue: import("./types").IObservable<T_16>[];
+        readonly list: import("./types").State<import("./types").State<T_16>[]>;
+        readonly listValue: import("./types").State<T_16>[];
         add: (item: T_16) => void;
         addAt: (item: T_16, index: number) => void;
         remove: any;
         removeWhere: any;
         length: import("./types").IObservable<number>;
     };
-    stateAdd: <T_17>(cons: import("./types").IObservable<T_17[]>, item: T_17) => void;
-    stateAddAt: <T_18>(cons: import("./types").IObservable<T_18[]>, item: T_18, index: number) => void;
-    stateRemoveWhere: <T_19>(cons: import("./types").IObservable<T_19[]>, cb: (item: T_19, index: number) => boolean) => void;
-    stateRemove: <T_20>(cons: import("./types").IObservable<T_20[]>, item: T_20) => void;
+    stateAdd: <T_17>(state: import("./types").State<T_17[]>, item: T_17) => void;
+    stateAddAt: <T_18>(state: import("./types").State<T_18[]>, item: T_18, index: number) => void;
+    stateRemoveWhere: <T_19>(state: import("./types").State<T_19[]>, cb: (item: T_19, index: number) => boolean) => void;
+    stateRemove: <T_20>(state: import("./types").State<T_20[]>, item: T_20) => void;
     context: {
         attached?: _tag.CTag | undefined;
         stack: _tag.CTag[];

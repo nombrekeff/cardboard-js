@@ -1,4 +1,4 @@
-import type { IObservable } from './types';
+import type { IObservable, State } from './types';
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
  *
@@ -16,10 +16,10 @@ import type { IObservable } from './types';
  * div(template('Count is: $count', { count: count }));
  * ```
  */
-export declare const state: <T>(initialValue: T) => IObservable<T>;
+export declare const state: <T>(initialValue: T) => State<T>;
 /**
  * `listState` creates a reactive list of values that can be used with tags to manage dynamic and reactive apps.
- * It wraps each item with an {@link IObservable}
+ * It wraps each item with a {@link State} (aka. {@link IObservable}) to allow for individual item reactivity.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/ListState
  *
  * @example
@@ -40,15 +40,62 @@ export declare const state: <T>(initialValue: T) => IObservable<T>;
  * ```
  */
 export declare const listState: <T>(initialData: T[]) => {
-    readonly list: IObservable<IObservable<T>[]>;
-    readonly listValue: IObservable<T>[];
+    /**
+     * The reactive list of items.
+     * Each item is wrapped in a {@link State} to allow for individual reactivity.
+     */
+    readonly list: State<State<T>[]>;
+    /**
+     * The raw list of items.
+     */
+    readonly listValue: State<T>[];
     add: (item: T) => void;
     addAt: (item: T, index: number) => void;
     remove: any;
     removeWhere: any;
     length: IObservable<number>;
 };
-export declare const stateAdd: <T>(cons: IObservable<T[]>, item: T) => void;
-export declare const stateAddAt: <T>(cons: IObservable<T[]>, item: T, index: number) => void;
-export declare const stateRemoveWhere: <T>(cons: IObservable<T[]>, cb: (item: T, index: number) => boolean) => void;
-export declare const stateRemove: <T>(cons: IObservable<T[]>, item: T) => void;
+/**
+ * `stateAdd` adds an item to a reactive list.
+ * It creates a new array with the existing items and the new item, then updates the state.
+ *
+ * @example
+ * ```typescript
+ * const myList = state([]);
+ * stateAdd(myList, 'new item');
+ * ```
+ */
+export declare const stateAdd: <T>(state: State<T[]>, item: T) => void;
+/**
+ * `stateAddAt` adds an item to a reactive list at a specific index.
+ * It creates a new array with the existing items and the new item at the specified index, then updates the state.
+ *
+ * @example
+ * ```typescript
+ * const myList = state([]);
+ * stateAddAt(myList, 'new item', 0);
+ * ```
+ */
+export declare const stateAddAt: <T>(state: State<T[]>, item: T, index: number) => void;
+/**
+ * `stateRemoveWhere` removes items from a reactive list based on a callback function.
+ * It filters the list and updates the state with the remaining items.
+ *
+ * @example
+ * ```typescript
+ * const myList = state([1, 2, 3, 4]);
+ * stateRemoveWhere(myList, (item) => item % 2 === 0); // Removes even numbers
+ * ```
+ */
+export declare const stateRemoveWhere: <T>(state: State<T[]>, cb: (item: T, index: number) => boolean) => void;
+/**
+ * `stateRemove` removes a specific item from a reactive list.
+ * It finds the index of the item in the list and calls `stateRemoveWhere` to remove it.
+ *
+ * @example
+ * ```typescript
+ * const myList = state([1, 2, 3, 4]);
+ * stateRemove(myList, 2); // Removes the item with value 2
+ * ```
+ */
+export declare const stateRemove: <T>(state: State<T[]>, item: T) => void;
