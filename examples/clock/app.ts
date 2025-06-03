@@ -29,13 +29,13 @@ const Clock = () => {
       span(seconds),
     ),
     {
-      start() {
+      mounted() {
         setTime();
         clearInterval(interval);
         interval = setInterval(setTime, 500);
         return true;
       },
-      removed() {
+      beforeUnmount() {
         clearInterval(interval);
         return true;
       },

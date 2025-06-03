@@ -4,16 +4,18 @@ export declare const createGlobalObserver: () => {
     onRemoved: import("./events.js").CEvent<Node>;
 };
 /**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
+ * Will call {mounted} when the element is added to the DOM.
+ * And will call {beforeUnmount} before the element is removed from the DOM.
+ * Finally will call {onUnmounted} when the element is removed from the DOM.
  */
-export declare function onLifecycle(tag: CTag, onStart?: (tag: CTag) => Promise<boolean> | boolean, onRemove?: (tag: CTag) => void, beforeRemove?: (tag: CTag) => Promise<boolean> | boolean): void;
+export declare function onLifecycle(tag: CTag, onMounted?: (tag: CTag) => Promise<boolean> | boolean, onUnmounted?: (tag: CTag) => void, beforeUnmount?: (tag: CTag) => Promise<boolean> | boolean): void;
 /**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
+ * Will call `handler.mounted` when the element is added to the DOM.
+ * Then call `handler.beforeUnmount` **before** the element is removed from the DOM.
+ * Finally call `handler.unmounted` **when** the element is removed from the DOM.
  */
 export declare const withLifecycle: (tag: CTag, handler: {
-    start?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
-    removed?: ((tag: CTag) => void) | undefined;
-    beforeRemove?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
+    mounted?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
+    unmounted?: ((tag: CTag) => void) | undefined;
+    beforeUnmount?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
 }) => CTag;

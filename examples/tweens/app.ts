@@ -35,11 +35,11 @@ const Box = () => {
       display: 'inline-block',
     }),
     {
-      start(tag) {
+      mounted(tag) {
         tweenTag(tag, bounceIn);
         return true;
       },
-      beforeRemove(tag) {
+      beforeUnmount(tag) {
         return new Promise((resolve) =>
           tweenTag(tag, bounceOut, () => resolve(true)),
         );

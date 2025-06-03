@@ -33,22 +33,23 @@ export const createGlobalObserver = () => {
     };
 };
 /**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
+ * Will call {mounted} when the element is added to the DOM.
+ * And will call {beforeUnmount} before the element is removed from the DOM.
+ * Finally will call {onUnmounted} when the element is removed from the DOM.
  */
-export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
-    if (beforeRemove) {
+export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmount) {
+    if (beforeUnmount) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = () => __awaiter(this, void 0, void 0, function* () {
-            const result = beforeRemove(tag);
+            const result = beforeUnmount(tag);
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.el);
             }
             return result.valueOf();
         });
     }
-    if (onStart) {
+    if (onMounted) {
         const tempOnStart = tag.show;
         tag.show = () => __awaiter(this, void 0, void 0, function* () {
             const result = tempOnStart.call(tag);
@@ -64,16 +65,16 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
     let cb1, cb2;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     context.observer.onAdded.listen(cb1 = (node) => __awaiter(this, void 0, void 0, function* () {
-        if (node === tag.el && onStart) {
-            const result = onStart(tag);
+        if (node === tag.el && onMounted) {
+            const result = onMounted(tag);
             if (result instanceof Promise) {
                 yield result;
             }
         }
     }));
     context.observer.onRemoved.listen(cb2 = (node) => {
-        if (node === tag.el && onRemove) {
-            onRemove(tag);
+        if (node === tag.el && onUnmounted) {
+            onUnmounted(tag);
         }
     });
     tag._listeners.push(() => {
@@ -81,17 +82,18 @@ export function onLifecycle(tag, onStart, onRemove, beforeRemove) {
         // Remove listeners and references (clear memory)
         (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(cb2);
         (_b = context.observer) === null || _b === void 0 ? void 0 : _b.onAdded.remove(cb1);
-        onRemove = undefined;
-        onStart = undefined;
+        onUnmounted = undefined;
+        onMounted = undefined;
     });
 }
 ;
 /**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
+ * Will call `handler.mounted` when the element is added to the DOM.
+ * Then call `handler.beforeUnmount` **before** the element is removed from the DOM.
+ * Finally call `handler.unmounted` **when** the element is removed from the DOM.
  */
 export const withLifecycle = (tag, handler) => {
-    onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
+    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmount);
     return tag;
 };
 //# sourceMappingURL=lifecycle.js.map
