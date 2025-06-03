@@ -58,9 +58,16 @@ export const listState = <T>(initialData: T[]) => {
   };
 
   return {
+    /**
+     * The reactive list of items.
+     * Each item is wrapped in a {@link State} to allow for individual reactivity.
+     */
     get list() {
       return _list;
     },
+    /**
+     * The raw list of items.
+     */
     get listValue() {
       return _list.value;
     },
@@ -71,7 +78,6 @@ export const listState = <T>(initialData: T[]) => {
     length: _list.computed((_list) => _list.length),
   };
 };
-
 /**
  * `stateAdd` adds an item to a reactive list.
  * It creates a new array with the existing items and the new item, then updates the state.
@@ -117,6 +123,16 @@ export const stateRemoveWhere = <T>(state: State<T[]>, cb: (item: T, index: numb
   state.value = state.value.filter((el, i) => !cb(el, i));
 };
 
+/**
+ * `stateRemove` removes a specific item from a reactive list.
+ * It finds the index of the item in the list and calls `stateRemoveWhere` to remove it.
+ * 
+ * @example
+ * ```typescript
+ * const myList = state([1, 2, 3, 4]);
+ * stateRemove(myList, 2); // Removes the item with value 2
+ * ```
+ */
 export const stateRemove = <T>(state: State<T[]>, item: T) => {
   const index = state.value.findIndex(state => getValue(state) === getValue(item));
   stateRemoveWhere(state, (_, i) => {
