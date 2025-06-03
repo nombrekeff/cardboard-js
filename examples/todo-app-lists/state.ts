@@ -1,4 +1,4 @@
-import { type IObservable, listState, state, createObservable } from '../../dist/cardboard.js';
+import { listState, state, createObservable } from '../../dist/cardboard.js';
 export interface TodoItem {
   item: string;
   complete: boolean;

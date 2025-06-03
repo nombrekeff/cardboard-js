@@ -36,6 +36,7 @@ export interface IObservable<T = any> {
   value: T;
   prev?: T;
 }
+export type State<T> = IObservable<T>;
 export type IObservableOr<T = any> = IObservable<T> | T;
 export interface WithLength {
   length: number;
