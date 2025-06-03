@@ -1,10 +1,7 @@
-import { state } from '../../dist/state.js';
-import { withLifecycle } from '../../dist/lifecycle.js';
 import { allTags, init, attach, detach } from '../../dist/tag.js';
 
 const { div, p } = allTags;
-const root = init();
-console.log(root);
+init();
 
 const wrapper = div.attach('wrapper');
 

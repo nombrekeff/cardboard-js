@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable eqeqeq */
-import { isConsumable } from './consumables.js';
+import { isObservable } from './observables.js';
 import { deepEquals } from './util.js';
 export var DiffState;
 (function (DiffState) {
@@ -12,8 +12,8 @@ export var DiffState;
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link IConsumable}.
- * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
+ * `each` can work with a goold old array, or with a {@link IObservable}.
+ * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -42,13 +42,13 @@ export var DiffState;
  *  );
  * ```
  */
-export function each(consumable, consumer, key) {
+export function each(observable, transform, key) {
     const node = document.createTextNode(''), elements = [];
     let oldData = [], nodeParentIndex = 0, elementsCopy = [];
     const add = (entry) => {
         var _a;
         if (entry.index >= 0) {
-            const el = consumer(entry.entry);
+            const el = transform(entry.entry);
             const elAt = elements[entry.index];
             elements.splice(entry.index, 0, el);
             (_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.insertBefore(el.el, elAt ? elAt.el : node);
@@ -124,9 +124,9 @@ export function each(consumable, consumer, key) {
         const timeDiff = performance.now() - start;
         console.log('Each Fast took: ' + timeDiff.toFixed(2) + 'ms');
     };
-    setTimeout(() => updateList('value' in consumable ? consumable.value : consumable), 1);
-    if (isConsumable(consumable))
-        consumable.changed(updateList);
+    setTimeout(() => updateList('value' in observable ? observable.value : observable), 1);
+    if (isObservable(observable))
+        observable.changed(updateList);
     return node;
 }
 /**

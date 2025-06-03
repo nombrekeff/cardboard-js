@@ -1,5 +1,5 @@
 import type { CTag } from './tag.js';
-import type { IConsumableOr } from './types.js';
+import type { IObservableOr } from './types.js';
 export declare enum DiffState {
     unchanged = "unchanged",
     added = "added",
@@ -16,8 +16,8 @@ export interface DiffEntry<T = unknown> {
 /**
  * Render a {@link CTag} for each item in the provided list.
  *
- * `each` can work with a goold old array, or with a {@link IConsumable}.
- * If you provide a `Consumable`, the list will update whenever the `Consumable` changes.
+ * `each` can work with a goold old array, or with a {@link IObservable}.
+ * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
@@ -46,7 +46,7 @@ export interface DiffEntry<T = unknown> {
  *  );
  * ```
  */
-export declare function each<T>(consumable: IConsumableOr<T[]>, consumer: (val: T) => CTag, key?: (val: T) => any): Node;
+export declare function each<T>(observable: IObservableOr<T[]>, transform: (val: T) => CTag, key?: (val: T) => any): Node;
 /**
  * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the {@link oldData} to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned

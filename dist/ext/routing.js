@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { allTags } from '../tag.js';
-import { routeMatcher } from '../route-matcher.js';
+import { routeMatcher } from './route-matcher.js';
 import { onLifecycle } from '../lifecycle.js';
 const { div, a } = allTags;
 /**

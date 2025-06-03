@@ -4,6 +4,7 @@ import { withLifecycle } from '../../dist/lifecycle.js';
 import { allTags, init } from '../../dist/tag.js';
 
 const { div, style, span } = allTags;
+const padd = (d) => d.toString().padStart(2, '0')
 
 const Clock = () => {
   const seconds = state('00');
@@ -12,9 +13,9 @@ const Clock = () => {
 
   const setTime = () => {
     const currentDate = new Date();
-    seconds.value = currentDate.getSeconds().toString().padStart(2, '0');
-    minutes.value = currentDate.getMinutes().toString().padStart(2, '0');
-    hours.value = currentDate.getHours().toString().padStart(2, '0');
+    seconds.value = padd(currentDate.getSeconds());
+    minutes.value = padd(currentDate.getMinutes());
+    hours.value = padd(currentDate.getHours());
   };
 
   let interval: any;

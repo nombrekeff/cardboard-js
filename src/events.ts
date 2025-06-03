@@ -20,7 +20,6 @@ export class CEvent<T> {
 
   remove(fn: (data?: T) => void) {
     removeFromList(fn, this._listeners);
-    // console.log(fn, this._listeners, removed);
   }
 
   dispatch(data?: T) {
