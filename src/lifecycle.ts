@@ -30,20 +30,20 @@ export const createGlobalObserver = () => {
 
 /**
  * Will call {mounted} when the element is added to the DOM.
- * And will call {beforeUnmount} before the element is removed from the DOM.
+ * And will call {beforeUnmounted} before the element is removed from the DOM.
  * Finally will call {onUnmounted} when the element is removed from the DOM.
  */
 export function onLifecycle(
     tag: CTag,
     onMounted?: (tag: CTag) => Promise<boolean> | boolean,
     onUnmounted?: (tag: CTag) => void,
-    beforeUnmount?: (tag: CTag) => Promise<boolean> | boolean,
+    beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean,
 ) {
-    if (beforeUnmount) {
+    if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = async () => {
-            const result = beforeUnmount(tag);
+            const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (await result))) {
                 tempElRemove.call(tag.el);
             }
@@ -131,9 +131,9 @@ export const withLifecycle = (
          * Called before the tag is unmounted from the DOM.
          * If it returns false, the tag will not be unmounted.
          */
-        beforeUnmount?: (tag: CTag) => Promise<boolean> | boolean;
+        beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
     },
 ): CTag => {
-    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmount);
+    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmounted);
     return tag;
 };
