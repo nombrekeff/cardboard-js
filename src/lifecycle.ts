@@ -1,5 +1,6 @@
 import { singleEvent } from './events.js';
 import { context, type CTag } from './tag.js';
+import { AtLeastOne } from './types.js';
 
 // TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
 export const createGlobalObserver = () => {
@@ -81,6 +82,7 @@ export function onLifecycle(
             onUnmounted(tag);
         }
     });
+
     // Using `any` here to avoid TypeScript errors, as `_listeners` is not typed in the CTag interface.
     (tag as any)._listeners.push(() => {
         // Remove listeners and references (clear memory)
@@ -119,21 +121,13 @@ export function onLifecycle(
  */
 export const withLifecycle = (
     tag: CTag,
-    handler: {
-        /**
-         * Called when the tag is mounted to the DOM.
-         */
+    handler: AtLeastOne<{
+        // Add object here so handlers can be seen when instecting the `withLifecycle` function.
+        // This is useful for IDEs to show the available properties.
         mounted?: (tag: CTag) => Promise<boolean> | boolean;
-        /**
-         * Called when the tag is unmounted from the DOM.
-         */
         unmounted?: (tag: CTag) => void;
-        /**
-         * Called before the tag is unmounted from the DOM.
-         * If it returns false, the tag will not be unmounted.
-         */
         beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
-    },
+    }>,
 ): CTag => {
     onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmounted);
     return tag;

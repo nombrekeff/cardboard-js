@@ -39,7 +39,7 @@ const Box = () => {
         tweenTag(tag, bounceIn);
         return true;
       },
-      beforeUnmount(tag) {
+      beforeUnmounted(tag) {
         return new Promise((resolve) =>
           tweenTag(tag, bounceOut, () => resolve(true)),
         );

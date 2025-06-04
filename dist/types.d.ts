@@ -63,3 +63,13 @@ export type AllTags = {
     attach: (...children: PickArgType<key>) => CTag;
   };
 };
+
+type AtLeastOne<T> = {
+  [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
+}[keyof T]
+
+export type LifecycleHandlers = {
+    mounted?: (tag: CTag) => Promise<boolean> | boolean;
+    unmounted?: (tag: CTag) => void;
+    beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
+};

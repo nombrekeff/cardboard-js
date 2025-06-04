@@ -35,7 +35,7 @@ const Clock = () => {
         interval = setInterval(setTime, 500);
         return true;
       },
-      beforeUnmount() {
+      beforeUnmounted() {
         clearInterval(interval);
         return true;
       },

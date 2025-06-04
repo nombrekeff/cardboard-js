@@ -34,15 +34,15 @@ export const createGlobalObserver = () => {
 };
 /**
  * Will call {mounted} when the element is added to the DOM.
- * And will call {beforeUnmount} before the element is removed from the DOM.
+ * And will call {beforeUnmounted} before the element is removed from the DOM.
  * Finally will call {onUnmounted} when the element is removed from the DOM.
  */
-export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmount) {
-    if (beforeUnmount) {
+export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmounted) {
+    if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = () => __awaiter(this, void 0, void 0, function* () {
-            const result = beforeUnmount(tag);
+            const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (yield result))) {
                 tempElRemove.call(tag.el);
             }
@@ -62,9 +62,9 @@ export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmount) {
     if (!context.observer) {
         context.observer = createGlobalObserver();
     }
-    let cb1, cb2;
+    let onAddedCb, onRemovedCb;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    context.observer.onAdded.listen(cb1 = (node) => __awaiter(this, void 0, void 0, function* () {
+    context.observer.onAdded.listen(onAddedCb = (node) => __awaiter(this, void 0, void 0, function* () {
         if (node === tag.el && onMounted) {
             const result = onMounted(tag);
             if (result instanceof Promise) {
@@ -72,28 +72,50 @@ export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmount) {
             }
         }
     }));
-    context.observer.onRemoved.listen(cb2 = (node) => {
+    context.observer.onRemoved.listen(onRemovedCb = (node) => {
         if (node === tag.el && onUnmounted) {
             onUnmounted(tag);
         }
     });
+    // Using `any` here to avoid TypeScript errors, as `_listeners` is not typed in the CTag interface.
     tag._listeners.push(() => {
         var _a, _b;
         // Remove listeners and references (clear memory)
-        (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(cb2);
-        (_b = context.observer) === null || _b === void 0 ? void 0 : _b.onAdded.remove(cb1);
+        (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(onRemovedCb);
+        (_b = context.observer) === null || _b === void 0 ? void 0 : _b.onAdded.remove(onAddedCb);
         onUnmounted = undefined;
         onMounted = undefined;
     });
 }
 ;
 /**
+ * `withLifecycle` is a utility function that adds lifecycle hooks to a Cardboard tag.
+ *
  * Will call `handler.mounted` when the element is added to the DOM.
  * Then call `handler.beforeUnmount` **before** the element is removed from the DOM.
  * Finally call `handler.unmounted` **when** the element is removed from the DOM.
+ *
+ * @example
+ * ```typescript
+ * const myTag = withLifecycle(
+ *   div('Hello World'),
+ *   {
+ *     mounted: (tag) => {
+ *       console.log('Mounted:', tag);
+ *       return true; // or false to prevent mounting
+ *     },
+ *     unmounted: (tag) => {
+ *       console.log('Unmounted:', tag);
+ *     },
+ *     beforeUnmount: (tag) => {
+ *       console.log('Before Unmount:', tag);
+ *       return true; // or false to prevent unmounting
+ *     },
+ *    }
+ *  );
  */
 export const withLifecycle = (tag, handler) => {
-    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmount);
+    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmounted);
     return tag;
 };
 //# sourceMappingURL=lifecycle.js.map

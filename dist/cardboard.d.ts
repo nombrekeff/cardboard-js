@@ -14,16 +14,12 @@ export * from './observables.js';
 export * from './ext/routing.js';
 export type * from './types';
 export declare const Cardboard: {
-    onLifecycle(tag: _tag.CTag, onMounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onUnmounted?: ((tag: _tag.CTag) => void) | undefined, beforeUnmount?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined): void;
+    onLifecycle(tag: _tag.CTag, onMounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onUnmounted?: ((tag: _tag.CTag) => void) | undefined, beforeUnmounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined): void;
     createGlobalObserver: () => {
         onAdded: _events.CEvent<Node>;
         onRemoved: _events.CEvent<Node>;
     };
-    withLifecycle: (tag: _tag.CTag, handler: {
-        mounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
-        unmounted?: ((tag: _tag.CTag) => void) | undefined;
-        beforeUnmount?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
-    }) => _tag.CTag;
+    withLifecycle: (tag: _tag.CTag, handler: import("./types").AtLeastOne<import("./types").LifecycleHandlers>) => _tag.CTag;
     Observable: typeof _observables.Observable;
     isObservable: (obj: any) => boolean;
     createObservable: <T>(val: T, destroyer?: (() => void) | undefined) => _observables.Observable<T>;

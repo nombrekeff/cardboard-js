@@ -1,6 +1,6 @@
 import { allTags, CTag } from '../tag.js';
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
-import { onLifecycle } from '../lifecycle.js';
+import { onLifecycle, withLifecycle } from '../lifecycle.js';
 
 const { div, a } = allTags;
 
@@ -16,9 +16,9 @@ export interface RouterOptions<
   fallbackRoute?: string;
   noRouteBuilder?: RouteBuilder;
   window?: Window & typeof globalThis;
-  start?: (route: CTag) => Promise<boolean> | boolean;
-  remove?: (route: CTag) => Promise<boolean> | boolean;
-  beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
+  mounted?: (route: CTag) => Promise<boolean> | boolean;
+  unmounted?: (route: CTag) => void;
+  beforeUnmounted?: (route: CTag) => Promise<boolean> | boolean;
 }
 
 /**
@@ -98,9 +98,17 @@ export class Router<T extends Record<string, Route> = Record<string, Route>> {
 
   private _hookLifecycle(route: CTag) {
     const options = this._options;
-    if (!options.remove && !options.start) return;
+    if (!options.unmounted && !options.mounted) return;
+    withLifecycle(
+      route,
+      {
+        mounted: options.mounted,
+        unmounted: options.unmounted,
+        beforeUnmounted: options.beforeUnmounted,
+      }
+    );
 
-    onLifecycle(route, options.start, options.remove, options.beforeRemove);
+    onLifecycle(route, options.mounted, options.unmounted, options.beforeUnmounted);
   }
 
   // Follow aliases until a valid route is found

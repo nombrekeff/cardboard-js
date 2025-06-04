@@ -63,3 +63,7 @@ export type AllTags = {
     attach: (...children: PickArgType<key>) => CTag;
   };
 };
+
+type AtLeastOne<T> = {
+  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
+}[keyof T]

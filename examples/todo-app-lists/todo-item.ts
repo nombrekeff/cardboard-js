@@ -7,20 +7,17 @@ export default function TodoItem(
   content: State<TodoItem>,
   remove: (self: CTag, content: State<TodoItem>) => void
 ) {
-  return withLifecycle(
-    div(
-      input()
-        .setAttrs({ type: 'checkbox', name: 'todo-complete' })
-        .on('change', (self, evt) => {
-          content.value.complete = self.checked;
-        }),
-      h4(content.value.item)
-        .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
-      button('-').addClass('btn-remove')
-        .clicked((self) => {
-          if (remove) remove(self, content);
-        }), // self.parent will be div
-    ).addClass('todo-item'),
-    {}
-  );
+  return div(
+    input()
+      .setAttrs({ type: 'checkbox', name: 'todo-complete' })
+      .on('change', (self, evt) => {
+        content.value.complete = self.checked;
+      }),
+    h4(content.value.item)
+      .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
+    button('-').addClass('btn-remove')
+      .clicked((self) => {
+        if (remove) remove(self, content);
+      }),
+  ).addClass('todo-item');
 }
