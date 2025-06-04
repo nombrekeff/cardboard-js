@@ -83,8 +83,8 @@ export function onLifecycle(
         }
     });
 
-    // Using `any` here to avoid TypeScript errors, as `_listeners` is not typed in the CTag interface.
-    (tag as any)._listeners.push(() => {
+    // Using `any` here to avoid TypeScript errors, as `_destroyers` is not typed in the CTag interface.
+    (tag as any)._destroyers.push(() => {
         // Remove listeners and references (clear memory)
         context.observer?.onRemoved.remove(onRemovedCb);
         context.observer?.onAdded.remove(onAddedCb);

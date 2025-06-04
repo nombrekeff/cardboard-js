@@ -188,7 +188,7 @@ export declare class CTag {
     /** Remove styles */
     rmStyle(...styleNames: string[]): this;
     /** Check if this element has styles */
-    hasStyle<K extends CssProperty>(...styles: K[]): boolean;
+    hasStyle(...styles: CssProperty[]): boolean;
     /** Adds a set of attributes to the element */
     setAttrs(attrs: Record<string, string | undefined>): this;
     /** Adds a single attribute to the element */

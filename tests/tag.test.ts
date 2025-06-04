@@ -1,5 +1,5 @@
 import { state } from '../src/state';
-import { CTag, attach, tag } from '../src/tag';
+import { CTag, tag } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
@@ -26,17 +26,6 @@ describe('Tags', () => {
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.tagName.toLowerCase()).toEqual('div');
     expect(t.el.id).toEqual('test');
-  });
-
-  it('tag attaches correctly', async () => {
-    createDomMock('<div id="test"></div>');
-
-    const test = tag('(#test)');
-    attach(test);
-    const d = tag('div', ['Hey!'], true);
-
-    expect(test.children.length).toEqual(1);
-    expect(test.children[0]).toEqual(d.el);
   });
 
   it('tag appends correctly', async () => {

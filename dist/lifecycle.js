@@ -77,8 +77,8 @@ export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmounted) {
             onUnmounted(tag);
         }
     });
-    // Using `any` here to avoid TypeScript errors, as `_listeners` is not typed in the CTag interface.
-    tag._listeners.push(() => {
+    // Using `any` here to avoid TypeScript errors, as `_destroyers` is not typed in the CTag interface.
+    tag._destroyers.push(() => {
         var _a, _b;
         // Remove listeners and references (clear memory)
         (_a = context.observer) === null || _a === void 0 ? void 0 : _a.onRemoved.remove(onRemovedCb);

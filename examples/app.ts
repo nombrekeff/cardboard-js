@@ -86,17 +86,17 @@ root.append(Counter());
 //////////////////////////////////////////////////////////////
 
 // Attributes
-hr.attach();
 
-input
-  .attach()
-  // adds a placeholder attribute to the input element and sets its type to 'number'
-  .setAttrs({ placeholder: 'Enter number', type: 'number' })
-  .changed((t, evt) => {
-    console.log(evt);
-  });
-hr.attach();
-
+root.append(hr());
+root.append(
+  input()
+    // adds a placeholder attribute to the input element and sets its type to 'number'
+    .setAttrs({ placeholder: 'Enter number', type: 'number' })
+    .changed((t, evt) => {
+      console.log(evt);
+    })
+);
+root.append(hr());
 
 //////////////////////////////////////////////////////////////
 
@@ -129,4 +129,4 @@ const TodoList = () => {
   return div(itemInput, button('Add item').clicked(addItem), list);
 };
 
-attached().append(TodoList());
+root.append(TodoList());
