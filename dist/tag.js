@@ -19,9 +19,7 @@ export const context = {
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
-export const attached = () => {
-    return context.attached;
-};
+export const attached = () => context.attached;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *

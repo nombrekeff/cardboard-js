@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { allTags } from '../tag.js';
 import { routeMatcher } from './route-matcher.js';
-import { onLifecycle } from '../lifecycle.js';
+import { onLifecycle, withLifecycle } from '../lifecycle.js';
 const { div, a } = allTags;
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
@@ -63,9 +63,14 @@ export class Router {
     }
     _hookLifecycle(route) {
         const options = this._options;
-        if (!options.remove && !options.start)
+        if (!options.unmounted && !options.mounted)
             return;
-        onLifecycle(route, options.start, options.remove, options.beforeRemove);
+        withLifecycle(route, {
+            mounted: options.mounted,
+            unmounted: options.unmounted,
+            beforeUnmounted: options.beforeUnmounted,
+        });
+        onLifecycle(route, options.mounted, options.unmounted, options.beforeUnmounted);
     }
     // Follow aliases until a valid route is found
     _getEffectiveRoute() {

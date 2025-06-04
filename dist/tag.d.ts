@@ -3,6 +3,7 @@ import { type CEvent } from './events.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
+import { CommonAttributes } from './attributes.js';
 export declare const context: {
     attached?: CTag;
     stack: CTag[];
@@ -113,13 +114,13 @@ export declare class CTag {
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
-    attrIf<T>(observable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+    attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
      * {value} can be a string or a function that returns a string.
      * If {invert} is set to true, the condition will be inversed
      */
-    attrIfNot<T>(observable: IObservable<T>, attr: string, value?: string | ((self: CTag) => string)): this;
+    attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string)): this;
     /**
      * Disable this element when the consumer is truthy. Updates whenever the observable changes.
      * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
@@ -191,13 +192,13 @@ export declare class CTag {
     /** Adds a set of attributes to the element */
     setAttrs(attrs: Record<string, string | undefined>): this;
     /** Adds a single attribute to the element */
-    addAttr(key: string, value?: string): this;
+    addAttr(key: CommonAttributes, value?: string): this;
     /** Remove attributes from the element */
-    rmAttr(...attrs: string[]): this;
+    rmAttr(...attrs: CommonAttributes[]): this;
     /** Check if this element has attributes */
-    hasAttr(...attr: string[]): boolean;
+    hasAttr(...attr: CommonAttributes[]): boolean;
     /** Get an attributes value */
-    getAttr(attr: string): any;
+    getAttr(attr: CommonAttributes): any;
     /**
      * Returns a {@link IObservable} that fires when the Event {@link evtName} is fired in this element
      *

@@ -17,11 +17,11 @@ export const HomeRoute = () => {
       ),
     ),
     {
-      // start(tag) {
+      // mounted(tag) {
       //   // console.log('start');
       //   // tweenTag(tag, fadeOut);
       // },
-      // beforeRemove(tag) {
+      // beforeUnmounted(tag) {
       //   return new Promise((resolve) =>
       //     tweenTag(tag, fadeIn, () => resolve(true)),
       //   );
