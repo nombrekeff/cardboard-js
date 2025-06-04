@@ -33,6 +33,15 @@ const baseStyles: StyleSet = {
     },
   },
 };
+
+/**
+ * Creates a base style for the application.  
+ * This style includes basic styles for buttons and inputs.  
+ * It can be attached to the document or used as a standalone style.
+ * 
+ * @param attach - If true, the style will be attached to the document.
+ * @returns A CTag representing the base style.
+ */
 export const BaseStyle = (attach: boolean = true): CTag => {
   return attach ? style.attach(baseStyles) : style(baseStyles);
 };

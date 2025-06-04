@@ -66,9 +66,9 @@ export function onLifecycle(
         context.observer = createGlobalObserver();
     }
 
-    let cb1, cb2;
+    let onAddedCb, onRemovedCb;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    context.observer.onAdded.listen(cb1 = async (node: Node) => {
+    context.observer.onAdded.listen(onAddedCb = async (node: Node) => {
         if (node === tag.el && onMounted) {
             const result = onMounted(tag);
             if (result instanceof Promise) {
@@ -76,15 +76,16 @@ export function onLifecycle(
             }
         }
     });
-    context.observer.onRemoved.listen(cb2 = (node: Node) => {
+    context.observer.onRemoved.listen(onRemovedCb = (node: Node) => {
         if (node === tag.el && onUnmounted) {
             onUnmounted(tag);
         }
     });
+    // Using `any` here to avoid TypeScript errors, as `_listeners` is not typed in the CTag interface.
     (tag as any)._listeners.push(() => {
         // Remove listeners and references (clear memory)
-        context.observer?.onRemoved.remove(cb2);
-        context.observer?.onAdded.remove(cb1);
+        context.observer?.onRemoved.remove(onRemovedCb);
+        context.observer?.onAdded.remove(onAddedCb);
         onUnmounted = undefined;
         onMounted = undefined;
     });
