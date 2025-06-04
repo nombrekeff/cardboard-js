@@ -1,5 +1,5 @@
 import { type CTag } from './tag.js';
-import { AtLeastOne, LifecycleHandlers } from './types.js';
+import { AtLeastOne } from './types.js';
 export declare const createGlobalObserver: () => {
     onAdded: import("./events.js").CEvent<Node>;
     onRemoved: import("./events.js").CEvent<Node>;
@@ -36,4 +36,8 @@ export declare function onLifecycle(tag: CTag, onMounted?: (tag: CTag) => Promis
  *    }
  *  );
  */
-export declare const withLifecycle: (tag: CTag, handler: AtLeastOne<LifecycleHandlers>) => CTag;
+export declare const withLifecycle: (tag: CTag, handler: AtLeastOne<{
+    mounted?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
+    unmounted?: ((tag: CTag) => void) | undefined;
+    beforeUnmounted?: ((tag: CTag) => Promise<boolean> | boolean) | undefined;
+}>) => CTag;

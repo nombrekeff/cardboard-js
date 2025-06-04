@@ -20,6 +20,7 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { createGlobalObserver } from './lifecycle.js';
+import { CommonAttributes } from './attributes.js';
 
 export const context: {
   attached?: CTag;
@@ -36,9 +37,7 @@ export const context: {
 /**
  * Returns the currently attached {@link CTag}. See {@link attach} for more information.
  */
-export const attached = () => {
-  return context.attached;
-};
+export const attached = () => context.attached;
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -362,7 +361,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
    */
-  attrIf<T>(observable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '', invert = false) {
+  attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       observable,
       () => this.addAttr(attr, val(value, this)),
@@ -376,7 +375,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed
    */
-  attrIfNot<T>(observable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '') {
+  attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value: string | ((self: CTag) => string) = '') {
     return this.attrIf(observable, attr, value, true);
   }
 
@@ -558,7 +557,7 @@ export class CTag {
   }
 
   /** Check if this element has styles */
-  hasStyle<K extends CssProperty>(...styles: K[]) {
+  hasStyle(...styles: CssProperty[]) {
     for (const key of styles) {
       if (!this.style.getPropertyValue(camelToDash(key))) {
         return false;
@@ -576,14 +575,14 @@ export class CTag {
   }
 
   /** Adds a single attribute to the element */
-  addAttr(key: string, value: string = '') {
-    this.el.attributes[key] = value;
+  addAttr(key: CommonAttributes, value: string = '') {
+    this.el.attributes[key as string] = value;
     this.el.setAttribute(key, value);
     return this;
   }
 
   /** Remove attributes from the element */
-  rmAttr(...attrs: string[]) {
+  rmAttr(...attrs: CommonAttributes[]) {
     for (const key of attrs) {
       this.el.removeAttribute(key);
       delete this.el.attributes[key];
@@ -592,7 +591,7 @@ export class CTag {
   }
 
   /** Check if this element has attributes */
-  hasAttr(...attr: string[]) {
+  hasAttr(...attr: CommonAttributes[]) {
     for (const key of attr) {
       if (!(key in this.el.attributes)) {
         return false;
@@ -602,7 +601,7 @@ export class CTag {
   }
 
   /** Get an attributes value */
-  getAttr(attr: string) {
+  getAttr(attr: CommonAttributes) {
     return this.el.attributes[attr];
   }
 

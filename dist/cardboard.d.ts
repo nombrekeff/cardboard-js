@@ -19,7 +19,11 @@ export declare const Cardboard: {
         onAdded: _events.CEvent<Node>;
         onRemoved: _events.CEvent<Node>;
     };
-    withLifecycle: (tag: _tag.CTag, handler: import("./types").AtLeastOne<import("./types").LifecycleHandlers>) => _tag.CTag;
+    withLifecycle: (tag: _tag.CTag, handler: import("./types").AtLeastOne<{
+        mounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
+        unmounted?: ((tag: _tag.CTag) => void) | undefined;
+        beforeUnmounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined;
+    }>) => _tag.CTag;
     Observable: typeof _observables.Observable;
     isObservable: (obj: any) => boolean;
     createObservable: <T>(val: T, destroyer?: (() => void) | undefined) => _observables.Observable<T>;
