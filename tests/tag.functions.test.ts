@@ -7,6 +7,7 @@ import {
   init,
   CTag,
   allTags,
+  resetMountPoints,
 } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 
@@ -128,6 +129,9 @@ const allKnownTags = [
 ];
 
 describe('Tag functions', () => {
+  beforeEach(() => {
+    clearMountPoints();
+  });
   it('mountPoint', async () => {
     createDomMock();
     const c = tag('div');
@@ -159,6 +163,18 @@ describe('Tag functions', () => {
     createDomMock();
     const c = tag('div');
     mountPoint(c);
+
+    expect(getMountPoint()).toBe(c);
+  });
+
+  it('resetMountPoint()', async () => {
+    createDomMock();
+    const c = tag('div');
+    mountPoint(c);
+    mountPoint(tag('div'));
+    mountPoint(tag('div'));
+
+    resetMountPoints();
 
     expect(getMountPoint()).toBe(c);
   });

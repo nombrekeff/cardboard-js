@@ -297,17 +297,17 @@ export declare const restoreMountPoint: () => void;
  */
 export declare const clearMountPoints: () => void;
 /**
- * Clears the stack of mount points tags and sets the mount point to the given tag.
- * This is useful when you want to reset the mount points to a specific tag.
+ * Clears the mount point history and resets the mount point to the first one.
+ * This means that the mount point will be the first tag that was mounted,
+ * and all other mount points will be cleared.
  */
-export declare const resetMountPoints: (tag: CTag) => void;
+export declare const resetMountPoints: () => void;
 /**
- * It makes the body tag the mount point ({@link mountPoint}).
+ * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
  * You can pass in a selector for an element you want to be the default tag ("body" by default).
- *
  */
 export declare const init: (options?: {
-    root: string;
+    selector: string;
 }) => CTag;
 /**
  * List of all HTML tag functions. From `div` to `abbr` :)

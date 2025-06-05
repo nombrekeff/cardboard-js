@@ -87,9 +87,9 @@ export declare const Cardboard: {
     mountPoint: (tag: _tag.CTag) => _tag.CTag;
     restoreMountPoint: () => void;
     clearMountPoints: () => void;
-    resetMountPoints: (tag: _tag.CTag) => void;
+    resetMountPoints: () => void;
     init: (options?: {
-        root: string;
+        selector: string;
     }) => _tag.CTag;
     allTags: import("./types").AllTags;
 };

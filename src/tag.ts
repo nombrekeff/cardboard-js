@@ -875,11 +875,13 @@ export const clearMountPoints = () => {
 };
 
 /**
- * Clears the stack of mount points tags and sets the mount point to the given tag.
- * This is useful when you want to reset the mount points to a specific tag.
+ * Clears the mount point history and resets the mount point to the first one.
+ * This means that the mount point will be the first tag that was mounted, 
+ * and all other mount points will be cleared.
  */
-export const resetMountPoints = (tag: CTag) => {
-  context.mountPoint = tag;
+export const resetMountPoints = () => {
+  let first = context.mountPointHistory.shift();
+  context.mountPoint = first;
   context.mountPointHistory = [];
 };
 
