@@ -723,22 +723,23 @@ export const clearMountPoints = () => {
     context.mountPointHistory = [];
 };
 /**
- * Clears the stack of mount points tags and sets the mount point to the given tag.
- * This is useful when you want to reset the mount points to a specific tag.
+ * Clears the mount point history and resets the mount point to the first one.
+ * This means that the mount point will be the first tag that was mounted,
+ * and all other mount points will be cleared.
  */
-export const resetMountPoints = (tag) => {
-    context.mountPoint = tag;
+export const resetMountPoints = () => {
+    let first = context.mountPointHistory.shift();
+    context.mountPoint = first;
     context.mountPointHistory = [];
 };
 /**
- * It makes the body tag the mount point ({@link mountPoint}).
+ * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
  * You can pass in a selector for an element you want to be the default tag ("body" by default).
- *
  */
-export const init = (options = { root: 'body' }) => {
-    const root = new CTag(`(${options.root})`);
+export const init = (options = { selector: 'body' }) => {
+    const tag = new CTag(`(${options.selector})`);
     context.observer = createGlobalObserver();
-    return mountPoint(root);
+    return mountPoint(tag);
 };
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
