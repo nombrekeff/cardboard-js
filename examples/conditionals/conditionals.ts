@@ -10,7 +10,7 @@ const hide4 = state(false);
 const hide5 = state(false);
 const disable = state(true);
 
-div.attach(
+div.mount(
   div(
     p('Paragraph 1').setId('p1').hideIf(hide1),
     p('Paragraph 2').setId('p2').hideIf(hide2),
@@ -40,9 +40,9 @@ const pp1 = p("I'm here 1");
 const pp2 = p("I'm here 2");
 const pp3 = p("I'm here 3");
 
-br();
-button.attach('Toggle').clicked(() => (show.value = !show.value));
-div.attach(
+br.mount();
+button.mount('Toggle').clicked(() => (show.value = !show.value));
+div.mount(
   pp1,
   pp2.hideIfNot(show), //
   pp3,

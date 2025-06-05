@@ -39,9 +39,9 @@ const baseStyles: StyleSet = {
  * This style includes basic styles for buttons and inputs.  
  * It can be attached to the document or used as a standalone style.
  * 
- * @param attach - If true, the style will be attached to the document.
+ * @param mountToParent - If true, the style will be appended to the current mount point.
  * @returns A CTag representing the base style.
  */
-export const BaseStyle = (attach: boolean = true): CTag => {
-  return attach ? style.attach(baseStyles) : style(baseStyles);
+export const BaseStyle = (mountToParent: boolean = true): CTag => {
+  return mountToParent ? style.mount(baseStyles) : style(baseStyles);
 };

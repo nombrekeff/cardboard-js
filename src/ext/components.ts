@@ -6,7 +6,7 @@ export interface HInputOptions<T = string> {
   value?: T | IObservable<T>;
   placeholder?: string;
   tooltip?: string;
-  attach?: boolean;
+  mountToParent?: boolean;
   attr?: Record<string, string | undefined>;
   type?: string;
   input?: EventCallback<'input'>;
@@ -14,7 +14,7 @@ export interface HInputOptions<T = string> {
 }
 
 export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
-  const el = options.attach ? input.attach() : input();
+  const el = options.mountToParent ? input.mount() : input();
   el.config({
     attr: {
       tooltip: options.tooltip,

@@ -4,7 +4,7 @@ const { style } = allTags;
 const flexCenterCenter = { display: 'flex', alignItems: 'center', justifyContent: 'center' };
 
 export default function styles() {
-  return style.attach({
+  return style.mount({
     '*': {
       fontFamily: "'Montserrat', sans-serif !important;",
       scrollbarGutter: 'stable',

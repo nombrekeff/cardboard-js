@@ -74,19 +74,20 @@ export declare const Cardboard: {
     stateRemoveWhere: <T_19>(state: import("./types").State<T_19[]>, cb: (item: T_19, index: number) => boolean) => void;
     stateRemove: <T_20>(state: import("./types").State<T_20[]>, item: T_20) => void;
     context: {
-        attached?: _tag.CTag | undefined;
-        stack: _tag.CTag[];
+        mountPoint?: _tag.CTag | undefined;
+        mountPointHistory: _tag.CTag[];
         observer?: {
             onAdded: _events.CEvent<Node>;
             onRemoved: _events.CEvent<Node>;
         } | undefined;
     };
-    attached: () => _tag.CTag | undefined;
+    getMountPoint: () => _tag.CTag | undefined;
     CTag: typeof _tag.CTag;
-    tag: (arg0: string | HTMLElement, children?: import("./types").TagChildren, attach?: boolean) => _tag.CTag;
-    attach: (tag: _tag.CTag) => _tag.CTag;
-    detach: () => void;
-    detachAll: () => void;
+    tag: (arg0: string | HTMLElement, children?: import("./types").TagChildren, mountToParent?: boolean) => _tag.CTag;
+    mountPoint: (tag: _tag.CTag) => _tag.CTag;
+    restoreMountPoint: () => void;
+    clearMountPoints: () => void;
+    resetMountPoints: (tag: _tag.CTag) => void;
     init: (options?: {
         root: string;
     }) => _tag.CTag;

@@ -5,17 +5,17 @@ import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
 import { CommonAttributes } from './attributes.js';
 export declare const context: {
-    attached?: CTag;
-    stack: CTag[];
+    mountPoint?: CTag;
+    mountPointHistory: CTag[];
     observer?: {
         onAdded: CEvent<Node>;
         onRemoved: CEvent<Node>;
     };
 };
 /**
- * Returns the currently attached {@link CTag}. See {@link attach} for more information.
+ * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */
-export declare const attached: () => CTag | undefined;
+export declare const getMountPoint: () => CTag | undefined;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -39,8 +39,6 @@ export declare class CTag {
     private _children;
     private _cachedChildren;
     get children(): Node[];
-    /** If set to true, it be appended to the attached tag */
-    private readonly _attachable;
     private readonly _meta;
     get value(): any;
     setValue(newValue: string): this;
@@ -53,7 +51,7 @@ export declare class CTag {
     get consumeValue(): any;
     get id(): string;
     setId(id: string): this;
-    constructor(arg0: TagName | HTMLElement, children?: TagChildren, attachable?: boolean);
+    constructor(arg0: TagName | HTMLElement, children?: TagChildren, mountToParent?: boolean);
     /** Sets the children, removes previous children  */
     setChildren(children: TagChildren): this;
     append(...children: TagChildren): this;
@@ -255,7 +253,7 @@ export declare class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
  *
  * @example
  * ```ts
@@ -265,40 +263,48 @@ export declare class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, attach?: boolean) => CTag;
+export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, mountToParent?: boolean) => CTag;
 /**
- * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
+ * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
- * You can call attach multiple times, and the last attach tag will be used.
- * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
+ * You can call mountPoint multiple times, and the last mount point tag will be used.
+ * Then when you've finished, you can call {@link restoreMountPoint} to go back to the previously mounted tag if there is one.
+ * You can clear all mount points using {@link clearMountPoints}.
  *
  * @example
  * ```ts
- * attach(div());
- * div.attach();  // added as child of div
- * p.attach();    // added as child of div
+ * mountPoint(div()); // Div 1
+ * div.mount();  // added as child of div
+ * p.mount();    // added as child of div
  *
- * attach(div()); // New div
- * div.attach();  // added as child of new div
- * p.attach();    // added as child of new div
+ * mountPoint(div()); // Div 2
+ * div.mount();  // added as child of new div
+ * p.mount();    // added as child of new div
  *
- * detach();      // Back to previous div
- * detach();      // No attached tag
+ * restoreMountPoint();      // Back to div 1
+ * clearMountPoints();       // Clears all mount points, no mount point after this call
  * ```
  */
-export declare const attach: (tag: CTag) => CTag;
+export declare const mountPoint: (tag: CTag) => CTag;
 /**
- * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
- * If there are no previous attached tags, it will clear the attached tag.
+ * Restore the currently mounted tag ({@link mountPoint}).
+ * Goes back in the stack of mount points tags.
+ * If there is no previous mount point tag, it will not do anything.
  */
-export declare const detach: () => void;
+export declare const restoreMountPoint: () => void;
 /**
- * Detaches all attached tags. There will be no attached tag after calling this function.
+ * Restores all mount points. There will be no mount points tag after calling this function.
  */
-export declare const detachAll: () => void;
+export declare const clearMountPoints: () => void;
 /**
- * It makes the body the attached tag ({@link attach}).
- * You can pass in a selector for an element you want to be the default attached tag.
+ * Clears the stack of mount points tags and sets the mount point to the given tag.
+ * This is useful when you want to reset the mount points to a specific tag.
+ */
+export declare const resetMountPoints: (tag: CTag) => void;
+/**
+ * It makes the body tag the mount point ({@link mountPoint}).
+ * You can pass in a selector for an element you want to be the default tag ("body" by default).
+ *
  */
 export declare const init: (options?: {
     root: string;

@@ -7,7 +7,6 @@ export interface TodoItem {
 const appState = listState<TodoItem>(
   new Array(50).fill('')
     .map((_, index) => ({ item: `Item ${index}`, complete: false }))
-    // .sort(() => Math.random() > .5 ? 1 : -1)
 );
 export const addAll = () => {
   appState.list.value = new Array(50).fill('')

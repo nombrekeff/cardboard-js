@@ -1,4 +1,4 @@
-import { CTag, attach, tag } from '../src/tag';
+import { tag } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {

@@ -59,9 +59,9 @@ export type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 export type AllTags = {
   [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
     /**
-     * This will attach (append) this tag to the currently attached tag if there is one.
+     * This will mount (append) this tag to the currently mounted tag if there is one.
      */
-    attach: (...children: PickArgType<key>) => CTag;
+    mount: (...children: PickArgType<key>) => CTag;
   };
 };
 

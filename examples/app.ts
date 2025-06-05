@@ -1,4 +1,4 @@
-import { init, allTags, state, attached, CTag } from '../dist/cardboard.js';
+import { init, allTags, state, getMountPoint, CTag } from '../dist/cardboard.js';
 import { Input } from '../dist/ext/components.js';
 import { BaseStyle } from '../dist/ext/base_style.js';
 import { makeTween, tween, tweenTag } from '../dist/ext/tween.js';
@@ -129,4 +129,4 @@ const TodoList = () => {
   return div(itemInput, button('Add item').clicked(addItem), list);
 };
 
-root.append(TodoList());
+getMountPoint().append(TodoList());

@@ -2,7 +2,7 @@ import {
   init,
   tag,
   allTags,
-  attach,
+  mountPoint,
   each,
   isEmpty,
 } from '../../dist/cardboard.js';
@@ -20,14 +20,16 @@ const pageLinks = [
 ];
 const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
-init();
-BaseStyle();
-tag('(head)').append(...makeLinks());
-styles();
+const root = init().append(
+  BaseStyle(false),
+  tag('(head)').append(...makeLinks()),
+  styles(),
+);
 
-attach(div.attach().addClass('todo-app'));
 
-h3.attach('Cardboard TODO - count: ', todoCount).setStyle({
+mountPoint(div.mount().addClass('todo-app'));
+
+h3.mount('Cardboard TODO - count: ', todoCount).setStyle({
   textAlign: 'center',
   margin: '40px 0',
 });
@@ -43,13 +45,13 @@ const addItemBtn = button('+')
   .disableIf(isEmpty(newTodo))
   .clicked(addItemFromInput);
 
-div.attach(
+div.mount(
   button('remove').clicked(() => removeAll()),
   button('add').clicked(() => addAll()),
 );
-div.attach(itemInput, addItemBtn).addClass('header');
+div.mount(itemInput, addItemBtn).addClass('header');
 div
-  .attach(
+  .mount(
     p('There are no items: ', todoCount).addClass('list-empty').hideIf(todoCount),
     each(todos, (item) => {
       return TodoItem(item, (s, c) => removeTodo(c));

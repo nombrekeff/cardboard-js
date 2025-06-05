@@ -1,9 +1,9 @@
 import {
   tag,
-  attach,
-  attached,
-  detachAll,
-  detach,
+  mountPoint,
+  getMountPoint,
+  clearMountPoints,
+  restoreMountPoint,
   init,
   CTag,
   allTags,
@@ -131,62 +131,62 @@ describe('Tag functions', () => {
   it('attach', async () => {
     createDomMock();
     const c = tag('div');
-    attach(c);
+    mountPoint(c);
 
-    expect(attached()).toBe(c);
+    expect(getMountPoint()).toBe(c);
   });
 
   it('multiple attach', async () => {
     createDomMock();
-    detachAll();
+    clearMountPoints();
 
     const c = tag('div');
-    attach(c);
-    expect(attached()).toBe(c);
+    mountPoint(c);
+    expect(getMountPoint()).toBe(c);
 
     const c1 = tag('div');
-    attach(c1);
-    expect(attached()).toBe(c1);
+    mountPoint(c1);
+    expect(getMountPoint()).toBe(c1);
 
-    detach();
-    expect(attached()).toBe(c);
+    restoreMountPoint();
+    expect(getMountPoint()).toBe(c);
 
-    detach();
-    expect(attached()).toBe(undefined);
+    restoreMountPoint();
+    expect(getMountPoint()).toBe(undefined);
   });
 
   it('attached', async () => {
     createDomMock();
     const c = tag('div');
-    attach(c);
+    mountPoint(c);
 
-    expect(attached()).toBe(c);
+    expect(getMountPoint()).toBe(c);
   });
 
   it('init default', async () => {
     createDomMock();
     init();
 
-    expect(attached()).toBeInstanceOf(CTag);
-    expect(attached()?.el.tagName).toBe('BODY');
+    expect(getMountPoint()).toBeInstanceOf(CTag);
+    expect(getMountPoint()?.el.tagName).toBe('BODY');
   });
 
   it('init with root', async () => {
     createDomMock('<div id="root"></div>');
     init({ root: '#root' });
 
-    expect(attached()).toBeInstanceOf(CTag);
-    expect(attached()?.el.tagName).toBe('DIV');
-    expect(attached()?.el.id).toBe('root');
+    expect(getMountPoint()).toBeInstanceOf(CTag);
+    expect(getMountPoint()?.el.tagName).toBe('DIV');
+    expect(getMountPoint()?.el.id).toBe('root');
   });
 
   it('allTags', async () => {
     createDomMock('');
     for (const tname of allKnownTags) {
       expect(allTags[tname]).toBeTruthy();
-      expect('attach' in allTags[tname]).toBeTruthy();
+      expect('mount' in allTags[tname]).toBeTruthy();
       expect(allTags[tname]()).toBeInstanceOf(CTag);
-      expect(allTags[tname].attach()).toBeInstanceOf(CTag);
+      expect(allTags[tname].mount()).toBeInstanceOf(CTag);
     }
   });
 

@@ -13,13 +13,13 @@ import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { createGlobalObserver } from './lifecycle.js';
 export const context = {
-    attached: undefined,
-    stack: [],
+    mountPoint: undefined,
+    mountPointHistory: [],
 };
 /**
- * Returns the currently attached {@link CTag}. See {@link attach} for more information.
+ * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */
-export const attached = () => context.attached;
+export const getMountPoint = () => context.mountPoint;
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -71,7 +71,7 @@ export class CTag {
         this.el.id = id;
         return this;
     }
-    constructor(arg0, children = [], attachable = false) {
+    constructor(arg0, children = [], mountToParent = false) {
         /**
          * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
          * Used to remove HTML Event Listeners and Observable listeners
@@ -80,13 +80,10 @@ export class CTag {
         /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
         this._children = [];
         this._cachedChildren = [];
-        /** If set to true, it be appended to the attached tag */
-        this._attachable = false;
         this._meta = {
             isHidden: false,
             nextSiblingID: null,
         };
-        this._attachable = false;
         const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
         if (isSelector) {
             const match = arg0.match(/\((.+)\)/);
@@ -101,17 +98,16 @@ export class CTag {
             this.el = element;
         }
         else if (typeof arg0 === 'string') {
-            this._attachable = attachable;
             this.el = document.createElement(arg0);
+            if (context.mountPoint && mountToParent) {
+                context.mountPoint.append(this);
+            }
         }
         else if (arg0 instanceof HTMLElement) {
             this.el = arg0;
         }
         else {
             throw new Error('Invalid argument 0');
-        }
-        if (context.attached && this._attachable) {
-            context.attached.append(this);
         }
         if (children.length > 0)
             this.setChildren(children);
@@ -670,7 +666,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
  *
  * @example
  * ```ts
@@ -680,68 +676,79 @@ export class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export const tag = (arg0, children = [], attach = false) => {
-    return new CTag(arg0, children, attach);
+export const tag = (arg0, children = [], mountToParent = false) => {
+    return new CTag(arg0, children, mountToParent);
 };
 /**
- * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
+ * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
- * You can call attach multiple times, and the last attach tag will be used.
- * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
+ * You can call mountPoint multiple times, and the last mount point tag will be used.
+ * Then when you've finished, you can call {@link restoreMountPoint} to go back to the previously mounted tag if there is one.
+ * You can clear all mount points using {@link clearMountPoints}.
  *
  * @example
  * ```ts
- * attach(div());
- * div.attach();  // added as child of div
- * p.attach();    // added as child of div
+ * mountPoint(div()); // Div 1
+ * div.mount();  // added as child of div
+ * p.mount();    // added as child of div
  *
- * attach(div()); // New div
- * div.attach();  // added as child of new div
- * p.attach();    // added as child of new div
+ * mountPoint(div()); // Div 2
+ * div.mount();  // added as child of new div
+ * p.mount();    // added as child of new div
  *
- * detach();      // Back to previous div
- * detach();      // No attached tag
+ * restoreMountPoint();      // Back to div 1
+ * clearMountPoints();       // Clears all mount points, no mount point after this call
  * ```
  */
-export const attach = (tag) => {
-    if (context.attached) {
-        context.stack.push(context.attached);
+export const mountPoint = (tag) => {
+    if (context.mountPoint) {
+        context.mountPointHistory.push(context.mountPoint);
     }
-    context.attached = tag;
+    context.mountPoint = tag;
     return tag;
 };
 /**
- * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
- * If there are no previous attached tags, it will clear the attached tag.
+ * Restore the currently mounted tag ({@link mountPoint}).
+ * Goes back in the stack of mount points tags.
+ * If there is no previous mount point tag, it will not do anything.
  */
-export const detach = () => {
-    context.attached = context.stack.pop();
+export const restoreMountPoint = () => {
+    context.mountPoint = context.mountPointHistory.pop();
 };
 /**
- * Detaches all attached tags. There will be no attached tag after calling this function.
+ * Restores all mount points. There will be no mount points tag after calling this function.
  */
-export const detachAll = () => {
-    context.attached = undefined;
-    context.stack = [];
+export const clearMountPoints = () => {
+    context.mountPoint = undefined;
+    context.mountPointHistory = [];
 };
 /**
- * It makes the body the attached tag ({@link attach}).
- * You can pass in a selector for an element you want to be the default attached tag.
+ * Clears the stack of mount points tags and sets the mount point to the given tag.
+ * This is useful when you want to reset the mount points to a specific tag.
+ */
+export const resetMountPoints = (tag) => {
+    context.mountPoint = tag;
+    context.mountPointHistory = [];
+};
+/**
+ * It makes the body tag the mount point ({@link mountPoint}).
+ * You can pass in a selector for an element you want to be the default tag ("body" by default).
+ *
  */
 export const init = (options = { root: 'body' }) => {
     const root = new CTag(`(${options.root})`);
     context.observer = createGlobalObserver();
-    return attach(root);
+    return mountPoint(root);
 };
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors = {
-    ul: (children, attach = false) => {
+    ul: (children, mountToParent = false) => {
         return tag('ul', children.map((cl) => {
-            return tag('li', [cl], attach);
+            return tag('li', [cl], mountToParent);
         }));
     },
-    style: (styles, attach = false) => {
-        return tag('style', [genCss(styles)], attach);
+    style: (styles, mountToParent = false) => {
+        return tag('style', [genCss(styles)], mountToParent);
     },
 };
 /**
@@ -760,7 +767,7 @@ export const allTags = new Proxy({}, {
         const fn = (...children) => {
             return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
         };
-        Object.defineProperty(fn, 'attach', {
+        Object.defineProperty(fn, 'mount', {
             get: () => {
                 return (...children) => {
                     return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
