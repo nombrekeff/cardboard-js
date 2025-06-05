@@ -7,7 +7,9 @@ import { makeTween, tween, tweenTag } from '../dist/ext/tween.js';
 const { div, button, input, ul, li, hr, style } = allTags;
 
 // Initialize Cardboard
-// This will create the root element and attach it to the document body
+// This will initialize the Cardboard framework
+// and create a root element referencing the 'body' by default
+// You can also pass a custom mount point if needed
 const root = init();
 
 // Adds a base stylesheet to the root element

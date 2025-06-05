@@ -128,7 +128,7 @@ const allKnownTags = [
 ];
 
 describe('Tag functions', () => {
-  it('attach', async () => {
+  it('mountPoint', async () => {
     createDomMock();
     const c = tag('div');
     mountPoint(c);
@@ -136,7 +136,7 @@ describe('Tag functions', () => {
     expect(getMountPoint()).toBe(c);
   });
 
-  it('multiple attach', async () => {
+  it('multiple mountPoint', async () => {
     createDomMock();
     clearMountPoints();
 
@@ -155,7 +155,7 @@ describe('Tag functions', () => {
     expect(getMountPoint()).toBe(undefined);
   });
 
-  it('attached', async () => {
+  it('getMountPoint()', async () => {
     createDomMock();
     const c = tag('div');
     mountPoint(c);
@@ -171,9 +171,9 @@ describe('Tag functions', () => {
     expect(getMountPoint()?.el.tagName).toBe('BODY');
   });
 
-  it('init with root', async () => {
+  it('init with selector', async () => {
     createDomMock('<div id="root"></div>');
-    init({ root: '#root' });
+    init({ selector: '#root' });
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
     expect(getMountPoint()?.el.tagName).toBe('DIV');

@@ -884,14 +884,13 @@ export const resetMountPoints = (tag: CTag) => {
 };
 
 /**
- * It makes the body tag the mount point ({@link mountPoint}).
+ * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
  * You can pass in a selector for an element you want to be the default tag ("body" by default).
- * 
  */
-export const init = (options: { root: string } = { root: 'body' }) => {
-  const root = new CTag(`(${options.root})`);
+export const init = (options: { selector: string } = { selector: 'body' }) => {
+  const tag = new CTag(`(${options.selector})`);
   context.observer = createGlobalObserver();
-  return mountPoint(root);
+  return mountPoint(tag);
 };
 
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
