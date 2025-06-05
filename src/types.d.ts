@@ -2,6 +2,7 @@ import type { CssProperty } from './css-properties.js';
 import type { PickPropertyValues } from './css-property-values.js';
 import type { CTag } from './tag.js';
 import type { ValidTagName } from './tag-names.js';
+import type { CommonAttributes } from './attributes.js';
 
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
 export type NoOp = () => void;
@@ -45,7 +46,7 @@ export type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
 export type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
 export interface TagConfig {
   style?: StyleMap;
-  attr?: Record<string, string | undefined>;
+  attr?: Record<CommonAttributes & {}, string | undefined>;
   classList?: string[];
   text?: string;
   children?: TagChildren;
@@ -58,8 +59,12 @@ export type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
 export type AllTags = {
   [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
     /**
-     * This will attach (append) this tag to the currently attached tag if there is one.
+     * This will mount (append) this tag to the currently mounted tag if there is one.
      */
-    attach: (...children: PickArgType<key>) => CTag;
+    mount: (...children: PickArgType<key>) => CTag;
   };
 };
+
+export type AtLeastOne<T> = {
+  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
+}[keyof T]

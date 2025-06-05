@@ -8,9 +8,9 @@ export interface RouterOptions<T extends Record<string, Route> = Record<string, 
     fallbackRoute?: string;
     noRouteBuilder?: RouteBuilder;
     window?: Window & typeof globalThis;
-    start?: (route: CTag) => Promise<boolean> | boolean;
-    remove?: (route: CTag) => Promise<boolean> | boolean;
-    beforeRemove?: (route: CTag) => Promise<boolean> | boolean;
+    mounted?: (route: CTag) => Promise<boolean> | boolean;
+    unmounted?: (route: CTag) => void;
+    beforeUnmounted?: (route: CTag) => Promise<boolean> | boolean;
 }
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing

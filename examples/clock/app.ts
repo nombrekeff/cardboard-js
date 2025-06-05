@@ -2,9 +2,11 @@
 import { state } from '../../dist/state.js';
 import { withLifecycle } from '../../dist/lifecycle.js';
 import { allTags, init } from '../../dist/tag.js';
+import { BaseStyle } from '../../dist/ext/base_style.js';
 
 const { div, style, span } = allTags;
 const padd = (d) => d.toString().padStart(2, '0')
+
 
 const Clock = () => {
   const seconds = state('00');
@@ -29,13 +31,13 @@ const Clock = () => {
       span(seconds),
     ),
     {
-      start() {
+      mounted() {
         setTime();
         clearInterval(interval);
         interval = setInterval(setTime, 500);
         return true;
       },
-      removed() {
+      beforeUnmounted() {
         clearInterval(interval);
         return true;
       },
@@ -57,6 +59,7 @@ init().append(
       fontSize: '5rem',
     },
   }),
+  BaseStyle(false),
   Clock(),
 );
 

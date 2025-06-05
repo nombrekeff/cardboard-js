@@ -4,7 +4,7 @@ export interface HInputOptions<T = string> {
     value?: T | IObservable<T>;
     placeholder?: string;
     tooltip?: string;
-    attach?: boolean;
+    mountToParent?: boolean;
     attr?: Record<string, string | undefined>;
     type?: string;
     input?: EventCallback<'input'>;

@@ -20,25 +20,24 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { createGlobalObserver } from './lifecycle.js';
+import { CommonAttributes } from './attributes.js';
 
 export const context: {
-  attached?: CTag;
-  stack: CTag[];
+  mountPoint?: CTag;
+  mountPointHistory: CTag[];
   observer?: {
     onAdded: CEvent<Node>;
     onRemoved: CEvent<Node>;
   };
 } = {
-  attached: undefined,
-  stack: [],
+  mountPoint: undefined,
+  mountPointHistory: [],
 };
 
 /**
- * Returns the currently attached {@link CTag}. See {@link attach} for more information.
+ * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */
-export const attached = () => {
-  return context.attached;
-};
+export const getMountPoint = () => context.mountPoint;
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -73,9 +72,6 @@ export class CTag {
   get children() {
     return this._getChildren(this.el);
   }
-
-  /** If set to true, it be appended to the attached tag */
-  private readonly _attachable: boolean = false;
 
   private readonly _meta = {
     isHidden: false,
@@ -128,8 +124,7 @@ export class CTag {
     return this;
   }
 
-  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], attachable: boolean = false) {
-    this._attachable = false;
+  constructor(arg0: TagName | HTMLElement, children: TagChildren = [], mountToParent: boolean = false) {
     const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
 
     if (isSelector) {
@@ -148,18 +143,17 @@ export class CTag {
       this.el = element as HTMLElement;
     }
     else if (typeof arg0 === 'string') {
-      this._attachable = attachable;
       this.el = document.createElement(arg0);
+
+      if (context.mountPoint && mountToParent) {
+        context.mountPoint.append(this);
+      }
     }
     else if (arg0 instanceof HTMLElement) {
       this.el = arg0;
     }
     else {
       throw new Error('Invalid argument 0');
-    }
-
-    if (context.attached && this._attachable) {
-      context.attached.append(this);
     }
 
     if (children.length > 0) this.setChildren(children);
@@ -362,7 +356,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
    */
-  attrIf<T>(observable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '', invert = false) {
+  attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
       observable,
       () => this.addAttr(attr, val(value, this)),
@@ -376,7 +370,7 @@ export class CTag {
    * {value} can be a string or a function that returns a string.
    * If {invert} is set to true, the condition will be inversed
    */
-  attrIfNot<T>(observable: IObservable<T>, attr: string, value: string | ((self: CTag) => string) = '') {
+  attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value: string | ((self: CTag) => string) = '') {
     return this.attrIf(observable, attr, value, true);
   }
 
@@ -558,7 +552,7 @@ export class CTag {
   }
 
   /** Check if this element has styles */
-  hasStyle<K extends CssProperty>(...styles: K[]) {
+  hasStyle(...styles: CssProperty[]) {
     for (const key of styles) {
       if (!this.style.getPropertyValue(camelToDash(key))) {
         return false;
@@ -576,14 +570,14 @@ export class CTag {
   }
 
   /** Adds a single attribute to the element */
-  addAttr(key: string, value: string = '') {
-    this.el.attributes[key] = value;
+  addAttr(key: CommonAttributes, value: string = '') {
+    this.el.attributes[key as string] = value;
     this.el.setAttribute(key, value);
     return this;
   }
 
   /** Remove attributes from the element */
-  rmAttr(...attrs: string[]) {
+  rmAttr(...attrs: CommonAttributes[]) {
     for (const key of attrs) {
       this.el.removeAttribute(key);
       delete this.el.attributes[key];
@@ -592,7 +586,7 @@ export class CTag {
   }
 
   /** Check if this element has attributes */
-  hasAttr(...attr: string[]) {
+  hasAttr(...attr: CommonAttributes[]) {
     for (const key of attr) {
       if (!(key in this.el.attributes)) {
         return false;
@@ -602,7 +596,7 @@ export class CTag {
   }
 
   /** Get an attributes value */
-  getAttr(attr: string) {
+  getAttr(attr: CommonAttributes) {
     return this.el.attributes[attr];
   }
 
@@ -820,7 +814,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * And receives a third argument for attaching this tag to the currently attach tag ({@link attach})
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
  *
  * @example
  * ```ts
@@ -830,76 +824,87 @@ export class CTag {
  * tag(document.querySelector('#something'));
  * ```
  */
-export const tag = (arg0: string | HTMLElement, children: TagChildren = [], attach: boolean = false) => {
-  return new CTag(arg0, children, attach);
+export const tag = (arg0: string | HTMLElement, children: TagChildren = [], mountToParent: boolean = false) => {
+  return new CTag(arg0, children, mountToParent);
 };
 
 /**
- * Attach the given tag. This means that when other tags are created marked as attachable (using `<tag_name>.attach()`, `tag('<tag_name>', [], true)`),
+ * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
  * they will be added as children of this tag.
- * You can call attach multiple times, and the last attach tag will be used.
- * Then when you've finished, you can call {@link detach} to go back to the previously attached tag if there is one, or clear the attached tag.
+ * You can call mountPoint multiple times, and the last mount point tag will be used.
+ * Then when you've finished, you can call {@link restoreMountPoint} to go back to the previously mounted tag if there is one.
+ * You can clear all mount points using {@link clearMountPoints}.
  *
  * @example
  * ```ts
- * attach(div());
- * div.attach();  // added as child of div
- * p.attach();    // added as child of div
+ * mountPoint(div()); // Div 1
+ * div.mount();  // added as child of div
+ * p.mount();    // added as child of div
  *
- * attach(div()); // New div
- * div.attach();  // added as child of new div
- * p.attach();    // added as child of new div
+ * mountPoint(div()); // Div 2
+ * div.mount();  // added as child of new div
+ * p.mount();    // added as child of new div
  *
- * detach();      // Back to previous div
- * detach();      // No attached tag
+ * restoreMountPoint();      // Back to div 1
+ * clearMountPoints();       // Clears all mount points, no mount point after this call
  * ```
  */
-export const attach = (tag: CTag) => {
-  if (context.attached) {
-    context.stack.push(context.attached);
+export const mountPoint = (tag: CTag) => {
+  if (context.mountPoint) {
+    context.mountPointHistory.push(context.mountPoint);
   }
-  context.attached = tag;
+  context.mountPoint = tag;
   return tag;
 };
 
 /**
- * Detach the currently attached tag ({@link attach}). If there was another attached tag before it will become the currently attached tag.
- * If there are no previous attached tags, it will clear the attached tag.
+ * Restore the currently mounted tag ({@link mountPoint}). 
+ * Goes back in the stack of mount points tags.
+ * If there is no previous mount point tag, it will not do anything.
  */
-export const detach = () => {
-  context.attached = context.stack.pop();
+export const restoreMountPoint = () => {
+  context.mountPoint = context.mountPointHistory.pop();
 };
 
 /**
- * Detaches all attached tags. There will be no attached tag after calling this function.
+ * Restores all mount points. There will be no mount points tag after calling this function.
  */
-export const detachAll = () => {
-  context.attached = undefined;
-  context.stack = [];
+export const clearMountPoints = () => {
+  context.mountPoint = undefined;
+  context.mountPointHistory = [];
 };
 
 /**
- * It makes the body the attached tag ({@link attach}).
- * You can pass in a selector for an element you want to be the default attached tag.
+ * Clears the stack of mount points tags and sets the mount point to the given tag.
+ * This is useful when you want to reset the mount points to a specific tag.
  */
-export const init = (options: { root: string } = { root: 'body' }) => {
-  const root = new CTag(`(${options.root})`);
+export const resetMountPoints = (tag: CTag) => {
+  context.mountPoint = tag;
+  context.mountPointHistory = [];
+};
+
+/**
+ * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
+ * You can pass in a selector for an element you want to be the default tag ("body" by default).
+ */
+export const init = (options: { selector: string } = { selector: 'body' }) => {
+  const tag = new CTag(`(${options.selector})`);
   context.observer = createGlobalObserver();
-  return attach(root);
+  return mountPoint(tag);
 };
 
 /** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
 const interceptors: Record<string, TagBuilder | ((styles: StyleSet[]) => CTag)> = {
-  ul: (children: TagChildren, attach: boolean = false) => {
+  ul: (children: TagChildren, mountToParent: boolean = false) => {
     return tag(
       'ul',
       children.map((cl) => {
-        return tag('li', [cl], attach);
+        return tag('li', [cl], mountToParent);
       }),
     );
   },
-  style: (styles: StyleSet[], attach: boolean = false) => {
-    return tag('style', [genCss(styles)], attach);
+  style: (styles: StyleSet[], mountToParent: boolean = false) => {
+    return tag('style', [genCss(styles)], mountToParent);
   },
 };
 
@@ -922,7 +927,7 @@ export const allTags: AllTags = new Proxy(
         return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
       };
 
-      Object.defineProperty(fn, 'attach', {
+      Object.defineProperty(fn, 'mount', {
         get: () => {
           return (...children: any[]) => {
             return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);

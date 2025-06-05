@@ -1,5 +1,6 @@
 import { singleEvent } from './events.js';
 import { context, type CTag } from './tag.js';
+import { AtLeastOne } from './types.js';
 
 // TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
 export const createGlobalObserver = () => {
@@ -29,20 +30,21 @@ export const createGlobalObserver = () => {
 };
 
 /**
- * Will call {onStart} when the element is added to the DOM.
- * And will call {onRemove} when the element is removed from the DOM.
+ * Will call {mounted} when the element is added to the DOM.
+ * And will call {beforeUnmounted} before the element is removed from the DOM.
+ * Finally will call {onUnmounted} when the element is removed from the DOM.
  */
 export function onLifecycle(
     tag: CTag,
-    onStart?: (tag: CTag) => Promise<boolean> | boolean,
-    onRemove?: (tag: CTag) => void,
-    beforeRemove?: (tag: CTag) => Promise<boolean> | boolean,
+    onMounted?: (tag: CTag) => Promise<boolean> | boolean,
+    onUnmounted?: (tag: CTag) => void,
+    beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean,
 ) {
-    if (beforeRemove) {
+    if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = async () => {
-            const result = beforeRemove(tag);
+            const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (await result))) {
                 tempElRemove.call(tag.el);
             }
@@ -50,7 +52,7 @@ export function onLifecycle(
         };
     }
 
-    if (onStart) {
+    if (onMounted) {
         const tempOnStart = tag.show;
         tag.show = async () => {
             const result = tempOnStart.call(tag);
@@ -65,42 +67,68 @@ export function onLifecycle(
         context.observer = createGlobalObserver();
     }
 
-    let cb1, cb2;
+    let onAddedCb, onRemovedCb;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    context.observer.onAdded.listen(cb1 = async (node: Node) => {
-        if (node === tag.el && onStart) {
-            const result = onStart(tag);
+    context.observer.onAdded.listen(onAddedCb = async (node: Node) => {
+        if (node === tag.el && onMounted) {
+            const result = onMounted(tag);
             if (result instanceof Promise) {
                 await result;
             }
         }
     });
-    context.observer.onRemoved.listen(cb2 = (node: Node) => {
-        if (node === tag.el && onRemove) {
-            onRemove(tag);
+    context.observer.onRemoved.listen(onRemovedCb = (node: Node) => {
+        if (node === tag.el && onUnmounted) {
+            onUnmounted(tag);
         }
     });
-    (tag as any)._listeners.push(() => {
+
+    // Using `any` here to avoid TypeScript errors, as `_destroyers` is not typed in the CTag interface.
+    (tag as any)._destroyers.push(() => {
         // Remove listeners and references (clear memory)
-        context.observer?.onRemoved.remove(cb2);
-        context.observer?.onAdded.remove(cb1);
-        onRemove = undefined;
-        onStart = undefined;
+        context.observer?.onRemoved.remove(onRemovedCb);
+        context.observer?.onAdded.remove(onAddedCb);
+        onUnmounted = undefined;
+        onMounted = undefined;
     });
 };
 
 /**
- * Will call {handler.onStart} when the element is added to the DOM.
- * And will call {handler.onRemove} when the element is removed from the DOM.
+ * `withLifecycle` is a utility function that adds lifecycle hooks to a Cardboard tag.
+ * 
+ * Will call `handler.mounted` when the element is added to the DOM.  
+ * Then call `handler.beforeUnmount` **before** the element is removed from the DOM.  
+ * Finally call `handler.unmounted` **when** the element is removed from the DOM.  
+ * 
+ * @example
+ * ```typescript
+ * const myTag = withLifecycle(
+ *   div('Hello World'),
+ *   {
+ *     mounted: (tag) => {
+ *       console.log('Mounted:', tag);
+ *       return true; // or false to prevent mounting
+ *     },                                       
+ *     unmounted: (tag) => {
+ *       console.log('Unmounted:', tag);
+ *     },
+ *     beforeUnmount: (tag) => {
+ *       console.log('Before Unmount:', tag);
+ *       return true; // or false to prevent unmounting
+ *     },
+ *    }
+ *  );
  */
 export const withLifecycle = (
     tag: CTag,
-    handler: {
-        start?: (tag: CTag) => Promise<boolean> | boolean;
-        removed?: (tag: CTag) => void;
-        beforeRemove?: (tag: CTag) => Promise<boolean> | boolean;
-    },
+    handler: AtLeastOne<{
+        // Add object here so handlers can be seen when instecting the `withLifecycle` function.
+        // This is useful for IDEs to show the available properties.
+        mounted?: (tag: CTag) => Promise<boolean> | boolean;
+        unmounted?: (tag: CTag) => void;
+        beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
+    }>,
 ): CTag => {
-    onLifecycle(tag, handler.start, handler.removed, handler.beforeRemove);
+    onLifecycle(tag, handler.mounted, handler.unmounted, handler.beforeUnmounted);
     return tag;
 };

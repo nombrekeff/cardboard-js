@@ -56,9 +56,15 @@ import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js'
 
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 
-const root = attach(tag('(body)'));
+// Initialize and get access to the root tag ('body' by default)
+const body = init();
 
-root.append(div(p('Hello world!')));
+// Add tags to the body
+body.append(
+  div(
+    p('Hello world!')
+  )
+);
 ```
 
 #### Single file script

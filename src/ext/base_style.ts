@@ -33,6 +33,15 @@ const baseStyles: StyleSet = {
     },
   },
 };
-export const BaseStyle = (attach: boolean = true): CTag => {
-  return attach ? style.attach(baseStyles) : style(baseStyles);
+
+/**
+ * Creates a base style for the application.  
+ * This style includes basic styles for buttons and inputs.  
+ * It can be mounted to the current mount point or used as a standalone style.
+ * 
+ * @param mountToParent - If true, the style will be appended to the current mount point.
+ * @returns A CTag representing the base style.
+ */
+export const BaseStyle = (mountToParent: boolean = false): CTag => {
+  return mountToParent ? style.mount(baseStyles) : style(baseStyles);
 };

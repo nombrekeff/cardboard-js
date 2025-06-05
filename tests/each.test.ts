@@ -8,7 +8,7 @@ describe('each', () => {
         init();
 
         const items = ['1', '2', '3'];
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -23,7 +23,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -39,7 +39,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -59,7 +59,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -77,7 +77,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -97,7 +97,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',
@@ -115,7 +115,7 @@ describe('each', () => {
         init();
 
         const items = state(['1', '2', '3']);
-        const t = div.attach(
+        const t = div.mount(
             'c',
             each(items, (item) => p(item)),
             'd',

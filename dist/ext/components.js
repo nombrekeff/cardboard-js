@@ -2,7 +2,7 @@ import { allTags, isObservable } from '../cardboard.js';
 const { input } = allTags;
 export const Input = (options = {}) => {
     var _a;
-    const el = options.attach ? input.attach() : input();
+    const el = options.mountToParent ? input.mount() : input();
     el.config({
         attr: Object.assign(Object.assign({ tooltip: options.tooltip, placeholder: options.placeholder }, ((_a = options.attr) !== null && _a !== void 0 ? _a : {})), { type: options.type }),
         on: {
