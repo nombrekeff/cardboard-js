@@ -3,8 +3,6 @@ import {
     getMountPoint,
     computeMultiple,
     State,
-    state,
-    compute,
 } from '../../../dist/cardboard.js';
 import { InputField } from './../components/input_field.js';
 
