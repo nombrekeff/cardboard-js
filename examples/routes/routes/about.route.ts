@@ -1,7 +1,7 @@
 import {
   allTags,
   withLifecycle,
-} from '../node_modules/cardboard-js/dist/cardboard.js';
+} from '../../../dist/cardboard.js';
 
 const { div, h3, p } = allTags;
 

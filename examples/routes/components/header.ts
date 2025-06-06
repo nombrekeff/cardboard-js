@@ -3,7 +3,7 @@ import {
   allTags,
   Link,
   router,
-} from '../node_modules/cardboard-js/dist/cardboard.js';
+} from '../../../dist/cardboard.js';
 
 const { nav, button, h4 } = allTags;
 const linkStyle: StyleMap = { color: 'white', textDecoration: 'none' };

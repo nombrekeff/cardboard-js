@@ -2,9 +2,9 @@ import {
   init,
   allTags,
   tag,
-} from './node_modules/cardboard-js/dist/cardboard.js';
-import { tweenTagAsync } from './node_modules/cardboard-js/dist/ext/tween.js';
-import { makeRouter } from './node_modules/cardboard-js/dist/ext/routing.js';
+} from '../../dist/cardboard.js';
+import { tweenTagAsync } from '../../dist/ext/tween.js';
+import { makeRouter } from '../../dist/ext/routing.js';
 import { Header } from './components/header.js';
 import { AboutRoute } from './routes/about.route.js';
 import { HomeRoute } from './routes/home.route.js';
@@ -44,11 +44,11 @@ const myRouter = makeRouter({
   },
   initialRoute: '/',
   fallbackRoute: '/404',
-  async start(route) {
+  async mounted(route) {
     await tweenTagAsync(route, fadeOut);
     return true;
   },
-  async beforeRemove(route) {
+  async beforeUnmounted(route) {
     await tweenTagAsync(route, fadeIn);
     return true;
   },

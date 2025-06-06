@@ -302,6 +302,15 @@ export declare const clearMountPoints: () => void;
  * and all other mount points will be cleared.
  */
 export declare const resetMountPoints: () => void;
+export type ScopedCallback = (tag: CTag) => void;
+/**
+ * Sets the mount point to the given tag, calls the scoped callback, and then restores the mount point.
+ * Useful for creating a temporary mount point for a specific tag, and then restoring the previous mount point.
+ *
+ * @param tag
+ * @param scopedCallback
+ */
+export declare const withMountPoint: (tag: CTag, scopedCallback: ScopedCallback) => void;
 /**
  * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
  * You can pass in a selector for an element you want to be the default tag ("body" by default).

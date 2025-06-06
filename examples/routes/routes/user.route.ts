@@ -2,9 +2,7 @@ import {
   allTags,
   withLifecycle,
   router,
-} from '../node_modules/cardboard-js/dist/cardboard.js';
-import { tweenTag } from '../node_modules/cardboard-js/dist/ext/tween.js';
-import { fadeOut, fadeIn } from '../components/app-tweens.js';
+} from '../../../dist/cardboard.js';
 
 const { div, h3, p } = allTags;
 

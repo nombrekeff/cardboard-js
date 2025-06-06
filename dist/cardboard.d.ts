@@ -88,6 +88,7 @@ export declare const Cardboard: {
     restoreMountPoint: () => void;
     clearMountPoints: () => void;
     resetMountPoints: () => void;
+    withMountPoint: (tag: _tag.CTag, scopedCallback: _tag.ScopedCallback) => void;
     init: (options?: {
         selector: string;
     }) => _tag.CTag;
