@@ -9,7 +9,7 @@ import {
 import { PickPropertyValues } from '../../../dist/css-property-values.js';
 import { makeTween, tween, tweenTag } from '../../../dist/ext/tween.js';
 
-const { div, p, input, label, br, button } = allTags;
+const { div, p, input, label } = allTags;
 
 function makeid(length) {
     var result = '';
@@ -41,9 +41,9 @@ export function InputField({
     type = 'text',
     error = state(''),
     value = state(''),
-    onInput = (newValue) => { },
-    onChange = (newValue) => { },
-    onSubmit = (newValue) => { },
+    onInput = () => { },
+    onChange = () => { },
+    onSubmit = () => { },
     validators = [],
 }: InputFieldProps) {
     const _id = id ?? makeid(8);

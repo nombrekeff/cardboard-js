@@ -3,7 +3,6 @@ import {
   allTags,
   tag,
   mountPoint,
-  restoreMountPoint,
   state,
   getMountPoint,
   withMountPoint,
