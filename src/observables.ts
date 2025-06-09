@@ -134,7 +134,7 @@ export const isObservable = (obj: any) => {
  * > Consider using `state(...)` instead.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
  */
-export const createObservable = <T>(val: T, destroyer?: () => void): Observable<T> => {
+export const createObservable = <T>(val: T, destroyer?: () => void): IObservable<T> => {
   return new Observable<T>(val, destroyer);
 };
 

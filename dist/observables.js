@@ -14,6 +14,38 @@ export class Observable extends CEvent {
     }
     constructor(val, destroyer) {
         super();
+        /**
+         * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
+         * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
+         *
+         * @example
+         * ```ts
+         * const value = createObservable(2);
+         * const isGreater = value.computed((value) => value > 5);
+         * // > isGreater == false;
+         * value.dispatch(6);
+         * // > isGreater == true;
+         * ```
+         */
+        this.computed = (transform) => compute(this, transform);
+        /** @see {@link greaterThan} */
+        this.greaterThan = (val = 0) => greaterThan(this, val);
+        /** @see {@link greaterThanOr} */
+        this.greaterThanOr = (val = 0) => greaterThanOr(this, val);
+        /** @see {@link lessThan} */
+        this.lessThan = (val = 0) => lessThan(this, val);
+        /** @see {@link lessThanOr} */
+        this.lessThanOr = (val = 0) => lessThanOr(this, val);
+        /** @see {@link equalTo} */
+        this.equalTo = (val) => equalTo(this, val);
+        /** @see {@link notEqualTo} */
+        this.notEqualTo = (val) => notEqualTo(this, val);
+        /** @see {@link isEmpty} */
+        this.isEmpty = () => isEmpty(this);
+        /** @see {@link notEmpty} */
+        this.notEmpty = () => notEmpty(this);
+        /** @see {@link grab} */
+        this.grab = (key, defaultVal) => grab(this, key, defaultVal);
         if (val && (isObject(val) || isArray(val))) {
             val = new Proxy(val, {
                 get(target, p, receiver) {
@@ -74,22 +106,6 @@ export class Observable extends CEvent {
         this._value = null;
         super.destroy();
     }
-    /**
-     * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
-     * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
-     *
-     * @example
-     * ```ts
-     * const value = createObservable(2);
-     * const isGreater = value.computed((value) => value > 5);
-     * // > isGreater == false;
-     * value.dispatch(6);
-     * // > isGreater == true;
-     * ```
-     */
-    computed(transform) {
-        return compute(this, transform);
-    }
 }
 /** Check if a given object {@link obj} is a {@link Observable}  */
 export const isObservable = (obj) => {
@@ -119,17 +135,17 @@ export const createObservable = (val, destroyer) => {
  */
 export const compute = (other, transform) => {
     // eslint-disable-next-line prefer-const
-    let cons;
-    const cb = (val) => cons === null || cons === void 0 ? void 0 : cons.dispatch(transform(val));
-    cons = createObservable(transform(other.value), () => {
+    let observable;
+    const cb = (val) => observable === null || observable === void 0 ? void 0 : observable.dispatch(transform(val));
+    observable = createObservable(transform(other.value), () => {
         // remove callback in other observable when destroyed
         // remove references, free memory
         other.remove(cb);
-        cons = null;
+        observable = null;
         other = null;
     });
     other.changed(cb);
-    return cons;
+    return observable;
 };
 export const computeMultiple = (observables, transform) => {
     const cons = createObservable(transform(...observables.map(c => c.value)));
@@ -142,39 +158,39 @@ export const getValue = (val) => {
     return isObservable(val) ? val.value : val;
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than {@link val} */
-export const greaterThan = (cons, val = 0) => {
-    return compute(cons, (newVal) => newVal > getValue(val));
+export const greaterThan = (observable, val = 0) => {
+    return compute(observable, (newVal) => newVal > getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal {@link val} */
-export const greaterThanOr = (cons, val = 0) => {
-    return compute(cons, (newVal) => newVal >= getValue(val));
+export const greaterThanOr = (observable, val = 0) => {
+    return compute(observable, (newVal) => newVal >= getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than {@link val} */
-export const lessThan = (cons, val = 0) => {
-    return compute(cons, (newVal) => newVal < getValue(val));
+export const lessThan = (observable, val = 0) => {
+    return compute(observable, (newVal) => newVal < getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal {@link val} */
-export const lessThanOr = (cons, val = 0) => {
-    return compute(cons, (newVal) => newVal <= getValue(val));
+export const lessThanOr = (observable, val = 0) => {
+    return compute(observable, (newVal) => newVal <= getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to {@link val} */
-export const equalTo = (cons, val) => {
-    return compute(cons, (newVal) => newVal === getValue(val));
+export const equalTo = (observable, val) => {
+    return compute(observable, (newVal) => newVal === getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to {@link val} */
-export const notEqualTo = (cons, val) => {
-    return compute(cons, (newVal) => newVal !== getValue(val));
+export const notEqualTo = (observable, val) => {
+    return compute(observable, (newVal) => newVal !== getValue(val));
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
-export const isEmpty = (cons) => {
-    return compute(cons, (newVal) => newVal.length <= 0);
+export const isEmpty = (observable) => {
+    return compute(observable, (newVal) => newVal.length <= 0);
 };
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
-export const notEmpty = (cons) => {
-    return compute(cons, (newVal) => newVal.length > 0);
+export const notEmpty = (observable) => {
+    return compute(observable, (newVal) => newVal.length > 0);
 };
 /** {@link compute} an observable and return a new {@link Observable} that is equal to some property of the original {@link Observable} */
-export const grab = (cons, key, defaultVal) => {
-    return compute(cons, (newVal) => { var _a; return newVal ? ((_a = newVal[key]) !== null && _a !== void 0 ? _a : defaultVal) : defaultVal; });
+export const grab = (observable, key, defaultVal) => {
+    return compute(observable, (newVal) => newVal ? (newVal[key] ? newVal[key] : defaultVal) : defaultVal);
 };
 //# sourceMappingURL=observables.js.map

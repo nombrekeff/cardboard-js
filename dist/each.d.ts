@@ -19,6 +19,10 @@ export interface DiffEntry<T = unknown> {
  * `each` can work with a goold old array, or with a {@link IObservable}.
  * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
+ * @param observable - An array or an {@link IObservable} that contains the list of items to render.
+ * @param builder - A function that takes an item from the list and returns a {@link CTag} to render.
+ * @param key - An optional function that returns a unique key for each item in the list. This is used to optimize the rendering process.
+ *
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
  * @example
@@ -46,9 +50,13 @@ export interface DiffEntry<T = unknown> {
  *  );
  * ```
  */
-export declare function each<T>(observable: IObservableOr<T[]>, transform: (val: T) => CTag, key?: (val: T) => any): Node;
+export declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T) => CTag, key?: (val: T) => any): Node;
 /**
  * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the {@link oldData} to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned
+ *
+ * @param newData - The new data to compare against the old data.
+ * @param oldData - The old data to compare against the new data.
+ * @param key - A function that returns a unique key for each item in the list. This is used to optimize the rendering process.
  */
 export declare function diffList<T>(newData: T[], oldData: T[], key?: (item: T) => any): Array<DiffEntry<T>>;

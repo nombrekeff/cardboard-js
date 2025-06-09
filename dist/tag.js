@@ -86,14 +86,14 @@ export class CTag {
         };
         const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
         if (isSelector) {
-            const match = arg0.match(/\((.+)\)/);
+            const match = arg0.match(/\(([\.\#]?[a-zA-Z][a-zA-Z0-9_$]+)\)/);
             const selector = match ? match[1] : null;
             if (!selector) {
-                throw new Error('Invalid selector: ' + arg0);
+                throw new Error(`'${arg0}' is not a valid selector`);
             }
             const element = document.querySelector(selector);
             if (!element) {
-                throw new Error("Can't find element for selector: " + arg0);
+                throw new Error('Can\'t find element for selector: ' + arg0);
             }
             this.el = element;
         }
@@ -107,7 +107,7 @@ export class CTag {
             this.el = arg0;
         }
         else {
-            throw new Error('Invalid argument 0');
+            throw new Error('Invalid argument: ' + arg0);
         }
         if (children.length > 0)
             this.setChildren(children);

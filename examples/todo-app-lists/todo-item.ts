@@ -1,4 +1,4 @@
-import { type CTag, type State, allTags, grab, withLifecycle } from '../../dist/cardboard.js';
+import { type CTag, type State, allTags } from '../../dist/cardboard.js';
 import { type TodoItem } from './state.js';
 
 const { div, button, input, h4 } = allTags;
@@ -14,7 +14,7 @@ export default function TodoItem(
         content.value.complete = self.checked;
       }),
     h4(content.value.item)
-      .stylesIf(grab(content, 'complete', false), { textDecoration: 'line-through' }),
+      .stylesIf(content.grab('complete', false), { textDecoration: 'line-through' }),
     button('-').addClass('btn-remove')
       .clicked((self) => {
         if (remove) remove(self, content);
