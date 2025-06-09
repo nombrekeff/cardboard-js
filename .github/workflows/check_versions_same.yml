@@ -22,4 +22,4 @@ jobs:
         with:
           node-version: '18.x'
       - name: Run check versions
-        run: node scripts/check_versions_same.cjs
+        run: node check_versions_same.cjs
