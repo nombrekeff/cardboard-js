@@ -16,4 +16,5 @@ if (mainFileVersionMatch && (mainFileVersionMatch[1] !== pkgVersion)) {
     process.exit(1);
 } else {
     console.log('Versions match.');
+    process.exit(0);
 }
