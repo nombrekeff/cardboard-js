@@ -127,4 +127,23 @@ describe('each', () => {
         await new Promise((r) => setTimeout(r, 10)); // Wait a bit before showing, otherwise it does have time to register changes
         expect(t.text()).toEqual('c4123d');
     });
+
+    it('renders a randomized list of 10 items correctly', async () => {
+        createDomMock();
+        init();
+
+        // Generate 10 random strings
+        const randomItems = Array.from({ length: 10 }, () =>
+            Math.random().toString(36).substring(2, 10)
+        );
+
+        const t = div.mount(
+            'start',
+            each(randomItems, (item) => p(item)),
+            'end',
+        );
+
+        await new Promise((r) => setTimeout(r, 5));
+        expect(t.text()).toEqual('start' + randomItems.join('') + 'end');
+    });
 });

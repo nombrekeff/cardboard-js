@@ -238,7 +238,7 @@ export function diffList<T>(
 
   // Count of how many items have been removed so far (inside the loop)
   let removedCount = 0;
-  
+
   // diff the old data with the new one
   for (let oi = 0; oi < oldLength; oi++) {
     const newEntry = newData[oi - removedCount],
