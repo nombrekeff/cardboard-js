@@ -306,4 +306,22 @@ describe('Tags', () => {
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(document.querySelector('#test')).toBeTruthy();
   });
+
+  it('tag throws if bad selector', async () => {
+    createDomMock();
+    const t = () => tag('(123123sad)', ['child']);
+    expect(t).toThrowError("'(123123sad)' is not a valid selector");
+  });
+
+  it('tag throws if tag does not exists for selector', async () => {
+    createDomMock();
+    const t = () => tag('(#test)', ['child']);
+    expect(t).toThrowError("Can't find element for selector: (#test)");
+  });
+
+  it('tag throws if bad argument passed', async () => {
+    createDomMock();
+    const t = () => tag(null as any, ['child']);
+    expect(t).toThrowError("Invalid argument: null");
+  });
 });

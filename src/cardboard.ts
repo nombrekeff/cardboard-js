@@ -20,6 +20,8 @@ export * from './observables.js';
 export * from './ext/routing.js';
 export type * from './types';
 
+// Import the version from package.json
+
 export const Cardboard = {
   ..._tag,
   ..._state,
@@ -30,4 +32,5 @@ export const Cardboard = {
   ..._routing,
   ..._observables,
   ..._lifecycle,
+  version: '0.0.4',
 };

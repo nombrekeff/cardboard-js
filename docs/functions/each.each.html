@@ -18,7 +18,7 @@
 <h1>Function each</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="each"><span class="tsd-kind-call-signature">each</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">observable</span>, <span class="tsd-kind-parameter">transform</span>, <span class="tsd-kind-parameter">key</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Node</span><a href="#each" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="each"><span class="tsd-kind-call-signature">each</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">observable</span>, <span class="tsd-kind-parameter">builder</span>, <span class="tsd-kind-parameter">key</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Node</span><a href="#each" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Render a <a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-kind-class">CTag</a> for each item in the provided list.</p>
 <p><code>each</code> can work with a goold old array, or with a <a href="../interfaces/types.IObservable.html" class="tsd-kind-interface">IObservable</a>.
@@ -33,9 +33,15 @@ If you provide a <code>Observable</code>, the list will update whenever the <cod
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">observable</span>: <a href="../types/types.IObservableOr.html" class="tsd-signature-type tsd-kind-type-alias">IObservableOr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
+<h5><span class="tsd-kind-parameter">observable</span>: <a href="../types/types.IObservableOr.html" class="tsd-signature-type tsd-kind-type-alias">IObservableOr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>An array or an <a href="../interfaces/types.IObservable.html" class="tsd-kind-interface">IObservable</a> that contains the list of items to render.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">transform</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">val</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-parameter">builder</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">val</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-signature-type tsd-kind-class">CTag</a><span class="tsd-signature-symbol">)</span></h5>
+<div class="tsd-comment tsd-typography"><p>A function that takes an item from the list and returns a <a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-kind-class">CTag</a> to render.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
@@ -49,6 +55,9 @@ If you provide a <code>Observable</code>, the list will update whenever the <cod
 <h4 class="tsd-returns-title">Returns <a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-signature-type tsd-kind-class">CTag</a></h4></li></ul></li></ul></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">key</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">val</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span></h5>
+<div class="tsd-comment tsd-typography"><p>An optional function that returns a unique key for each item in the list. This is used to optimize the rendering process.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
@@ -73,7 +82,7 @@ If you provide a <code>Observable</code>, the list will update whenever the <cod
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/0b6d58a/src/each.ts#L55">each.ts:55</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/e91a39e/src/each.ts#L57">each.ts:57</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

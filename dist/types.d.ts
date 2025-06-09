@@ -34,6 +34,15 @@ export interface IObservable<T = any> {
   dispatch: (newValue: T) => IObservable<T>;
   destroy: () => void;
   computed: <K>(transform: (val: T) => K) => IObservable<K>;
+  greaterThan: (val: IObservableOr<number> | number) => IObservable<boolean>;
+  greaterThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
+  lessThan: (val: IObservableOr<number>) => IObservable<boolean>;
+  lessThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
+  equalTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+  notEqualTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+  isEmpty: () => IObservable<boolean>;
+  notEmpty: () => IObservable<boolean>;
+  grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable;
   value: T;
   prev?: T;
 }

@@ -1,8 +1,8 @@
 import {
   allTags,
   withLifecycle,
-} from '../node_modules/cardboard-js/dist/cardboard.js';
-import { tweenTag } from '../node_modules/cardboard-js/dist/ext/tween.js';
+} from '../../../dist/cardboard.js';
+import { tweenTag } from '../../../dist/ext/tween.js';
 import { fadeOut, fadeIn } from '../components/app-tweens.js';
 
 const { div, h3, p } = allTags;

@@ -1,8 +1,8 @@
-import { CTag } from '../node_modules/cardboard-js/dist/cardboard.js';
+import { CTag } from '../../../dist/cardboard.js';
 import {
   makeTween,
   tween,
-} from '../node_modules/cardboard-js/dist/ext/tween.js';
+} from '../../../dist/ext/tween.js';
 
 const opacityEnd = { opacity: 1 };
 const opacityStart = { opacity: 0 };

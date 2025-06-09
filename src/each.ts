@@ -1,5 +1,3 @@
-/* eslint-disable no-case-declarations */
-/* eslint-disable eqeqeq */
 import { isObservable } from './observables.js';
 import { deepEquals } from './util.js';
 import type { CTag } from './tag.js';
@@ -25,6 +23,10 @@ export interface DiffEntry<T = unknown> {
  * `each` can work with a goold old array, or with a {@link IObservable}.
  * If you provide a `Observable`, the list will update whenever the `Observable` changes.
  *
+ * @param observable - An array or an {@link IObservable} that contains the list of items to render.
+ * @param builder - A function that takes an item from the list and returns a {@link CTag} to render.
+ * @param key - An optional function that returns a unique key for each item in the list. This is used to optimize the rendering process.
+ * 
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Logic
  *
  * @example
@@ -54,25 +56,28 @@ export interface DiffEntry<T = unknown> {
  */
 export function each<T>(
   observable: IObservableOr<T[]>,
-  transform: (val: T) => CTag,
+  builder: (val: T) => CTag,
   key?: (val: T) => any,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
-
   let oldData: T[] = [],
     nodeParentIndex: number = 0,
     elementsCopy: CTag[] = [];
 
-  const add = (entry: DiffEntry<T>) => {
+  // Inserts a new element into the DOM and the elements array at the specified index.
+  // Uses the transform function to create the element and places it before the next sibling or anchor node.
+  const actionAdd = (entry: DiffEntry<T>) => {
     if (entry.index >= 0) {
-      const el = transform(entry.entry);
+      const el = builder(entry.entry);
       const elAt = elements[entry.index];
       elements.splice(entry.index, 0, el);
       node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
     }
   };
 
-  const remove = (entry: DiffEntry<T>) => {
+  // Removes the element at the specified index from the DOM and calls its destroy method.
+  // Also removes the element from the internal elements array to keep it in sync.
+  const actionRemove = (entry: DiffEntry<T>) => {
     node.parentElement?.removeChild(elementsCopy[entry.index].el);
     elementsCopy[entry.index].destroy();
 
@@ -82,88 +87,117 @@ export function each<T>(
     elements.splice(i, 1);
   };
 
-  const swap = (entry: DiffEntry<T>) => {
-    const from = entry.index,
-      to = entry.targetIndex ?? 0;
+  // Swaps two elements in the DOM and updates their positions in the internal arrays.
+  // Ensures the visual order matches the new data order after a swap operation.
+  const actionSwap = (entry: DiffEntry<T>) => {
+    const fromIndex = entry.index,
+      toIndex = entry.targetIndex ?? 0;
 
-    if (from >= 0 && to >= 0) {
-      const elementFrom = elementsCopy[from];
-      const elementTo = elementsCopy[to];
+    if (fromIndex >= 0 && toIndex >= 0) {
+      const elementFrom = elementsCopy[fromIndex];
+      const elementTo = elementsCopy[toIndex];
 
-      const parentY = elementFrom.el.parentNode;
-      const nextY = elementFrom.el.nextSibling;
+      const parentNode = elementFrom.el.parentNode;
+      const nextSiblingNode = elementFrom.el.nextSibling;
 
-      if (parentY && nextY === elementTo.el) {
-        parentY.insertBefore(elementTo.el, elementFrom.el);
+      if (parentNode && nextSiblingNode === elementTo.el) {
+        parentNode.insertBefore(elementTo.el, elementFrom.el);
       }
       else if (elementTo.el.parentNode) {
         elementTo.el.parentNode.insertBefore(elementFrom.el, elementTo.el);
-        if (nextY && parentY) {
-          parentY.insertBefore(elementTo.el, nextY);
+
+        if (nextSiblingNode && parentNode) {
+          parentNode.insertBefore(elementTo.el, nextSiblingNode);
         }
-        else if (parentY) {
-          parentY.appendChild(elementTo.el);
+        else if (parentNode) {
+          parentNode.appendChild(elementTo.el);
         }
       }
 
-      const tempCopy = elementsCopy[from];
-      elementsCopy[from] = elementsCopy[to];
-      elementsCopy[to] = tempCopy;
+      const tempCopy = elementsCopy[fromIndex];
+      elementsCopy[fromIndex] = elementsCopy[toIndex];
+      elementsCopy[toIndex] = tempCopy;
 
-      const temp = elements[from];
-      elements[from] = elements[to];
-      elements[to] = temp;
+      const temp = elements[fromIndex];
+      elements[fromIndex] = elements[toIndex];
+      elements[toIndex] = temp;
     }
   };
 
+  // Map of actions to perform based on the diff state
+  // This is used to avoid using a switch statement, which is slower
+  // and to keep the code cleaner.
   const actionMap = {
-    [DiffState.added]: add,
-    [DiffState.removed]: remove,
-    [DiffState.swap]: swap,
+    [DiffState.added]: actionAdd,
+    [DiffState.removed]: actionRemove,
+    [DiffState.swap]: actionSwap,
   };
 
-  const updateList = (newData: T[]) => {
+  // Maximum number of tries to find the parent element
+  // This is used to avoid infinite loops in case the parent element is not found
+  const MAX_UPDATE_TRIES = 100;
+
+  // This function updates the list of elements based on the new data.
+  // It calculates the differences between the old and new data using `diffList`,
+  // and applies the necessary actions to the DOM.
+  const updateList = (newData: T[], tries = 0) => {
+    // If the node has no parent element, it means it has not been mounted yet,
+    // so we wait a bit and try again.
     if (!node.parentElement) {
-      setTimeout(() => updateList(newData), 1);
+      // If we have not reached the max tries, we wait a bit and try again
+      if (tries < MAX_UPDATE_TRIES) {
+        setTimeout(() => updateList(newData, tries + 1), 1);
+      } else {
+        console.warn(`[each]: parentElement not found after max retries`);
+      }
       return;
     }
-
-    const start = performance.now();
 
     if (!nodeParentIndex) {
       const children = Array.from(node.parentElement?.childNodes ?? []);
       nodeParentIndex = children.indexOf(node);
     }
 
+    // Create the diff between the new data and the old data
     const diff = diffList(newData, oldData, key);
 
-    if (diff.length > 0) {
-      for (let index = 0; index < diff.length; index++) {
-        const data = diff[index];
-        const nextIndex = diff[index + 1] ? diff[index + 1].index : null;
-        const nextState = diff[index + 1] ? diff[index + 1].state : null;
-        actionMap[data.state](data);
-        if (nextState === DiffState.swap && nextIndex === data.targetIndex) {
-          index++;
-        }
+    // If the diff is empty, it means the data has not changed, so we do nothing
+    if (diff.length <= 0) return;
+
+    // Process the diff and apply the actions
+    for (let index = 0; index < diff.length; index++) {
+      const data = diff[index];
+      const nextIndex = diff[index + 1] ? diff[index + 1].index : null;
+      const nextState = diff[index + 1] ? diff[index + 1].state : null;
+      actionMap[data.state](data);
+      if (nextState === DiffState.swap && nextIndex === data.targetIndex) {
+        index++;
       }
     }
 
+    // Set the new data as the old data for the next update
     oldData = [...newData].slice(0);
-    elementsCopy = elements.slice(0);
 
-    const timeDiff = performance.now() - start;
-    console.log('Each Fast took: ' + timeDiff.toFixed(2) + 'ms');
+    // Update the elementsCopy to match the new data
+    elementsCopy = elements.slice(0);
   };
 
-  setTimeout(() => updateList('value' in observable ? observable.value : observable), 1);
-  if (isObservable(observable)) (observable as IObservable).changed(updateList);
+  updateList('value' in observable ? observable.value : observable);
+
+  if (isObservable(observable)) {
+    (observable as IObservable).changed(updateList);
+  }
+
   return node;
 }
 
 /**
  * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the {@link oldData} to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned
+ * 
+ * @param newData - The new data to compare against the old data.
+ * @param oldData - The old data to compare against the new data.
+ * @param key - A function that returns a unique key for each item in the list. This is used to optimize the rendering process.
  */
 export function diffList<T>(
   newData: T[], oldData: T[],
@@ -202,12 +236,12 @@ export function diffList<T>(
     return diff;
   }
 
-  // diff the old data with the new one
   // Count of how many items have been removed so far (inside the loop)
-  let removed = 0;
+  let removedCount = 0;
 
+  // diff the old data with the new one
   for (let oi = 0; oi < oldLength; oi++) {
-    const newEntry = newData[oi - removed],
+    const newEntry = newData[oi - removedCount],
       oldEntry = oldData[oi],
       areEqual = key(oldEntry) == key(newEntry);
 
@@ -218,16 +252,18 @@ export function diffList<T>(
     const existsNew = !!newData.find(item => key(oldEntry) == key(item)),
       existsOld = !!oldData.find(item => key(newEntry) == key(item));
 
+    // If the new entry does not exist in the old data, it means it was added
     if (!existsOld && existsNew) {
       diff.push({
         entry: newEntry,
         state: DiffState.added,
-        index: oi - removed,
+        index: oi - removedCount,
       });
-      removed--;
+      removedCount--;
       continue;
     }
 
+    // If the old entry does not exist in the new data, it means it was removed
     // `newEntry` can be undefined if the newData is shorter than the oldData
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if ((existsOld && !existsNew) || newEntry == null) {
@@ -236,33 +272,32 @@ export function diffList<T>(
         state: DiffState.removed,
         index: oi,
       });
-      removed++;
+      removedCount++;
       continue;
     }
 
-    // eslint-disable-next-line @typescript-eslint/prefer-includes
+    // If the new entry exists in the old data, it means it was swapped
     if (newData.indexOf(oldEntry) >= 0) {
       diff.push({
         entry: newEntry,
         targetEntry: oldEntry,
         state: DiffState.swap,
-        index: oldData.indexOf(newData[oi - removed]),
+        index: oldData.indexOf(newData[oi - removedCount]),
         targetIndex: oldData.indexOf(oldData[oi]),
       });
 
       // This swaps items, this is needed to create cohesive swapping
       const oldIndex = oldData.indexOf(newEntry);
       const temp = oldData[oi];
-      oldData[oi] = newData[oi - removed];
+      oldData[oi] = newData[oi - removedCount];
       oldData[oldIndex] = temp;
       continue;
     }
   }
 
-  // Get the additional items in newData, any new item added at the end
-  // from the end of the oldData plus added items
-  if (removed != oldLength) {
-    for (let i = oldLength - removed; i < newLength; i++) {
+  // Add any new items that were not in the old data
+  if (removedCount != oldLength) {
+    for (let i = oldLength - removedCount; i < newLength; i++) {
       const newEntry = newData[i];
       diff.push({
         entry: newEntry,

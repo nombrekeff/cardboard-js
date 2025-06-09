@@ -1,6 +1,6 @@
 {
   "name": "cardboard-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A very simple, yet powerful framework/library to create web applications without the need to write any HTML.",
   "type": "module",
   "main": "./dist/cardboard.js",
@@ -10,9 +10,10 @@
     "lint": "eslint ./src/**/*.ts",
     "test:watch": "jest --coverage --watchAll",
     "build": "rimraf dist && tsc --p tsconfig.json && npm run build:docs && npm run copy:definitions && npm run build:example && npm run build:bundle:main",
-    "build:source": "rimraf dist && tsc --p tsconfig.json && npm run copy:definitions && npm run build:example",
+    "build:source": "rimraf dist && tsc --p tsconfig.json && npm run copy:definitions",
     "build:watch": "tsc --watch",
     "build:example": "tsc --p examples/tsconfig.json",
+    "build:example:login": "tsc --p examples/login-page/tsconfig.json",
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",
     "build:docs": "typedoc --out docs src/*.ts",
     "build:_exp": "tsc --p _experiments/tsconfig.json",
@@ -29,9 +30,11 @@
     "@tweenjs/tween.js": "^21.0.0",
     "@types/jest": "^29.5.5",
     "@types/jsdom": "^21.1.3",
+    "@types/node": "^22.15.30",
     "@types/tween.js": "^18.6.1",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
+    "conventional-changelog": "^7.0.2",
     "esbuild": "^0.19.5",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
@@ -47,8 +50,7 @@
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "typedoc": "^0.25.1",
-    "typescript": "^5.2.2",
-    "conventional-changelog": "^7.0.2"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "fast-deep-equal": "^3.1.3"
