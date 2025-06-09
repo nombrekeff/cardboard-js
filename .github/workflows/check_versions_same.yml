@@ -1,4 +1,13 @@
-on: pull_request
+name: Check Versions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   example-job:
     runs-on: ubuntu-latest
