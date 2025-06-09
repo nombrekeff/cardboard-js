@@ -29,7 +29,7 @@ const Counter = () => {
   return button()
     .text(`Clicked $count times`, { count })
     .addStyle('color', 'gray')
-    .stylesIf(greaterThan(count, 5), { color: 'red' }) // If count > 5, it will make the color red
+    .stylesIf(count.greaterThan(5), { color: 'red' }) // If count > 5, it will make the color red
     .clicked((_) => count.value++);
 };
 
