@@ -18,6 +18,5 @@ export * from './lifecycle.js';
 export * from './observables.js';
 export * from './ext/routing.js';
 // Import the version from package.json
-import { version } from '../package.json';
-export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _routing), _observables), _lifecycle), { version });
+export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _routing), _observables), _lifecycle), { version: '0.0.4' });
 //# sourceMappingURL=cardboard.js.map
