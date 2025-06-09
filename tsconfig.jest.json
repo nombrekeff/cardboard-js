@@ -10,9 +10,9 @@
         "allowSyntheticDefaultImports": true,
         "lib": [
             "ES2016",
-            "DOM"
+            "DOM",
         ],
-        "types": ["jest"]
+        "types": ["jest", "node"]
     },
     "include": [
         "./src/**/*.ts"

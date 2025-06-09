@@ -14,6 +14,7 @@ export * from './observables.js';
 export * from './ext/routing.js';
 export type * from './types';
 export declare const Cardboard: {
+    version: string;
     onLifecycle(tag: _tag.CTag, onMounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined, onUnmounted?: ((tag: _tag.CTag) => void) | undefined, beforeUnmounted?: ((tag: _tag.CTag) => boolean | Promise<boolean>) | undefined): void;
     createGlobalObserver: () => {
         onAdded: _events.CEvent<Node>;
