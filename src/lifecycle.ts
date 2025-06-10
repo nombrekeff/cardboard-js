@@ -1,33 +1,7 @@
-import { singleEvent } from './events.js';
-import { context, type CTag } from './tag.js';
-import { AtLeastOne } from './types.js';
+import { context, createGlobalObserver } from './cardboard.js';
+import { type CTag } from './tag.js';
+import { type AtLeastOne } from './types.js';
 
-// TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
-export const createGlobalObserver = () => {
-    const _addedEvt = singleEvent<Node>();
-    const _removedEvt = singleEvent<Node>();
-
-    const observer = new window.MutationObserver((mutations, observer) => {
-        for (const mut of mutations) {
-            for (const n of Array.from(mut.addedNodes)) {
-                _addedEvt.dispatch(n);
-            }
-            for (const n of Array.from(mut.removedNodes)) {
-                _removedEvt.dispatch(n);
-            }
-        }
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-    });
-
-    return {
-        onAdded: _addedEvt,
-        onRemoved: _removedEvt,
-    };
-};
 
 /**
  * Will call {mounted} when the element is added to the DOM.

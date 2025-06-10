@@ -1,8 +1,8 @@
 import {
   allTags,
   withLifecycle,
-  router,
 } from '../../../dist/cardboard.js';
+import { router } from '../../../dist/ext/routing.js';
 
 const { div, h3, p } = allTags;
 

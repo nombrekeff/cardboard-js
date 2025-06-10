@@ -1,9 +1,5 @@
 import { type CTag } from './tag.js';
-import { AtLeastOne } from './types.js';
-export declare const createGlobalObserver: () => {
-    onAdded: import("./events.js").CEvent<Node>;
-    onRemoved: import("./events.js").CEvent<Node>;
-};
+import { type AtLeastOne } from './types.js';
 /**
  * Will call {mounted} when the element is added to the DOM.
  * And will call {beforeUnmounted} before the element is removed from the DOM.

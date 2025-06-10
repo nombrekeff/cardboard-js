@@ -1,7 +1,5 @@
 // Importing from individual modules will help with tree shaking if building with esbuild
-import { state } from '../../dist/state.js';
-import { withLifecycle } from '../../dist/lifecycle.js';
-import { allTags, init } from '../../dist/tag.js';
+import { allTags, init, state, withLifecycle } from '../../dist/cardboard.js';
 import { BaseStyle } from '../../dist/ext/base_style.js';
 
 const { div, style, span } = allTags;

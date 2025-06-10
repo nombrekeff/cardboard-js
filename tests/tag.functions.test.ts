@@ -1,13 +1,8 @@
+import { clearMountPoints, mountPoint, getMountPoint, restoreMountPoint, resetMountPoints, init } from '../src/context';
 import {
   tag,
-  mountPoint,
-  getMountPoint,
-  clearMountPoints,
-  restoreMountPoint,
-  init,
   CTag,
   allTags,
-  resetMountPoints,
 } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 

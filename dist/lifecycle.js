@@ -7,31 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { singleEvent } from './events.js';
-import { context } from './tag.js';
-// TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
-export const createGlobalObserver = () => {
-    const _addedEvt = singleEvent();
-    const _removedEvt = singleEvent();
-    const observer = new window.MutationObserver((mutations, observer) => {
-        for (const mut of mutations) {
-            for (const n of Array.from(mut.addedNodes)) {
-                _addedEvt.dispatch(n);
-            }
-            for (const n of Array.from(mut.removedNodes)) {
-                _removedEvt.dispatch(n);
-            }
-        }
-    });
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-    });
-    return {
-        onAdded: _addedEvt,
-        onRemoved: _removedEvt,
-    };
-};
+import { context, createGlobalObserver } from './cardboard.js';
 /**
  * Will call {mounted} when the element is added to the DOM.
  * And will call {beforeUnmounted} before the element is removed from the DOM.

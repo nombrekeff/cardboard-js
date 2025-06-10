@@ -1,6 +1,7 @@
 import { createDomMock } from './__mocks__/client';
 import { Link, makeRouter } from '../src/ext/routing';
-import { tag, allTags, init } from '../src/tag';
+import { tag, allTags } from '../src/tag';
+import { init } from '../src/cardboard';
 const { div } = allTags;
 
 describe('Routing', () => {
