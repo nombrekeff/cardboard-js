@@ -1,6 +1,8 @@
 import { type CEvent } from "./events.js";
 import { CTag } from "./tag.js";
+import type { StyleManager } from "./types.js";
 export type CardboardContext = {
+    styleManager?: StyleManager;
     mountPoint?: CTag;
     mountPointHistory: CTag[];
     observer?: {
@@ -9,6 +11,14 @@ export type CardboardContext = {
     };
 };
 export declare const context: CardboardContext;
+/**
+ * Generates a unique ID for a Cardboard tag.
+ * The ID is prefixed with "_card_" and is incremented each time this function is called.
+ *
+ * @returns A unique ID string for a Cardboard tag.
+ */
+export declare function generateUID(): string;
+export declare function uuidv4(): string;
 /**
  * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */
@@ -60,13 +70,6 @@ export type ScopedCallback = (tag: CTag) => void;
  * @param scopedCallback
  */
 export declare const withMountPoint: (tag: CTag, scopedCallback: ScopedCallback) => void;
-/**
- * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
- * You can pass in a selector for an element you want to be the default tag ("body" by default).
- */
-export declare const init: (options?: {
-    selector: string;
-}) => CTag;
 export declare const createGlobalObserver: () => {
     onAdded: CEvent<Node>;
     onRemoved: CEvent<Node>;

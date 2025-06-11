@@ -1,4 +1,4 @@
-import type { AllTags, IObservable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
+import type { IObservable, Primitive, StyleMap, TagChild, TagChildren, TagConfig, TextObj } from './types';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
@@ -224,7 +224,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IObservable<any> | undefined;
+    find(predicate: (el: TagChild) => boolean): string | IObservable<any> | Node | CTag | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;
@@ -251,14 +251,3 @@ export declare class CTag {
  * ```
  */
 export declare const tag: (arg0: string | HTMLElement, children?: TagChildren, mountToParent?: boolean) => CTag;
-/**
- * List of all HTML tag functions. From `div` to `abbr` :)
- * If you want to create any other tag, use the {@link tag} function.
- *
- * @type {AllTags}
- * @example
- * ```ts
- * const { div, p, abbr, img, style, ... } = allTags;
- * ```
- */
-export declare const allTags: AllTags;

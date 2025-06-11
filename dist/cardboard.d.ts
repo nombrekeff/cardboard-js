@@ -12,9 +12,27 @@ export * from './events.js';
 export * from './each.js';
 export * from './lifecycle.js';
 export * from './observables.js';
+export * from './all-tags.js';
+export * from './styles.js';
 export type * from './types';
+/**
+ * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
+ * You can pass in a selector for an element you want to be the default tag ("body" by default).
+ */
+export declare const init: (options?: {
+    selector: string;
+}) => _tag.CTag;
 export declare const Cardboard: {
     version: string;
+    styleManager: {
+        styleTag: _tag.CTag;
+        rules: Set<string>;
+        generatedIdsCount: number;
+        add(styleSheet: Record<string, import("./types").NestedStyleMap> | Record<string, import("./types").NestedStyleMap>[]): void;
+    };
+    allTags: import("./types").AllTags;
+    generateUID(): string;
+    uuidv4(): string;
     context: _context.CardboardContext;
     getMountPoint: () => _tag.CTag | undefined;
     mountPoint: (tag: _tag.CTag) => _tag.CTag;
@@ -22,9 +40,6 @@ export declare const Cardboard: {
     clearMountPoints: () => void;
     resetMountPoints: () => void;
     withMountPoint: (tag: _tag.CTag, scopedCallback: _context.ScopedCallback) => void;
-    init: (options?: {
-        selector: string;
-    }) => _tag.CTag;
     createGlobalObserver: () => {
         onAdded: _events.CEvent<Node>;
         onRemoved: _events.CEvent<Node>;
@@ -82,5 +97,4 @@ export declare const Cardboard: {
     stateRemove: <T_19>(state: import("./types").State<T_19[]>, item: T_19) => void;
     CTag: typeof _tag.CTag;
     tag: (arg0: string | HTMLElement, children?: import("./types").TagChildren, mountToParent?: boolean) => _tag.CTag;
-    allTags: import("./types").AllTags;
 };

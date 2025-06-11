@@ -1,9 +1,14 @@
-import { clearMountPoints, mountPoint, getMountPoint, restoreMountPoint, resetMountPoints, init } from '../src/context';
 import {
   tag,
   CTag,
   allTags,
-} from '../src/tag';
+  clearMountPoints,
+  getMountPoint,
+  init,
+  mountPoint,
+  resetMountPoints,
+  restoreMountPoint,
+} from '../src/cardboard.js';
 import { createDomMock } from './__mocks__/client';
 
 const allKnownTags = [

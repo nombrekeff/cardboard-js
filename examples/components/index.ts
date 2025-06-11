@@ -1,43 +1,35 @@
-import { init, allTags, tag } from '../../dist/cardboard.js';
-const { div, p, style } = allTags;
+import { context, init } from '../../dist/cardboard.js';
 
-// Example of a styled component using Cardboard.js
-// This example demonstrates how to create a simple styled component
-// with custom styles applied to it.
+const root = init();
+console.log('Cardboard initialized:', context);
 
-// It adds a css style block to the head of the document
-// and uses a class to apply styles to the component.
+import { StyledThing } from './styled_thing.js';
+import { StyledThing2 } from './styled_thing2.js';
 
-// This is done like this instead of using inline styles
-// to keep the styles organized and reusable. 
+// Example of styled components using Cardboard.js
+// This example demonstrates how to create simple styled components
+// with custom styles applied to them.
 
-// Inline styles can be used for quick prototyping, in tags/components that are not reused,
-// or in places where dynamic styles are needed,
-// but for reusable components, it's better to use classes, 
-// otherwise the styles get added to each instance of the component,
-// which can lead to performance issues.
-
-tag('(head)').append(style({
-  '.styled_thing': {
-    backgroundColor: 'lightblue',
-    padding: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '16px',
-    color: 'darkslategray',
-    textAlign: 'center',
-    margin: '10px 0',
-  }
-}));
-
-const StyledThing = () => {
-  return div(
-    p('This is a styled component'),
-  ).addClass('styled_thing');
-}
-
-init().append(
+const timeBefore = performance.now(); // Start measuring performance
+root.append(
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
+  StyledThing(),
   StyledThing(),
   StyledThing(),
 );
+const timAfter = performance.now(); // Start measuring performance
+console.log('Components rendered in', timAfter - timeBefore, 'ms');

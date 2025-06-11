@@ -1,17 +1,13 @@
 import type {
-  AllTags,
   IObservable,
   NoOp,
   Primitive,
   StyleMap,
-  StyleSet,
-  TagBuilder,
   TagChild,
   TagChildren,
   TagConfig,
   TextObj,
 } from './types';
-import { genCss } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
@@ -19,7 +15,8 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { CommonAttributes } from './attributes.js';
-import { context } from './context.js';
+import { context, generateUID, uuidv4 } from './context.js';
+
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -809,52 +806,3 @@ export class CTag {
 export const tag = (arg0: string | HTMLElement, children: TagChildren = [], mountToParent: boolean = false) => {
   return new CTag(arg0, children, mountToParent);
 };
-
-
-
-/** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
-const interceptors: Record<string, TagBuilder | ((styles: StyleSet[]) => CTag)> = {
-  ul: (children: TagChildren, mountToParent: boolean = false) => {
-    return tag(
-      'ul',
-      children.map((cl) => {
-        return tag('li', [cl], mountToParent);
-      }),
-    );
-  },
-  style: (styles: StyleSet[], mountToParent: boolean = false) => {
-    return tag('style', [genCss(styles)], mountToParent);
-  },
-};
-
-/**
- * List of all HTML tag functions. From `div` to `abbr` :)
- * If you want to create any other tag, use the {@link tag} function.
- *
- * @type {AllTags}
- * @example
- * ```ts
- * const { div, p, abbr, img, style, ... } = allTags;
- * ```
- */
-export const allTags: AllTags = new Proxy(
-  {},
-  {
-    get: (t, p, r) => {
-      const tagName = p.toString();
-      const fn = (...children: any[]) => {
-        return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
-      };
-
-      Object.defineProperty(fn, 'mount', {
-        get: () => {
-          return (...children: any[]) => {
-            return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
-          };
-        },
-      });
-
-      return fn;
-    },
-  },
-) as AllTags;

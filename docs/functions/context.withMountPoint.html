@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>allTags | cardboard-js</title><meta name="description" content="Documentation for cardboard-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>withMountPoint | cardboard-js</title><meta name="description" content="Documentation for cardboard-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -13,19 +13,29 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
 <li><a href="../index.html">cardboard-js</a></li>
-<li><a href="../modules/tag.html">tag</a></li>
-<li><a href="tag.allTags.html">allTags</a></li></ul>
-<h1>Variable allTags<code class="tsd-tag ts-flagConst">Const</code> </h1></div>
-<div class="tsd-signature"><span class="tsd-kind-variable">all<wbr/>Tags</span><span class="tsd-signature-symbol">:</span> <a href="../types/types.AllTags.html" class="tsd-signature-type tsd-kind-type-alias">AllTags</a><span class="tsd-signature-symbol"> = ...</span></div>
-<div class="tsd-comment tsd-typography"><p>List of all HTML tag functions. From <code>div</code> to <code>abbr</code> :)
-If you want to create any other tag, use the <a href="cardboard.Cardboard.html#__type.tag" class="tsd-kind-property">tag</a> function.</p>
+<li><a href="../modules/context.html">context</a></li>
+<li><a href="context.withMountPoint.html">withMountPoint</a></li></ul>
+<h1>Function withMountPoint</h1></div>
+<section class="tsd-panel">
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="withMountPoint"><span class="tsd-kind-call-signature">with<wbr/>Mount<wbr/>Point</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tag</span>, <span class="tsd-kind-parameter">scopedCallback</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#withMountPoint" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Sets the mount point to the given tag, calls the scoped callback, and then restores the mount point.
+Useful for creating a temporary mount point for a specific tag, and then restoring the previous mount point.</p>
 </div>
-<div class="tsd-comment tsd-typography">
-<h4>Example</h4><pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-3">div</span><span class="hl-1">, </span><span class="hl-3">p</span><span class="hl-1">, </span><span class="hl-3">abbr</span><span class="hl-1">, </span><span class="hl-3">img</span><span class="hl-1">, </span><span class="hl-3">style</span><span class="hl-1">, ... } = </span><span class="hl-7">allTags</span><span class="hl-1">;</span>
-</code><button>Copy</button></pre>
-</div><aside class="tsd-sources">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">tag</span>: <a href="../variables/cardboard.Cardboard.html#__type.CTag" class="tsd-signature-type tsd-kind-class">CTag</a></h5>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">scopedCallback</span>: <a href="../types/context.ScopedCallback.html" class="tsd-signature-type tsd-kind-type-alias">ScopedCallback</a></h5>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/6d77e4c/src/tag.ts#L938">tag.ts:938</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/nombrekeff/cardboard-js/blob/2e9aea4/src/context.ts#L110">context.ts:110</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -44,9 +54,11 @@ If you want to create any other tag, use the <a href="cardboard.Cardboard.html#_
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>cardboard-js</span></a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="..">
+<li><a href="../modules/all_tags.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>all-tags</a></li>
 <li><a href="../modules/attributes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>attributes</a></li>
 <li><a href="../modules/cardboard.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>cardboard</a></li>
 <li><a href="../modules/colors.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>colors</a></li>
+<li><a href="../modules/context.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>context</a></li>
 <li><a href="../modules/css_generator.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-generator</a></li>
 <li><a href="../modules/css_properties.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-properties</a></li>
 <li><a href="../modules/css_property_values.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>css-property-values</a></li>
@@ -55,6 +67,7 @@ If you want to create any other tag, use the <a href="cardboard.Cardboard.html#_
 <li><a href="../modules/lifecycle.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>lifecycle</a></li>
 <li><a href="../modules/observables.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>observables</a></li>
 <li><a href="../modules/state.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>state</a></li>
+<li><a href="../modules/styles.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>styles</a></li>
 <li><a href="../modules/tag.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>tag</a></li>
 <li><a href="../modules/tag_names.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>tag-names</a></li>
 <li><a href="../modules/text.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2"></use></svg>text</a></li>

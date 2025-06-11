@@ -1,4 +1,4 @@
-import type { StyleMap } from '../../../src/types';
+import type { StyleMap } from '../../../dist/types';
 import {
   allTags,
 } from '../../../dist/cardboard.js';

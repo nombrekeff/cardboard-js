@@ -17,7 +17,15 @@ export const genBlockContent = (selector, style) => {
     const blocks = [];
     for (const key in style) {
         if (isObject(style[key])) {
-            blocks.push(...genBlockContent(selector + key, style[key]));
+            let newSelector = selector;
+            if (!key.match(/^[a-z.]/)) {
+                newSelector += key;
+            }
+            // add space to tags
+            else {
+                newSelector += ` ${key}`;
+            }
+            blocks.push(...genBlockContent(newSelector, style[key]));
         }
         else if (style[key]) {
             inside += `${camelToDash(key)}:${style[key]};`;
