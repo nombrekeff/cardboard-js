@@ -1,5 +1,5 @@
-import { type CEvent } from "./events";
-import { CTag } from "./tag";
+import { type CEvent } from "./events.js";
+import { CTag } from "./tag.js";
 export type CardboardContext = {
     mountPoint?: CTag;
     mountPointHistory: CTag[];

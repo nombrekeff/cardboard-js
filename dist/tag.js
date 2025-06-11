@@ -11,7 +11,7 @@ import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
-import { context } from './context';
+import { context } from './context.js';
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *

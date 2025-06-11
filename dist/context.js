@@ -1,5 +1,5 @@
-import { singleEvent } from "./events";
-import { CTag } from "./tag";
+import { singleEvent } from "./events.js";
+import { CTag } from "./tag.js";
 export const context = {
     mountPoint: undefined,
     mountPointHistory: [],
