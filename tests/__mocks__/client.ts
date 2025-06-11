@@ -3,6 +3,7 @@ import jsdom, { JSDOM } from 'jsdom';
 export function createDomMock(content = '') {
   const dom = new JSDOM(content, { url: 'https://example.org/' });
   global.document = dom.window.document;
+  global.document.body = global.document.body || global.document.createElement('body');
   global.window = dom.window as any;
   global.HTMLElement = dom.window.HTMLElement;
   global.HTMLInputElement = dom.window.HTMLInputElement;

@@ -1,3 +1,4 @@
+/** @jest-environment jsdom */
 import { tag } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 

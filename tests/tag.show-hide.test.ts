@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { createDomMock } from './__mocks__/client';
 import { tag, allTags, state, CTag } from '../src/cardboard';
 const { p } = allTags;

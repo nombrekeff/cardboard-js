@@ -1,15 +1,7 @@
+/** @jest-environment jsdom */
 import { createDomMock } from './__mocks__/client';
 import { tag, state } from '../src/cardboard.js';
 
-function getElementIndex(node) {
-  var index = 0;
-
-  while ((node = node.previousElementSibling)) {
-    index++;
-  }
-
-  return index;
-}
 
 describe('Tag conditionals', () => {
   it('tag.hideIfNot', async () => {

@@ -28,9 +28,8 @@ export function generateUID() {
     return `_card_${generatedIdsCount++}`;
 }
 
-
 export function uuidv4() {
-    return "_card_10000000".replace(/[018]/g, c =>
+    return "c_1000000010".replace(/[018]/g, c =>
         (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
     );
 }
