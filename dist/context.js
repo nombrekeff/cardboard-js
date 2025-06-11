@@ -99,7 +99,7 @@ export const createGlobalObserver = () => {
             }
         }
     });
-    observer.observe(document.body, {
+    observer.observe(window.document.body, {
         childList: true,
         subtree: true,
     });

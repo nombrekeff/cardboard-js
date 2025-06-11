@@ -747,7 +747,7 @@ export class CTag {
   private _observer: MutationObserver;
   private _getChildren(element: HTMLElement) {
     if (!this._observer) {
-      this._observer = new MutationObserver(() => {
+      this._observer = new window.MutationObserver(() => {
         this._cacheChildren(element);
       });
       this._observer.observe(this.el, { childList: true });

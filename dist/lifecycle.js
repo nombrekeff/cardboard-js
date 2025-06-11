@@ -16,7 +16,6 @@ import { context, createGlobalObserver } from './cardboard.js';
 export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmounted) {
     if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = () => __awaiter(this, void 0, void 0, function* () {
             const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (yield result))) {
@@ -39,9 +38,9 @@ export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmounted) {
         context.observer = createGlobalObserver();
     }
     let onAddedCb, onRemovedCb;
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     context.observer.onAdded.listen(onAddedCb = (node) => __awaiter(this, void 0, void 0, function* () {
-        if (node === tag.el && onMounted) {
+        let isAdded = node === tag.el || node.contains(tag.el);
+        if (isAdded && onMounted) {
             const result = onMounted(tag);
             if (result instanceof Promise) {
                 yield result;
@@ -49,7 +48,8 @@ export function onLifecycle(tag, onMounted, onUnmounted, beforeUnmounted) {
         }
     }));
     context.observer.onRemoved.listen(onRemovedCb = (node) => {
-        if (node === tag.el && onUnmounted) {
+        let isRemoved = node === tag.el || node.contains(tag.el);
+        if (isRemoved && onUnmounted) {
             onUnmounted(tag);
         }
     });

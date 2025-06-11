@@ -135,7 +135,7 @@ describe('Tag functions', () => {
     clearMountPoints();
   });
   it('mountPoint', async () => {
-    createDomMock();
+    
     const c = tag('div');
     mountPoint(c);
 
@@ -143,7 +143,7 @@ describe('Tag functions', () => {
   });
 
   it('multiple mountPoint', async () => {
-    createDomMock();
+    
     clearMountPoints();
 
     const c = tag('div');
@@ -162,7 +162,7 @@ describe('Tag functions', () => {
   });
 
   it('getMountPoint()', async () => {
-    createDomMock();
+    
     const c = tag('div');
     mountPoint(c);
 
@@ -170,7 +170,7 @@ describe('Tag functions', () => {
   });
 
   it('resetMountPoint()', async () => {
-    createDomMock();
+    
     const c = tag('div');
     mountPoint(c);
     mountPoint(tag('div'));
@@ -182,7 +182,7 @@ describe('Tag functions', () => {
   });
 
   it('init default', async () => {
-    createDomMock();
+    
     init();
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
@@ -190,7 +190,8 @@ describe('Tag functions', () => {
   });
 
   it('init with selector', async () => {
-    createDomMock('<div id="root"></div>');
+    // createDomMock('<div id="root"></div>');
+    document.body.innerHTML = '<div id="root"></div>';
     init({ selector: '#root' });
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
@@ -199,7 +200,6 @@ describe('Tag functions', () => {
   });
 
   it('allTags', async () => {
-    createDomMock('');
     for (const tname of allKnownTags) {
       expect(allTags[tname]).toBeTruthy();
       expect('mount' in allTags[tname]).toBeTruthy();
@@ -209,7 +209,6 @@ describe('Tag functions', () => {
   });
 
   it('interceptor.ul', async () => {
-    createDomMock('');
     const list = allTags['ul']('test');
     expect(list).toBeInstanceOf(CTag);
     expect((list.children[0] as HTMLElement).tagName).toBe('LI');

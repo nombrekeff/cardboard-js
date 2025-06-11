@@ -16,7 +16,6 @@ export function onLifecycle(
 ) {
     if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = async () => {
             const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (await result))) {
@@ -42,9 +41,9 @@ export function onLifecycle(
     }
 
     let onAddedCb, onRemovedCb;
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     context.observer.onAdded.listen(onAddedCb = async (node: Node) => {
-        if (node === tag.el && onMounted) {
+        let isAdded = node === tag.el || node.contains(tag.el);
+        if (isAdded && onMounted) {
             const result = onMounted(tag);
             if (result instanceof Promise) {
                 await result;
@@ -52,7 +51,8 @@ export function onLifecycle(
         }
     });
     context.observer.onRemoved.listen(onRemovedCb = (node: Node) => {
-        if (node === tag.el && onUnmounted) {
+        let isRemoved = node === tag.el || node.contains(tag.el);
+        if (isRemoved && onUnmounted) {
             onUnmounted(tag);
         }
     });

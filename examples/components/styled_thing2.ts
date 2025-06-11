@@ -1,4 +1,4 @@
-import { allTags, context, CTag, NestedStyleMap, styleManager, uuidv4, withLifecycle } from '../../dist/cardboard.js';
+import { allTags, CTag, NestedStyleMap, styleManager, uuidv4, withLifecycle } from '../../dist/cardboard.js';
 const { div, p, span } = allTags;
 
 // Example of a styled component using Cardboard.js
@@ -17,9 +17,20 @@ const { div, p, span } = allTags;
 // otherwise the styles get added to each instance of the component,
 // which can lead to performance issues.
 
+export const Row = Component((...children) => {
+  return div(...children);
+}, {
+  styles: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 32px',
+    color: 'white',
+  }
+});
+
 export const StyledThing2 = Component(() => {
   return div(
-    div(
+    Row(
       span('X'),
       p('This is a styled component')
     ),
@@ -28,26 +39,18 @@ export const StyledThing2 = Component(() => {
   styles: {
     backgroundColor: 'lightsteelblue',
     borderRadius: '16px',
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '16px',
     color: 'darkslategray',
     textAlign: 'center',
     margin: '10px',
-    'div': {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 32px',
-      color: 'white',
-      'span': {
-        marginRight: '16px',
-        fontSize: '24px',
-      },
-      'p': {
-        fontSize: '20px',
-        ':hover': {
-          color: 'red',
-        }
-      },
+    'span': {
+      marginRight: '16px',
+      fontSize: '24px',
+    },
+    'p': {
+      fontSize: '20px',
+      ':hover': {
+        color: 'red',
+      }
     },
   }
 });
@@ -57,7 +60,9 @@ function Component(fn: (...args) => CTag, options: { name?: string, styles?: Nes
   let called = false;
 
   return function (...args) {
-    if (called) return fn(...args).addClass(className);
+    if (called) {
+      return fn(...args).addClass(className);
+    }
 
     // Using lifecycle to ensure styles are added once when the first tag is mounted
     return withLifecycle(fn(...args).addClass(className), {

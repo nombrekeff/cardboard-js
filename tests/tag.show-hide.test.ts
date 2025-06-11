@@ -15,8 +15,10 @@ const getChildStr = () => {
 };
 
 describe('Conditional show/hide', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
   it('basic case', async () => {
-    createDomMock();
     const root = tag('(body)');
 
     let hide = state(false);
@@ -37,7 +39,6 @@ describe('Conditional show/hide', () => {
   });
 
   it('basic case', async () => {
-    createDomMock();
     const root = tag('(body)');
 
     let hide0 = state(false);
@@ -74,7 +75,7 @@ describe('Conditional show/hide', () => {
   });
 
   // it('Works between text nodes', async () => {
-  //   createDomMock();
+
   //   const root = tag('(body)');
   //   let st = state({ hide: false });
 
@@ -89,7 +90,7 @@ describe('Conditional show/hide', () => {
   // });
 
   // it('Works with nested children', async () => {
-  //   createDomMock();
+
   //   const root = tag('(body)');
   //   let st = state({ hide: false });
 
@@ -104,7 +105,7 @@ describe('Conditional show/hide', () => {
   // });
 
   // it('random test case', async () => {
-  //   createDomMock();
+
   //   const root = tag('(body)');
 
   //   let completeChildStrigns = ['0', '1', '2', '3', '4', '5'];

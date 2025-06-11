@@ -3,15 +3,17 @@ import { CTag, tag } from '../src/tag';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
   it('tag creates correctly', async () => {
-    createDomMock();
     const t = tag('custom', ['child']);
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.textContent).toEqual('child');
   });
 
   it('tag queries correctly', async () => {
-    createDomMock('<div id="test"></div>');
+    document.body.innerHTML = '<div id="test"></div>';
     const t = tag('(#test)');
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.tagName.toLowerCase()).toEqual('div');
@@ -19,7 +21,7 @@ describe('Tags', () => {
   });
 
   it('tag receives el correctly', async () => {
-    createDomMock('<div id="test"></div>');
+    document.body.innerHTML = '<div id="test"></div>';
 
     const t = tag(document.querySelector('#test') as HTMLElement);
 
@@ -29,7 +31,6 @@ describe('Tags', () => {
   });
 
   it('tag appends correctly', async () => {
-    createDomMock();
     const s = tag('span');
     const d = tag('div', [s]);
     const p = tag('p');
@@ -39,7 +40,6 @@ describe('Tags', () => {
   });
 
   it('tag prepends correctly', async () => {
-    createDomMock();
     const s = tag('span');
     const d = tag('div', [s]);
     const p = tag('p');
@@ -49,14 +49,12 @@ describe('Tags', () => {
   });
 
   it('tag.text works correctly', async () => {
-    createDomMock();
     const t = tag('custom').text('child');
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.textContent).toEqual('child');
   });
 
   it('tag.text works with template correctly', async () => {
-    createDomMock();
     const t = tag('custom').text('$a', { a: state('123') });
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.textContent).toEqual('123');
@@ -64,7 +62,6 @@ describe('Tags', () => {
 
 
   it('tag.when', async () => {
-    createDomMock();
     const clickCallback = jest.fn();
     const clickChange = jest.fn();
 
@@ -80,7 +77,6 @@ describe('Tags', () => {
   });
 
   it('tag.config works correctly', async () => {
-    createDomMock();
     const t = tag('custom').config({
       attr: { href: 'example.com' },
       classList: ['one'],
@@ -100,7 +96,6 @@ describe('Tags', () => {
   });
 
   it('tag.config children', async () => {
-    createDomMock();
     const c = tag('div', ['Hey']);
     const t = tag('custom').config({
       children: [c],
@@ -110,7 +105,6 @@ describe('Tags', () => {
   });
 
   it('tag.config value', async () => {
-    createDomMock();
     const t = tag('custom').config({
       value: 'hello',
     });
@@ -119,7 +113,6 @@ describe('Tags', () => {
   });
 
   it('tag.config on', async () => {
-    createDomMock();
     const clickCallback = jest.fn();
 
     const t = tag('custom').config({
@@ -133,13 +126,11 @@ describe('Tags', () => {
   });
 
   it('tag.className', async () => {
-    createDomMock();
     const t = tag('custom').setClassName('true false');
     expect(t.className).toBe('true false');
   });
 
   it('tag.config className', async () => {
-    createDomMock();
     const t = tag('custom').config({
       className: 'test box',
     });
@@ -147,7 +138,6 @@ describe('Tags', () => {
   });
 
   it('tag.rmClass', async () => {
-    createDomMock();
     const t = tag('custom').config({
       className: 'test box',
     });
@@ -157,7 +147,6 @@ describe('Tags', () => {
   });
 
   it('tag.hasClass', async () => {
-    createDomMock();
     const t = tag('custom').config({
       className: 'test box',
     });
@@ -167,7 +156,6 @@ describe('Tags', () => {
   });
 
   it('tag.replaceClass', async () => {
-    createDomMock();
     const t = tag('custom')
       .setClassName('test box')
       .replaceClass('test', 'new-test');
@@ -178,7 +166,6 @@ describe('Tags', () => {
   });
 
   it('tag.toggleClass', async () => {
-    createDomMock();
     const t = tag('custom');
     expect(t.hasClass('hello')).toBe(false);
     t.toggleClass('hello');
@@ -188,7 +175,6 @@ describe('Tags', () => {
   });
 
   it('tag.rmStyle', async () => {
-    createDomMock();
     const t = tag('custom')
       .addStyle('color', 'red')
       .addStyle('background', 'white');
@@ -200,7 +186,6 @@ describe('Tags', () => {
   });
 
   it('tag.rmAttr', async () => {
-    createDomMock();
     const t = tag('custom').addAttr('src', 'link').addAttr('href', 'link');
     t.rmAttr('src');
 
@@ -210,7 +195,6 @@ describe('Tags', () => {
   });
 
   it('tag.disable & tag.enable', async () => {
-    createDomMock();
     const t = tag('custom').disable();
     expect(t).toBeInstanceOf(CTag);
     expect(t.hasAttr('disabled')).toBe(true);
@@ -220,7 +204,6 @@ describe('Tags', () => {
   });
 
   it('tag.consumeValue', async () => {
-    createDomMock();
     const t = tag('custom').setValue('hey');
 
     expect(t.consumeValue).toBe('hey');
@@ -228,7 +211,6 @@ describe('Tags', () => {
   });
 
   it('tag.checked', async () => {
-    createDomMock();
     const t = tag('custom').setChecked(true);
     expect(t.checked).toBe(true);
     t.setChecked(false);
@@ -236,7 +218,6 @@ describe('Tags', () => {
   });
 
   it('tag.clear', async () => {
-    createDomMock();
     const t = tag('custom').setValue('hey');
 
     expect(t).toBeInstanceOf(CTag);
@@ -247,7 +228,6 @@ describe('Tags', () => {
   });
 
   it('tag.q', async () => {
-    createDomMock();
     const t = tag('custom').append(tag('p').setId('test'));
     const q = t.q('#test');
 
@@ -256,7 +236,6 @@ describe('Tags', () => {
   });
 
   it('tag.find', async () => {
-    createDomMock();
     const t = tag('custom').append(tag('p').setId('test'));
     const q = t.findTag((t) => t.id == 'test');
 
@@ -265,7 +244,6 @@ describe('Tags', () => {
   });
 
   it('tag.find no item', async () => {
-    createDomMock();
     const t = tag('custom').append(tag('p').setId('test'));
     const q = t.findTag((t) => t.id == 'not-exists');
 
@@ -273,7 +251,6 @@ describe('Tags', () => {
   });
 
   it('tag.remove', async () => {
-    createDomMock();
     const c = tag('div');
     const t = tag('test').append(c);
 
@@ -283,7 +260,6 @@ describe('Tags', () => {
   });
 
   it('tag.consume', async () => {
-    createDomMock();
     const callback = jest.fn();
     let count = state(0);
 
@@ -294,7 +270,6 @@ describe('Tags', () => {
   });
 
   it('tag.hide & tag.show', async () => {
-    createDomMock();
     const test = tag('div').setId('test');
     tag('(body)').append(test);
 
@@ -308,19 +283,16 @@ describe('Tags', () => {
   });
 
   it('tag throws if bad selector', async () => {
-    createDomMock();
     const t = () => tag('(123123sad)', ['child']);
     expect(t).toThrowError("'(123123sad)' is not a valid selector");
   });
 
   it('tag throws if tag does not exists for selector', async () => {
-    createDomMock();
     const t = () => tag('(#test)', ['child']);
     expect(t).toThrowError("Can't find element for selector: (#test)");
   });
 
   it('tag throws if bad argument passed', async () => {
-    createDomMock();
     const t = () => tag(null as any, ['child']);
     expect(t).toThrowError("Invalid argument: null");
   });

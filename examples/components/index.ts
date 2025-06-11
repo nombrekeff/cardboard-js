@@ -1,13 +1,18 @@
-import { context, init } from '../../dist/cardboard.js';
+import { init, styleManager } from '../../dist/cardboard.js';
 import { StyledThing } from './styled_thing.js';
 import { StyledThing2 } from './styled_thing2.js';
 
 const root = init();
-// console.log('Cardboard initialized:', context);
+styleManager.add({
+  'body': {
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '16px',
+  }
+});
 
-// // Example of styled components using Cardboard.js
-// // This example demonstrates how to create simple styled components
-// // with custom styles applied to them.
+// Example of styled components using Cardboard.js
+// This example demonstrates how to create simple styled components
+// with custom styles applied to them.
 
 const timeBefore = performance.now(); // Start measuring performance
 // // root.append(
@@ -30,26 +35,26 @@ const timeBefore = performance.now(); // Start measuring performance
 // //   StyledThing(),
 // //   StyledThing(),
 // // );
-  
+
 root.append(
   StyledThing2(),
   StyledThing2(),
   StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
-  StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
+  // StyledThing2(),
 );
 const timAfter = performance.now(); // Start measuring performance
 console.log('Components rendered in', timAfter - timeBefore, 'ms');

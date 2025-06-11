@@ -1,15 +1,14 @@
 /** @jest-environment jsdom */
 
-import { createDomMock } from './__mocks__/client';
 import { Link, makeRouter } from '../src/ext/routing';
 import { tag } from '../src/tag';
 import { allTags, init } from '../src/cardboard';
 const { div } = allTags;
 
 describe('Routing', () => {
-  it('router basic shows correct route', async () => {
-    createDomMock();
 
+
+  it('router basic shows correct route', async () => {
     const home = div('Home');
     const about = div('About');
 
@@ -39,8 +38,6 @@ describe('Routing', () => {
   });
 
   it('router basic shows correct route for alias', async () => {
-    createDomMock();
-
     const home = div('Home');
     const about = div('About');
 
@@ -61,8 +58,6 @@ describe('Routing', () => {
   });
 
   it('router shows fallback route', async () => {
-    createDomMock();
-
     const home = div('Home');
     const about = div('About');
     const fallback = div('Fallback');
@@ -92,8 +87,6 @@ describe('Routing', () => {
   });
 
   it('router shows noRouteBuilder if no route and no fallback', async () => {
-    createDomMock();
-
     const home = div('Home');
     const about = div('About');
     const fallback = div('Fallback');
@@ -123,8 +116,6 @@ describe('Routing', () => {
   });
 
   it('router shows error if it has no fallback or noRouteBuilder defined', async () => {
-    createDomMock();
-
     const home = div('Home');
     const about = div('About');
 
@@ -153,8 +144,6 @@ describe('Routing', () => {
   });
 
   it('router basic shows correct route', async () => {
-    createDomMock();
-
     const home = div('Home');
     const about = div('About');
 
@@ -180,7 +169,6 @@ describe('Routing', () => {
   });
 
   it('router params work', async () => {
-    createDomMock();
 
     const home = div('Home');
     const about = div('About');
@@ -201,7 +189,6 @@ describe('Routing', () => {
   });
 
   it('query params work', async () => {
-    createDomMock();
 
     const home = div('Home');
     const about = div('About');
