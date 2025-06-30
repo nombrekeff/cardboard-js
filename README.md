@@ -13,15 +13,6 @@ It's similar in philosophy to [VanJS](https://vanjs.org/), but with many more fe
 > **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
 > You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!**
 
-<!-- Welcome to Cardboard. An **extremely light** (_around **18kb**_), **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like managing state, components, logic, and the rest. But with a twist, **you don't need to write any HTML, CSS, or JSX** if you don't want to. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
-
-
-It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with many more features, and a more extensive API.
-
-> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
-> You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!** -->
-
-
 ```ts
 const Counter = () => {
   const count = state(0);
@@ -90,9 +81,7 @@ Cardboard.js lets you create web apps using only JavaScript/TypeScript, eliminat
 *   **[Logic](https://github.com/nombrekeff/cardboard-js/wiki/Logic)**: Add application logic in a simple way.
 *   **[Text Templates](https://github.com/nombrekeff/cardboard-js/wiki/Text-Templates)**: Simplify text and template manipulation with state.
 *   **[Components](https://github.com/nombrekeff/cardboard-js/wiki/Reusable-Component)**: Create reusable UI components.
-*   **[Tweening](https://github.com/nombrekeff/cardboard-js/wiki/Tweening)**: Simple tweening animations.
-*   **[Routing](https://github.com/nombrekeff/cardboard-js/wiki/Routing)**: Build single-page applications with ease.
-*   **[CSS in JS](#css-in-js)**: Style your application using JavaScript objects.
+*   **[CSS in JS](https://github.com/nombrekeff/cardboard-js/wiki/Styling)**: Style your application using JavaScript objects.
 *   **Typed**: Full TypeScript support for code completion and type safety.
 *   **ATAP**: As tested as possible!
 
@@ -114,7 +103,6 @@ You can help with the Wiki, using and testing the project, reporting bugs, fixin
 Take a look at these guides:
 * [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
 * [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
-
 
 
 
