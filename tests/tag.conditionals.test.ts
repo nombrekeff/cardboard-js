@@ -1,9 +1,12 @@
 /** @jest-environment jsdom */
 import { createDomMock } from './__mocks__/client';
-import { tag, state } from '../src/cardboard.js';
+import { tag, state, init } from '../src/cardboard.js';
 
 
 describe('Tag conditionals', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
   beforeEach(() => {
     document.body.innerHTML = '';
   });

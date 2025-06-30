@@ -13,6 +13,9 @@ export declare class CTag {
     el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
+    private _visible;
+    get visible(): boolean;
+    set visible(newValue: boolean);
     /**
      * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
      * Used to remove HTML Event Listeners and Observable listeners
@@ -224,7 +227,7 @@ export declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | IObservable<any> | Node | CTag | undefined;
+    find(predicate: (el: TagChild) => boolean): string | Node | IObservable<any> | CTag | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;
@@ -240,7 +243,7 @@ export declare class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
  *
  * @example
  * ```ts

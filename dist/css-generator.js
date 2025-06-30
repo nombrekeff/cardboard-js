@@ -18,13 +18,7 @@ export const genBlockContent = (selector, style) => {
     for (const key in style) {
         if (isObject(style[key])) {
             let newSelector = selector;
-            if (!key.match(/^[a-z.]/)) {
-                newSelector += key;
-            }
-            // add space to tags
-            else {
-                newSelector += ` ${key}`;
-            }
+            newSelector += key;
             blocks.push(...genBlockContent(newSelector, style[key]));
         }
         else if (style[key]) {

@@ -6,8 +6,12 @@ import { allTags, init } from '../src/cardboard';
 const { div } = allTags;
 
 describe('Routing', () => {
-
-
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
   it('router basic shows correct route', async () => {
     const home = div('Home');
     const about = div('About');

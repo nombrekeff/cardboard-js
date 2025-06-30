@@ -2,6 +2,7 @@ import { type CEvent } from "./events.js";
 import { CTag } from "./tag.js";
 import type { StyleManager } from "./types.js";
 export type CardboardContext = {
+    intersectionObserver?: IntersectionObserver;
     styleManager?: StyleManager;
     mountPoint?: CTag;
     mountPointHistory: CTag[];
@@ -9,16 +10,11 @@ export type CardboardContext = {
         onAdded: CEvent<Node>;
         onRemoved: CEvent<Node>;
     };
+    initialized?: boolean;
 };
 export declare const context: CardboardContext;
-/**
- * Generates a unique ID for a Cardboard tag.
- * The ID is prefixed with "_card_" and is incremented each time this function is called.
- *
- * @returns A unique ID string for a Cardboard tag.
- */
-export declare function generateUID(): string;
-export declare function uuidv4(): string;
+export declare const isInitialized: () => boolean;
+export declare const checkInitialized: () => void;
 /**
  * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */

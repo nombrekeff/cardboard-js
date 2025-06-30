@@ -2,6 +2,7 @@ import * as _context from './context.js';
 import * as _tag from './tag.js';
 import * as _events from './events.js';
 import * as _observables from './observables.js';
+import * as _styles from './style-manager.js';
 export * from './context.js';
 export * from './tag.js';
 export * from './state.js';
@@ -13,7 +14,6 @@ export * from './each.js';
 export * from './lifecycle.js';
 export * from './observables.js';
 export * from './all-tags.js';
-export * from './styles.js';
 export type * from './types';
 /**
  * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
@@ -24,16 +24,11 @@ export declare const init: (options?: {
 }) => _tag.CTag;
 export declare const Cardboard: {
     version: string;
-    styleManager: {
-        styleTag: _tag.CTag;
-        rules: Set<string>;
-        generatedIdsCount: number;
-        add(styleSheet: Record<string, import("./types").NestedStyleMap> | Record<string, import("./types").NestedStyleMap>[]): void;
-    };
+    StyleManager: typeof _styles.StyleManager;
     allTags: import("./types").AllTags;
-    generateUID(): string;
-    uuidv4(): string;
     context: _context.CardboardContext;
+    isInitialized: () => boolean;
+    checkInitialized: () => void;
     getMountPoint: () => _tag.CTag | undefined;
     mountPoint: (tag: _tag.CTag) => _tag.CTag;
     restoreMountPoint: () => void;
@@ -70,6 +65,8 @@ export declare const Cardboard: {
     singleEvent: <T_9>() => _events.CEvent<T_9>;
     mappedEvent: <T_10>() => _events.CMappedEvent<T_10>;
     text: <T_11 extends Record<string, import("./types").Primitive>, K_3 extends import("./types").TextObj>(textTemplate: string, obj?: K_3 | import("./types").IObservable<T_11> | undefined) => Node;
+    generateUID(idNumber?: number | undefined): string;
+    uuidv4(): string;
     removeFromList: <T_12>(item: T_12, list?: T_12[] | undefined) => boolean;
     camelToDash: (str: any) => any;
     isObject: (obj: any) => boolean;

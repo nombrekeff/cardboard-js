@@ -10,13 +10,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
-import { context } from './context.js';
+import { checkInitialized, context } from './context.js';
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
 export class CTag {
+    get visible() {
+        return this._visible;
+    }
+    set visible(newValue) {
+        this._visible = newValue;
+        this.el.dispatchEvent(new CustomEvent('visible', {
+            detail: {
+                visible: newValue,
+                tag: this,
+            },
+            bubbles: true,
+            composed: true,
+        }));
+    }
     get parent() {
         return this._parent;
     }
@@ -63,6 +77,7 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], mountToParent = false) {
+        this._visible = false;
         /**
          * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
          * Used to remove HTML Event Listeners and Observable listeners
@@ -102,6 +117,8 @@ export class CTag {
         }
         if (children.length > 0)
             this.setChildren(children);
+        // Used by other parts of Cardboard to identify this tag
+        this.el.tag = this;
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
@@ -161,6 +178,7 @@ export class CTag {
     hide() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.parent && this.parent.children.includes(this.el)) {
+                this.parent.el.insertBefore(document.createComment(this.el.id), this.el);
                 yield this.remove();
                 this._meta.isHidden = true;
             }
@@ -545,6 +563,8 @@ export class CTag {
      * Destroy the element, should not be used afterwards
      */
     destroy() {
+        var _a;
+        (_a = context.intersectionObserver) === null || _a === void 0 ? void 0 : _a.unobserve(this.el);
         this._children.forEach((cl) => {
             if (cl instanceof CTag) {
                 cl.destroy();
@@ -637,7 +657,9 @@ export class CTag {
     }
     _mapChildren(children) {
         const mapped = [];
-        for (const child of children) {
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            // for (const child of children) {
             if (child instanceof CTag) {
                 child.parent = this;
             }
@@ -657,7 +679,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
  *
  * @example
  * ```ts
@@ -668,6 +690,7 @@ export class CTag {
  * ```
  */
 export const tag = (arg0, children = [], mountToParent = false) => {
+    checkInitialized();
     return new CTag(arg0, children, mountToParent);
 };
 //# sourceMappingURL=tag.js.map

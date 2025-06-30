@@ -1,8 +1,11 @@
-import { state } from '../src/state';
+import { init, state } from '../src/cardboard';
 import { CTag, tag } from '../src/tag';
-import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+
   beforeEach(() => {
     document.body.innerHTML = '';
   });

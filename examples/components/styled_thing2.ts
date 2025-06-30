@@ -1,4 +1,7 @@
-import { allTags, CTag, NestedStyleMap, styleManager, uuidv4, withLifecycle } from '../../dist/cardboard.js';
+import { allTags, CTag, state } from '../../dist/cardboard.js';
+import { AlignContentOptions } from '../../dist/css-property-values.js';
+import { Component } from '../../dist/ext/components.js';
+import { styles } from './styles.js';
 const { div, p, span } = allTags;
 
 // Example of a styled component using Cardboard.js
@@ -17,66 +20,18 @@ const { div, p, span } = allTags;
 // otherwise the styles get added to each instance of the component,
 // which can lead to performance issues.
 
-export const Row = Component((...children) => {
-  return div(...children);
-}, {
-  styles: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 32px',
-    color: 'white',
-  }
-});
+export const Row = Component((children?: CTag[], align?: AlignContentOptions) => {
+  const count = state(1);
+  return div(...children).addClass(align);
+}).styled(styles.row);
 
 export const StyledThing2 = Component(() => {
+  const count = state(1);
   return div(
-    Row(
+    Row([
       span('X'),
-      p('This is a styled component')
-    ),
+      p('This is a styled component'),
+      span('X'),
+    ], 'space-between'),
   );
-}, {
-  styles: {
-    backgroundColor: 'lightsteelblue',
-    borderRadius: '16px',
-    color: 'darkslategray',
-    textAlign: 'center',
-    margin: '10px',
-    'span': {
-      marginRight: '16px',
-      fontSize: '24px',
-    },
-    'p': {
-      fontSize: '20px',
-      ':hover': {
-        color: 'red',
-      }
-    },
-  }
-});
-
-function Component(fn: (...args) => CTag, options: { name?: string, styles?: NestedStyleMap } = {}): (...args) => CTag {
-  const className = options && options.name ? options.name : uuidv4();
-  let called = false;
-
-  return function (...args) {
-    if (called) {
-      return fn(...args).addClass(className);
-    }
-
-    // Using lifecycle to ensure styles are added once when the first tag is mounted
-    return withLifecycle(fn(...args).addClass(className), {
-      mounted: (el) => {
-        if (!called) {
-          called = true;
-          if (options && options.styles) {
-            styleManager.add({
-              [`.${className}`]: options.styles
-            });
-          }
-        }
-        return true;
-      }
-    });
-  }
-}
+}).styled(styles.styledThing);

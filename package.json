@@ -1,25 +1,31 @@
 {
   "name": "cardboard-js",
-  "version": "0.0.4",
-  "description": "A very simple, yet powerful framework/library to create web applications without the need to write any HTML.",
+  "version": "0.0.5",
+  "description": "Fast, light & ultra-compact library for composing interactive web apps—all in plain JavaScript or TypeScript, no HTML required.",
   "type": "module",
   "main": "./dist/cardboard.js",
   "types": "./dist/cardboard.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/cardboard.js",
+      "require": "./dist/cardboard.js",
+      "types": "./dist/cardboard.d.ts"
+    }
+  },
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint ./src/**/*.ts",
     "test:watch": "jest --coverage --watchAll",
-    "build": "rimraf dist && tsc --p tsconfig.json && npm run build:docs && npm run copy:definitions && npm run build:bundle:main",
+    "build": "./scripts/build.sh",
     "build:source": "rimraf dist && tsc --p tsconfig.json && npm run copy:definitions",
     "build:watch": "tsc --watch",
     "build:example": "tsc --p examples/tsconfig.json",
     "build:example:login": "tsc --p examples/login-page/tsconfig.json",
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",
     "build:docs": "typedoc --out docs src/*.ts",
-    "build:_exp": "tsc --p _experiments/tsconfig.json",
-    "build:bundle:main": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.js --minify src/cardboard.ts",
-    "build:bundle:main:nomin": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.js --minify-whitespace src/cardboard.ts",
-    "copy:definitions": "./scripts/copy-definitions.sh"
+    "build:bundle:main": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.min.js --minify src/cardboard.ts",
+    "build:bundle:main:nomin": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.js src/cardboard.ts",
+    "copy:definitions": "./scripts/copy_definitions.sh"
   },
   "author": "nombrekeff",
   "repository": {

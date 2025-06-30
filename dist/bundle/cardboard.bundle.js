@@ -1,1 +1,1620 @@
-var Cardboard=(()=>{var G=Object.defineProperty;var Ve=Object.getOwnPropertyDescriptor;var qe=Object.getOwnPropertyNames;var Be=Object.prototype.hasOwnProperty;var h=(r,e)=>{for(var t in e)G(r,t,{get:e[t],enumerable:!0})},We=(r,e,t,s)=>{if(e&&typeof e=="object"||typeof e=="function")for(let n of qe(e))!Be.call(r,n)&&n!==t&&G(r,n,{get:()=>e[n],enumerable:!(s=Ve(e,n))||s.enumerable});return r};var ze=r=>We(G({},"__esModule",{value:!0}),r);var Ze={};h(Ze,{CEvent:()=>A,CMappedEvent:()=>k,CTag:()=>P,Cardboard:()=>Ue,DiffState:()=>ke,Observable:()=>M,allTags:()=>Le,arraysEqual:()=>Ce,camelToDash:()=>S,clearMountPoints:()=>Se,compute:()=>p,computeMultiple:()=>Ne,context:()=>l,createGlobalObserver:()=>N,createObservable:()=>g,deepEquals:()=>E,diffList:()=>He,each:()=>Ge,equalTo:()=>te,genBlock:()=>pe,genBlockContent:()=>W,genCss:()=>K,generateUID:()=>Ie,getMountPoint:()=>Ee,getValue:()=>v,grab:()=>ie,greaterThan:()=>X,greaterThanOr:()=>Y,init:()=>De,isArray:()=>q,isEmpty:()=>se,isObject:()=>I,isObservable:()=>x,lessThan:()=>Q,lessThanOr:()=>ee,listState:()=>Me,mappedEvent:()=>Oe,mountPoint:()=>R,notEmpty:()=>ne,notEqualTo:()=>re,onLifecycle:()=>Te,removeFromList:()=>w,resetMountPoints:()=>Ae,restoreMountPoint:()=>Z,singleEvent:()=>H,state:()=>de,stateAdd:()=>ue,stateAddAt:()=>ce,stateRemove:()=>fe,stateRemoveWhere:()=>B,styleManager:()=>F,swapItems:()=>xe,tag:()=>m,text:()=>j,uuidv4:()=>_e,val:()=>b,withLifecycle:()=>Ke,withMountPoint:()=>Pe});var J={};h(J,{clearMountPoints:()=>Se,context:()=>l,createGlobalObserver:()=>N,generateUID:()=>Ie,getMountPoint:()=>Ee,mountPoint:()=>R,resetMountPoints:()=>Ae,restoreMountPoint:()=>Z,uuidv4:()=>_e,withMountPoint:()=>Pe});var U={};h(U,{CEvent:()=>A,CMappedEvent:()=>k,mappedEvent:()=>Oe,singleEvent:()=>H});var D={};h(D,{arraysEqual:()=>Ce,camelToDash:()=>S,deepEquals:()=>E,isArray:()=>q,isObject:()=>I,removeFromList:()=>w,swapItems:()=>xe,val:()=>b});var w=(r,e)=>{if(!e)return!1;let t=e.indexOf(r);return t!==-1?(e.splice(t,1),!0):!1},S=r=>r.replace(/([A-Z])/g,e=>`-${e.toLowerCase()}`),I=r=>typeof r=="object"&&!(r instanceof Array),q=r=>Object.prototype.toString.call(r)==="[object Array]",b=(r,...e)=>typeof r=="function"?r(...e):r,xe=(r,e,t)=>{let s=r[e];return r[e]=r[t],r[t]=s,r},Ce=(r,e)=>{if(r===e)return!0;if(r==null||e==null||r.length!==e.length)return!1;for(let t=0;t<r.length;++t)if(r[t]!==e[t])return!1;return!0},E=(r,e)=>{if(r===e)return!0;if(r&&e&&r.length!==e.length)return!1;if(r&&e&&typeof r=="object"&&typeof e=="object"){if(r.constructor!==e.constructor)return!1;var t,s,n;if(Array.isArray(r)){if(t=r.length,t!=e.length)return!1;for(s=t;s--!==0;)if(!E(r[s],e[s]))return!1;return!0}if(r.constructor===RegExp)return r.source===e.source&&r.flags===e.flags;if(r.valueOf!==Object.prototype.valueOf)return r.valueOf()===e.valueOf();if(r.toString!==Object.prototype.toString)return r.toString()===e.toString();if(n=Object.keys(r),t=n.length,t!==Object.keys(e).length)return!1;for(s=t;s--!==0;)if(!Object.prototype.hasOwnProperty.call(e,n[s]))return!1;for(s=t;s--!==0;){var i=n[s];if(!E(r[i],e[i]))return!1}return!0}return r!==r&&e!==e};var A=class{constructor(){this._listeners=[]}listen(e){this._listeners.push(e)}remove(e){w(e,this._listeners)}dispatch(e){this._listeners.forEach(t=>t(e))}destroy(){this._listeners=[]}},k=class{constructor(){this._listeners={}}listen(e,t){e in this._listeners?this._listeners[e]&&this._listeners[e].push(t):this._listeners[e]=[t]}remove(e,t){w(t,this._listeners[e])}dispatch(e,t){e in this._listeners&&this._listeners[e].forEach(s=>s(t))}destroy(){this._listeners={}}},H=()=>new A,Oe=()=>new k;var l={mountPoint:void 0,mountPointHistory:[]},Fe=0;function Ie(){return`_card_${Fe++}`}function _e(){return"_card_10000000".replace(/[018]/g,r=>(+r^crypto.getRandomValues(new Uint8Array(1))[0]&15>>+r/4).toString(16))}var Ee=()=>l.mountPoint,R=r=>(l.mountPoint&&l.mountPointHistory.push(l.mountPoint),l.mountPoint=r,r),Z=()=>{l.mountPoint=l.mountPointHistory.pop()},Se=()=>{l.mountPoint=void 0,l.mountPointHistory=[]},Ae=()=>{let r=l.mountPointHistory.shift();l.mountPoint=r,l.mountPointHistory=[]},Pe=(r,e)=>{R(r),e(r),Z()},N=()=>{let r=H(),e=H();return new window.MutationObserver((s,n)=>{for(let i of s){for(let a of Array.from(i.addedNodes))r.dispatch(a);for(let a of Array.from(i.removedNodes))e.dispatch(a)}}).observe(document.body,{childList:!0,subtree:!0}),{onAdded:r,onRemoved:e}};var le={};h(le,{CTag:()=>P,tag:()=>m});var ae={};h(ae,{text:()=>j});var oe={};h(oe,{Observable:()=>M,compute:()=>p,computeMultiple:()=>Ne,createObservable:()=>g,equalTo:()=>te,getValue:()=>v,grab:()=>ie,greaterThan:()=>X,greaterThanOr:()=>Y,isEmpty:()=>se,isObservable:()=>x,lessThan:()=>Q,lessThanOr:()=>ee,notEmpty:()=>ne,notEqualTo:()=>re});var M=class extends A{constructor(t,s){super();this.computed=t=>p(this,t);this.greaterThan=(t=0)=>X(this,t);this.greaterThanOr=(t=0)=>Y(this,t);this.lessThan=(t=0)=>Q(this,t);this.lessThanOr=(t=0)=>ee(this,t);this.equalTo=t=>te(this,t);this.notEqualTo=t=>re(this,t);this.isEmpty=()=>se(this);this.notEmpty=()=>ne(this);this.grab=(t,s)=>ie(this,t,s);t&&(I(t)||q(t))&&(t=new Proxy(t,{get(n,i,a){return n[i]},set:(n,i,a,o)=>(n[i]===a||(n[i]=a,super.dispatch(n)),!0),deleteProperty:(n,i)=>(delete n[i],super.dispatch(n),!0)})),this._value=t,this._destroyer=s}get value(){return this._value}set value(t){this.dispatch(t)}valueOf(){return this._value}toString(){return this._value.toString()}changed(t){return this.listen(t),this}remove(t){return super.remove(t),this}dispatch(t){return t===this._value?this:(this._value=t,super.dispatch(t),this)}destroy(){this._destroyer&&this._destroyer(),this._value=null,super.destroy()}},x=r=>r instanceof M,g=(r,e)=>new M(r,e),p=(r,e)=>{let t,s=n=>t?.dispatch(e(n));return t=g(e(r.value),()=>{r.remove(s),t=null,r=null}),r.changed(s),t},Ne=(r,e)=>{let t=g(e(...r.map(s=>s.value)));for(let s of r)s.changed(()=>t.dispatch(e(...r.map(n=>n.value))));return t},v=r=>x(r)?r.value:r,X=(r,e=0)=>p(r,t=>t>v(e)),Y=(r,e=0)=>p(r,t=>t>=v(e)),Q=(r,e=0)=>p(r,t=>t<v(e)),ee=(r,e=0)=>p(r,t=>t<=v(e)),te=(r,e)=>p(r,t=>t===v(e)),re=(r,e)=>p(r,t=>t!==v(e)),se=r=>p(r,e=>e.length<=0),ne=r=>p(r,e=>e.length>0),ie=(r,e,t)=>p(r,s=>s&&s[e]?s[e]:t);var j=(r,e)=>{let t=document.createTextNode(""),s=/\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;if(!e)return t.nodeValue=r,t;let n=i=>{t.nodeValue=i?r.replace(s,(a,o)=>(i[o]??a).toString()):r};if(x(e))e.changed(i=>n(i)),n(e.value);else if(I(e)){for(let i of Object.getOwnPropertyNames(e))r.includes(`$${i}`)&&x(e[i])&&e[i].changed(()=>n(e));n(e)}return t};var P=class r{constructor(e,t=[],s=!1){this._destroyers=[];this._children=[];this._cachedChildren=[];this._meta={isHidden:!1,nextSiblingID:null};if(typeof e=="string"&&e.match(/\(.+\)/)){let i=e.match(/\(([\.\#]?[a-zA-Z][a-zA-Z0-9_$]+)\)/),a=i?i[1]:null;if(!a)throw new Error(`'${e}' is not a valid selector`);let o=document.querySelector(a);if(!o)throw new Error("Can't find element for selector: "+e);this.el=o}else if(typeof e=="string")this.el=document.createElement(e),l.mountPoint&&s&&l.mountPoint.append(this);else if(e instanceof HTMLElement)this.el=e;else throw new Error("Invalid argument: "+e);t.length>0&&this.setChildren(t)}get parent(){return this._parent}set parent(e){this._parent=e}get children(){return this._getChildren(this.el)}get value(){return this.el.value}setValue(e){return this.el.value=e,this}get checked(){return this.el.checked}setChecked(e){return this.el.checked=e,this}get style(){return this.el.style}get className(){return this.el.className}get classList(){return this.el.classList}get consumeValue(){let e=this.value;return this.clear(),e}get id(){return this.el.id}setId(e){return this.el.id=e,this}setChildren(e){return this.el.replaceChildren(...this._mapChildren(e)),this._children=e,this}append(...e){return this.el.append(...this._mapChildren(e)),this._children.push(...e),this}prepend(...e){return this.el.prepend(...this._mapChildren(e)),this._children.unshift(...e),this}async show(){if(this.parent&&!this.parent.children.includes(this.el)){let e=this.parent.el,t=this.parent._children.indexOf(this);if(t===0)e.prepend(this.el);else if(t===this.parent._children.length-1)e.append(this.el);else{let s=0;for(let i=t-1;i>=0;i--){let a=this.parent._children[i];a instanceof r&&a._meta.isHidden&&s++}let n=e.childNodes[t-s];e.insertBefore(this.el,n)}}return this._meta.isHidden=!1,!0}async hide(){this.parent&&this.parent.children.includes(this.el)&&(await this.remove(),this._meta.isHidden=!0)}consume(e,t){if(e.changed){let s=n=>t(this,n);e.changed(s),this._destroyers.push(()=>{e.remove(s),e=null})}else console.warn("An invalid Observable was supplied to `tag.consume`");return t(this,"value"in e?e.value:e),this}doIf(e,t,s,n=!1){if(n){let a=t;t=s,s=a}let i=(a,o)=>{o?t(o):s(o)};return this.consume(e,i)}doIfNot(e,t,s){return this.doIf(e,t,s,!0)}hideIf(e,t=!1){let s=(n,i)=>{let a=t?!i:!!i;this._meta.isHidden=a,this.parent&&(a?this.hide():this.show())};return this.consume(e,s)}hideIfNot(e){return this.hideIf(e,!0)}classIf(e,t,s=!1){return this.doIf(e,()=>this.addClass(...b(t,this)),()=>this.rmClass(...b(t,this)),s)}classIfNot(e,t){return this.classIf(e,t,!0)}textIf(e,t,s="",n=!1){return this.doIf(e,()=>this.text(b(t,this)),()=>this.text(b(s,this)),n)}textIfNot(e,t,s=""){return this.textIf(e,t,s,!0)}attrIf(e,t,s="",n=!1){return this.doIf(e,()=>this.addAttr(t,b(s,this)),()=>this.rmAttr(t),n)}attrIfNot(e,t,s=""){return this.attrIf(e,t,s,!0)}disableIf(e,t=!1){return this.attrIf(e,"disabled","",t)}disableIfNot(e){return this.disableIf(e,!0)}styleIf(e,t,s="",n=!1){return this.doIf(e,()=>this.addStyle(t,b(s,this)),()=>this.rmStyle(t),n)}styleIfNot(e,t,s=""){return this.styleIf(e,t,s,!0)}stylesIf(e,t,s=!1){return this.doIf(e,()=>this.setStyle(b(t,this)),()=>this.rmStyle(...Object.keys(t)),s)}stylesIfNot(e,t){return this.stylesIf(e,t,!0)}listen(e,t,s){return e.on(t,(n,i)=>{s(this,n,i)})}text(e,t){return e==null?this.el.textContent:t&&e?this.setChildren([j(e,t)]):(this.el.textContent=e,this)}config(e){if(e.attr&&this.setAttrs(e.attr),e.classList&&this.addClass(...e.classList),e.className&&this.setClassName(e.className),e.style&&this.setStyle(e.style),e.text&&this.text(e.text),e.value&&this.setValue(e.value),e.children&&this.append(...e.children),e.on)for(let t of Object.keys(e.on))this.on(t,e.on[t]);return this}addClass(...e){return this.classList.add(...e),this}setClassName(e){return this.el.className=e,this}rmClass(...e){for(let t of e)this.classList.remove(t);return this}hasClass(...e){for(let t of e)if(!this.classList.contains(t))return!1;return!0}replaceClass(e,t){return this.classList.replace(e,t),this}toggleClass(e){return this.hasClass(e)?this.rmClass(e):this.addClass(e)}addStyle(e,t){return this.el.style[e]=t,this}setStyle(e){for(let t in e)this.addStyle(t,e[t]??"");return this}rmStyle(...e){for(let t of e)this.style.removeProperty(S(t));return this}hasStyle(...e){for(let t of e)if(!this.style.getPropertyValue(S(t)))return!1;return!0}setAttrs(e){for(let t in e)this.addAttr(t,e[t]);return this}addAttr(e,t=""){return this.el.attributes[e]=t,this.el.setAttribute(e,t),this}rmAttr(...e){for(let t of e)this.el.removeAttribute(t),delete this.el.attributes[t];return this}hasAttr(...e){for(let t of e)if(!(t in this.el.attributes))return!1;return!0}getAttr(e){return this.el.attributes[e]}when(e,t){let s=g({});return this.on(e,(n,i)=>{s.dispatch(t(n,i))}),s}on(e,t){if(t){let s=n=>t(this,n);this.el.addEventListener(e,s),this._destroyers.push(()=>{this.el.removeEventListener(e,s)})}return this}once(e,t){let s=n=>{t(this,n),this.el.removeEventListener(e,s)};return this.el.addEventListener(e,s),this}clicked(e){return this.on("click",e)}keyPressed(e,t){return t?this.on("keypress",(s,n)=>{(n.code===t||n.key===t)&&e(this,n)}):this.on("keypress",e)}changed(e){return this.on("change",e)}submited(e){return this.on("submit",e)}async remove(){let e=this.el.remove();return e instanceof Promise&&await e,await this.el.remove(),this}destroy(){this._children.forEach(e=>{e instanceof r&&e.destroy()}),this._destroyers.forEach(e=>e()),this._children=[],this._cachedChildren=[],this.remove()}clear(){return this.el.value="",this.el.dispatchEvent(new InputEvent("input")),this}disable(){return this.setDisabled(!0)}enable(){return this.setDisabled(!1)}setDisabled(e){return e?this.addAttr("disabled"):this.rmAttr("disabled")}q(e){let t=this.el.querySelector(e);if(t)return new r(t)}find(e){for(let t of this._children)if(e(t))return t}findTag(e){for(let t of this._children)if(t instanceof r&&e(t))return t}_childrenFilterPredicate(e){return!(e instanceof r&&e._meta.isHidden)}_getElementForChild(e){return typeof e=="string"?document.createTextNode(e):x(e)?j("$val",{val:e}):e instanceof r?e.el:e instanceof Node?e:null}_getChildren(e){return this._observer||(this._observer=new MutationObserver(()=>{this._cacheChildren(e)}),this._observer.observe(this.el,{childList:!0}),this._cacheChildren(e)),this._cachedChildren}_cacheChildren(e){let t=e.childNodes,s=[],n=t.length;for(;n--;)t[n].nodeType===1&&s.unshift(t[n]);this._cachedChildren=s}_mapChildren(e){let t=[];for(let s of e)if(s instanceof r&&(s.parent=this),this._childrenFilterPredicate(s)){let n=this._getElementForChild(s);n!=null&&t.push(n)}return t}},m=(r,e=[],t=!1)=>new P(r,e,t);var he={};h(he,{listState:()=>Me,state:()=>de,stateAdd:()=>ue,stateAddAt:()=>ce,stateRemove:()=>fe,stateRemoveWhere:()=>B});var de=r=>g(r),Me=r=>{let e=de(r.map(n=>g(n)));return{get list(){return e},get listValue(){return e.value},add:n=>{ue(e,g(n))},addAt:(n,i)=>{ce(e,g(n),i)},remove:fe.bind({},e),removeWhere:B.bind({},e),length:e.computed(n=>n.length)}},ue=(r,e)=>{r.value=[...r.value,e]},ce=(r,e,t)=>{let s=[...r.value];s.splice(t,0,e),r.value=s,s=[]},B=(r,e)=>{r.value=r.value.filter((t,s)=>!e(t,s))},fe=(r,e)=>{let t=r.value.findIndex(s=>v(s)===v(e));B(r,(s,n)=>t===n)};var me={};h(me,{genBlock:()=>pe,genBlockContent:()=>W,genCss:()=>K});var K=r=>{let e=r instanceof Array?r:[r],t="";for(let s of e)for(let n in s)t+=pe(n,s[n]);return t},pe=(r,e)=>W(r,e).join(""),W=(r,e)=>{let t="",s=[];for(let n in e)if(I(e[n])){let i=r;n.match(/^[a-z.]/)?i+=` ${n}`:i+=n,s.push(...W(i,e[n]))}else e[n]&&(t+=`${S(n)}:${e[n]};`);return s.unshift(`${r}{${t}}`),s};var ge={};h(ge,{onLifecycle:()=>Te,withLifecycle:()=>Ke});function Te(r,e,t,s){if(s){let a=r.el.remove;r.el.remove=async()=>{let o=s(r);return(!o||o instanceof Promise&&await o)&&a.call(r.el),o.valueOf()}}if(e){let a=r.show;r.show=async()=>{let o=a.call(r);return o instanceof Promise?await o:o}}l.observer||(l.observer=N());let n,i;l.observer.onAdded.listen(n=async a=>{if(a===r.el&&e){let o=e(r);o instanceof Promise&&await o}}),l.observer.onRemoved.listen(i=a=>{a===r.el&&t&&t(r)}),r._destroyers.push(()=>{l.observer?.onRemoved.remove(i),l.observer?.onAdded.remove(n),t=void 0,e=void 0})}var Ke=(r,e)=>(Te(r,e.mounted,e.unmounted,e.beforeUnmounted),r);var ve={};h(ve,{allTags:()=>Le});var z={ul:(r,e=!1)=>m("ul",r.map(t=>m("li",[t],e))),style:(r,e=!1)=>m("style",[K(r)],e)},Le=new Proxy({},{get:(r,e,t)=>{let s=e.toString(),n=(...i)=>z[s]?z[s](i,!1):m(s,i);return Object.defineProperty(n,"mount",{get:()=>(...i)=>z[s]?z[s](i,!0):m(s,i,!0)}),n}});var be={};h(be,{styleManager:()=>F});var we="cardboard-styles",ye=class{constructor(){this.generatedIdsCount=0;this.rules=new Set;let e=null;try{e=m(`(#${we})`)}catch{e=m("style").setId(we)}m("(head)").append(e),this.styleTag=e}add(e){let t=K(e);this.rules.has(t)||(this.rules.add(t),this.styleTag.append(t))}},F=new ye;var ke=(n=>(n.unchanged="unchanged",n.added="added",n.removed="removed",n.swap="swap",n))(ke||{});function Ge(r,e,t){let s=document.createTextNode(""),n=[],i=[],a=0,o=[],$={added:d=>{if(d.index>=0){let c=e(d.entry),u=n[d.index];n.splice(d.index,0,c),s.parentElement?.insertBefore(c.el,u?u.el:s)}},removed:d=>{s.parentElement?.removeChild(o[d.index].el),o[d.index].destroy();let c=n.indexOf(o[d.index]);n.splice(c,1)},swap:d=>{let c=d.index,u=d.targetIndex??0;if(c>=0&&u>=0){let f=o[c],T=o[u],O=f.el.parentNode,L=f.el.nextSibling;O&&L===T.el?O.insertBefore(T.el,f.el):T.el.parentNode&&(T.el.parentNode.insertBefore(f.el,T.el),L&&O?O.insertBefore(T.el,L):O&&O.appendChild(T.el));let je=o[c];o[c]=o[u],o[u]=je;let $e=n[c];n[c]=n[u],n[u]=$e}}},V=100,C=(d,c=0)=>{if(!s.parentElement){c<V?setTimeout(()=>C(d,c+1),1):console.warn("[each]: parentElement not found after max retries");return}a||(a=Array.from(s.parentElement?.childNodes??[]).indexOf(s));let u=He(d,i,t);if(!(u.length<=0)){for(let f=0;f<u.length;f++){let T=u[f],O=u[f+1]?u[f+1].index:null,L=u[f+1]?u[f+1].state:null;$[T.state](T),L==="swap"&&O===T.targetIndex&&f++}i=[...d].slice(0),o=n.slice(0)}};return C("value"in r?r.value:r),x(r)&&r.changed(C),s}function He(r,e,t=s=>s){let s=[],n=r.length,i=e.length;if(n===i&&(r==e||E(e,r)))return s;if(n<=0){for(let o=0;o<i;o++)s[o]={entry:e[o],state:"removed",index:o};return s}if(!i){for(let o=0;o<n;o++)s[o]={entry:r[o],state:"added",index:o};return s}let a=0;for(let o=0;o<i;o++){let y=r[o-a],_=e[o];if(t(_)==t(y)||E(_,y))continue;let $=!!r.find(C=>t(_)==t(C)),V=!!e.find(C=>t(y)==t(C));if(!V&&$){s.push({entry:y,state:"added",index:o-a}),a--;continue}if(V&&!$||y==null){s.push({entry:_,state:"removed",index:o}),a++;continue}if(r.indexOf(_)>=0){s.push({entry:y,targetEntry:_,state:"swap",index:e.indexOf(r[o-a]),targetIndex:e.indexOf(e[o])});let C=e.indexOf(y),d=e[o];e[o]=r[o-a],e[C]=d;continue}}if(a!=i)for(let o=i-a;o<n;o++){let y=r[o];s.push({entry:y,state:"added",index:o})}return s}var De=(r={selector:"body"})=>{let e=new P(`(${r.selector})`);return l.observer=N(),l.styleManager=F,R(e)},Ue={...le,...he,...me,...D,...ae,...U,...oe,...ge,...J,...ve,...be,version:"0.0.4"};return ze(Ze);})();
+var Cardboard = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+  // src/cardboard.ts
+  var cardboard_exports = {};
+  __export(cardboard_exports, {
+    CEvent: () => CEvent,
+    CMappedEvent: () => CMappedEvent,
+    CTag: () => CTag,
+    Cardboard: () => Cardboard,
+    DiffState: () => DiffState,
+    Observable: () => Observable,
+    allTags: () => allTags,
+    arraysEqual: () => arraysEqual,
+    camelToDash: () => camelToDash,
+    checkInitialized: () => checkInitialized,
+    clearMountPoints: () => clearMountPoints,
+    compute: () => compute,
+    computeMultiple: () => computeMultiple,
+    context: () => context,
+    createGlobalObserver: () => createGlobalObserver,
+    createObservable: () => createObservable,
+    deepEquals: () => deepEquals,
+    diffList: () => diffList,
+    each: () => each,
+    equalTo: () => equalTo,
+    genBlock: () => genBlock,
+    genBlockContent: () => genBlockContent,
+    genCss: () => genCss,
+    generateUID: () => generateUID,
+    getMountPoint: () => getMountPoint,
+    getValue: () => getValue,
+    grab: () => grab,
+    greaterThan: () => greaterThan,
+    greaterThanOr: () => greaterThanOr,
+    init: () => init,
+    isArray: () => isArray,
+    isEmpty: () => isEmpty,
+    isInitialized: () => isInitialized,
+    isObject: () => isObject,
+    isObservable: () => isObservable,
+    lessThan: () => lessThan,
+    lessThanOr: () => lessThanOr,
+    listState: () => listState,
+    mappedEvent: () => mappedEvent,
+    mountPoint: () => mountPoint,
+    notEmpty: () => notEmpty,
+    notEqualTo: () => notEqualTo,
+    onLifecycle: () => onLifecycle,
+    removeFromList: () => removeFromList,
+    resetMountPoints: () => resetMountPoints,
+    restoreMountPoint: () => restoreMountPoint,
+    singleEvent: () => singleEvent,
+    state: () => state,
+    stateAdd: () => stateAdd,
+    stateAddAt: () => stateAddAt,
+    stateRemove: () => stateRemove,
+    stateRemoveWhere: () => stateRemoveWhere,
+    swapItems: () => swapItems,
+    tag: () => tag,
+    text: () => text,
+    uuidv4: () => uuidv4,
+    val: () => val,
+    withLifecycle: () => withLifecycle,
+    withMountPoint: () => withMountPoint
+  });
+
+  // src/context.ts
+  var context_exports = {};
+  __export(context_exports, {
+    checkInitialized: () => checkInitialized,
+    clearMountPoints: () => clearMountPoints,
+    context: () => context,
+    createGlobalObserver: () => createGlobalObserver,
+    getMountPoint: () => getMountPoint,
+    isInitialized: () => isInitialized,
+    mountPoint: () => mountPoint,
+    resetMountPoints: () => resetMountPoints,
+    restoreMountPoint: () => restoreMountPoint,
+    withMountPoint: () => withMountPoint
+  });
+
+  // src/events.ts
+  var events_exports = {};
+  __export(events_exports, {
+    CEvent: () => CEvent,
+    CMappedEvent: () => CMappedEvent,
+    mappedEvent: () => mappedEvent,
+    singleEvent: () => singleEvent
+  });
+
+  // src/util.ts
+  var util_exports = {};
+  __export(util_exports, {
+    arraysEqual: () => arraysEqual,
+    camelToDash: () => camelToDash,
+    deepEquals: () => deepEquals,
+    generateUID: () => generateUID,
+    isArray: () => isArray,
+    isObject: () => isObject,
+    removeFromList: () => removeFromList,
+    swapItems: () => swapItems,
+    uuidv4: () => uuidv4,
+    val: () => val
+  });
+  var removeFromList = (item, list) => {
+    if (!list)
+      return false;
+    const index = list.indexOf(item);
+    if (index !== -1) {
+      list.splice(index, 1);
+      return true;
+    }
+    return false;
+  };
+  var camelToDash = (str) => str.replace(/([A-Z])/g, (val2) => `-${val2.toLowerCase()}`);
+  var isObject = (obj) => {
+    return typeof obj === "object" && !(obj instanceof Array);
+  };
+  var isArray = (obj) => {
+    return Object.prototype.toString.call(obj) === "[object Array]";
+  };
+  var val = (val2, ...args) => {
+    if (typeof val2 === "function") {
+      return val2(...args);
+    }
+    return val2;
+  };
+  var swapItems = (array, from, to) => {
+    const temp = array[from];
+    array[from] = array[to];
+    array[to] = temp;
+    return array;
+  };
+  var arraysEqual = (a, b) => {
+    if (a === b)
+      return true;
+    if (a == null || b == null)
+      return false;
+    if (a.length !== b.length)
+      return false;
+    for (let i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i])
+        return false;
+    }
+    return true;
+  };
+  var deepEquals = (a, b) => {
+    if (a === b)
+      return true;
+    if (a && b && a.length !== b.length)
+      return false;
+    if (a && b && typeof a == "object" && typeof b == "object") {
+      if (a.constructor !== b.constructor)
+        return false;
+      var length, i, keys;
+      if (Array.isArray(a)) {
+        length = a.length;
+        if (length != b.length)
+          return false;
+        for (i = length; i-- !== 0; )
+          if (!deepEquals(a[i], b[i]))
+            return false;
+        return true;
+      }
+      if (a.constructor === RegExp)
+        return a.source === b.source && a.flags === b.flags;
+      if (a.valueOf !== Object.prototype.valueOf)
+        return a.valueOf() === b.valueOf();
+      if (a.toString !== Object.prototype.toString)
+        return a.toString() === b.toString();
+      keys = Object.keys(a);
+      length = keys.length;
+      if (length !== Object.keys(b).length)
+        return false;
+      for (i = length; i-- !== 0; )
+        if (!Object.prototype.hasOwnProperty.call(b, keys[i]))
+          return false;
+      for (i = length; i-- !== 0; ) {
+        var key = keys[i];
+        if (!deepEquals(a[key], b[key]))
+          return false;
+      }
+      return true;
+    }
+    return a !== a && b !== b;
+  };
+  function generateUID(idNumber) {
+    if (!idNumber)
+      return uuidv4();
+    return `c_${idNumber}`;
+  }
+  function uuidv4() {
+    return "c_1000000010".replace(
+      /[018]/g,
+      (c) => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    );
+  }
+
+  // src/events.ts
+  var CEvent = class {
+    constructor() {
+      this._listeners = [];
+    }
+    listen(fn) {
+      this._listeners.push(fn);
+    }
+    remove(fn) {
+      removeFromList(fn, this._listeners);
+    }
+    dispatch(data) {
+      this._listeners.forEach((el) => el(data));
+    }
+    destroy() {
+      this._listeners = [];
+    }
+  };
+  var CMappedEvent = class {
+    constructor() {
+      this._listeners = {};
+    }
+    listen(evt, fn) {
+      if (!(evt in this._listeners)) {
+        this._listeners[evt] = [fn];
+      } else if (this._listeners[evt]) {
+        this._listeners[evt].push(fn);
+      }
+    }
+    remove(evt, fn) {
+      removeFromList(fn, this._listeners[evt]);
+    }
+    dispatch(evt, data) {
+      if (evt in this._listeners) {
+        this._listeners[evt].forEach((el) => el(data));
+      }
+    }
+    destroy() {
+      this._listeners = {};
+    }
+  };
+  var singleEvent = () => {
+    return new CEvent();
+  };
+  var mappedEvent = () => {
+    return new CMappedEvent();
+  };
+
+  // src/context.ts
+  var context = {
+    mountPoint: void 0,
+    mountPointHistory: [],
+    styleManager: void 0,
+    intersectionObserver: void 0,
+    observer: void 0,
+    initialized: false
+  };
+  var isInitialized = () => context.initialized === true;
+  var checkInitialized = () => {
+    if (!isInitialized()) {
+      throw new Error("Cardboard is not initialized. Please call `init()`, as some features will not work.");
+    }
+  };
+  var getMountPoint = () => context.mountPoint;
+  var mountPoint = (tag2) => {
+    if (context.mountPoint) {
+      context.mountPointHistory.push(context.mountPoint);
+    }
+    context.mountPoint = tag2;
+    return tag2;
+  };
+  var restoreMountPoint = () => {
+    context.mountPoint = context.mountPointHistory.pop();
+  };
+  var clearMountPoints = () => {
+    context.mountPoint = void 0;
+    context.mountPointHistory = [];
+  };
+  var resetMountPoints = () => {
+    let first = context.mountPointHistory.shift();
+    context.mountPoint = first;
+    context.mountPointHistory = [];
+  };
+  var withMountPoint = (tag2, scopedCallback) => {
+    mountPoint(tag2);
+    scopedCallback(tag2);
+    restoreMountPoint();
+  };
+  var createGlobalObserver = () => {
+    const _addedEvt = singleEvent();
+    const _removedEvt = singleEvent();
+    const observer = new window.MutationObserver((mutations, observer2) => {
+      for (const mut of mutations) {
+        for (const n of Array.from(mut.addedNodes)) {
+          _addedEvt.dispatch(n);
+        }
+        for (const n of Array.from(mut.removedNodes)) {
+          _removedEvt.dispatch(n);
+        }
+      }
+    });
+    observer.observe(window.document.body, {
+      childList: true,
+      subtree: true
+    });
+    return {
+      onAdded: _addedEvt,
+      onRemoved: _removedEvt
+    };
+  };
+
+  // src/tag.ts
+  var tag_exports = {};
+  __export(tag_exports, {
+    CTag: () => CTag,
+    tag: () => tag
+  });
+
+  // src/text.ts
+  var text_exports = {};
+  __export(text_exports, {
+    text: () => text
+  });
+
+  // src/observables.ts
+  var observables_exports = {};
+  __export(observables_exports, {
+    Observable: () => Observable,
+    compute: () => compute,
+    computeMultiple: () => computeMultiple,
+    createObservable: () => createObservable,
+    equalTo: () => equalTo,
+    getValue: () => getValue,
+    grab: () => grab,
+    greaterThan: () => greaterThan,
+    greaterThanOr: () => greaterThanOr,
+    isEmpty: () => isEmpty,
+    isObservable: () => isObservable,
+    lessThan: () => lessThan,
+    lessThanOr: () => lessThanOr,
+    notEmpty: () => notEmpty,
+    notEqualTo: () => notEqualTo
+  });
+  var Observable = class extends CEvent {
+    constructor(val2, destroyer) {
+      super();
+      /**
+       * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
+       * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
+       *
+       * @example
+       * ```ts
+       * const value = createObservable(2);
+       * const isGreater = value.computed((value) => value > 5);
+       * // > isGreater == false;
+       * value.dispatch(6);
+       * // > isGreater == true;
+       * ```
+       */
+      this.computed = (transform) => compute(this, transform);
+      /** @see {@link greaterThan} */
+      this.greaterThan = (val2 = 0) => greaterThan(this, val2);
+      /** @see {@link greaterThanOr} */
+      this.greaterThanOr = (val2 = 0) => greaterThanOr(this, val2);
+      /** @see {@link lessThan} */
+      this.lessThan = (val2 = 0) => lessThan(this, val2);
+      /** @see {@link lessThanOr} */
+      this.lessThanOr = (val2 = 0) => lessThanOr(this, val2);
+      /** @see {@link equalTo} */
+      this.equalTo = (val2) => equalTo(this, val2);
+      /** @see {@link notEqualTo} */
+      this.notEqualTo = (val2) => notEqualTo(this, val2);
+      /** @see {@link isEmpty} */
+      this.isEmpty = () => isEmpty(this);
+      /** @see {@link notEmpty} */
+      this.notEmpty = () => notEmpty(this);
+      /** @see {@link grab} */
+      this.grab = (key, defaultVal) => grab(this, key, defaultVal);
+      if (val2 && (isObject(val2) || isArray(val2))) {
+        val2 = new Proxy(val2, {
+          get(target, p, receiver) {
+            return target[p];
+          },
+          set: (target, p, newValue, receiver) => {
+            if (target[p] === newValue)
+              return true;
+            target[p] = newValue;
+            super.dispatch(target);
+            return true;
+          },
+          deleteProperty: (target, p) => {
+            delete target[p];
+            super.dispatch(target);
+            return true;
+          }
+        });
+      }
+      this._value = val2;
+      this._destroyer = destroyer;
+    }
+    get value() {
+      return this._value;
+    }
+    /** Set the value, and dispatch to all listeners. */
+    set value(val2) {
+      this.dispatch(val2);
+    }
+    valueOf() {
+      return this._value;
+    }
+    toString() {
+      return this._value.toString();
+    }
+    /**
+     * Add a listener for when this Observable changes.
+     */
+    changed(callback) {
+      this.listen(callback);
+      return this;
+    }
+    /**
+    * Remove a listener for when this Observable changes.
+    */
+    remove(callback) {
+      super.remove(callback);
+      return this;
+    }
+    /**
+     * Set's the new value, and calls all the listeners.
+     * You can additionaly set the {@link value} directly.
+     */
+    dispatch(val2) {
+      if (val2 === this._value) {
+        return this;
+      }
+      this._value = val2;
+      super.dispatch(val2);
+      return this;
+    }
+    destroy() {
+      if (this._destroyer)
+        this._destroyer();
+      this._value = null;
+      super.destroy();
+    }
+  };
+  var isObservable = (obj) => {
+    return obj instanceof Observable;
+  };
+  var createObservable = (val2, destroyer) => {
+    return new Observable(val2, destroyer);
+  };
+  var compute = (other, transform) => {
+    let observable;
+    const cb = (val2) => observable?.dispatch(transform(val2));
+    observable = createObservable(transform(other.value), () => {
+      other.remove(cb);
+      observable = null;
+      other = null;
+    });
+    other.changed(cb);
+    return observable;
+  };
+  var computeMultiple = (observables, transform) => {
+    const cons = createObservable(transform(...observables.map((c) => c.value)));
+    for (const other of observables) {
+      other.changed(() => cons.dispatch(
+        transform(...observables.map((c) => c.value))
+      ));
+    }
+    return cons;
+  };
+  var getValue = (val2) => {
+    return isObservable(val2) ? val2.value : val2;
+  };
+  var greaterThan = (observable, val2 = 0) => {
+    return compute(observable, (newVal) => newVal > getValue(val2));
+  };
+  var greaterThanOr = (observable, val2 = 0) => {
+    return compute(observable, (newVal) => newVal >= getValue(val2));
+  };
+  var lessThan = (observable, val2 = 0) => {
+    return compute(observable, (newVal) => newVal < getValue(val2));
+  };
+  var lessThanOr = (observable, val2 = 0) => {
+    return compute(observable, (newVal) => newVal <= getValue(val2));
+  };
+  var equalTo = (observable, val2) => {
+    return compute(observable, (newVal) => newVal === getValue(val2));
+  };
+  var notEqualTo = (observable, val2) => {
+    return compute(observable, (newVal) => newVal !== getValue(val2));
+  };
+  var isEmpty = (observable) => {
+    return compute(observable, (newVal) => newVal.length <= 0);
+  };
+  var notEmpty = (observable) => {
+    return compute(observable, (newVal) => newVal.length > 0);
+  };
+  var grab = (observable, key, defaultVal) => {
+    return compute(observable, (newVal) => newVal ? newVal[key] ? newVal[key] : defaultVal : defaultVal);
+  };
+
+  // src/text.ts
+  var text = (textTemplate, obj) => {
+    const node = document.createTextNode(""), interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
+    if (!obj) {
+      node.nodeValue = textTemplate;
+      return node;
+    }
+    const updateNode = (data) => {
+      node.nodeValue = !data ? textTemplate : textTemplate.replace(
+        interpolatePattern,
+        (m, g1) => (data[g1] ?? m).toString()
+      );
+    };
+    if (isObservable(obj)) {
+      obj.changed((val2) => updateNode(val2));
+      updateNode(obj.value);
+    } else if (isObject(obj)) {
+      for (const key of Object.getOwnPropertyNames(obj)) {
+        if (textTemplate.includes(`$${key}`) && isObservable(obj[key])) {
+          obj[key].changed(() => updateNode(obj));
+        }
+      }
+      updateNode(obj);
+    }
+    return node;
+  };
+
+  // src/tag.ts
+  var CTag = class _CTag {
+    constructor(arg0, children = [], mountToParent = false) {
+      this._visible = false;
+      /**
+       * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
+       * Used to remove HTML Event Listeners and Observable listeners
+       */
+      this._destroyers = [];
+      /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
+      this._children = [];
+      this._cachedChildren = [];
+      this._meta = {
+        isHidden: false,
+        nextSiblingID: null
+      };
+      const isSelector = typeof arg0 === "string" && arg0.match(/\(.+\)/);
+      if (isSelector) {
+        const match = arg0.match(/\(([\.\#]?[a-zA-Z][a-zA-Z0-9_$]+)\)/);
+        const selector = match ? match[1] : null;
+        if (!selector) {
+          throw new Error(`'${arg0}' is not a valid selector`);
+        }
+        const element = document.querySelector(selector);
+        if (!element) {
+          throw new Error("Can't find element for selector: " + arg0);
+        }
+        this.el = element;
+      } else if (typeof arg0 === "string") {
+        this.el = document.createElement(arg0);
+        if (context.mountPoint && mountToParent) {
+          context.mountPoint.append(this);
+        }
+      } else if (arg0 instanceof HTMLElement) {
+        this.el = arg0;
+      } else {
+        throw new Error("Invalid argument: " + arg0);
+      }
+      if (children.length > 0)
+        this.setChildren(children);
+      this.el.tag = this;
+    }
+    get visible() {
+      return this._visible;
+    }
+    set visible(newValue) {
+      this._visible = newValue;
+      this.el.dispatchEvent(new CustomEvent("visible", {
+        detail: {
+          visible: newValue,
+          tag: this
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
+    get parent() {
+      return this._parent;
+    }
+    set parent(newParent) {
+      this._parent = newParent;
+    }
+    get children() {
+      return this._getChildren(this.el);
+    }
+    get value() {
+      return this.el.value;
+    }
+    setValue(newValue) {
+      this.el.value = newValue;
+      return this;
+    }
+    get checked() {
+      return this.el.checked;
+    }
+    setChecked(checked) {
+      this.el.checked = checked;
+      return this;
+    }
+    get style() {
+      return this.el.style;
+    }
+    get className() {
+      return this.el.className;
+    }
+    get classList() {
+      return this.el.classList;
+    }
+    /** Gets the value of the element and clears the value */
+    get consumeValue() {
+      const value = this.value;
+      this.clear();
+      return value;
+    }
+    get id() {
+      return this.el.id;
+    }
+    setId(id) {
+      this.el.id = id;
+      return this;
+    }
+    /** Sets the children, removes previous children  */
+    setChildren(children) {
+      this.el.replaceChildren(...this._mapChildren(children));
+      this._children = children;
+      return this;
+    }
+    append(...children) {
+      this.el.append(...this._mapChildren(children));
+      this._children.push(...children);
+      return this;
+    }
+    prepend(...children) {
+      this.el.prepend(...this._mapChildren(children));
+      this._children.unshift(...children);
+      return this;
+    }
+    /**
+     * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
+     * I will be placed exactly in the correct position, even if there are other elements hidden.
+     */
+    async show() {
+      if (this.parent && !this.parent.children.includes(this.el)) {
+        const parentEl = this.parent.el;
+        const expectedIndex = this.parent._children.indexOf(this);
+        if (expectedIndex === 0) {
+          parentEl.prepend(this.el);
+        } else if (expectedIndex === this.parent._children.length - 1) {
+          parentEl.append(this.el);
+        } else {
+          let hiddenBefore = 0;
+          for (let i = expectedIndex - 1; i >= 0; i--) {
+            const child = this.parent._children[i];
+            if (child instanceof _CTag && child._meta.isHidden) {
+              hiddenBefore++;
+            }
+          }
+          const nextEl = parentEl.childNodes[expectedIndex - hiddenBefore];
+          parentEl.insertBefore(this.el, nextEl);
+        }
+      }
+      this._meta.isHidden = false;
+      return true;
+    }
+    /** Hide this element (removed from DOM) */
+    async hide() {
+      if (this.parent && this.parent.children.includes(this.el)) {
+        this.parent.el.insertBefore(document.createComment(this.el.id), this.el);
+        await this.remove();
+        this._meta.isHidden = true;
+      }
+    }
+    /** Whenever the observable changes, it will call the consumer */
+    consume(observable, consumer) {
+      if (observable.changed) {
+        const cb = (newValue) => consumer(this, newValue);
+        observable.changed(cb);
+        this._destroyers.push(() => {
+          observable.remove(cb);
+          observable = null;
+        });
+      } else {
+        console.warn("An invalid Observable was supplied to `tag.consume`");
+      }
+      consumer(this, "value" in observable ? observable.value : observable);
+      return this;
+    }
+    /**
+     * When the observable changes, it will call {ifTrue} when the observable is true. Or {ifFalse} when the observable is false.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
+     */
+    doIf(observable, ifTrue, ifFalse, invert = false) {
+      if (invert) {
+        const temp = ifTrue;
+        ifTrue = ifFalse;
+        ifFalse = temp;
+      }
+      const callback = (_, value) => {
+        if (!!value)
+          ifTrue(value);
+        else
+          ifFalse(value);
+      };
+      return this.consume(observable, callback);
+    }
+    /**
+     * The oposite of {this.doIf}
+     * When the observable changes, it will call {ifTrue} if the observable is false. Or {ifFalse} if the observable is true.
+     */
+    doIfNot(observable, ifTrue, ifFalse) {
+      return this.doIf(observable, ifTrue, ifFalse, true);
+    }
+    /**
+     * Hide this element when the consumer is truthy. Updates whenever the observable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
+     */
+    hideIf(observable, invert = false) {
+      const handleHide = (_, value) => {
+        const correctedValue = invert ? !value : !!value;
+        this._meta.isHidden = correctedValue;
+        if (!this.parent)
+          return;
+        if (!correctedValue)
+          void this.show();
+        else
+          void this.hide();
+      };
+      return this.consume(observable, handleHide);
+    }
+    /** Hide this element when the consumer is falsy. Updates whenever the observable changes. */
+    hideIfNot(observable) {
+      return this.hideIf(observable, true);
+    }
+    /**
+     * Adds classes to the element when the consumer is truthy. Updates whenever the observable changes.
+     * You can pass in an array of classes, or a function that returns a list of classes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+     */
+    classIf(observable, classes, invert = false) {
+      return this.doIf(
+        observable,
+        () => this.addClass(...val(classes, this)),
+        () => this.rmClass(...val(classes, this)),
+        invert
+      );
+    }
+    /**
+     * Adds classes to the element when the consumer is falsy. Updates whenever the observable changes.
+     * You can pass in an array of classes, or a function that returns a list of classes.
+     * For the oposite you can also use {@link classIf}
+     */
+    classIfNot(observable, classes) {
+      return this.classIf(observable, classes, true);
+    }
+    /**
+     * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
+     * Both {text} and {elseText} can be a string or a function that returns a string.
+     * Updates whenever the observable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
+     */
+    textIf(observable, text2, elseText = "", invert = false) {
+      return this.doIf(
+        observable,
+        () => this.text(val(text2, this)),
+        () => this.text(val(elseText, this)),
+        invert
+      );
+    }
+    /**
+     * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
+     * Both {text} and {elseText} can be a string or a function that returns a string.
+     * Updates whenever the observable changes.
+     */
+    textIfNot(observable, text2, elseText = "") {
+      return this.textIf(observable, text2, elseText, true);
+    }
+    /**
+     * Add attribute to the element when the consumer is truthy. Updates whenever the observable changes.
+     * {value} can be a string or a function that returns a string.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
+     */
+    attrIf(observable, attr, value = "", invert = false) {
+      return this.doIf(
+        observable,
+        () => this.addAttr(attr, val(value, this)),
+        () => this.rmAttr(attr),
+        invert
+      );
+    }
+    /**
+     * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
+     * {value} can be a string or a function that returns a string.
+     * If {invert} is set to true, the condition will be inversed
+     */
+    attrIfNot(observable, attr, value = "") {
+      return this.attrIf(observable, attr, value, true);
+    }
+    /**
+     * Disable this element when the consumer is truthy. Updates whenever the observable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
+     */
+    disableIf(observable, invert = false) {
+      return this.attrIf(observable, "disabled", "", invert);
+    }
+    /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
+    disableIfNot(observable) {
+      return this.disableIf(observable, true);
+    }
+    /**
+     * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
+     * {value} can be a string or a function that returns a string.
+     */
+    styleIf(observable, style, value = "", invert = false) {
+      return this.doIf(
+        observable,
+        () => this.addStyle(style, val(value, this)),
+        () => this.rmStyle(style),
+        invert
+      );
+    }
+    /**
+     * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
+     * {value} can be a string or a function that returns a string.
+     */
+    styleIfNot(observable, style, value = "") {
+      return this.styleIf(observable, style, value, true);
+    }
+    /**
+     * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
+     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+     * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+     */
+    stylesIf(observable, styles, invert = false) {
+      return this.doIf(
+        observable,
+        () => this.setStyle(val(styles, this)),
+        () => this.rmStyle(...Object.keys(styles)),
+        invert
+      );
+    }
+    /**
+     * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
+     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+     * For the oposite use  {@link stylesIf}
+     */
+    stylesIfNot(observable, styles) {
+      return this.stylesIf(observable, styles, true);
+    }
+    /**
+     * Listen to an event on the element. Like addEventListener.
+     */
+    listen(tag2, evt, consumer) {
+      return tag2.on(evt, (other, evt2) => {
+        consumer(this, other, evt2);
+      });
+    }
+    /**
+     * If {newText} is provided, it sets the `textContent` of the element.
+     * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
+     * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
+     *
+     * If no argument is provided, it returns the `textContent` of the element.
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
+     */
+    text(textTemplate, obj) {
+      if (textTemplate == null) {
+        return this.el.textContent;
+      }
+      if (obj && textTemplate) {
+        return this.setChildren([text(textTemplate, obj)]);
+      }
+      this.el.textContent = textTemplate;
+      return this;
+    }
+    /**
+     * Configure the element in a single call by passing @param {TagConfig} c
+     * instead of having to call a method for each property you want to changes
+     */
+    config(c) {
+      if (c.attr)
+        this.setAttrs(c.attr);
+      if (c.classList)
+        this.addClass(...c.classList);
+      if (c.className)
+        this.setClassName(c.className);
+      if (c.style)
+        this.setStyle(c.style);
+      if (c.text)
+        this.text(c.text);
+      if (c.value)
+        this.setValue(c.value);
+      if (c.children)
+        this.append(...c.children);
+      if (c.on) {
+        for (const key of Object.keys(c.on)) {
+          this.on(key, c.on[key]);
+        }
+      }
+      return this;
+    }
+    /** Add classes to the elements class list */
+    addClass(...classes) {
+      this.classList.add(...classes);
+      return this;
+    }
+    /** Set the elements class name */
+    setClassName(className) {
+      this.el.className = className;
+      return this;
+    }
+    /** Remove classes from class list */
+    rmClass(...classes) {
+      for (const key of classes) {
+        this.classList.remove(key);
+      }
+      return this;
+    }
+    /** Check if classes are present in this element */
+    hasClass(...classes) {
+      for (const key of classes) {
+        if (!this.classList.contains(key)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    /** Replace a class with another */
+    replaceClass(targetClass, replaceClass) {
+      this.classList.replace(targetClass, replaceClass);
+      return this;
+    }
+    /** Toggle a class. If it's present it's removed, if it's not present its added. */
+    toggleClass(targetClass) {
+      return this.hasClass(targetClass) ? this.rmClass(targetClass) : this.addClass(targetClass);
+    }
+    /** Add a single style */
+    addStyle(property, value) {
+      this.el.style[property] = value;
+      return this;
+    }
+    /** Set multiple styles at once */
+    setStyle(styles) {
+      for (const key in styles) {
+        this.addStyle(key, styles[key] ?? "");
+      }
+      return this;
+    }
+    /** Remove styles */
+    rmStyle(...styleNames) {
+      for (const key of styleNames) {
+        this.style.removeProperty(camelToDash(key));
+      }
+      return this;
+    }
+    /** Check if this element has styles */
+    hasStyle(...styles) {
+      for (const key of styles) {
+        if (!this.style.getPropertyValue(camelToDash(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+    /** Adds a set of attributes to the element */
+    setAttrs(attrs) {
+      for (const key in attrs) {
+        this.addAttr(key, attrs[key]);
+      }
+      return this;
+    }
+    /** Adds a single attribute to the element */
+    addAttr(key, value = "") {
+      this.el.attributes[key] = value;
+      this.el.setAttribute(key, value);
+      return this;
+    }
+    /** Remove attributes from the element */
+    rmAttr(...attrs) {
+      for (const key of attrs) {
+        this.el.removeAttribute(key);
+        delete this.el.attributes[key];
+      }
+      return this;
+    }
+    /** Check if this element has attributes */
+    hasAttr(...attr) {
+      for (const key of attr) {
+        if (!(key in this.el.attributes)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    /** Get an attributes value */
+    getAttr(attr) {
+      return this.el.attributes[attr];
+    }
+    /**
+     * Returns a {@link IObservable} that fires when the Event {@link evtName} is fired in this element
+     *
+     * The return value of {@link fn} will be passed to the listeners of the {@link IObservable}
+     */
+    when(evtName, fn) {
+      const cons = createObservable({});
+      this.on(evtName, (t, evt) => {
+        cons.dispatch(fn(t, evt));
+      });
+      return cons;
+    }
+    /** Add an event listener for a particular event */
+    on(evtName, fn) {
+      if (fn) {
+        const cb = (evt) => fn(this, evt);
+        this.el.addEventListener(evtName, cb);
+        this._destroyers.push(() => {
+          this.el.removeEventListener(evtName, cb);
+        });
+      }
+      return this;
+    }
+    /** Add an event listener for a particular event that will only fire once */
+    once(evtName, fn) {
+      const listener = (evt) => {
+        fn(this, evt);
+        this.el.removeEventListener(evtName, listener);
+      };
+      this.el.addEventListener(evtName, listener);
+      return this;
+    }
+    /** Add a **click** event listener */
+    clicked(fn) {
+      return this.on("click", fn);
+    }
+    /** Add a **keypress** event listener */
+    keyPressed(fn, key) {
+      if (key) {
+        return this.on("keypress", (_, evt) => {
+          if (evt.code === key || evt.key === key) {
+            fn(this, evt);
+          }
+        });
+      }
+      return this.on("keypress", fn);
+    }
+    /** Add a **change** event listener */
+    changed(fn) {
+      return this.on("change", fn);
+    }
+    /** Add a **submit** event listener */
+    submited(fn) {
+      return this.on("submit", fn);
+    }
+    /**
+     * Remove element from the DOM, but keep data as is. Can then be added again.
+     * To fully remove the element use {@link destroy}
+     */
+    async remove() {
+      const result = this.el.remove();
+      if (result instanceof Promise) {
+        await result;
+      }
+      await this.el.remove();
+      return this;
+    }
+    /**
+     * Destroy the element, should not be used afterwards
+     */
+    destroy() {
+      context.intersectionObserver?.unobserve(this.el);
+      this._children.forEach((cl) => {
+        if (cl instanceof _CTag) {
+          cl.destroy();
+        }
+      });
+      this._destroyers.forEach((listener) => listener());
+      this._children = [];
+      this._cachedChildren = [];
+      void this.remove();
+    }
+    /**
+     * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
+     */
+    clear() {
+      this.el.value = "";
+      this.el.dispatchEvent(new InputEvent("input"));
+      return this;
+    }
+    /** Disable the element */
+    disable() {
+      return this.setDisabled(true);
+    }
+    /** Enable the element */
+    enable() {
+      return this.setDisabled(false);
+    }
+    /** Set whether the element should be disabled or not */
+    setDisabled(disabled) {
+      return disabled ? this.addAttr("disabled") : this.rmAttr("disabled");
+    }
+    /** Query a child in this element (in the DOM) */
+    q(selector) {
+      const element = this.el.querySelector(selector);
+      if (element)
+        return new _CTag(element);
+    }
+    /** Find a child in this element (in the DOM or NOT) */
+    find(predicate) {
+      for (const child of this._children) {
+        if (predicate(child)) {
+          return child;
+        }
+      }
+    }
+    findTag(predicate) {
+      for (const child of this._children) {
+        if (child instanceof _CTag && predicate(child)) {
+          return child;
+        }
+      }
+    }
+    _childrenFilterPredicate(item) {
+      if (item instanceof _CTag && item._meta.isHidden) {
+        return false;
+      }
+      return true;
+    }
+    _getElementForChild(cl) {
+      if (typeof cl === "string")
+        return document.createTextNode(cl);
+      if (isObservable(cl)) {
+        return text("$val", { val: cl });
+      }
+      if (cl instanceof _CTag)
+        return cl.el;
+      if (cl instanceof Node)
+        return cl;
+      return null;
+    }
+    _getChildren(element) {
+      if (!this._observer) {
+        this._observer = new window.MutationObserver(() => {
+          this._cacheChildren(element);
+        });
+        this._observer.observe(this.el, { childList: true });
+        this._cacheChildren(element);
+      }
+      return this._cachedChildren;
+    }
+    _cacheChildren(element) {
+      const nodes = element.childNodes, children = [];
+      let i = nodes.length;
+      while (i--) {
+        if (nodes[i].nodeType === 1) {
+          children.unshift(nodes[i]);
+        }
+      }
+      this._cachedChildren = children;
+    }
+    _mapChildren(children) {
+      const mapped = [];
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (child instanceof _CTag) {
+          child.parent = this;
+        }
+        if (this._childrenFilterPredicate(child)) {
+          const element = this._getElementForChild(child);
+          if (element != null)
+            mapped.push(element);
+        }
+      }
+      return mapped;
+    }
+  };
+  var tag = (arg0, children = [], mountToParent = false) => {
+    checkInitialized();
+    return new CTag(arg0, children, mountToParent);
+  };
+
+  // src/state.ts
+  var state_exports = {};
+  __export(state_exports, {
+    listState: () => listState,
+    state: () => state,
+    stateAdd: () => stateAdd,
+    stateAddAt: () => stateAddAt,
+    stateRemove: () => stateRemove,
+    stateRemoveWhere: () => stateRemoveWhere
+  });
+  var state = (initialValue) => {
+    return createObservable(initialValue);
+  };
+  var listState = (initialData) => {
+    const _list = state(
+      initialData.map((d) => createObservable(d))
+    );
+    const add = (item) => {
+      stateAdd(_list, createObservable(item));
+    };
+    const addAt = (item, index) => {
+      stateAddAt(_list, createObservable(item), index);
+    };
+    return {
+      /**
+       * The reactive list of items.
+       * Each item is wrapped in a {@link State} to allow for individual reactivity.
+       */
+      get list() {
+        return _list;
+      },
+      /**
+       * The raw list of items.
+       */
+      get listValue() {
+        return _list.value;
+      },
+      add,
+      addAt,
+      remove: stateRemove.bind({}, _list),
+      removeWhere: stateRemoveWhere.bind({}, _list),
+      length: _list.computed((_list2) => _list2.length)
+    };
+  };
+  var stateAdd = (state2, item) => {
+    state2.value = [...state2.value, item];
+  };
+  var stateAddAt = (state2, item, index) => {
+    let newData = [...state2.value];
+    newData.splice(index, 0, item);
+    state2.value = newData;
+    newData = [];
+  };
+  var stateRemoveWhere = (state2, cb) => {
+    state2.value = state2.value.filter((el, i) => !cb(el, i));
+  };
+  var stateRemove = (state2, item) => {
+    const index = state2.value.findIndex((state3) => getValue(state3) === getValue(item));
+    stateRemoveWhere(state2, (_, i) => {
+      return index === i;
+    });
+  };
+
+  // src/css-generator.ts
+  var css_generator_exports = {};
+  __export(css_generator_exports, {
+    genBlock: () => genBlock,
+    genBlockContent: () => genBlockContent,
+    genCss: () => genCss
+  });
+  var genCss = (styleSheet) => {
+    const stylesheets = styleSheet instanceof Array ? styleSheet : [styleSheet];
+    let generatedCss = "";
+    for (const sheet of stylesheets) {
+      for (const key in sheet) {
+        generatedCss += genBlock(key, sheet[key]);
+      }
+    }
+    return generatedCss;
+  };
+  var genBlock = (selector, style) => {
+    return genBlockContent(selector, style).join("");
+  };
+  var genBlockContent = (selector, style) => {
+    let inside = "";
+    const blocks = [];
+    for (const key in style) {
+      if (isObject(style[key])) {
+        let newSelector = selector;
+        newSelector += key;
+        blocks.push(...genBlockContent(newSelector, style[key]));
+      } else if (style[key]) {
+        inside += `${camelToDash(key)}:${style[key]};`;
+      }
+    }
+    blocks.unshift(`${selector}{${inside}}`);
+    return blocks;
+  };
+
+  // src/lifecycle.ts
+  var lifecycle_exports = {};
+  __export(lifecycle_exports, {
+    onLifecycle: () => onLifecycle,
+    withLifecycle: () => withLifecycle
+  });
+  function onLifecycle(tag2, onMounted, onUnmounted, beforeUnmounted) {
+    if (beforeUnmounted) {
+      const tempElRemove = tag2.el.remove;
+      tag2.el.remove = async () => {
+        const result = beforeUnmounted(tag2);
+        if (!result || result instanceof Promise && await result) {
+          tempElRemove.call(tag2.el);
+        }
+        return result.valueOf();
+      };
+    }
+    if (onMounted) {
+      const tempOnStart = tag2.show;
+      tag2.show = async () => {
+        const result = tempOnStart.call(tag2);
+        if (result instanceof Promise) {
+          return await result;
+        }
+        return result;
+      };
+    }
+    if (!context.observer) {
+      context.observer = createGlobalObserver();
+    }
+    let onAddedCb, onRemovedCb;
+    context.observer.onAdded.listen(onAddedCb = async (node) => {
+      let isAdded = node === tag2.el || node.contains(tag2.el);
+      if (isAdded && onMounted) {
+        const result = onMounted(tag2);
+        if (result instanceof Promise) {
+          await result;
+        }
+      }
+    });
+    context.observer.onRemoved.listen(onRemovedCb = (node) => {
+      let isRemoved = node === tag2.el || node.contains(tag2.el);
+      if (isRemoved && onUnmounted) {
+        onUnmounted(tag2);
+      }
+    });
+    tag2._destroyers.push(() => {
+      context.observer?.onRemoved.remove(onRemovedCb);
+      context.observer?.onAdded.remove(onAddedCb);
+      onUnmounted = void 0;
+      onMounted = void 0;
+    });
+  }
+  var withLifecycle = (tag2, handler) => {
+    onLifecycle(tag2, handler.mounted, handler.unmounted, handler.beforeUnmounted);
+    return tag2;
+  };
+
+  // src/all-tags.ts
+  var all_tags_exports = {};
+  __export(all_tags_exports, {
+    allTags: () => allTags
+  });
+  var interceptors = {
+    ul: (children, mountToParent = false) => {
+      return tag(
+        "ul",
+        children.map((cl) => {
+          return tag("li", [cl], mountToParent);
+        })
+      );
+    },
+    style: (styles, mountToParent = false) => {
+      return tag("style", [genCss(styles)], mountToParent);
+    }
+  };
+  var allTags = new Proxy(
+    {},
+    {
+      get: (t, p, r) => {
+        const tagName = p.toString();
+        const fn = (...children) => {
+          return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
+        };
+        Object.defineProperty(fn, "mount", {
+          get: () => {
+            return (...children) => {
+              return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
+            };
+          }
+        });
+        return fn;
+      }
+    }
+  );
+
+  // src/style-manager.ts
+  var style_manager_exports = {};
+  __export(style_manager_exports, {
+    StyleManager: () => StyleManager
+  });
+  var STYLE_TAG_ID = "cardboard-styles";
+  var StyleManager = class {
+    constructor() {
+      this.generatedIdsCount = 0;
+      this.rules = /* @__PURE__ */ new Set();
+      let styleTag = null;
+      try {
+        styleTag = tag(`(#${STYLE_TAG_ID})`);
+      } catch (error) {
+        styleTag = tag("style").setId(STYLE_TAG_ID);
+      }
+      tag("(head)").append(styleTag);
+      this.styleTag = styleTag;
+    }
+    add(styleSheet) {
+      const css = genCss(styleSheet);
+      if (!this.rules.has(css)) {
+        this.rules.add(css);
+        this.styleTag.append(css);
+      }
+    }
+  };
+
+  // src/each.ts
+  var DiffState = /* @__PURE__ */ ((DiffState2) => {
+    DiffState2["unchanged"] = "unchanged";
+    DiffState2["added"] = "added";
+    DiffState2["removed"] = "removed";
+    DiffState2["swap"] = "swap";
+    return DiffState2;
+  })(DiffState || {});
+  function each(observable, builder, key) {
+    const node = document.createTextNode(""), elements = [];
+    let oldData = [], nodeParentIndex = 0, elementsCopy = [];
+    const actionAdd = (entry) => {
+      if (entry.index >= 0) {
+        const el = builder(entry.entry);
+        const elAt = elements[entry.index];
+        elements.splice(entry.index, 0, el);
+        node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
+      }
+    };
+    const actionRemove = (entry) => {
+      node.parentElement?.removeChild(elementsCopy[entry.index].el);
+      elementsCopy[entry.index].destroy();
+      const i = elements.indexOf(elementsCopy[entry.index]);
+      elements.splice(i, 1);
+    };
+    const actionSwap = (entry) => {
+      const fromIndex = entry.index, toIndex = entry.targetIndex ?? 0;
+      if (fromIndex >= 0 && toIndex >= 0) {
+        const elementFrom = elementsCopy[fromIndex];
+        const elementTo = elementsCopy[toIndex];
+        const parentNode = elementFrom.el.parentNode;
+        const nextSiblingNode = elementFrom.el.nextSibling;
+        if (parentNode && nextSiblingNode === elementTo.el) {
+          parentNode.insertBefore(elementTo.el, elementFrom.el);
+        } else if (elementTo.el.parentNode) {
+          elementTo.el.parentNode.insertBefore(elementFrom.el, elementTo.el);
+          if (nextSiblingNode && parentNode) {
+            parentNode.insertBefore(elementTo.el, nextSiblingNode);
+          } else if (parentNode) {
+            parentNode.appendChild(elementTo.el);
+          }
+        }
+        const tempCopy = elementsCopy[fromIndex];
+        elementsCopy[fromIndex] = elementsCopy[toIndex];
+        elementsCopy[toIndex] = tempCopy;
+        const temp = elements[fromIndex];
+        elements[fromIndex] = elements[toIndex];
+        elements[toIndex] = temp;
+      }
+    };
+    const actionMap = {
+      ["added" /* added */]: actionAdd,
+      ["removed" /* removed */]: actionRemove,
+      ["swap" /* swap */]: actionSwap
+    };
+    const MAX_UPDATE_TRIES = 100;
+    const updateList = (newData, tries = 0) => {
+      if (!node.parentElement) {
+        if (tries < MAX_UPDATE_TRIES) {
+          setTimeout(() => updateList(newData, tries + 1), 1);
+        } else {
+          console.warn(`[each]: parentElement not found after max retries`);
+        }
+        return;
+      }
+      if (!nodeParentIndex) {
+        const children = Array.from(node.parentElement?.childNodes ?? []);
+        nodeParentIndex = children.indexOf(node);
+      }
+      const diff = diffList(newData, oldData, key);
+      if (diff.length <= 0)
+        return;
+      for (let index = 0; index < diff.length; index++) {
+        const data = diff[index];
+        const nextIndex = diff[index + 1] ? diff[index + 1].index : null;
+        const nextState = diff[index + 1] ? diff[index + 1].state : null;
+        actionMap[data.state](data);
+        if (nextState === "swap" /* swap */ && nextIndex === data.targetIndex) {
+          index++;
+        }
+      }
+      oldData = [...newData].slice(0);
+      elementsCopy = elements.slice(0);
+    };
+    updateList("value" in observable ? observable.value : observable);
+    if (isObservable(observable)) {
+      observable.changed(updateList);
+    }
+    return node;
+  }
+  function diffList(newData, oldData, key = (item) => item) {
+    const diff = [], newLength = newData.length, oldLength = oldData.length;
+    if (newLength === oldLength && (newData == oldData || deepEquals(oldData, newData))) {
+      return diff;
+    }
+    if (newLength <= 0) {
+      for (let i = 0; i < oldLength; i++) {
+        diff[i] = {
+          entry: oldData[i],
+          state: "removed" /* removed */,
+          index: i
+        };
+      }
+      return diff;
+    }
+    if (!oldLength) {
+      for (let i = 0; i < newLength; i++) {
+        diff[i] = {
+          entry: newData[i],
+          state: "added" /* added */,
+          index: i
+        };
+      }
+      return diff;
+    }
+    let removedCount = 0;
+    for (let oi = 0; oi < oldLength; oi++) {
+      const newEntry = newData[oi - removedCount], oldEntry = oldData[oi], areEqual = key(oldEntry) == key(newEntry);
+      if (areEqual || deepEquals(oldEntry, newEntry)) {
+        continue;
+      }
+      const existsNew = !!newData.find((item) => key(oldEntry) == key(item)), existsOld = !!oldData.find((item) => key(newEntry) == key(item));
+      if (!existsOld && existsNew) {
+        diff.push({
+          entry: newEntry,
+          state: "added" /* added */,
+          index: oi - removedCount
+        });
+        removedCount--;
+        continue;
+      }
+      if (existsOld && !existsNew || newEntry == null) {
+        diff.push({
+          entry: oldEntry,
+          state: "removed" /* removed */,
+          index: oi
+        });
+        removedCount++;
+        continue;
+      }
+      if (newData.indexOf(oldEntry) >= 0) {
+        diff.push({
+          entry: newEntry,
+          targetEntry: oldEntry,
+          state: "swap" /* swap */,
+          index: oldData.indexOf(newData[oi - removedCount]),
+          targetIndex: oldData.indexOf(oldData[oi])
+        });
+        const oldIndex = oldData.indexOf(newEntry);
+        const temp = oldData[oi];
+        oldData[oi] = newData[oi - removedCount];
+        oldData[oldIndex] = temp;
+        continue;
+      }
+    }
+    if (removedCount != oldLength) {
+      for (let i = oldLength - removedCount; i < newLength; i++) {
+        const newEntry = newData[i];
+        diff.push({
+          entry: newEntry,
+          state: "added" /* added */,
+          index: i
+        });
+      }
+    }
+    return diff;
+  }
+
+  // src/cardboard.ts
+  var init = (options = { selector: "body" }) => {
+    context.initialized = true;
+    context.observer = createGlobalObserver();
+    context.styleManager = new StyleManager();
+    const tag2 = new CTag(`(${options.selector})`);
+    return mountPoint(tag2);
+  };
+  var Cardboard = {
+    ...tag_exports,
+    ...state_exports,
+    ...css_generator_exports,
+    ...util_exports,
+    ...text_exports,
+    ...events_exports,
+    ...observables_exports,
+    ...lifecycle_exports,
+    ...context_exports,
+    ...all_tags_exports,
+    ...style_manager_exports,
+    version: "0.0.5"
+  };
+  return __toCommonJS(cardboard_exports);
+})();

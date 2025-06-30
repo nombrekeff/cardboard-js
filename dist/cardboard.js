@@ -8,7 +8,7 @@ import * as _events from './events.js';
 import * as _lifecycle from './lifecycle.js';
 import * as _observables from './observables.js';
 import * as _alltags from './all-tags.js';
-import * as _styles from './styles.js';
+import * as _styles from './style-manager.js';
 export * from './context.js';
 export * from './tag.js';
 export * from './state.js';
@@ -20,17 +20,17 @@ export * from './each.js';
 export * from './lifecycle.js';
 export * from './observables.js';
 export * from './all-tags.js';
-export * from './styles.js';
 /**
  * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
  * You can pass in a selector for an element you want to be the default tag ("body" by default).
  */
 export const init = (options = { selector: 'body' }) => {
-    const tag = new _tag.CTag(`(${options.selector})`);
+    _context.context.initialized = true;
     _context.context.observer = _context.createGlobalObserver();
-    _context.context.styleManager = _styles.styleManager;
+    _context.context.styleManager = new _styles.StyleManager();
+    const tag = new _tag.CTag(`(${options.selector})`);
     return _context.mountPoint(tag);
 };
 // Import the version from package.json
-export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _observables), _lifecycle), _context), _alltags), _styles), { version: '0.0.4' });
+export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _observables), _lifecycle), _context), _alltags), _styles), { version: '0.0.5' });
 //# sourceMappingURL=cardboard.js.map

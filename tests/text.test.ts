@@ -1,9 +1,10 @@
-import { state } from '../src/state';
-import { text } from '../src/text';
-import { tag } from '../src/tag';
-import { createDomMock } from './__mocks__/client';
+import { init, state, tag, text } from "../src/cardboard";
 
 describe('text', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+
   beforeEach(() => {
     document.body.innerHTML = '';
   });

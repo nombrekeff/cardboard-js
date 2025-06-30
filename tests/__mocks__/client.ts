@@ -13,5 +13,20 @@ export function createDomMock(content = '') {
   global.InputEvent = dom.window.InputEvent;
   global.Node = dom.window.Node;
   global.window.MutationObserver = dom.window.MutationObserver;
+  global.IntersectionObserver = dom.window.IntersectionObserver;
+  global.window.IntersectionObserver = global.window.IntersectionObserver || IntersectionObserverMock;
   return dom;
+}
+
+class IntersectionObserverMock {
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+    this.callback = callback;
+  }
+
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+
+  callback: IntersectionObserverCallback;
+  options: IntersectionObserverInit;
 }

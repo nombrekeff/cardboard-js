@@ -4,7 +4,7 @@ import { NestedStyleMap } from "./types.js";
 
 const STYLE_TAG_ID = 'cardboard-styles';
 
-class StyleManager {
+export class StyleManager {
     styleTag: CTag;
     rules: Set<string>;
 
@@ -34,5 +34,3 @@ class StyleManager {
         }
     }
 }
-
-export const styleManager = new StyleManager();

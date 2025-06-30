@@ -1,7 +1,7 @@
 import { genCss } from "./css-generator.js";
 import { tag } from "./tag.js";
 const STYLE_TAG_ID = 'cardboard-styles';
-class StyleManager {
+export class StyleManager {
     constructor() {
         this.generatedIdsCount = 0;
         this.rules = new Set();
@@ -23,5 +23,4 @@ class StyleManager {
         }
     }
 }
-export const styleManager = new StyleManager();
-//# sourceMappingURL=styles.js.map
+//# sourceMappingURL=style-manager.js.map

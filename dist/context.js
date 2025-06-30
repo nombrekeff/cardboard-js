@@ -2,20 +2,17 @@ import { singleEvent } from "./events.js";
 export const context = {
     mountPoint: undefined,
     mountPointHistory: [],
+    styleManager: undefined,
+    intersectionObserver: undefined,
+    observer: undefined,
+    initialized: false,
 };
-let generatedIdsCount = 0;
-/**
- * Generates a unique ID for a Cardboard tag.
- * The ID is prefixed with "_card_" and is incremented each time this function is called.
- *
- * @returns A unique ID string for a Cardboard tag.
- */
-export function generateUID() {
-    return `_card_${generatedIdsCount++}`;
-}
-export function uuidv4() {
-    return "c_1000000010".replace(/[018]/g, c => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
-}
+export const isInitialized = () => context.initialized === true;
+export const checkInitialized = () => {
+    if (!isInitialized()) {
+        throw new Error("Cardboard is not initialized. Please call `init()`, as some features will not work.");
+    }
+};
 /**
  * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */

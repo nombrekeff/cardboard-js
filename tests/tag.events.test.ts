@@ -1,8 +1,12 @@
 /** @jest-environment jsdom */
-import { tag } from '../src/tag';
+import { init } from '../src/cardboard.js';
+import { tag } from '../src/tag.js';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
   beforeEach(() => {
     document.body.innerHTML = '';
   });

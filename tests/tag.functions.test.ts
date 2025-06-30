@@ -131,11 +131,15 @@ const allKnownTags = [
 ];
 
 describe('Tag functions', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+
   beforeEach(() => {
     clearMountPoints();
   });
   it('mountPoint', async () => {
-    
+
     const c = tag('div');
     mountPoint(c);
 
@@ -143,7 +147,7 @@ describe('Tag functions', () => {
   });
 
   it('multiple mountPoint', async () => {
-    
+
     clearMountPoints();
 
     const c = tag('div');
@@ -162,7 +166,7 @@ describe('Tag functions', () => {
   });
 
   it('getMountPoint()', async () => {
-    
+
     const c = tag('div');
     mountPoint(c);
 
@@ -170,7 +174,7 @@ describe('Tag functions', () => {
   });
 
   it('resetMountPoint()', async () => {
-    
+
     const c = tag('div');
     mountPoint(c);
     mountPoint(tag('div'));
@@ -182,7 +186,6 @@ describe('Tag functions', () => {
   });
 
   it('init default', async () => {
-    
     init();
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
@@ -190,7 +193,6 @@ describe('Tag functions', () => {
   });
 
   it('init with selector', async () => {
-    // createDomMock('<div id="root"></div>');
     document.body.innerHTML = '<div id="root"></div>';
     init({ selector: '#root' });
 

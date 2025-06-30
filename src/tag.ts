@@ -15,7 +15,7 @@ import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { CommonAttributes } from './attributes.js';
-import { context, generateUID, uuidv4 } from './context.js';
+import { checkInitialized, context } from './context.js';
 
 
 /**
@@ -26,6 +26,23 @@ import { context, generateUID, uuidv4 } from './context.js';
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
+
+  private _visible = false;
+  get visible() {
+    return this._visible;
+  }
+
+  set visible(newValue: boolean) {
+    this._visible = newValue;
+    this.el.dispatchEvent(new CustomEvent('visible', {
+      detail: {
+        visible: newValue,
+        tag: this,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /**
    * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
@@ -136,6 +153,9 @@ export class CTag {
     }
 
     if (children.length > 0) this.setChildren(children);
+
+    // Used by other parts of Cardboard to identify this tag
+    (this.el as any).tag = this;
   }
 
   /** Sets the children, removes previous children  */
@@ -199,6 +219,7 @@ export class CTag {
   /** Hide this element (removed from DOM) */
   async hide() {
     if (this.parent && this.parent.children.includes(this.el)) {
+      this.parent.el.insertBefore(document.createComment(this.el.id), this.el as any);
       await this.remove();
       this._meta.isHidden = true;
     }
@@ -664,6 +685,7 @@ export class CTag {
    * Destroy the element, should not be used afterwards
    */
   destroy() {
+    context.intersectionObserver?.unobserve(this.el);
     this._children.forEach((cl) => {
       if (cl instanceof CTag) {
         cl.destroy();
@@ -772,7 +794,9 @@ export class CTag {
 
   private _mapChildren(children: TagChildren): Node[] {
     const mapped: Node[] = [];
-    for (const child of children) {
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      // for (const child of children) {
       if (child instanceof CTag) {
         child.parent = this;
       }
@@ -793,7 +817,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
  *
  * @example
  * ```ts
@@ -804,5 +828,6 @@ export class CTag {
  * ```
  */
 export const tag = (arg0: string | HTMLElement, children: TagChildren = [], mountToParent: boolean = false) => {
+  checkInitialized();
   return new CTag(arg0, children, mountToParent);
 };
