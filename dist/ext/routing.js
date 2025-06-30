@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { allTags } from '../tag.js';
 import { routeMatcher } from './route-matcher.js';
 import { onLifecycle, withLifecycle } from '../lifecycle.js';
+import { allTags } from '../cardboard.js';
 const { div, a } = allTags;
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing

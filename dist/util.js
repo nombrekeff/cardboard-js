@@ -88,4 +88,19 @@ export const deepEquals = (a, b) => {
     // true if both NaN, false otherwise
     return a !== a && b !== b;
 };
+/**
+ * Generates a unique ID for a Cardboard tag.
+ * If an `idNumber` is provided, it will return a string in the format `c_<idNumber>`.
+ * If no `idNumber` is provided, it will generate a random UUID in the format `c_xxxxxxxxxx`.
+ *
+ * @returns A unique ID string for a Cardboard tag.
+ */
+export function generateUID(idNumber) {
+    if (!idNumber)
+        return uuidv4();
+    return `c_${idNumber}`;
+}
+export function uuidv4() {
+    return "c_1000000010".replace(/[018]/g, c => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
+}
 //# sourceMappingURL=util.js.map

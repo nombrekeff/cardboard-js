@@ -1,10 +1,14 @@
+/** @jest-environment jsdom */
 import { createDomMock } from './__mocks__/client';
 import { allTags, each, init, state } from '../src/cardboard.js';
 const { div, p } = allTags;
 
 describe('each', () => {
+    beforeEach(() => {
+        document.body.innerHTML = '';
+    });
+
     it('works with non-observable', async () => {
-        let dom = createDomMock();
         init();
 
         const items = ['1', '2', '3'];
@@ -19,7 +23,6 @@ describe('each', () => {
     });
 
     it('works with observable', async () => {
-        let dom = createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -35,7 +38,6 @@ describe('each', () => {
 
 
     it('works with observable same data', async () => {
-        createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -55,7 +57,6 @@ describe('each', () => {
 
 
     it('item added works with observable', async () => {
-        createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -73,7 +74,6 @@ describe('each', () => {
     });
 
     it('item removed works with observable', async () => {
-        createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -93,7 +93,6 @@ describe('each', () => {
     });
 
     it('item swap works with observable', async () => {
-        createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -111,7 +110,6 @@ describe('each', () => {
     });
 
     it('item moved works with observable', async () => {
-        createDomMock();
         init();
 
         const items = state(['1', '2', '3']);
@@ -129,7 +127,6 @@ describe('each', () => {
     });
 
     it('renders a randomized list of 10 items correctly', async () => {
-        createDomMock();
         init();
 
         // Generate 10 random strings

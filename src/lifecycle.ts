@@ -1,33 +1,7 @@
-import { singleEvent } from './events.js';
-import { context, type CTag } from './tag.js';
-import { AtLeastOne } from './types.js';
+import { context, createGlobalObserver } from './cardboard.js';
+import { type CTag } from './tag.js';
+import { type AtLeastOne } from './types.js';
 
-// TODO: Optimize this. Instead of observing everything, let lifecycles listen just to the parent of the element instead of everything.
-export const createGlobalObserver = () => {
-    const _addedEvt = singleEvent<Node>();
-    const _removedEvt = singleEvent<Node>();
-
-    const observer = new window.MutationObserver((mutations, observer) => {
-        for (const mut of mutations) {
-            for (const n of Array.from(mut.addedNodes)) {
-                _addedEvt.dispatch(n);
-            }
-            for (const n of Array.from(mut.removedNodes)) {
-                _removedEvt.dispatch(n);
-            }
-        }
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-    });
-
-    return {
-        onAdded: _addedEvt,
-        onRemoved: _removedEvt,
-    };
-};
 
 /**
  * Will call {mounted} when the element is added to the DOM.
@@ -42,7 +16,6 @@ export function onLifecycle(
 ) {
     if (beforeUnmounted) {
         const tempElRemove = tag.el.remove;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         tag.el.remove = async () => {
             const result = beforeUnmounted(tag);
             if (!result || (result instanceof Promise && (await result))) {
@@ -68,9 +41,9 @@ export function onLifecycle(
     }
 
     let onAddedCb, onRemovedCb;
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     context.observer.onAdded.listen(onAddedCb = async (node: Node) => {
-        if (node === tag.el && onMounted) {
+        let isAdded = node === tag.el || node.contains(tag.el);
+        if (isAdded && onMounted) {
             const result = onMounted(tag);
             if (result instanceof Promise) {
                 await result;
@@ -78,7 +51,8 @@ export function onLifecycle(
         }
     });
     context.observer.onRemoved.listen(onRemovedCb = (node: Node) => {
-        if (node === tag.el && onUnmounted) {
+        let isRemoved = node === tag.el || node.contains(tag.el);
+        if (isRemoved && onUnmounted) {
             onUnmounted(tag);
         }
     });

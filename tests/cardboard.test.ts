@@ -1,3 +1,5 @@
+
+/** @jest-environment jsdom */
 import { Cardboard } from '../src/cardboard.js';
 import * as fs from 'fs';
 

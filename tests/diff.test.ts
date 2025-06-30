@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { DiffState, diffList } from '../src/cardboard.js';
 
 describe('diff string array', () => {

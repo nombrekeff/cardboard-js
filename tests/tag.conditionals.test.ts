@@ -1,19 +1,16 @@
+/** @jest-environment jsdom */
 import { createDomMock } from './__mocks__/client';
-import { tag, state } from '../src/cardboard.js';
+import { tag, state, init } from '../src/cardboard.js';
 
-function getElementIndex(node) {
-  var index = 0;
-
-  while ((node = node.previousElementSibling)) {
-    index++;
-  }
-
-  return index;
-}
 
 describe('Tag conditionals', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
   it('tag.hideIfNot', async () => {
-    createDomMock();
     const show = state(true);
     const pp = tag('p', ["I'm here"]);
 
@@ -27,7 +24,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.doIfNot', async () => {
-    createDomMock();
     let done = false;
     const show = state(true);
     const pp = tag('p', ["I'm here"]);
@@ -41,7 +37,6 @@ describe('Tag conditionals', () => {
     expect(done).toEqual(true);
   });
   it('tag.attrIfNot', async () => {
-    createDomMock();
     let done = false;
     const show = state(true);
     const pp = tag('p', ["I'm here"]);
@@ -57,7 +52,6 @@ describe('Tag conditionals', () => {
 
 
   it('tag.hideIfNot appends item at correct position', async () => {
-    const dom = createDomMock();
     const show = state(true);
     const pp1 = tag('p', ["I'm here 1"]);
     const pp = tag('p', ["I'm here 2"]);
@@ -82,7 +76,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.hideIf', async () => {
-    createDomMock();
     const hide = state(true);
     const pp = tag('p', ["I'm here"]);
 
@@ -96,7 +89,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.disableIf', async () => {
-    createDomMock();
     const disable = state(true);
     const pp = tag('p', ["I'm here"]);
 
@@ -110,7 +102,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.disableIfNot', async () => {
-    createDomMock();
     const enable = state(true);
     const pp = tag('p', ["I'm here"]);
 
@@ -124,7 +115,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.classIf', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').classIf(enable, ['test-class']);
 
@@ -145,7 +135,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.classIfNot', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').classIfNot(enable, ['test-class']);
 
@@ -155,7 +144,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.classIfNot function', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').classIfNot(enable, () => ['test-class']);
 
@@ -165,7 +153,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.stylesIf', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').stylesIf(enable, {
       color: 'red',
@@ -181,7 +168,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.stylesIf function', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').stylesIf(enable, () => ({
       color: 'red',
@@ -197,7 +183,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.stylesIfNot', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').stylesIfNot(enable, { color: 'red' });
 
@@ -208,7 +193,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.styleIf', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').styleIf(enable, 'color', 'red');
 
@@ -219,7 +203,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.styleIf function', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').styleIf(enable, 'color', () => 'red');
 
@@ -230,7 +213,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.styleIfNot', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').styleIfNot(enable, 'color', 'red');
 
@@ -241,7 +223,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.textIf', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').textIf(enable, 'yes', 'no');
 
@@ -253,7 +234,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.textIf without else', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').textIf(enable, 'yes');
 
@@ -265,7 +245,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.textIf with functions', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').textIf(
       enable,
@@ -281,7 +260,6 @@ describe('Tag conditionals', () => {
   });
 
   it('tag.textIfNot', async () => {
-    createDomMock();
     const enable = state(false);
     const pp = tag('p').textIfNot(enable, 'yes', 'no');
 

@@ -15,7 +15,7 @@ export type Suffixer<K, T extends string> = {
 };
 export type Primitive = number | string | boolean | symbol | bigint;
 export type NestedStyleMap = {
-  [key in CssProperty]?: PickPropertyValues<key> | StyleMap;
+  [key in CssProperty]?: PickPropertyValues<key> | NestedStyleMap | StyleMap;
 };
 export type StyleSet = Record<string, NestedStyleMap>;
 export type TagChildren = TagChild[];
@@ -77,3 +77,7 @@ export type AllTags = {
 export type AtLeastOne<T> = {
   [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
 }[keyof T]
+
+export type StyleManager = {
+  add: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => void;
+}

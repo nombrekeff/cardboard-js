@@ -1,6 +1,40 @@
-import { allTags, CTag, isObservable } from '../cardboard.js';
-import type { EventCallback, IObservable } from '../types';
+import { allTags, CTag, isObservable, context, uuidv4, withLifecycle } from '../cardboard.js';
+import type { EventCallback, IObservable, NestedStyleMap } from '../types';
 const { input } = allTags;
+
+type Component<T extends Function> = T & {
+  styled: (styles: NestedStyleMap, name?: string) => Component<T>
+};
+type AnyFn = (...args: any[]) => CTag;
+type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
+
+export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
+  let stylesAreAdded = false;
+  let className = uuidv4();
+  let stylesheet: NestedStyleMap | undefined;
+
+  const builder = function (...args) {
+    if (!stylesheet) return fn(...args);
+    if (!stylesAreAdded) {
+      stylesAreAdded = true;
+      if (stylesheet) {
+        context.styleManager?.add({
+          [`.${className}`]: stylesheet,
+        });
+      }
+    }
+
+    return fn(...args).addClass(className);
+  }
+
+  builder.styled = (styles: NestedStyleMap, name?: string): typeof builder => {
+    stylesheet = styles || {};
+    className = name || className;
+    return builder;
+  };
+
+  return builder as Component<ThatFn<F>>;
+}
 
 export interface HInputOptions<T = string> {
   value?: T | IObservable<T>;

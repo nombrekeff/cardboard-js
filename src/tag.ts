@@ -1,43 +1,22 @@
 import type {
-  AllTags,
   IObservable,
   NoOp,
   Primitive,
   StyleMap,
-  StyleSet,
-  TagBuilder,
   TagChild,
   TagChildren,
   TagConfig,
   TextObj,
 } from './types';
-import { type CEvent } from './events.js';
-import { genCss } from './css-generator.js';
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
-import { createGlobalObserver } from './lifecycle.js';
 import { CommonAttributes } from './attributes.js';
+import { checkInitialized, context } from './context.js';
 
-export const context: {
-  mountPoint?: CTag;
-  mountPointHistory: CTag[];
-  observer?: {
-    onAdded: CEvent<Node>;
-    onRemoved: CEvent<Node>;
-  };
-} = {
-  mountPoint: undefined,
-  mountPointHistory: [],
-};
-
-/**
- * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
- */
-export const getMountPoint = () => context.mountPoint;
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -47,6 +26,23 @@ export const getMountPoint = () => context.mountPoint;
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
+
+  private _visible = false;
+  get visible() {
+    return this._visible;
+  }
+
+  set visible(newValue: boolean) {
+    this._visible = newValue;
+    this.el.dispatchEvent(new CustomEvent('visible', {
+      detail: {
+        visible: newValue,
+        tag: this,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /**
    * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
@@ -157,6 +153,9 @@ export class CTag {
     }
 
     if (children.length > 0) this.setChildren(children);
+
+    // Used by other parts of Cardboard to identify this tag
+    (this.el as any).tag = this;
   }
 
   /** Sets the children, removes previous children  */
@@ -220,6 +219,7 @@ export class CTag {
   /** Hide this element (removed from DOM) */
   async hide() {
     if (this.parent && this.parent.children.includes(this.el)) {
+      this.parent.el.insertBefore(document.createComment(this.el.id), this.el as any);
       await this.remove();
       this._meta.isHidden = true;
     }
@@ -685,6 +685,7 @@ export class CTag {
    * Destroy the element, should not be used afterwards
    */
   destroy() {
+    context.intersectionObserver?.unobserve(this.el);
     this._children.forEach((cl) => {
       if (cl instanceof CTag) {
         cl.destroy();
@@ -768,7 +769,7 @@ export class CTag {
   private _observer: MutationObserver;
   private _getChildren(element: HTMLElement) {
     if (!this._observer) {
-      this._observer = new MutationObserver(() => {
+      this._observer = new window.MutationObserver(() => {
         this._cacheChildren(element);
       });
       this._observer.observe(this.el, { childList: true });
@@ -793,7 +794,9 @@ export class CTag {
 
   private _mapChildren(children: TagChildren): Node[] {
     const mapped: Node[] = [];
-    for (const child of children) {
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      // for (const child of children) {
       if (child instanceof CTag) {
         child.parent = this;
       }
@@ -814,7 +817,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
  *
  * @example
  * ```ts
@@ -825,134 +828,6 @@ export class CTag {
  * ```
  */
 export const tag = (arg0: string | HTMLElement, children: TagChildren = [], mountToParent: boolean = false) => {
+  checkInitialized();
   return new CTag(arg0, children, mountToParent);
 };
-
-/**
- * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
- * they will be added as children of this tag.
- * You can call mountPoint multiple times, and the last mount point tag will be used.
- * Then when you've finished, you can call {@link restoreMountPoint} to go back to the previously mounted tag if there is one.
- * You can clear all mount points using {@link clearMountPoints}.
- *
- * @example
- * ```ts
- * mountPoint(div()); // Div 1
- * div.mount();  // added as child of div
- * p.mount();    // added as child of div
- *
- * mountPoint(div()); // Div 2
- * div.mount();  // added as child of new div
- * p.mount();    // added as child of new div
- *
- * restoreMountPoint();      // Back to div 1
- * clearMountPoints();       // Clears all mount points, no mount point after this call
- * ```
- */
-export const mountPoint = (tag: CTag) => {
-  if (context.mountPoint) {
-    context.mountPointHistory.push(context.mountPoint);
-  }
-  context.mountPoint = tag;
-  return tag;
-};
-
-/**
- * Restore the currently mounted tag ({@link mountPoint}). 
- * Goes back in the stack of mount points tags.
- * If there is no previous mount point tag, it will not do anything.
- */
-export const restoreMountPoint = () => {
-  context.mountPoint = context.mountPointHistory.pop();
-};
-
-/**
- * Restores all mount points. There will be no mount points tag after calling this function.
- */
-export const clearMountPoints = () => {
-  context.mountPoint = undefined;
-  context.mountPointHistory = [];
-};
-
-/**
- * Clears the mount point history and resets the mount point to the first one.
- * This means that the mount point will be the first tag that was mounted, 
- * and all other mount points will be cleared.
- */
-export const resetMountPoints = () => {
-  let first = context.mountPointHistory.shift();
-  context.mountPoint = first;
-  context.mountPointHistory = [];
-};
-
-export type ScopedCallback = (tag: CTag) => void;
-
-/**
- * Sets the mount point to the given tag, calls the scoped callback, and then restores the mount point.
- * Useful for creating a temporary mount point for a specific tag, and then restoring the previous mount point.
- * 
- * @param tag 
- * @param scopedCallback 
- */
-export const withMountPoint = (tag: CTag, scopedCallback: ScopedCallback) => {
-  mountPoint(tag);
-  scopedCallback(tag);
-  restoreMountPoint();
-}
-
-/**
- * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
- * You can pass in a selector for an element you want to be the default tag ("body" by default).
- */
-export const init = (options: { selector: string } = { selector: 'body' }) => {
-  const tag = new CTag(`(${options.selector})`);
-  context.observer = createGlobalObserver();
-  return mountPoint(tag);
-};
-
-/** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
-const interceptors: Record<string, TagBuilder | ((styles: StyleSet[]) => CTag)> = {
-  ul: (children: TagChildren, mountToParent: boolean = false) => {
-    return tag(
-      'ul',
-      children.map((cl) => {
-        return tag('li', [cl], mountToParent);
-      }),
-    );
-  },
-  style: (styles: StyleSet[], mountToParent: boolean = false) => {
-    return tag('style', [genCss(styles)], mountToParent);
-  },
-};
-
-/**
- * List of all HTML tag functions. From `div` to `abbr` :)
- * If you want to create any other tag, use the {@link tag} function.
- *
- * @type {AllTags}
- * @example
- * ```ts
- * const { div, p, abbr, img, style, ... } = allTags;
- * ```
- */
-export const allTags: AllTags = new Proxy(
-  {},
-  {
-    get: (t, p, r) => {
-      const tagName = p.toString();
-      const fn = (...children: any[]) => {
-        return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
-      };
-
-      Object.defineProperty(fn, 'mount', {
-        get: () => {
-          return (...children: any[]) => {
-            return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
-          };
-        },
-      });
-
-      return fn;
-    },
-  },
-) as AllTags;

@@ -30,7 +30,11 @@ export const genBlockContent = (
 
   for (const key in style) {
     if (isObject(style[key])) {
-      blocks.push(...genBlockContent(selector + key, style[key] as NestedStyleMap));
+      let newSelector = selector;
+
+      newSelector += key;
+
+      blocks.push(...genBlockContent(newSelector, style[key] as NestedStyleMap));
     }
     else if (style[key]) {
       inside += `${camelToDash(key)}:${style[key] as string};`;

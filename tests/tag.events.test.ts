@@ -1,9 +1,16 @@
-import { tag } from '../src/tag';
+/** @jest-environment jsdom */
+import { init } from '../src/cardboard.js';
+import { tag } from '../src/tag.js';
 import { createDomMock } from './__mocks__/client';
 
 describe('Tags', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
   it('tag.clicked', async () => {
-    createDomMock();
     const clickCallback = jest.fn();
     const t = tag('custom').clicked(clickCallback);
     t.el.dispatchEvent(new window.Event('click'));
@@ -11,7 +18,6 @@ describe('Tags', () => {
   });
 
   it('tag.keyPressed', async () => {
-    createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback);
     t.el.dispatchEvent(new window.KeyboardEvent('keypress'));
@@ -19,7 +25,6 @@ describe('Tags', () => {
   });
 
   it('tag.keyPressed with key', async () => {
-    createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback, 'Enter');
     t.el.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
@@ -27,7 +32,6 @@ describe('Tags', () => {
   });
 
   it('tag.keyPressed with key omits other keys', async () => {
-    createDomMock();
     const callback = jest.fn();
     const t = tag('custom').keyPressed(callback, 'Shift');
     t.el.dispatchEvent(new window.KeyboardEvent('keypress', { key: 'Enter' }));
@@ -35,7 +39,6 @@ describe('Tags', () => {
   });
 
   it('tag.changed', async () => {
-    createDomMock();
     const callback = jest.fn();
     const t = tag('custom').changed(callback);
     t.el.dispatchEvent(new window.Event('change'));
@@ -43,7 +46,6 @@ describe('Tags', () => {
   });
 
   it('tag.submited', async () => {
-    createDomMock();
     const callback = jest.fn();
     const t = tag('test').submited(callback);
     t.el.dispatchEvent(new window.SubmitEvent('submit'));
@@ -51,7 +53,6 @@ describe('Tags', () => {
   });
 
   it('tag.listen', async () => {
-    createDomMock();
     const callback = jest.fn();
     const c = tag('child');
     tag('test').listen(c, 'click', callback);
@@ -62,7 +63,6 @@ describe('Tags', () => {
 
 
   it('tag.once', async () => {
-    createDomMock();
     const callback = jest.fn();
     const c = tag('child');
     c.once('click', callback);

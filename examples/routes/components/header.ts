@@ -1,9 +1,8 @@
-import type { StyleMap } from '../../../src/types';
+import type { StyleMap } from '../../../dist/types';
 import {
   allTags,
-  Link,
-  router,
 } from '../../../dist/cardboard.js';
+import { Link, router } from '../../../dist/ext/routing';
 
 const { nav, button, h4 } = allTags;
 const linkStyle: StyleMap = { color: 'white', textDecoration: 'none' };

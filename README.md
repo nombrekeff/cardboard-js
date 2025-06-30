@@ -6,21 +6,12 @@
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
 [![Project Status](https://img.shields.io/badge/Project_Status-WIP-orange)](https://github.com/nombrekeff/cardboard-js/milestone/1)
 
-**Cardboard.js: Build web apps without HTML, CSS, or JSX!** This lightweight (_around 18kb_), performant framework lets you manage state, components, and logic using just JavaScript/TypeScript.  Ideal for projects where simplicity and speed are key.
+**Cardboard.js: Build web apps without HTML, CSS, or JSX!** This lightweight (_around 18kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), but with many more features and a more extensive API.
 
 > **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
 > You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!**
-
-<!-- Welcome to Cardboard. An **extremely light** (_around **18kb**_), **performant**, and **very simple** reactive framework. It offers almost everything you'd expect from a complete framework. Like managing state, components, logic, and the rest. But with a twist, **you don't need to write any HTML, CSS, or JSX** if you don't want to. See **[what it can do](https://github.com/nombrekeff/cardboard-js#what-does-it-do)**.
-
-
-It's similar in philosophy to [VanJS](https://vanjs.org/), if that rings a bell, but with many more features, and a more extensive API.
-
-> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
-> You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!** -->
-
 
 ```ts
 const Counter = () => {
@@ -46,12 +37,12 @@ tag('(body)').append(Counter());
 #### Install
 
 ```
-npm install https://github.com/nombrekeff/cardboard-js
+npm install @nkeff/cardboard-js
 ```
 #### Setup
 
 ```ts
-import { tag, init, allTags } from 'cardboard-js';
+import { tag, init, allTags } from '@nkeff/cardboard-js';
 // Or
 import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js';
 
@@ -75,6 +66,8 @@ If you want to add it to your site and start using Cardboard, you can import the
 
 ```html
 <script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
+<!-- OR the minified version -->
+<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.min.js"></script>
 <script>
 const { div, p } = Carboard.allTags;
 </script>
@@ -91,9 +84,7 @@ Cardboard.js lets you create web apps using only JavaScript/TypeScript, eliminat
 *   **[Logic](https://github.com/nombrekeff/cardboard-js/wiki/Logic)**: Add application logic in a simple way.
 *   **[Text Templates](https://github.com/nombrekeff/cardboard-js/wiki/Text-Templates)**: Simplify text and template manipulation with state.
 *   **[Components](https://github.com/nombrekeff/cardboard-js/wiki/Reusable-Component)**: Create reusable UI components.
-*   **[Tweening](https://github.com/nombrekeff/cardboard-js/wiki/Tweening)**: Simple tweening animations.
-*   **[Routing](https://github.com/nombrekeff/cardboard-js/wiki/Routing)**: Build single-page applications with ease.
-*   **[CSS in JS](#css-in-js)**: Style your application using JavaScript objects.
+*   **[CSS in JS](https://github.com/nombrekeff/cardboard-js/wiki/Styling)**: Style your application using JavaScript objects.
 *   **Typed**: Full TypeScript support for code completion and type safety.
 *   **ATAP**: As tested as possible!
 
@@ -115,7 +106,6 @@ You can help with the Wiki, using and testing the project, reporting bugs, fixin
 Take a look at these guides:
 * [Development Project Setup](https://github.com/nombrekeff/cardboard-js/wiki/Development-Guide)
 * [Contributing Guide](https://github.com/nombrekeff/cardboard-js/wiki/Contributing-Guide)
-
 
 
 

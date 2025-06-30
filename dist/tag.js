@@ -7,25 +7,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { genCss } from './css-generator.js';
 import { val, camelToDash } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
-import { createGlobalObserver } from './lifecycle.js';
-export const context = {
-    mountPoint: undefined,
-    mountPointHistory: [],
-};
-/**
- * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
- */
-export const getMountPoint = () => context.mountPoint;
+import { checkInitialized, context } from './context.js';
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
 export class CTag {
+    get visible() {
+        return this._visible;
+    }
+    set visible(newValue) {
+        this._visible = newValue;
+        this.el.dispatchEvent(new CustomEvent('visible', {
+            detail: {
+                visible: newValue,
+                tag: this,
+            },
+            bubbles: true,
+            composed: true,
+        }));
+    }
     get parent() {
         return this._parent;
     }
@@ -72,6 +77,7 @@ export class CTag {
         return this;
     }
     constructor(arg0, children = [], mountToParent = false) {
+        this._visible = false;
         /**
          * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
          * Used to remove HTML Event Listeners and Observable listeners
@@ -111,6 +117,8 @@ export class CTag {
         }
         if (children.length > 0)
             this.setChildren(children);
+        // Used by other parts of Cardboard to identify this tag
+        this.el.tag = this;
     }
     /** Sets the children, removes previous children  */
     setChildren(children) {
@@ -170,6 +178,7 @@ export class CTag {
     hide() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.parent && this.parent.children.includes(this.el)) {
+                this.parent.el.insertBefore(document.createComment(this.el.id), this.el);
                 yield this.remove();
                 this._meta.isHidden = true;
             }
@@ -554,6 +563,8 @@ export class CTag {
      * Destroy the element, should not be used afterwards
      */
     destroy() {
+        var _a;
+        (_a = context.intersectionObserver) === null || _a === void 0 ? void 0 : _a.unobserve(this.el);
         this._children.forEach((cl) => {
             if (cl instanceof CTag) {
                 cl.destroy();
@@ -626,7 +637,7 @@ export class CTag {
     }
     _getChildren(element) {
         if (!this._observer) {
-            this._observer = new MutationObserver(() => {
+            this._observer = new window.MutationObserver(() => {
                 this._cacheChildren(element);
             });
             this._observer.observe(this.el, { childList: true });
@@ -646,7 +657,9 @@ export class CTag {
     }
     _mapChildren(children) {
         const mapped = [];
-        for (const child of children) {
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            // for (const child of children) {
             if (child instanceof CTag) {
                 child.parent = this;
             }
@@ -666,7 +679,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
  *
  * @example
  * ```ts
@@ -677,117 +690,7 @@ export class CTag {
  * ```
  */
 export const tag = (arg0, children = [], mountToParent = false) => {
+    checkInitialized();
     return new CTag(arg0, children, mountToParent);
 };
-/**
- * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
- * they will be added as children of this tag.
- * You can call mountPoint multiple times, and the last mount point tag will be used.
- * Then when you've finished, you can call {@link restoreMountPoint} to go back to the previously mounted tag if there is one.
- * You can clear all mount points using {@link clearMountPoints}.
- *
- * @example
- * ```ts
- * mountPoint(div()); // Div 1
- * div.mount();  // added as child of div
- * p.mount();    // added as child of div
- *
- * mountPoint(div()); // Div 2
- * div.mount();  // added as child of new div
- * p.mount();    // added as child of new div
- *
- * restoreMountPoint();      // Back to div 1
- * clearMountPoints();       // Clears all mount points, no mount point after this call
- * ```
- */
-export const mountPoint = (tag) => {
-    if (context.mountPoint) {
-        context.mountPointHistory.push(context.mountPoint);
-    }
-    context.mountPoint = tag;
-    return tag;
-};
-/**
- * Restore the currently mounted tag ({@link mountPoint}).
- * Goes back in the stack of mount points tags.
- * If there is no previous mount point tag, it will not do anything.
- */
-export const restoreMountPoint = () => {
-    context.mountPoint = context.mountPointHistory.pop();
-};
-/**
- * Restores all mount points. There will be no mount points tag after calling this function.
- */
-export const clearMountPoints = () => {
-    context.mountPoint = undefined;
-    context.mountPointHistory = [];
-};
-/**
- * Clears the mount point history and resets the mount point to the first one.
- * This means that the mount point will be the first tag that was mounted,
- * and all other mount points will be cleared.
- */
-export const resetMountPoints = () => {
-    let first = context.mountPointHistory.shift();
-    context.mountPoint = first;
-    context.mountPointHistory = [];
-};
-/**
- * Sets the mount point to the given tag, calls the scoped callback, and then restores the mount point.
- * Useful for creating a temporary mount point for a specific tag, and then restoring the previous mount point.
- *
- * @param tag
- * @param scopedCallback
- */
-export const withMountPoint = (tag, scopedCallback) => {
-    mountPoint(tag);
-    scopedCallback(tag);
-    restoreMountPoint();
-};
-/**
- * It initializes the framework & makes the body tag the mount point ({@link mountPoint}).
- * You can pass in a selector for an element you want to be the default tag ("body" by default).
- */
-export const init = (options = { selector: 'body' }) => {
-    const tag = new CTag(`(${options.selector})`);
-    context.observer = createGlobalObserver();
-    return mountPoint(tag);
-};
-/** Override any tag function we want, to give it some custom behaviour, process the children, etc... */
-const interceptors = {
-    ul: (children, mountToParent = false) => {
-        return tag('ul', children.map((cl) => {
-            return tag('li', [cl], mountToParent);
-        }));
-    },
-    style: (styles, mountToParent = false) => {
-        return tag('style', [genCss(styles)], mountToParent);
-    },
-};
-/**
- * List of all HTML tag functions. From `div` to `abbr` :)
- * If you want to create any other tag, use the {@link tag} function.
- *
- * @type {AllTags}
- * @example
- * ```ts
- * const { div, p, abbr, img, style, ... } = allTags;
- * ```
- */
-export const allTags = new Proxy({}, {
-    get: (t, p, r) => {
-        const tagName = p.toString();
-        const fn = (...children) => {
-            return interceptors[tagName] ? interceptors[tagName](children, false) : tag(tagName, children);
-        };
-        Object.defineProperty(fn, 'mount', {
-            get: () => {
-                return (...children) => {
-                    return interceptors[tagName] ? interceptors[tagName](children, true) : tag(tagName, children, true);
-                };
-            },
-        });
-        return fn;
-    },
-});
 //# sourceMappingURL=tag.js.map

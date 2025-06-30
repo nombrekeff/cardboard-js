@@ -1,5 +1,7 @@
+import type { Config } from 'jest';
+
 // Sync object
-export default {
+const config: Config = {
   verbose: true,
   transform: {
     '^.+\\.[tj]sx?$': [
@@ -11,5 +13,10 @@ export default {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  testEnvironment: 'jest-environment-jsdom',
   testMatch: ['**/tests/**/*.+(ts|tsx|js)', '!**/tests/__mocks__/**/*'],
+  setupFiles: ['<rootDir>/jest.setup.ts'],
 };
+
+export default config;
+

@@ -1,4 +1,4 @@
-import { CTag } from '../tag.js';
+import { CTag } from '../cardboard.js';
 export type RouteBuilder = (router: Router<any>) => CTag;
 export type Route = RouteBuilder | string;
 export interface RouterOptions<T extends Record<string, Route> = Record<string, Route>> {

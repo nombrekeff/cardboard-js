@@ -1,5 +1,30 @@
-import { allTags, isObservable } from '../cardboard.js';
+import { allTags, isObservable, context, uuidv4 } from '../cardboard.js';
 const { input } = allTags;
+export function Component(fn) {
+    let stylesAreAdded = false;
+    let className = uuidv4();
+    let stylesheet;
+    const builder = function (...args) {
+        var _a;
+        if (!stylesheet)
+            return fn(...args);
+        if (!stylesAreAdded) {
+            stylesAreAdded = true;
+            if (stylesheet) {
+                (_a = context.styleManager) === null || _a === void 0 ? void 0 : _a.add({
+                    [`.${className}`]: stylesheet,
+                });
+            }
+        }
+        return fn(...args).addClass(className);
+    };
+    builder.styled = (styles, name) => {
+        stylesheet = styles || {};
+        className = name || className;
+        return builder;
+    };
+    return builder;
+}
 export const Input = (options = {}) => {
     var _a;
     const el = options.mountToParent ? input.mount() : input();

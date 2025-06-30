@@ -1,14 +1,16 @@
+/** @jest-environment jsdom */
+
 import {
   tag,
-  mountPoint,
-  getMountPoint,
-  clearMountPoints,
-  restoreMountPoint,
-  init,
   CTag,
   allTags,
+  clearMountPoints,
+  getMountPoint,
+  init,
+  mountPoint,
   resetMountPoints,
-} from '../src/tag';
+  restoreMountPoint,
+} from '../src/cardboard.js';
 import { createDomMock } from './__mocks__/client';
 
 const allKnownTags = [
@@ -129,11 +131,15 @@ const allKnownTags = [
 ];
 
 describe('Tag functions', () => {
+  beforeAll(() => {
+    init({ selector: 'body' });
+  });
+
   beforeEach(() => {
     clearMountPoints();
   });
   it('mountPoint', async () => {
-    createDomMock();
+
     const c = tag('div');
     mountPoint(c);
 
@@ -141,7 +147,7 @@ describe('Tag functions', () => {
   });
 
   it('multiple mountPoint', async () => {
-    createDomMock();
+
     clearMountPoints();
 
     const c = tag('div');
@@ -160,7 +166,7 @@ describe('Tag functions', () => {
   });
 
   it('getMountPoint()', async () => {
-    createDomMock();
+
     const c = tag('div');
     mountPoint(c);
 
@@ -168,7 +174,7 @@ describe('Tag functions', () => {
   });
 
   it('resetMountPoint()', async () => {
-    createDomMock();
+
     const c = tag('div');
     mountPoint(c);
     mountPoint(tag('div'));
@@ -180,7 +186,6 @@ describe('Tag functions', () => {
   });
 
   it('init default', async () => {
-    createDomMock();
     init();
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
@@ -188,7 +193,7 @@ describe('Tag functions', () => {
   });
 
   it('init with selector', async () => {
-    createDomMock('<div id="root"></div>');
+    document.body.innerHTML = '<div id="root"></div>';
     init({ selector: '#root' });
 
     expect(getMountPoint()).toBeInstanceOf(CTag);
@@ -197,7 +202,6 @@ describe('Tag functions', () => {
   });
 
   it('allTags', async () => {
-    createDomMock('');
     for (const tname of allKnownTags) {
       expect(allTags[tname]).toBeTruthy();
       expect('mount' in allTags[tname]).toBeTruthy();
@@ -207,7 +211,6 @@ describe('Tag functions', () => {
   });
 
   it('interceptor.ul', async () => {
-    createDomMock('');
     const list = allTags['ul']('test');
     expect(list).toBeInstanceOf(CTag);
     expect((list.children[0] as HTMLElement).tagName).toBe('LI');
