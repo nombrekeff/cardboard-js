@@ -36,12 +36,12 @@ tag('(body)').append(Counter());
 #### Install
 
 ```
-npm install https://github.com/nombrekeff/cardboard-js
+npm install @nkeff/cardboard-js
 ```
 #### Setup
 
 ```ts
-import { tag, init, allTags } from 'cardboard-js';
+import { tag, init, allTags } from '@nkeff/cardboard-js';
 // Or
 import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js';
 
@@ -65,6 +65,8 @@ If you want to add it to your site and start using Cardboard, you can import the
 
 ```html
 <script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
+<!-- OR the minified version -->
+<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.min.js"></script>
 <script>
 const { div, p } = Carboard.allTags;
 </script>

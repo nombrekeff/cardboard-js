@@ -1,5 +1,5 @@
 {
-  "name": "cardboard-js",
+  "name": "@nkeff/cardboard-js",
   "version": "0.0.5",
   "description": "Fast, light & ultra-compact library for composing interactive web apps—all in plain JavaScript or TypeScript, no HTML required.",
   "type": "module",
