@@ -39,6 +39,7 @@ tag('(body)').append(Counter());
 
 #### 🔸 [Getting Started](https://github.com/nombrekeff/cardboard-js/wiki/Getting-Started) - for a getting started guide.
 #### 🔸 [Wiki](https://github.com/nombrekeff/cardboard-js/wiki/Examples) - for human documentation, and examples.
+#### 🔸 [Deepwiki](https://deepwiki.com/nombrekeff/cardboard-js/1-overview) - ai generated docs using deepwiki
 #### 🔸 [Documentation](https://nombrekeff.github.io/cardboard-js/) - for technical docs.
 
 ### Setup
