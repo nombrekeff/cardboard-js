@@ -824,6 +824,84 @@ type CommonAttributes =
      | 'wrap' 
      | (string & {});
 
+type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
+type NoOp = () => void;
+// eslint-disable-next-line @typescript-eslint/array-type, @typescript-eslint/ban-types
+type KeysOf<T extends Record<string, unknown>> = keyof T;
+
+type Suffix<K extends string, T extends string> = `${T}${K}`;
+type Suffixer<K, T extends string> = {
+  [P in keyof K as Suffix<T, string & P>]: K[P];
+};
+type Primitive = number | string | boolean | symbol | bigint;
+type NestedStyleMap = {
+  [key in CssProperty]?: PickPropertyValues<key> | NestedStyleMap | StyleMap;
+};
+type StyleSet = Record<string, NestedStyleMap>;
+type TagChildren = TagChild[];
+type EventCallback<T extends EventName> = (
+  tag: CTag,
+  evt: HTMLElementEventMap[T],
+) => void;
+type EventName = keyof HTMLElementEventMap;
+type EventMap = {
+  [k in EventName]?: EventCallback<k>;
+};
+type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
+interface IObservable<T = any> {
+  changed: (callback: (newValue: T) => void) => IObservable<T>;
+  remove: (callback: (newValue: T) => void) => IObservable<T>;
+  dispatch: (newValue: T) => IObservable<T>;
+  destroy: () => void;
+  computed: <K>(transform: (val: T) => K) => IObservable<K>;
+  greaterThan: (val: IObservableOr<number> | number) => IObservable<boolean>;
+  greaterThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
+  lessThan: (val: IObservableOr<number>) => IObservable<boolean>;
+  lessThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
+  equalTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+  notEqualTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+  isEmpty: () => IObservable<boolean>;
+  notEmpty: () => IObservable<boolean>;
+  grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable;
+  value: T;
+  prev?: T;
+}
+type State<T> = IObservable<T>;
+type IObservableOr<T = any> = IObservable<T> | T;
+interface WithLength {
+  length: number;
+}
+type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
+type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
+interface TagConfig {
+  style?: StyleMap;
+  attr?: Record<CommonAttributes & {}, string | undefined>;
+  classList?: string[];
+  text?: string;
+  children?: TagChildren;
+  on?: EventMap;
+  value?: string;
+  className?: string;
+}
+
+type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
+type AllTags = {
+  [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
+    /**
+     * This will mount (append) this tag to the currently mounted tag if there is one.
+     */
+    mount: (...children: PickArgType<key>) => CTag;
+  };
+};
+
+type AtLeastOne<T> = {
+  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
+}[keyof T]
+
+type StyleManager = {
+  add: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => void;
+}
+
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
  *
@@ -834,23 +912,26 @@ declare class CTag {
     el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
-    private _visible;
+    _visible: boolean;
     get visible(): boolean;
     set visible(newValue: boolean);
     /**
      * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
      * Used to remove HTML Event Listeners and Observable listeners
      */
-    private readonly _destroyers;
+    readonly _destroyers: NoOp[];
     /** @param parent Reference to the parent @type {CTag} of this element */
-    private _parent?;
+    _parent?: CTag;
     get parent(): CTag | undefined;
     set parent(newParent: CTag);
     /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
-    private _children;
-    private _cachedChildren;
+    _children: TagChild[];
+    _cachedChildren: Node[];
     get children(): Node[];
-    private readonly _meta;
+    readonly _meta: {
+        isHidden: boolean;
+        nextSiblingID: null;
+    };
     get value(): any;
     setValue(newValue: string): this;
     get checked(): any;
@@ -960,6 +1041,7 @@ declare class CTag {
      * For the oposite use  {@link stylesIf}
      */
     stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+    styled(stylesheet: NestedStyleMap | undefined, className?: string): CTag;
     /**
      * Listen to an event on the element. Like addEventListener.
      */
@@ -1048,7 +1130,7 @@ declare class CTag {
     /** Query a child in this element (in the DOM) */
     q(selector: any): CTag | undefined;
     /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | Node | CTag | IObservable<any> | undefined;
+    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IObservable<any> | undefined;
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;
@@ -1075,84 +1157,6 @@ declare class CTag {
  * ```
  */
 declare const tag: (arg0: string | HTMLElement, children?: TagChildren, mountToParent?: boolean) => CTag;
-
-type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
-type NoOp = () => void;
-// eslint-disable-next-line @typescript-eslint/array-type, @typescript-eslint/ban-types
-type KeysOf<T extends Record<string, unknown>> = keyof T;
-
-type Suffix<K extends string, T extends string> = `${T}${K}`;
-type Suffixer<K, T extends string> = {
-  [P in keyof K as Suffix<T, string & P>]: K[P];
-};
-type Primitive = number | string | boolean | symbol | bigint;
-type NestedStyleMap = {
-  [key in CssProperty]?: PickPropertyValues<key> | NestedStyleMap | StyleMap;
-};
-type StyleSet = Record<string, NestedStyleMap>;
-type TagChildren = TagChild[];
-type EventCallback<T extends EventName> = (
-  tag: CTag,
-  evt: HTMLElementEventMap[T],
-) => void;
-type EventName = keyof HTMLElementEventMap;
-type EventMap = {
-  [k in EventName]?: EventCallback<k>;
-};
-type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
-interface IObservable<T = any> {
-  changed: (callback: (newValue: T) => void) => IObservable<T>;
-  remove: (callback: (newValue: T) => void) => IObservable<T>;
-  dispatch: (newValue: T) => IObservable<T>;
-  destroy: () => void;
-  computed: <K>(transform: (val: T) => K) => IObservable<K>;
-  greaterThan: (val: IObservableOr<number> | number) => IObservable<boolean>;
-  greaterThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
-  lessThan: (val: IObservableOr<number>) => IObservable<boolean>;
-  lessThanOr: (val: IObservableOr<number>) => IObservable<boolean>;
-  equalTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
-  notEqualTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
-  isEmpty: () => IObservable<boolean>;
-  notEmpty: () => IObservable<boolean>;
-  grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable;
-  value: T;
-  prev?: T;
-}
-type State<T> = IObservable<T>;
-type IObservableOr<T = any> = IObservable<T> | T;
-interface WithLength {
-  length: number;
-}
-type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
-type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
-interface TagConfig {
-  style?: StyleMap;
-  attr?: Record<CommonAttributes & {}, string | undefined>;
-  classList?: string[];
-  text?: string;
-  children?: TagChildren;
-  on?: EventMap;
-  value?: string;
-  className?: string;
-}
-
-type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
-type AllTags = {
-  [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
-    /**
-     * This will mount (append) this tag to the currently mounted tag if there is one.
-     */
-    mount: (...children: PickArgType<key>) => CTag;
-  };
-};
-
-type AtLeastOne<T> = {
-  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
-}[keyof T]
-
-type StyleManager$1 = {
-  add: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => void;
-}
 
 /**
  * Single event listener/emitter, listen to, and trigger events. (for mapped events use {@link CMappedEvent}).
@@ -1195,7 +1199,7 @@ declare const mappedEvent: <T>() => CMappedEvent<T>;
 
 type CardboardContext = {
     intersectionObserver?: IntersectionObserver;
-    styleManager?: StyleManager$1;
+    styleManager?: StyleManager;
     mountPoint?: CTag;
     mountPointHistory: CTag[];
     observer?: {
@@ -1262,121 +1266,6 @@ declare const createGlobalObserver: () => {
     onAdded: CEvent<Node>;
     onRemoved: CEvent<Node>;
 };
-
-/**
- * A class that holds a value and notifies whenever the value changes.
- * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
- */
-declare class Observable<T = any> extends CEvent<T> implements IObservable<T> {
-    private _value;
-    private readonly _destroyer?;
-    get value(): T;
-    /** Set the value, and dispatch to all listeners. */
-    set value(val: T);
-    constructor(val: T, destroyer?: () => void);
-    valueOf(): T;
-    toString(): any;
-    /**
-     * Add a listener for when this Observable changes.
-     */
-    changed(callback: (val: T) => void): this;
-    /**
-    * Remove a listener for when this Observable changes.
-    */
-    remove(callback: (val: T) => void): this;
-    /**
-     * Set's the new value, and calls all the listeners.
-     * You can additionaly set the {@link value} directly.
-     */
-    dispatch(val: T): this;
-    destroy(): void;
-    /**
-     * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
-     * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
-     *
-     * @example
-     * ```ts
-     * const value = createObservable(2);
-     * const isGreater = value.computed((value) => value > 5);
-     * // > isGreater == false;
-     * value.dispatch(6);
-     * // > isGreater == true;
-     * ```
-     */
-    computed: <K>(transform: (val: T) => K) => any;
-    /** @see {@link greaterThan} */
-    greaterThan: (val?: IObservableOr<number> | number) => IObservable<boolean>;
-    /** @see {@link greaterThanOr} */
-    greaterThanOr: (val?: IObservableOr<number>) => IObservable<boolean>;
-    /** @see {@link lessThan} */
-    lessThan: (val?: IObservableOr<number>) => IObservable<boolean>;
-    /** @see {@link lessThanOr} */
-    lessThanOr: (val?: IObservableOr<number>) => IObservable<boolean>;
-    /** @see {@link equalTo} */
-    equalTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
-    /** @see {@link notEqualTo} */
-    notEqualTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
-    /** @see {@link isEmpty} */
-    isEmpty: <K extends WithLength>() => IObservable<boolean>;
-    /** @see {@link notEmpty} */
-    notEmpty: <K extends WithLength>() => IObservable<boolean>;
-    /** @see {@link grab} */
-    grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
-}
-/** Check if a given object {@link obj} is a {@link Observable}  */
-declare const isObservable: (obj: any) => obj is Observable<any>;
-/**
- * Create a new {@link Observable}
- * > Consider using `state(...)` instead.
- * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
- */
-declare const createObservable: <T>(val: T, destroyer?: () => void) => IObservable<T>;
-/**
- * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
- * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
- *
- * @example
- * ```ts
- * const value = createObservable(2);
- * // Create a derived observable that is true if value > 5
- * const isGreater = compute(value, (v) => v > 5);
- * // isGreater.value == false
- * value.dispatch(6);
- * // isGreater.value == true
- * ```
- */
-declare const compute: <T, K>(other: IObservable<T>, transform: (val: T) => K) => IObservable<K>;
-type ExtractValue<T extends Array<IObservable<any>>> = {
-    [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
-};
-declare const computeMultiple: <T extends IObservable[], K>(observables: [...T], transform: (...v: [...ExtractValue<T>]) => K) => IObservable<K>;
-declare const getValue: <T>(val: IObservableOr<T>) => T;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than {@link val} */
-declare const greaterThan: (observable: IObservable<number>, val?: IObservable<number> | number) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal {@link val} */
-declare const greaterThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than {@link val} */
-declare const lessThan: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal {@link val} */
-declare const lessThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to {@link val} */
-declare const equalTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to {@link val} */
-declare const notEqualTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
-declare const isEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
-declare const notEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} that is equal to some property of the original {@link Observable} */
-declare const grab: <T, K extends keyof T>(observable: IObservable<T>, key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
-
-declare class StyleManager {
-    styleTag: CTag;
-    rules: Set<string>;
-    generatedIdsCount: number;
-    constructor();
-    add(styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>): void;
-}
 
 /**
  * `state` creates a reactive value that can the be used with tags to create dinamic and reactive apps.
@@ -1625,6 +1514,113 @@ declare const withLifecycle: (tag: CTag, handler: AtLeastOne<{
 }>) => CTag;
 
 /**
+ * A class that holds a value and notifies whenever the value changes.
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
+ */
+declare class Observable<T = any> extends CEvent<T> implements IObservable<T> {
+    private _value;
+    private readonly _destroyer?;
+    get value(): T;
+    /** Set the value, and dispatch to all listeners. */
+    set value(val: T);
+    constructor(val: T, destroyer?: () => void);
+    valueOf(): T;
+    toString(): any;
+    /**
+     * Add a listener for when this Observable changes.
+     */
+    changed(callback: (val: T) => void): this;
+    /**
+    * Remove a listener for when this Observable changes.
+    */
+    remove(callback: (val: T) => void): this;
+    /**
+     * Set's the new value, and calls all the listeners.
+     * You can additionaly set the {@link value} directly.
+     */
+    dispatch(val: T): this;
+    destroy(): void;
+    /**
+     * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
+     * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
+     *
+     * @example
+     * ```ts
+     * const value = createObservable(2);
+     * const isGreater = value.computed((value) => value > 5);
+     * // > isGreater == false;
+     * value.dispatch(6);
+     * // > isGreater == true;
+     * ```
+     */
+    computed: <K>(transform: (val: T) => K) => any;
+    /** @see {@link greaterThan} */
+    greaterThan: (val?: IObservableOr<number> | number) => IObservable<boolean>;
+    /** @see {@link greaterThanOr} */
+    greaterThanOr: (val?: IObservableOr<number>) => IObservable<boolean>;
+    /** @see {@link lessThan} */
+    lessThan: (val?: IObservableOr<number>) => IObservable<boolean>;
+    /** @see {@link lessThanOr} */
+    lessThanOr: (val?: IObservableOr<number>) => IObservable<boolean>;
+    /** @see {@link equalTo} */
+    equalTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+    /** @see {@link notEqualTo} */
+    notEqualTo: <K>(val: IObservableOr<K>) => IObservable<boolean>;
+    /** @see {@link isEmpty} */
+    isEmpty: <K extends WithLength>() => IObservable<boolean>;
+    /** @see {@link notEmpty} */
+    notEmpty: <K extends WithLength>() => IObservable<boolean>;
+    /** @see {@link grab} */
+    grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
+}
+/** Check if a given object {@link obj} is a {@link Observable}  */
+declare const isObservable: (obj: any) => obj is Observable<any>;
+/**
+ * Create a new {@link Observable}
+ * > Consider using `state(...)` instead.
+ * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
+ */
+declare const createObservable: <T>(val: T, destroyer?: () => void) => IObservable<T>;
+/**
+ * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
+ * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
+ *
+ * @example
+ * ```ts
+ * const value = createObservable(2);
+ * // Create a derived observable that is true if value > 5
+ * const isGreater = compute(value, (v) => v > 5);
+ * // isGreater.value == false
+ * value.dispatch(6);
+ * // isGreater.value == true
+ * ```
+ */
+declare const compute: <T, K>(other: IObservable<T>, transform: (val: T) => K) => IObservable<K>;
+type ExtractValue<T extends Array<IObservable<any>>> = {
+    [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
+};
+declare const computeMultiple: <T extends IObservable[], K>(observables: [...T], transform: (...v: [...ExtractValue<T>]) => K) => IObservable<K>;
+declare const getValue: <T>(val: IObservableOr<T>) => T;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than {@link val} */
+declare const greaterThan: (observable: IObservable<number>, val?: IObservable<number> | number) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal {@link val} */
+declare const greaterThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than {@link val} */
+declare const lessThan: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal {@link val} */
+declare const lessThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to {@link val} */
+declare const equalTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to {@link val} */
+declare const notEqualTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
+declare const isEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
+declare const notEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
+/** {@link compute} an observable and return a new {@link Observable} that is equal to some property of the original {@link Observable} */
+declare const grab: <T, K extends keyof T>(observable: IObservable<T>, key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
+
+/**
  * List of all HTML tag functions. From `div` to `abbr` :)
  * If you want to create any other tag, use the {@link tag} function.
  *
@@ -1643,81 +1639,6 @@ declare const allTags: AllTags;
 declare const init: (options?: {
     selector: string;
 }) => CTag;
-declare const Cardboard: {
-    init: (options?: {
-        selector: string;
-    }) => CTag;
-    version: string;
-    StyleManager: typeof StyleManager;
-    allTags: AllTags;
-    context: CardboardContext;
-    isInitialized: () => boolean;
-    checkInitialized: () => void;
-    getMountPoint: () => CTag | undefined;
-    mountPoint: (tag: CTag) => CTag;
-    restoreMountPoint: () => void;
-    clearMountPoints: () => void;
-    resetMountPoints: () => void;
-    withMountPoint: (tag: CTag, scopedCallback: ScopedCallback) => void;
-    createGlobalObserver: () => {
-        onAdded: CEvent<Node>;
-        onRemoved: CEvent<Node>;
-    };
-    onLifecycle(tag: CTag, onMounted?: (tag: CTag) => Promise<boolean> | boolean, onUnmounted?: (tag: CTag) => void, beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean): void;
-    withLifecycle: (tag: CTag, handler: AtLeastOne<{
-        mounted?: (tag: CTag) => Promise<boolean> | boolean;
-        unmounted?: (tag: CTag) => void;
-        beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
-    }>) => CTag;
-    Observable: typeof Observable;
-    isObservable: (obj: any) => obj is Observable<any>;
-    createObservable: <T>(val: T, destroyer?: () => void) => IObservable<T>;
-    compute: <T, K>(other: IObservable<T>, transform: (val: T) => K) => IObservable<K>;
-    computeMultiple: <T extends IObservable[], K>(observables: [...T], transform: (...v: [...ExtractValue<T>]) => K) => IObservable<K>;
-    getValue: <T>(val: IObservableOr<T>) => T;
-    greaterThan: (observable: IObservable<number>, val?: IObservable<number> | number) => IObservable<boolean>;
-    greaterThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-    lessThan: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-    lessThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-    equalTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
-    notEqualTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
-    isEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
-    notEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;
-    grab: <T, K extends keyof T>(observable: IObservable<T>, key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
-    CEvent: typeof CEvent;
-    CMappedEvent: typeof CMappedEvent;
-    singleEvent: <T>() => CEvent<T>;
-    mappedEvent: <T>() => CMappedEvent<T>;
-    text: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IObservable<T> | K) => Node;
-    generateUID(idNumber?: number): string;
-    uuidv4(): string;
-    removeFromList: <T>(item: T, list?: T[]) => boolean;
-    camelToDash: (str: any) => any;
-    isObject: (obj: any) => boolean;
-    isArray: (obj: any) => boolean;
-    val: <T>(val: T | ((...args: any) => T), ...args: any[]) => T;
-    swapItems: (array: any[], from: number, to: number) => any[];
-    arraysEqual: (a?: any[], b?: any[]) => boolean;
-    deepEquals: (a: any, b: any) => boolean;
-    genCss: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => string;
-    genBlock: (selector: string, style: NestedStyleMap) => string;
-    genBlockContent: (selector: string, style: NestedStyleMap) => string[];
-    state: <T>(initialValue: T) => State<T>;
-    listState: <T>(initialData: T[]) => {
-        readonly list: State<State<T>[]>;
-        readonly listValue: State<T>[];
-        add: (item: T) => void;
-        addAt: (item: T, index: number) => void;
-        remove: any;
-        removeWhere: any;
-        length: IObservable<number>;
-    };
-    stateAdd: <T>(state: State<T[]>, item: T) => void;
-    stateAddAt: <T>(state: State<T[]>, item: T, index: number) => void;
-    stateRemoveWhere: <T>(state: State<T[]>, cb: (item: T, index: number) => boolean) => void;
-    stateRemove: <T>(state: State<T[]>, item: T) => void;
-    CTag: typeof CTag;
-    tag: (arg0: string | HTMLElement, children?: TagChildren, mountToParent?: boolean) => CTag;
-};
+declare const version = "0.0.7-alpha.2";
 
-export { type AllTags, type AtLeastOne, CEvent, CMappedEvent, CTag, Cardboard, type CardboardContext, type DiffEntry, DiffState, type EventCallback, type EventMap, type EventName, type ExtractValue, type IObservable, type IObservableOr, type KeysOf, type NestedStyleMap, type NoOp, Observable, type PickArgType, type Primitive, type ScopedCallback, type State, type StyleManager$1 as StyleManager, type StyleMap, type StyleSet, type Suffix, type Suffixer, type TagBuilder, type TagChild, type TagChildren, type TagConfig, type TextObj, type WithLength, allTags, arraysEqual, camelToDash, checkInitialized, clearMountPoints, compute, computeMultiple, context, createGlobalObserver, createObservable, deepEquals, diffList, each, equalTo, genBlock, genBlockContent, genCss, generateUID, getMountPoint, getValue, grab, greaterThan, greaterThanOr, init, isArray, isEmpty, isInitialized, isObject, isObservable, lessThan, lessThanOr, listState, mappedEvent, mountPoint, notEmpty, notEqualTo, onLifecycle, removeFromList, resetMountPoints, restoreMountPoint, singleEvent, state, stateAdd, stateAddAt, stateRemove, stateRemoveWhere, swapItems, tag, text, uuidv4, val, withLifecycle, withMountPoint };
+export { type AlignContentOptions, type AlignItemsOptions, type AllTags, type AtLeastOne, type BackgroundImageOptions, CEvent, CMappedEvent, CTag, type CardboardContext, type ColorOptions, type CommonAttributes, type CommonOptions, type DiffEntry, DiffState, type DisplayOptions, type EventCallback, type EventMap, type EventName, type ExtractValue, type FlexDirectionOptions, type FontStyleOptions, type FontWeightOptions, type IObservable, type IObservableOr, type KeysOf, type NamedColor, type NestedStyleMap, type NoOp, Observable, type PPositionOptions, type PickArgType, type PickPropertyValues, type Primitive, type ScopedCallback, type State, type StyleManager, type StyleMap, type StyleSet, type Suffix, type Suffixer, type TagBuilder, type TagChild, type TagChildren, type TagConfig, type TagName, type TextObj, type TransformOptions, type ValidTagName, type WithLength, allTags, arraysEqual, camelToDash, checkInitialized, clearMountPoints, compute, computeMultiple, context, createGlobalObserver, createObservable, deepEquals, diffList, each, equalTo, genBlock, genBlockContent, genCss, generateUID, getMountPoint, getValue, grab, greaterThan, greaterThanOr, init, isArray, isEmpty, isInitialized, isObject, isObservable, lessThan, lessThanOr, listState, mappedEvent, mountPoint, notEmpty, notEqualTo, onLifecycle, removeFromList, resetMountPoints, restoreMountPoint, singleEvent, state, stateAdd, stateAddAt, stateRemove, stateRemoveWhere, swapItems, tag, text, uuidv4, val, version, withLifecycle, withMountPoint };

@@ -7,7 +7,6 @@ import {
   isEmpty,
 } from '../../dist/cardboard.js';
 import { Input } from '../../dist/ext/components.js';
-import { BaseStyle } from '../../dist/ext/base_style.js';
 import styles from './style.js';
 import TodoItem from './todo-item.js';
 import { todos, todoCount, addTodo, removeTodo, newTodo, removeAll, addAll } from './state.js';
@@ -21,7 +20,6 @@ const pageLinks = [
 const makeLinks = () => pageLinks.map((url) => link().addAttr('href', url));
 
 const root = init().append(
-  BaseStyle(false),
   tag('(head)').append(...makeLinks()),
   styles(),
 );

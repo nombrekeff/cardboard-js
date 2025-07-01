@@ -1,5 +1,6 @@
 import type {
   IObservable,
+  NestedStyleMap,
   NoOp,
   Primitive,
   StyleMap,
@@ -11,7 +12,7 @@ import type {
 import { CssProperty } from './css-properties.js';
 import { PickPropertyValues } from './css-property-values.js';
 import { TagName } from './tag-names.js';
-import { val, camelToDash } from './util.js';
+import { val, camelToDash, uuidv4 } from './util.js';
 import { text } from './text.js';
 import { createObservable, isObservable } from './observables.js';
 import { CommonAttributes } from './attributes.js';
@@ -27,7 +28,7 @@ export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
 
-  private _visible = false;
+  _visible = false;
   get visible() {
     return this._visible;
   }
@@ -48,10 +49,10 @@ export class CTag {
    * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
    * Used to remove HTML Event Listeners and Observable listeners
    */
-  private readonly _destroyers: NoOp[] = [];
+  readonly _destroyers: NoOp[] = [];
 
   /** @param parent Reference to the parent @type {CTag} of this element */
-  private _parent?: CTag;
+  _parent?: CTag;
 
   get parent(): CTag | undefined {
     return this._parent;
@@ -62,14 +63,14 @@ export class CTag {
   }
 
   /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
-  private _children: TagChild[] = [];
+  _children: TagChild[] = [];
 
-  private _cachedChildren: Node[] = [];
+  _cachedChildren: Node[] = [];
   get children() {
     return this._getChildren(this.el);
   }
 
-  private readonly _meta = {
+  readonly _meta = {
     isHidden: false,
     nextSiblingID: null,
   };
@@ -430,6 +431,19 @@ export class CTag {
    */
   stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) {
     return this.stylesIf(observable, styles, true);
+  }
+
+  styled(stylesheet: NestedStyleMap | undefined, className?: string): CTag {
+    // TODO(nombrekeff): sanitizing className might be a good idea
+    className ??= uuidv4();
+
+    if (stylesheet) {
+      context.styleManager?.add({
+        [`.${className}`]: stylesheet,
+      });
+    }
+
+    return this.addClass(className);
   }
 
   /**

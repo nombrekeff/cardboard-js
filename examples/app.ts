@@ -1,6 +1,5 @@
 import { init, allTags, state, getMountPoint, CTag } from '../dist/cardboard.js';
 import { Input } from '../dist/ext/components.js';
-import { BaseStyle } from '../dist/ext/base_style.js';
 import { makeTween, tween, tweenTag } from '../dist/ext/tween.js';
 
 // spread allTags to get desired HTML tags
@@ -11,10 +10,6 @@ const { div, button, input, ul, li, hr, style } = allTags;
 // and create a root element referencing the 'body' by default
 // You can also pass a custom mount point if needed
 const root = init();
-
-// Adds a base stylesheet to the root element
-// This will apply basic styles to buttons, inputs, etc.
-BaseStyle();
 
 // Add custom stylesheet to the root element
 root.append(style({

@@ -1,5 +1,5 @@
+import { type CTag } from '../cardboard.js';
 import * as TWEEN from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
-import type { CTag } from '../tag.js';
 import type {
   Easing,
   Tween,

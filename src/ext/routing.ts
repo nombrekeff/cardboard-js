@@ -1,6 +1,5 @@
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
-import { onLifecycle, withLifecycle } from '../lifecycle.js';
-import { allTags, CTag } from '../cardboard.js';
+import { allTags, type CTag, onLifecycle, withLifecycle } from '../cardboard.js';
 
 const { div, a } = allTags;
 

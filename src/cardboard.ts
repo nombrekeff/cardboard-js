@@ -37,20 +37,4 @@ export const init = (options: { selector: string } = { selector: 'body' }) => {
   return _context.mountPoint(tag);
 };
 
-// Import the version from package.json
-
-export const Cardboard = {
-  ..._tag,
-  ..._state,
-  ..._css,
-  ..._util,
-  ..._text,
-  ..._events,
-  ..._observables,
-  ..._lifecycle,
-  ..._context,
-  ..._alltags,
-  ..._styles,
-  init,
-  version: '0.0.6',
-};
+export const version = '0.0.7-alpha.2'; // This should be replaced with the actual version from package.json during the build process

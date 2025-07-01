@@ -1,6 +1,6 @@
 {
   "name": "@nkeff/cardboard-js",
-  "version": "0.0.7-alpha.0",
+  "version": "0.0.7-alpha.2",
   "description": "Fast, light & ultra-compact library for composing interactive web apps—all in plain JavaScript or TypeScript, no HTML required.",
   "type": "module",
   "main": "dist/cardboard.cjs.js",
@@ -8,7 +8,9 @@
   "unpkg": "dist/cardboard.global.js",
   "types": "dist/cardboard.d.ts",
   "files": [
-    "dist"
+    "dist/**/*",
+    "examples/**/*",
+    "src/**/*"
   ],
   "scripts": {
     "test": "jest --coverage",
@@ -16,8 +18,9 @@
     "test:watch": "jest --coverage --watchAll",
     "build:tsup": "rimraf dist && tsup",
     "build": "./scripts/build.sh",
+    "build:extensions": "tsup --config ./tsup.extensions.ts",
     "build:source": "rimraf dist && tsc --p tsconfig.json && npm run copy:definitions",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsup --watch",
     "build:example": "tsc --p examples/tsconfig.json",
     "build:example:login": "tsc --p examples/login-page/tsconfig.json",
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",
@@ -56,7 +59,7 @@
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "tsup": "^8.5.0",
-    "typedoc": "^0.25.1",
+    "typedoc": "^0.28.7",
     "typescript": "^5.8.3"
   },
   "dependencies": {

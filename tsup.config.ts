@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
     entry: ['src/cardboard.ts'],
-    clean: true,
+    clean: false,
     sourcemap: true,
     dts: true,
     format: ['esm', 'cjs', 'iife'],
@@ -11,4 +11,6 @@ export default defineConfig({
     splitting: true,
     external: [],
     minify: true,
+    platform: 'browser',
+    treeshake: false,
 })

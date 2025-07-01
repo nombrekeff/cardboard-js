@@ -1,5 +1,4 @@
-import { allTags, CTag, state } from '../../dist/cardboard.js';
-import { AlignContentOptions } from '../../dist/css-property-values.js';
+import { allTags, CTag, state, AlignContentOptions } from '../../dist/cardboard.js';
 import { Component } from '../../dist/ext/components.js';
 import { styles } from './styles.js';
 const { div, p, span } = allTags;
