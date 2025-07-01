@@ -23,6 +23,9 @@ export declare const init: (options?: {
     selector: string;
 }) => _tag.CTag;
 export declare const Cardboard: {
+    init: (options?: {
+        selector: string;
+    }) => _tag.CTag;
     version: string;
     StyleManager: typeof _styles.StyleManager;
     allTags: import("./types").AllTags;

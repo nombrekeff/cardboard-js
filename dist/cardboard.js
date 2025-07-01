@@ -32,5 +32,5 @@ export const init = (options = { selector: 'body' }) => {
     return _context.mountPoint(tag);
 };
 // Import the version from package.json
-export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _observables), _lifecycle), _context), _alltags), _styles), { version: '0.0.5' });
+export const Cardboard = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, _tag), _state), _css), _util), _text), _events), _observables), _lifecycle), _context), _alltags), _styles), { init, version: '0.0.6' });
 //# sourceMappingURL=cardboard.js.map

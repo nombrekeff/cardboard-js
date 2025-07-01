@@ -51,5 +51,6 @@ export const Cardboard = {
   ..._context,
   ..._alltags,
   ..._styles,
-  version: '0.0.5',
+  init,
+  version: '0.0.6',
 };

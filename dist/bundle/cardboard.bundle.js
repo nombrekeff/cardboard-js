@@ -1614,7 +1614,8 @@ var Cardboard = (() => {
     ...context_exports,
     ...all_tags_exports,
     ...style_manager_exports,
-    version: "0.0.5"
+    init,
+    version: "0.0.6"
   };
   return __toCommonJS(cardboard_exports);
 })();
