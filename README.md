@@ -42,12 +42,13 @@ tag('(body)').append(Counter());
 ```
 npm install @nkeff/cardboard-js
 ```
+
 #### Setup
 
 ```ts
 import { tag, init, allTags } from '@nkeff/cardboard-js';
 // Or
-import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js';
+import { tag, init, allTags } from 'node_modules/@nkeff/cardboard-js/dist/cardboard.js';
 
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 
@@ -66,15 +67,24 @@ body.append(
 
 If you want to add it to your site and start using Cardboard, you can import the bundle file:
 
-
+**Global import:**
 ```html
-<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
-<!-- OR the minified version -->
-<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.min.js"></script>
+<script src="node_modules/@nkeff/cardboard-js/dist/cardboard.global.js"></script>
+<!-- Or using a CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@nkeff/cardboard-js/dist/cardboard.global.js"></script>
 <script>
 const { div, p } = Carboard.allTags;
 </script>
 ```
+
+**ESM import:**
+```html
+<script>
+  import { tag, init, allTags, p } from 'https://cdn.jsdelivr.net/npm/@nkeff/cardboard-js/dist/cardboard.js';
+  const { div, p } = allTags;
+</script>
+```
+
 
 ### What does it do?
 
