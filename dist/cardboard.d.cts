@@ -912,143 +912,299 @@ declare class CTag {
     el: HTMLElement & {
         remove: () => (Promise<boolean> | any);
     };
-    _visible: boolean;
+    private _visible;
     get visible(): boolean;
     set visible(newValue: boolean);
     /**
      * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
      * Used to remove HTML Event Listeners and Observable listeners
+     * @hidden
      */
-    readonly _destroyers: NoOp[];
-    /** @param parent Reference to the parent @type {CTag} of this element */
-    _parent?: CTag;
+    private readonly _destroyers;
+    /** @param parent Reference to the parent @type {CTag} of this element. */
+    private _parent?;
     get parent(): CTag | undefined;
     set parent(newParent: CTag);
-    /** Holds the list of all children, the ones that are currently in the DOM and those that are not */
-    _children: TagChild[];
-    _cachedChildren: Node[];
+    /** Holds the list of all children, the ones that are currently in the DOM and those that are not. */
+    private _children;
+    private _cachedChildren;
     get children(): Node[];
-    readonly _meta: {
-        isHidden: boolean;
-        nextSiblingID: null;
-    };
+    private readonly _meta;
+    /**
+     * Gets the value of the `HTMLElement` that this CTag represents, if it has a value.
+     */
     get value(): any;
-    setValue(newValue: string): this;
+    /**
+     * Sets the value of the `HTMLElement` that this CTag represents.
+     */
+    setValue(newValue?: string): this;
+    /**
+     * Gets the checked state of the `HTMLElement` that this CTag represents,
+     * if it is a checkbox or radio button.
+     */
     get checked(): any;
+    /**
+     * Sets the checked state of the element, if it is a checkbox or radio button.
+     */
     setChecked(checked: boolean): this;
+    /**
+     * Gets the style of the `HTMLElement` that this CTag represents.
+     */
     get style(): CSSStyleDeclaration;
+    /**
+    * Gets the classname of the `HTMLElement` that this CTag represents.
+    */
     get className(): string;
+    /**
+     * Gets the classlist of the `HTMLElement` that this CTag represents.
+     */
     get classList(): DOMTokenList;
     /** Gets the value of the element and clears the value */
     get consumeValue(): any;
+    /**
+     * Get's the id of the `HTMLElement` that this CTag represents.
+     */
     get id(): string;
+    /**
+     * Set's the id of the `HTMLElement` that this CTag represents.
+     */
     setId(id: string): this;
     constructor(arg0: TagName | HTMLElement, children?: TagChildren, mountToParent?: boolean);
-    /** Sets the children, removes previous children  */
+    /**
+     * Sets the children, removes previous children
+     */
     setChildren(children: TagChildren): this;
+    /**
+     * Appends the given `children` to the element.
+     *
+     * @param {...TagChildren} children - The children to append to the element.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     * @example
+     * ```ts
+     * const tag = new CTag('div');
+     * tag.append(
+     *   new CTag('span', ['Child 1']),
+     *   new CTag('span', ['Child 2']),
+     * );
+     * ```
+     */
     append(...children: TagChildren): this;
+    /**
+     * Prepends the given `children` to the element.
+     *
+     * @param {...TagChildren} children - The children to append to the element.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     * @example
+     * ```ts
+     * const tag = new CTag('div');
+     * tag.prepend(
+     *   new CTag('span', ['Child 1']),
+     *   new CTag('span', ['Child 2']),
+     * );
+     * ```
+     */
     prepend(...children: TagChildren): this;
     /**
      * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
      * I will be placed exactly in the correct position, even if there are other elements hidden.
+     * **USE WITH CAUTION**: Not intended to be used in most cases.
+     * @hidden
      */
     show(): Promise<boolean>;
-    /** Hide this element (removed from DOM) */
-    hide(): Promise<void>;
-    /** Whenever the observable changes, it will call the consumer */
-    consume<T>(observable: IObservable<T>, consumer: (self: CTag, newValue?: T) => void): this;
     /**
-     * When the observable changes, it will call {ifTrue} when the observable is true. Or {ifFalse} when the observable is false.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link doIfNot}
+     * Hide this element (removed from DOM)
+     * **USE WITH CAUTION**: Not intended to be used in most cases.
+     * @hidden
+     */
+    hide(): Promise<void>;
+    /**
+     * Whenever the `observable` changes, it will call the `callback`.
+     * This is helpful to react to changes in observables and update the tag accordingly.
+     *
+     * You can also do it directly, although you need to keep a reference to the tag yourself.
+     *
+     * @param observable - The observable to listen to.
+     * @param callback - The callback to call when the observable changes.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining.
+     *
+     * @example
+     * ```ts
+     * const disabled = createObservable(false);
+     * const tag = new CTag('div');
+     * tag.consume(disabled, (self, isDisabled) => {
+     *   console.log('New value:', isDisabled);
+     *   self.setDisabled(isDisabled);
+     * });
+     * ```
+     */
+    consume<T>(observable: IObservable<T>, callback: (self: CTag, newValue?: T) => void): this;
+    /**
+     * When the observable changes, it will call `ifTrue` when the observable is true. Or `ifFalse` when the observable is false.
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link doIfNot}
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {function} ifTrue - The function to call when the observable is truey.
+     * @param {function} ifFalse - The function to call when the observable is falsey.
+     * @param {boolean} [invert=false] - If true, the condition will be inversed.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining.
      */
     doIf<T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
     /**
-     * The oposite of {this.doIf}
-     * When the observable changes, it will call {ifTrue} if the observable is false. Or {ifFalse} if the observable is true.
+     * The oposite of {@link doIf}
+     * When the observable changes, it will call `ifTrue` if the observable is false. Or `ifFalse` if the observable is true.
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {function} ifTrue - The function to call when the observable is falsy.
+     * @param {function} ifFalse - The function to call when the observable is truthy.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
      */
     doIfNot<T>(observable: IObservable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
     /**
      * Hide this element when the consumer is truthy. Updates whenever the observable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {boolean} [invert=false] - If true, the condition will be inversed.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     *
+     * @example
+     * ```ts
+     * const isHidden = createObservable(false);
+     * const tag = new CTag('div');
+     * tag.hideIf(isHidden); // Hides the tag when isHidden is true
+     * ```
      */
     hideIf<T>(observable: IObservable<T>, invert?: boolean): this;
-    /** Hide this element when the consumer is falsy. Updates whenever the observable changes. */
+    /**
+     * Hide this element when the `observable` is falsy. Updates whenever the `observable` changes.
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     *
+     * @example
+     * ```ts
+     * const isVisible = createObservable(false);
+     * const tag = new CTag('div');
+     * tag.hideIfNot(isVisible); // Hides the tag when isVisible is false
+     * ```
+     */
     hideIfNot<T>(observable: IObservable<T>): this;
     /**
-     * Adds classes to the element when the consumer is truthy. Updates whenever the observable changes.
+     * Adds classes to the element when the `observable` is truthy, and removes them when it is falsy.
+     * Updates whenever the `observable` changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
+     * @param {boolean} [invert=false] - If true, the condition will be inversed.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     *
+     * @example
+     * ```ts
+     * const isActive = createObservable(true);
+     * const tag = new CTag('div');
+     *
+     * // Adds 'active' and 'highlighted' classes when isActive is true
+     * tag.classIf(isActive, ['active', 'highlighted']);
+     * ```
      */
     classIf<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
     /**
-     * Adds classes to the element when the consumer is falsy. Updates whenever the observable changes.
+     * Adds classes to the element when the `observable` is falsy, and removes them when it is truthy.
+     * Updates whenever the `observable` changes.
      * You can pass in an array of classes, or a function that returns a list of classes.
-     * For the oposite you can also use {@link classIf}
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     *
+     * @example
+     * ```ts
+     * const isActive = createObservable(true);
+     * const tag = new CTag('div');
+     *
+     * // Adds 'inactive' classes when isActive is false
+     * tag.classIfNot(isActive, ['inactive']);
+     * ```
      */
     classIfNot<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[])): this;
     /**
-     * Sets {text} when the consumer is true, and sets {elseText (default='')} when the consumer is false.
-     * Both {text} and {elseText} can be a string or a function that returns a string.
+     * Sets `text` when the consumer is true, and sets `elseText (default='')` when the consumer is false.
+     * Both `text` and `elseText` can be a string or a function that returns a string.
      * Updates whenever the observable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link textIfNot}
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link textIfNot}
+     *
+     * @param {IObservable} observable - The observable to listen to.
+     * @param {string | ((self: CTag) => string)} text - The text to set when the observable is truthy. Can be a string or a function that returns a string.
+     * @param {string | ((self: CTag) => string)} [elseText=''] - The text to set when the observable is falsy. Can be a string or a function that returns a string. Defaults to an empty string.
+     * @param {boolean} [invert=false] - If true, the condition will be inversed.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
      */
     textIf<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
-     * Sets {text} when the consumer is falsy, and sets {elseText (default='')} when the consumer is truthy.
-     * Both {text} and {elseText} can be a string or a function that returns a string.
+     * Sets text when the consumer is falsy, and sets `elseText (default='')` when the consumer is truthy.
+     * Both text and `elseText` can be a string or a function that returns a string.
      * Updates whenever the observable changes.
      */
     textIfNot<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
     /**
      * Add attribute to the element when the consumer is truthy. Updates whenever the observable changes.
-     * {value} can be a string or a function that returns a string.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
+     * `value` can be a string or a function that returns a string.
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
      */
     attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
-     * {value} can be a string or a function that returns a string.
-     * If {invert} is set to true, the condition will be inversed
+     * `value` can be a string or a function that returns a string.
+     * If `invert` is set to true, the condition will be inversed
      */
     attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string)): this;
     /**
      * Disable this element when the consumer is truthy. Updates whenever the observable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
      */
     disableIf<T>(observable: IObservable<T>, invert?: boolean): this;
     /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
     disableIfNot<T>(observable: IObservable<T>): this;
     /**
      * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
-     * {value} can be a string or a function that returns a string.
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
+     * `value` can be a string or a function that returns a string.
      */
     styleIf<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
     /**
      * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
-     * {value} can be a string or a function that returns a string.
+     * `value` can be a string or a function that returns a string.
      */
     styleIfNot<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)): this;
     /**
      * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
-     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-     * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+     * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+     * If `invert` is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
      */
     stylesIf<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
     /**
      * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
-     * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+     * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
      * For the oposite use  {@link stylesIf}
      */
     stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+    /**
+     * Adds a `stylesheet` to main style manager, and adds the `className` to the element.
+     * This is useful for adding styles to the element that are not inline styles.
+     * By doing this we can have just one style definition for tags that will have the same styles.
+     *
+     * @see https://github.com/nombrekeff/cardboard-js/wiki/Styling#6-advanced-styling-child-elements
+     *
+     * @param {NestedStyleMap} stylesheet - The stylesheet to add to the style manager.
+     * @param {string} [className] - The class name to add to the element. If not provided, a random UUID will be generated.
+     * @return {CTag} - The current CTag instance, allowing for method chaining.
+     */
     styled(stylesheet: NestedStyleMap | undefined, className?: string): CTag;
     /**
-     * Listen to an event on the element. Like addEventListener.
-     */
-    listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
-    /**
-     * If {newText} is provided, it sets the `textContent` of the element.
-     * If {newText} is provided, and a state is provided. It will use the {newText} as a template,
+     * If {textTemplate} is provided, it sets the `textContent` of the element.
+     * If {textTemplate} is provided, and a state is provided. It will use the {textTemplate} as a template,
      * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
      *
      * If no argument is provided, it returns the `textContent` of the element.
@@ -1057,10 +1213,41 @@ declare class CTag {
     text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IObservable<T> | K): J extends string ? CTag : string;
     /**
      * Configure the element in a single call by passing @param {TagConfig} c
-     * instead of having to call a method for each property you want to changes
+     * instead of having to call a method for each property you want to change
+     *
+     * @param {TagConfig} c - The configuration object containing properties to set on the element.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining
+     *
+     * @example
+     * ```ts
+     * const tag = new CTag('div');
+     * tag.config({
+     *   attr: { id: 'my-div', 'data-custom': 'value' },
+     *   classList: ['class1', 'class2'],
+     *   className: 'my-class',
+     *   style: { color: 'red', backgroundColor: 'blue' },
+     *   text: 'Hello World',
+     *   value: 'Initial Value',
+     *   children: [new CTag('span', ['Child Text'])],
+     *   on: {
+     *     click: (self, evt) => console.log('Clicked!', self),
+     *   },
+     * });
+     * ```
      */
     config(c: TagConfig): this;
-    /** Add classes to the elements class list */
+    /**
+     * Add classes to the elements class list.
+     *
+     * @param {...string} classes - The classes to add to the element's class list.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining
+     *
+     * @example
+     * ```ts
+     * const tag = new CTag('div');
+     * tag.addClass('class1', 'class2');
+     * ```
+     */
     addClass(...classes: string[]): this;
     /** Set the elements class name */
     setClassName(className: string): this;
@@ -1091,46 +1278,89 @@ declare class CTag {
     /** Get an attributes value */
     getAttr(attr: CommonAttributes): any;
     /**
-     * Returns a {@link IObservable} that fires when the Event {@link evtName} is fired in this element
+     * Listen to an event on the element. Like addEventListener.
+     */
+    listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
+    /**
+     * Returns a {@link IObservable} that fires when the Event `evtName` is fired in this element
+     * The return value of `fn` will be passed to the listeners of the {@link IObservable}
      *
-     * The return value of {@link fn} will be passed to the listeners of the {@link IObservable}
+     * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
+     * @param {fn} fn - The callback function to execute when the event is triggered.
+     * @returns {IObservable<any>} - An observable that emits the return value of the callback function when the event is triggered.
      */
     when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag, evt: HTMLElementEventMap[K]) => any): IObservable<any>;
-    /** Add an event listener for a particular event */
-    on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
-    /** Add an event listener for a particular event that will only fire once */
-    once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): this;
+    /**
+     * Add an event listener for a particular HTMLElement event
+     *
+     * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
+     * @param {fn} fn - The callback function to execute when the event is triggered.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining
+     */
+    on<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
+    /**
+     * Add an event listener for a particular event that will only fire once
+     * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
+     * @param {fn} fn - The callback function to execute when the event is triggered.
+     * @returns {CTag} - The current CTag instance, allowing for method chaining
+     */
+    once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
     /** Add a **click** event listener */
-    clicked(fn: (tag: CTag, evt: MouseEvent) => void): this;
+    clicked(fn: (tag: CTag, evt: MouseEvent) => void): CTag;
     /** Add a **keypress** event listener */
-    keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): this;
+    keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): CTag;
     /** Add a **change** event listener */
-    changed(fn: (tag: CTag, evt: Event) => void): this;
+    changed(fn: (tag: CTag, evt: Event) => void): CTag;
     /** Add a **submit** event listener */
-    submited(fn: (tag: CTag, evt: SubmitEvent) => void): this;
+    submited(fn: (tag: CTag, evt: SubmitEvent) => void): CTag;
     /**
      * Remove element from the DOM, but keep data as is. Can then be added again.
      * To fully remove the element use {@link destroy}
+     *
+     * **USE WITH CAUTION!** Not intended to be used in most cases.
      */
-    remove(): Promise<this>;
+    remove(): Promise<CTag>;
     /**
      * Destroy the element, should not be used afterwards
+     *
+     * **USE WITH CAUTION!** Not intended to be used in most cases.
      */
     destroy(): void;
     /**
      * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
      */
-    clear(): this;
+    clear(): CTag;
     /** Disable the element */
-    disable(): this;
+    disable(): CTag;
     /** Enable the element */
-    enable(): this;
-    /** Set whether the element should be disabled or not */
-    setDisabled(disabled: boolean): this;
-    /** Query a child in this element (in the DOM) */
+    enable(): CTag;
+    /**
+     * Set whether the element should be disabled or not. It sets the `disabled` attribute.
+     */
+    setDisabled(disabled: boolean): CTag;
+    /**
+     * Query a child in this element (in the DOM)
+     *
+     * @param {string} selector - The CSS selector to query the child element.
+     * @returns {CTag | undefined} - Returns a CTag instance if the element is found, or undefined if not found.
+     *
+     * @example
+     * ```ts
+     * const childTag = parentTag.q('.child-class');
+     * ```
+     */
     q(selector: any): CTag | undefined;
-    /** Find a child in this element (in the DOM or NOT) */
-    find(predicate: (el: TagChild) => boolean): string | CTag | Node | IObservable<any> | undefined;
+    /**
+     * Find a child in this element (in the DOM or NOT)
+     * @param {function} predicate - A function that takes a TagChild and returns true if it matches the condition.
+     * @returns {TagChild | undefined} - Returns the first TagChild that matches the predicate, or undefined if no match is found.
+     */
+    find(predicate: (el: TagChild) => boolean): TagChild | undefined;
+    /**
+     * Find a CTag child in this element (in the DOM or NOT)
+     * @param {function} predicate - A function that takes a CTag and returns true if it matches the condition.
+     * @returns {CTag | undefined} - Returns the first CTag that matches the predicate, or undefined if no match is found.
+     */
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
     private _childrenFilterPredicate;
     private _getElementForChild;
@@ -1146,7 +1376,7 @@ declare class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mp}).
  *
  * @example
  * ```ts
@@ -1170,7 +1400,7 @@ declare const tag: (arg0: string | HTMLElement, children?: TagChildren, mountToP
  * ```
  */
 declare class CEvent<T> {
-    protected _listeners: Array<(data: T | undefined) => void>;
+    protected _lstrs: Array<(data: T | undefined) => void>;
     listen(fn: (data?: T) => void): void;
     remove(fn: (data?: T) => void): void;
     dispatch(data?: T): void;
@@ -1188,7 +1418,7 @@ declare class CEvent<T> {
  * ```
  */
 declare class CMappedEvent<T> {
-    private _listeners;
+    private _lstrs;
     listen(evt: string, fn: (data?: T) => void): void;
     remove(evt: string, fn: (data?: T) => void): void;
     dispatch(evt: string, data?: T): void;
@@ -1198,15 +1428,15 @@ declare const singleEvent: <T>() => CEvent<T>;
 declare const mappedEvent: <T>() => CMappedEvent<T>;
 
 type CardboardContext = {
-    intersectionObserver?: IntersectionObserver;
+    intObs?: IntersectionObserver;
     styleManager?: StyleManager;
-    mountPoint?: CTag;
-    mountPointHistory: CTag[];
-    observer?: {
+    mp?: CTag;
+    mpHistory: CTag[];
+    obs?: {
         onAdded: CEvent<Node>;
         onRemoved: CEvent<Node>;
     };
-    initialized?: boolean;
+    init?: boolean;
 };
 declare const context: CardboardContext;
 declare const isInitialized: () => boolean;
@@ -1483,7 +1713,7 @@ interface DiffEntry<T = unknown> {
  */
 declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T) => CTag, key?: (val: T) => any): Node;
 /**
- * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the {@link oldData} to create the new list.
+ * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the `oldData` to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned
  *
  * @param newData - The new data to compare against the old data.
@@ -1591,17 +1821,29 @@ declare class Observable<T = any> extends CEvent<T> implements IObservable<T> {
     /** @see {@link grab} */
     grab: <K extends keyof T>(key: K, defaultVal?: T[K]) => IObservable<T[K] | undefined>;
 }
-/** Check if a given object {@link obj} is a {@link Observable}  */
+/**
+ * Check if a given object `obj` is a {@link Observable}
+ * * @param obj - The object to check.
+ * @returns `true` if the object is an {@link Observable}, `false` otherwise
+ */
 declare const isObservable: (obj: any) => obj is Observable<any>;
 /**
  * Create a new {@link Observable}
  * > Consider using `state(...)` instead.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
+ *
+ * @param val - The initial value of the observable.
+ * @param destroyer - An optional function to call when the observable is destroyed.
+ * @returns A new {@link Observable} instance.
  */
 declare const createObservable: <T>(val: T, destroyer?: () => void) => IObservable<T>;
 /**
  * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
  * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
+ *
+ * @param other - The source {@link Observable} to derive the value from.
+ * @param transform - A function that takes the value of the source {@link Observable} and returns the derived value.
+ * @return A new {@link Observable} that will contain the derived value.
  *
  * @example
  * ```ts
@@ -1617,19 +1859,28 @@ declare const compute: <T, K>(other: IObservable<T>, transform: (val: T) => K) =
 type ExtractValue<T extends Array<IObservable<any>>> = {
     [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
 };
+/**
+ * Computes a new {@link Observable} from multiple observables.
+ * The new {@link Observable} will automatically update and notify listeners whenever any of the source observables change.
+ *
+ * @param observables - An array of source {@link Observable}s to derive the value from.
+ * @param transform - A function that takes the values of the source observables and returns the derived value.
+ * @returns A new {@link Observable} that will contain the derived value.
+ */
 declare const computeMultiple: <T extends IObservable[], K>(observables: [...T], transform: (...v: [...ExtractValue<T>]) => K) => IObservable<K>;
+/** Returns the value from an observable. Convenience method if you prefer it instead of `observable.value` */
 declare const getValue: <T>(val: IObservableOr<T>) => T;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than `val` */
 declare const greaterThan: (observable: IObservable<number>, val?: IObservable<number> | number) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal `val` */
 declare const greaterThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than `val` */
 declare const lessThan: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal `val` */
 declare const lessThanOr: (observable: IObservable<number>, val?: IObservableOr<number>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to `val` */
 declare const equalTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to `val` */
 declare const notEqualTo: <T>(observable: IObservable<T>, val: IObservableOr<T>) => IObservable<boolean>;
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT empty */
 declare const isEmpty: <T extends WithLength>(observable: IObservable<T>) => IObservable<boolean>;

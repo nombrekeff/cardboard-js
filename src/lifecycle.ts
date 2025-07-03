@@ -36,12 +36,12 @@ export function onLifecycle(
         };
     }
 
-    if (!context.observer) {
-        context.observer = createGlobalObserver();
+    if (!context.obs) {
+        context.obs = createGlobalObserver();
     }
 
     let onAddedCb, onRemovedCb;
-    context.observer.onAdded.listen(onAddedCb = async (node: Node) => {
+    context.obs.onAdded.listen(onAddedCb = async (node: Node) => {
         let isAdded = node === tag.el || node.contains(tag.el);
         if (isAdded && onMounted) {
             const result = onMounted(tag);
@@ -50,7 +50,7 @@ export function onLifecycle(
             }
         }
     });
-    context.observer.onRemoved.listen(onRemovedCb = (node: Node) => {
+    context.obs.onRemoved.listen(onRemovedCb = (node: Node) => {
         let isRemoved = node === tag.el || node.contains(tag.el);
         if (isRemoved && onUnmounted) {
             onUnmounted(tag);
@@ -60,8 +60,8 @@ export function onLifecycle(
     // Using `any` here to avoid TypeScript errors, as `_destroyers` is not typed in the CTag interface.
     (tag as any)._destroyers.push(() => {
         // Remove listeners and references (clear memory)
-        context.observer?.onRemoved.remove(onRemovedCb);
-        context.observer?.onAdded.remove(onAddedCb);
+        context.obs?.onRemoved.remove(onRemovedCb);
+        context.obs?.onAdded.remove(onAddedCb);
         onUnmounted = undefined;
         onMounted = undefined;
     });

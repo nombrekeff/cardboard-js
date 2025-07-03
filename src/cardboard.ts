@@ -21,8 +21,8 @@ export type * from './types';
  * You can pass in a selector for an element you want to be the default tag ("body" by default).
  */
 export const init = (options: { selector: string } = { selector: 'body' }) => {
-  _context.context.initialized = true;
-  _context.context.observer = _context.createGlobalObserver();
+  _context.context.init = true;
+  _context.context.obs = _context.createGlobalObserver();
   _context.context.styleManager = new _styles.StyleManager();
 
   const tag = new _tag.CTag(`(${options.selector})`);

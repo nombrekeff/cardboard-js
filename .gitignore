@@ -8,3 +8,6 @@ _*/
 /index.html
 node_modules/
 TODO.md
+__*.cjs
+__*.js
+__*.ts

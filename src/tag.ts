@@ -28,7 +28,7 @@ export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
   el: HTMLElement & { remove: () => (Promise<boolean> | any) };
 
-  
+
   private _visible = false;
   get visible() {
     return this._visible;
@@ -77,32 +77,54 @@ export class CTag {
     nextSiblingID: null,
   };
 
+  /**
+   * Gets the value of the `HTMLElement` that this CTag represents, if it has a value.
+   */
   get value() {
     return (this.el as any).value;
   }
 
-  setValue(newValue: string) {
+  /**
+   * Sets the value of the `HTMLElement` that this CTag represents.
+   */
+  setValue(newValue?: string) {
     (this.el as any).value = newValue;
     return this;
   }
 
+  /** 
+   * Gets the checked state of the `HTMLElement` that this CTag represents, 
+   * if it is a checkbox or radio button.
+   */
   get checked() {
     return (this.el as any).checked;
   }
 
+  /** 
+   * Sets the checked state of the element, if it is a checkbox or radio button.
+   */
   setChecked(checked: boolean) {
     (this.el as any).checked = checked;
     return this;
   }
 
+  /** 
+   * Gets the style of the `HTMLElement` that this CTag represents.
+   */
   get style() {
     return this.el.style;
   }
 
+  /** 
+  * Gets the classname of the `HTMLElement` that this CTag represents.
+  */
   get className() {
     return this.el.className;
   }
 
+  /** 
+   * Gets the classlist of the `HTMLElement` that this CTag represents.
+   */
   get classList() {
     return this.el.classList;
   }
@@ -114,10 +136,16 @@ export class CTag {
     return value;
   }
 
+  /**
+   * Get's the id of the `HTMLElement` that this CTag represents.
+   */
   get id() {
     return this.el.id;
   }
 
+  /**
+   * Set's the id of the `HTMLElement` that this CTag represents.
+   */
   setId(id: string) {
     this.el.id = id;
     return this;
@@ -144,8 +172,8 @@ export class CTag {
     else if (typeof arg0 === 'string') {
       this.el = document.createElement(arg0);
 
-      if (context.mountPoint && mountToParent) {
-        context.mountPoint.append(this);
+      if (context.mp && mountToParent) {
+        context.mp.append(this);
       }
     }
     else if (arg0 instanceof HTMLElement) {
@@ -161,19 +189,50 @@ export class CTag {
     (this.el as any).tag = this;
   }
 
-  /** Sets the children, removes previous children  */
+  /** 
+   * Sets the children, removes previous children  
+   */
   setChildren(children: TagChildren) {
     this.el.replaceChildren(...this._mapChildren(children));
     this._children = children;
     return this;
   }
 
+  // TODO: Consider if passing `children` as a single argument is better than spreading it.
+  /**
+   * Appends the given `children` to the element.
+   * 
+   * @param {...TagChildren} children - The children to append to the element.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * @example
+   * ```ts
+   * const tag = new CTag('div');
+   * tag.append(
+   *   new CTag('span', ['Child 1']),
+   *   new CTag('span', ['Child 2']),
+   * );
+   * ```
+   */
   append(...children: TagChildren) {
     this.el.append(...this._mapChildren(children));
     this._children.push(...children);
     return this;
   }
 
+  /**
+   * Prepends the given `children` to the element.
+   * 
+   * @param {...TagChildren} children - The children to append to the element.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * @example
+   * ```ts
+   * const tag = new CTag('div');
+   * tag.prepend(
+   *   new CTag('span', ['Child 1']),
+   *   new CTag('span', ['Child 2']),
+   * );
+   * ```
+   */
   prepend(...children: TagChildren) {
     this.el.prepend(...this._mapChildren(children));
     this._children.unshift(...children);
@@ -183,6 +242,8 @@ export class CTag {
   /**
    * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
    * I will be placed exactly in the correct position, even if there are other elements hidden.
+   * **USE WITH CAUTION**: Not intended to be used in most cases.
+   * @hidden
    */
   async show() {
     if (this.parent && !this.parent.children.includes(this.el)) {
@@ -222,6 +283,7 @@ export class CTag {
   /** 
    * Hide this element (removed from DOM) 
    * **USE WITH CAUTION**: Not intended to be used in most cases.
+   * @hidden
    */
   async hide() {
     if (this.parent && this.parent.children.includes(this.el)) {
@@ -312,6 +374,17 @@ export class CTag {
   /**
    * Hide this element when the consumer is truthy. Updates whenever the observable changes.
    * If `invert` is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
+   * 
+   * @param {IObservable} observable - The observable to listen to.
+   * @param {boolean} [invert=false] - If true, the condition will be inversed.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * 
+   * @example
+   * ```ts
+   * const isHidden = createObservable(false);
+   * const tag = new CTag('div');
+   * tag.hideIf(isHidden); // Hides the tag when isHidden is true
+   * ```
    */
   hideIf<T>(observable: IObservable<T>, invert = false) {
     const handleHide = (_, value: any) => {
@@ -328,15 +401,40 @@ export class CTag {
 
   /** 
    * Hide this element when the `observable` is falsy. Updates whenever the `observable` changes. 
+   * 
+   * @param {IObservable} observable - The observable to listen to.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * 
+   * @example
+   * ```ts
+   * const isVisible = createObservable(false);
+   * const tag = new CTag('div');
+   * tag.hideIfNot(isVisible); // Hides the tag when isVisible is false
+   * ```
    */
   hideIfNot<T>(observable: IObservable<T>) {
     return this.hideIf(observable, true);
   }
 
   /**
-   * Adds classes to the element when the `observable` is truthy. Updates whenever the `observable` changes.
+   * Adds classes to the element when the `observable` is truthy, and removes them when it is falsy.
+   * Updates whenever the `observable` changes.
    * You can pass in an array of classes, or a function that returns a list of classes.
-   * If {invert} is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+   * If `invert` is set to true, the condition will be inversed, but you can also use {@link classIfNot}
+   * 
+   * @param {IObservable} observable - The observable to listen to.
+   * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
+   * @param {boolean} [invert=false] - If true, the condition will be inversed.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * 
+   * @example
+   * ```ts
+   * const isActive = createObservable(true);
+   * const tag = new CTag('div');
+   * 
+   * // Adds 'active' and 'highlighted' classes when isActive is true
+   * tag.classIf(isActive, ['active', 'highlighted']); 
+   * ```
    */
   classIf<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert = false) {
     return this.doIf(
@@ -348,9 +446,22 @@ export class CTag {
   }
 
   /**
-   * Adds classes to the element when the consumer is falsy. Updates whenever the observable changes.
+   * Adds classes to the element when the `observable` is falsy, and removes them when it is truthy.
+   * Updates whenever the `observable` changes.
    * You can pass in an array of classes, or a function that returns a list of classes.
-   * For the oposite you can also use {@link classIf}
+   * 
+   * @param {IObservable} observable - The observable to listen to.
+   * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
+   * 
+   * @example
+   * ```ts
+   * const isActive = createObservable(true);
+   * const tag = new CTag('div');
+   * 
+   * // Adds 'inactive' classes when isActive is false
+   * tag.classIfNot(isActive, ['inactive']); 
+   * ```
    */
   classIfNot<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[])) {
     return this.classIf(observable, classes, true);
@@ -361,6 +472,12 @@ export class CTag {
    * Both `text` and `elseText` can be a string or a function that returns a string.
    * Updates whenever the observable changes.
    * If `invert` is set to true, the condition will be inversed, but you can also use {@link textIfNot}
+   * 
+   * @param {IObservable} observable - The observable to listen to.
+   * @param {string | ((self: CTag) => string)} text - The text to set when the observable is truthy. Can be a string or a function that returns a string.
+   * @param {string | ((self: CTag) => string)} [elseText=''] - The text to set when the observable is falsy. Can be a string or a function that returns a string. Defaults to an empty string.
+   * @param {boolean} [invert=false] - If true, the condition will be inversed.
+   * @return {CTag} - The current CTag instance, allowing for method chaining.
    */
   textIf<T>(
     observable: IObservable<T>,
@@ -405,8 +522,8 @@ export class CTag {
 
   /**
    * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
-   * {value} can be a string or a function that returns a string.
-   * If {invert} is set to true, the condition will be inversed
+   * `value` can be a string or a function that returns a string.
+   * If `invert` is set to true, the condition will be inversed
    */
   attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value: string | ((self: CTag) => string) = '') {
     return this.attrIf(observable, attr, value, true);
@@ -414,7 +531,7 @@ export class CTag {
 
   /**
    * Disable this element when the consumer is truthy. Updates whenever the observable changes.
-   * If {invert} is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
+   * If `invert` is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
    */
   disableIf<T>(observable: IObservable<T>, invert = false) {
     return this.attrIf(observable, 'disabled', '', invert);
@@ -427,8 +544,8 @@ export class CTag {
 
   /**
    * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
-   * If {invert} is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
-   * {value} can be a string or a function that returns a string.
+   * If `invert` is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
+   * `value` can be a string or a function that returns a string.
    */
   styleIf<T>(observable: IObservable<T>, style: string, value: string | ((self: CTag) => string) = '', invert = false) {
     return this.doIf(
@@ -441,7 +558,7 @@ export class CTag {
 
   /**
    * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
-   * {value} can be a string or a function that returns a string.
+   * `value` can be a string or a function that returns a string.
    */
   styleIfNot<T>(observable: IObservable<T>, style: string, value: string | ((self: CTag) => string) = '') {
     return this.styleIf(observable, style, value, true);
@@ -449,8 +566,8 @@ export class CTag {
 
   /**
    * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
-   * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-   * If {invert} is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
+   * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+   * If `invert` is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
    */
   stylesIf<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert = false) {
     return this.doIf(
@@ -463,7 +580,7 @@ export class CTag {
 
   /**
    * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
-   * {styles} can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
+   * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
    * For the oposite use  {@link stylesIf}
    */
   stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) {
@@ -492,19 +609,6 @@ export class CTag {
     }
 
     return this.addClass(className);
-  }
-
-  /**
-   * Listen to an event on the element. Like addEventListener.
-   */
-  listen<K extends keyof HTMLElementEventMap>(
-    tag: CTag,
-    evt: K,
-    consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void,
-  ) {
-    return tag.on(evt, (other, evt) => {
-      consumer(this, other, evt);
-    });
   }
 
   /**
@@ -693,6 +797,20 @@ export class CTag {
     return this.el.attributes[attr];
   }
 
+  // TODO: Might be a good idea to return the listener so it can be removed later
+  /**
+   * Listen to an event on the element. Like addEventListener.
+   */
+  listen<K extends keyof HTMLElementEventMap>(
+    tag: CTag,
+    evt: K,
+    consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void,
+  ) {
+    return tag.on(evt, (other, evt) => {
+      consumer(this, other, evt);
+    });
+  }
+
   /**
    * Returns a {@link IObservable} that fires when the Event `evtName` is fired in this element
    * The return value of `fn` will be passed to the listeners of the {@link IObservable}
@@ -712,6 +830,7 @@ export class CTag {
     return cons;
   }
 
+  // TODO: Might be a good idea to return the listener so it can be removed later
   /** 
    * Add an event listener for a particular HTMLElement event 
    * 
@@ -803,7 +922,7 @@ export class CTag {
    * **USE WITH CAUTION!** Not intended to be used in most cases.
    */
   destroy(): void {
-    context.intersectionObserver?.unobserve(this.el);
+    context.intObs?.unobserve(this.el);
     this._children.forEach((cl) => {
       if (cl instanceof CTag) {
         cl.destroy();
@@ -885,7 +1004,7 @@ export class CTag {
     }
   }
 
-  
+
   private _childrenFilterPredicate(item) {
     if (item instanceof CTag && item._meta.isHidden) {
       return false;
@@ -893,7 +1012,7 @@ export class CTag {
     return true;
   }
 
-  
+
   private _getElementForChild(cl: TagChild): Node | null {
     if (typeof cl === 'string') return document.createTextNode(cl);
     if (isObservable(cl)) {
@@ -907,9 +1026,9 @@ export class CTag {
   // Update cached child nodes whenever this elements childs change
   // This makes it a lot faster to get children.
   // If the children have not changed, there's no need to set the children, use the previous ones
-  
+
   private _observer: MutationObserver;
-  
+
   private _getChildren(element: HTMLElement) {
     if (!this._observer) {
       this._observer = new window.MutationObserver(() => {
@@ -921,7 +1040,7 @@ export class CTag {
     return this._cachedChildren;
   }
 
-  
+
   private _cacheChildren(element: HTMLElement) {
     const nodes = element.childNodes,
       children: Node[] = [];
@@ -936,7 +1055,7 @@ export class CTag {
     this._cachedChildren = children;
   }
 
-  
+
   private _mapChildren(children: TagChildren): Node[] {
     const mapped: Node[] = [];
     for (let i = 0; i < children.length; i++) {
@@ -962,7 +1081,7 @@ export class CTag {
  * * wrap around an element passed in
  *
  * Then it can receive a list of children to be added.
- * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mountPoint}).
+ * Receives a third argument for mounting this tag to the currently mounted tag ({@link context.mp}).
  *
  * @example
  * ```ts
