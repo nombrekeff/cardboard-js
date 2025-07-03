@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js (if your docs use Node.js tools)
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Adjust the version as needed
+          node-version: '18'  # Adjust the version as needed
 
       - name: Install dependencies
         run: npm install  # Replace with your package manager if different
