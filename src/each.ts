@@ -310,7 +310,6 @@ export function diffList<T>(
       const temp = oldData[oi];
       oldData[oi] = newData[oi - removedCount];
       oldData[oldIndex] = temp;
-      continue;
     }
   }
 

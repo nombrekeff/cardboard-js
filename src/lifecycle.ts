@@ -36,12 +36,9 @@ export function onLifecycle(
         };
     }
 
-    if (!context.obs) {
-        context.obs = createGlobalObserver();
-    }
+    context.obs ??= createGlobalObserver();
 
-    let onAddedCb, onRemovedCb;
-    context.obs.onAdded.listen(onAddedCb = async (node: Node) => {
+    const onAddedCb = async (node: Node) => {
         let isAdded = node === tag.el || node.contains(tag.el);
         if (isAdded && onMounted) {
             const result = onMounted(tag);
@@ -49,13 +46,15 @@ export function onLifecycle(
                 await result;
             }
         }
-    });
-    context.obs.onRemoved.listen(onRemovedCb = (node: Node) => {
+    }
+    const onRemovedCb = (node: Node) => {
         let isRemoved = node === tag.el || node.contains(tag.el);
         if (isRemoved && onUnmounted) {
             onUnmounted(tag);
         }
-    });
+    };
+    context.obs.onAdded.listen(onAddedCb);
+    context.obs.onRemoved.listen(onRemovedCb);
 
     // Using `any` here to avoid TypeScript errors, as `_destroyers` is not typed in the CTag interface.
     (tag as any)._destroyers.push(() => {

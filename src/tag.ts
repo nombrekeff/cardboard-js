@@ -286,7 +286,7 @@ export class CTag {
    * @hidden
    */
   async hide() {
-    if (this.parent && this.parent.children.includes(this.el)) {
+    if (this.parent?.children.includes(this.el)) {
       this.parent.el.insertBefore(document.createComment(this.el.id), this.el as any);
       await this.remove();
       this._meta.isHidden = true;
@@ -598,7 +598,7 @@ export class CTag {
    * @param {string} [className] - The class name to add to the element. If not provided, a random UUID will be generated.
    * @return {CTag} - The current CTag instance, allowing for method chaining.
    */
-  styled(stylesheet: NestedStyleMap | undefined, className?: string): CTag {
+  styled(stylesheet: NestedStyleMap | undefined, className?: string): this {
     // TODO(nombrekeff): sanitizing className might be a good idea
     className ??= uuidv4();
 

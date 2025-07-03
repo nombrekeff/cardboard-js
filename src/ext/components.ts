@@ -27,7 +27,7 @@ export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
 
   builder.styled = (styles: NestedStyleMap, name?: string): typeof builder => {
     stylesheet = styles || {};
-    className = name || className;
+    className = name ?? className;
     return builder;
   };
 

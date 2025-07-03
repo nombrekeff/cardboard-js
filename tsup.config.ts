@@ -10,7 +10,8 @@ export default defineConfig({
     outDir: 'dist',
     splitting: true,
     external: [],
-    minify: true,
+    // minify: true,
+    minifyIdentifiers: true,
     platform: 'browser',
     treeshake: false,
 })
