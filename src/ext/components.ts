@@ -4,7 +4,6 @@ import {
   type EventCallback,
   type IObservable,
   isObservable,
-  context,
   uuidv4,
   allTags,
 } from '../cardboard.js';
@@ -16,11 +15,10 @@ export type Component<T extends Function> = T & {
 };
 export type AnyFn = (...args: any[]) => CTag;
 export type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
+
 export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
-  let stylesAreAdded = false;
   let className = uuidv4();
   let stylesheet: NestedStyleMap | undefined;
-  console.log('Component', className);
 
   const builder = function (...args) {
     if (!stylesheet) return fn(...args);

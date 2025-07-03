@@ -10,7 +10,7 @@
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), but with many more features and a more extensive API.
 
-> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
+> **!NOTE!**: Cardboard is [in development](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status), use it with caution.  
 > You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!**
 
 ```ts

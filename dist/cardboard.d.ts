@@ -1414,12 +1414,29 @@ declare function uuidv4(): string;
  */
 declare const text: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj?: IObservable<T> | K) => Node;
 
+/**
+ * @enum {string}
+ * @property {string} unchanged - The entry is unchanged.
+ * @property {string} added - The entry was added.
+ * @property {string} removed - The entry was removed.
+ * @property {string} swap - The entry was swapped with another entry.
+ */
 declare enum DiffState {
     unchanged = "unchanged",
     added = "added",
     removed = "removed",
     swap = "swap"
 }
+/**
+ * Represents a single entry in the diff process.
+ * This interface is used to describe the state of an entry in the diff process,
+ * including its index, the entry itself, and optionally the target entry and target index if it was swapped.
+ * @property {DiffState} state - The state of the entry in the diff process.
+ * @property {number} index - The index of the entry in the old data.
+ * @property {T} entry - The entry itself.
+ * @property {T} targetEntry - The target entry if the entry was swapped
+ * @property {number} targetIndex - The index of the target entry if the entry was swapped.
+ */
 interface DiffEntry<T = unknown> {
     state: DiffState;
     index: number;
@@ -1472,6 +1489,7 @@ declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T) => CT
  * @param newData - The new data to compare against the old data.
  * @param oldData - The old data to compare against the new data.
  * @param key - A function that returns a unique key for each item in the list. This is used to optimize the rendering process.
+ * @returns An array of {@link DiffEntry} objects that describe the differences between the two lists.
  */
 declare function diffList<T>(newData: T[], oldData: T[], key?: (item: T) => any): Array<DiffEntry<T>>;
 

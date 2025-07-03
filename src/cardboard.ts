@@ -24,7 +24,7 @@ export const init = (options: { selector: string } = { selector: 'body' }) => {
   _context.context.initialized = true;
   _context.context.observer = _context.createGlobalObserver();
   _context.context.styleManager = new _styles.StyleManager();
-  
+
   const tag = new _tag.CTag(`(${options.selector})`);
   return _context.mountPoint(tag);
 };
