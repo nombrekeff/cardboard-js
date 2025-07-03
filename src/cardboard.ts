@@ -29,4 +29,4 @@ export const init = (options: { selector: string } = { selector: 'body' }) => {
   return _context.mountPoint(tag);
 };
 
-export const version = '0.0.7-alpha.2'; // This should be replaced with the actual version from package.json during the build process
+export const version = '0.1.0'; // This should be replaced with the actual version from package.json during the build process

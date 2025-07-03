@@ -1,6 +1,6 @@
 {
   "name": "@nkeff/cardboard-js",
-  "version": "0.0.7-alpha.2",
+  "version": "0.1.0",
   "description": "Fast, light & ultra-compact library for composing interactive web apps—all in plain JavaScript or TypeScript, no HTML required.",
   "type": "module",
   "main": "dist/cardboard.cjs.js",

@@ -1201,7 +1201,7 @@ declare class CTag {
      * @param {string} [className] - The class name to add to the element. If not provided, a random UUID will be generated.
      * @return {CTag} - The current CTag instance, allowing for method chaining.
      */
-    styled(stylesheet: NestedStyleMap | undefined, className?: string): CTag;
+    styled(stylesheet: NestedStyleMap | undefined, className?: string): this;
     /**
      * If {textTemplate} is provided, it sets the `textContent` of the element.
      * If {textTemplate} is provided, and a state is provided. It will use the {textTemplate} as a template,
@@ -1908,6 +1908,6 @@ declare const allTags: AllTags;
 declare const init: (options?: {
     selector: string;
 }) => CTag;
-declare const version = "0.0.7-alpha.2";
+declare const version = "0.1.0";
 
 export { type AlignContentOptions, type AlignItemsOptions, type AllTags, type AtLeastOne, type BackgroundImageOptions, CEvent, CMappedEvent, CTag, type CardboardContext, type ColorOptions, type CommonAttributes, type CommonOptions, type DiffEntry, DiffState, type DisplayOptions, type EventCallback, type EventMap, type EventName, type ExtractValue, type FlexDirectionOptions, type FontStyleOptions, type FontWeightOptions, type IObservable, type IObservableOr, type KeysOf, type NamedColor, type NestedStyleMap, type NoOp, Observable, type PPositionOptions, type PickArgType, type PickPropertyValues, type Primitive, type ScopedCallback, type State, type StyleManager, type StyleMap, type StyleSet, type Suffix, type Suffixer, type TagBuilder, type TagChild, type TagChildren, type TagConfig, type TagName, type TextObj, type TransformOptions, type ValidTagName, type WithLength, allTags, arraysEqual, camelToDash, checkInitialized, clearMountPoints, compute, computeMultiple, context, createGlobalObserver, createObservable, deepEquals, diffList, each, equalTo, genBlock, genBlockContent, genCss, generateUID, getMountPoint, getValue, grab, greaterThan, greaterThanOr, init, isArray, isEmpty, isInitialized, isObject, isObservable, lessThan, lessThanOr, listState, mappedEvent, mountPoint, notEmpty, notEqualTo, onLifecycle, removeFromList, resetMountPoints, restoreMountPoint, singleEvent, state, stateAdd, stateAddAt, stateRemove, stateRemoveWhere, swapItems, tag, text, uuidv4, val, version, withLifecycle, withMountPoint };
