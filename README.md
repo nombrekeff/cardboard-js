@@ -37,6 +37,9 @@ tag('(body)').append(Counter());
 #### 🔸 [Documentation](https://nombrekeff.github.io/cardboard-js/) - for technical docs.
 
 ### Setup
+
+[![Clone Template](https://img.shields.io/badge/Clone_Template-blue)](https://github.com/new?template_name=cardboard-js-template&template_owner=nombrekeff)
+
 #### Install
 
 ```
