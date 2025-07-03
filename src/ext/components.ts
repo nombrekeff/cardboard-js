@@ -1,35 +1,33 @@
-import { allTags, CTag, isObservable, context, uuidv4, withLifecycle } from '../cardboard.js';
-import type { EventCallback, IObservable, NestedStyleMap } from '../types';
+import {
+  type CTag,
+  type NestedStyleMap,
+  type EventCallback,
+  type IObservable,
+  isObservable,
+  uuidv4,
+  allTags,
+} from '../cardboard.js';
+
 const { input } = allTags;
 
-type Component<T extends Function> = T & {
+export type Component<T extends Function> = T & {
   styled: (styles: NestedStyleMap, name?: string) => Component<T>
 };
-type AnyFn = (...args: any[]) => CTag;
-type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
+export type AnyFn = (...args: any[]) => CTag;
+export type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
 
 export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
-  let stylesAreAdded = false;
   let className = uuidv4();
   let stylesheet: NestedStyleMap | undefined;
 
   const builder = function (...args) {
     if (!stylesheet) return fn(...args);
-    if (!stylesAreAdded) {
-      stylesAreAdded = true;
-      if (stylesheet) {
-        context.styleManager?.add({
-          [`.${className}`]: stylesheet,
-        });
-      }
-    }
-
-    return fn(...args).addClass(className);
+    return fn(...args).styled(stylesheet, className);
   }
 
   builder.styled = (styles: NestedStyleMap, name?: string): typeof builder => {
     stylesheet = styles || {};
-    className = name || className;
+    className = name ?? className;
     return builder;
   };
 
@@ -44,10 +42,11 @@ export interface HInputOptions<T = string> {
   attr?: Record<string, string | undefined>;
   type?: string;
   input?: EventCallback<'input'>;
+  change?: EventCallback<'change'>;
   submit?: (tag: CTag, evt: Event) => void;
 }
 
-export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
+export const Input = Component(<T>(options: HInputOptions<T> = {}): CTag => {
   const el = options.mountToParent ? input.mount() : input();
   el.config({
     attr: {
@@ -59,6 +58,12 @@ export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
     on: {
       input: (self, evt) => {
         if (options.input) options.input(self, evt);
+        if (options.value && isObservable(options.value)) {
+          (options.value as IObservable).dispatch(el.value);
+        }
+      },
+      change: (self, evt) => {
+        if (options.change) options.change(self, evt);
         if (options.value && isObservable(options.value)) {
           (options.value as IObservable).dispatch(el.value);
         }
@@ -78,8 +83,18 @@ export const Input = <T>(options: HInputOptions<T> = {}): CTag => {
     });
   }
 
-  return el.addClass('CInput');
-};
+  return el;
+}).styled({
+  border: '1px solid #eee',
+  borderRadius: '3px',
+  background: '#eee',
+  padding: '8px 16px',
+  margin: '0 8px',
+  outline: 'none',
+  ':focus': {
+    border: '1px solid #aaa',
+  },
+}, 'c_input');
 
 export const Checkbox = (options: HInputOptions<boolean> = {}) => {
   return Input({

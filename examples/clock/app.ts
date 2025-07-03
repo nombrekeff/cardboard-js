@@ -1,6 +1,5 @@
 // Importing from individual modules will help with tree shaking if building with esbuild
 import { allTags, init, state, withLifecycle } from '../../dist/cardboard.js';
-import { BaseStyle } from '../../dist/ext/base_style.js';
 
 const { div, style, span } = allTags;
 const padd = (d) => d.toString().padStart(2, '0')
@@ -57,7 +56,6 @@ init().append(
       fontSize: '5rem',
     },
   }),
-  BaseStyle(false),
   Clock(),
 );
 

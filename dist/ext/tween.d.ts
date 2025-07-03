@@ -1,9 +1,10 @@
-/// <reference types="@tweenjs/tween.js" />
-import type { CTag } from '../tag.js';
-import type { Easing, Tween } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
-export * as tween from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
-export type { Easing, Tween, } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
-export interface TweenOptions<T> {
+import { CTag } from '../cardboard.js';
+import { Easing, Tween } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
+export { Easing, Tween } from '../../node_modules/@tweenjs/tween.js/dist/tween.js';
+import * as tween_esm_js from '../../node_modules/@tweenjs/tween.js/dist/tween.esm.js';
+export { tween_esm_js as tween };
+
+interface TweenOptions<T> {
     from: T;
     to: T;
     duration: number;
@@ -14,12 +15,14 @@ export interface TweenOptions<T> {
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
-export declare function makeTween<T extends Record<string, unknown>>(opts: TweenOptions<T>): Tween<T>;
+declare function makeTween<T extends Record<string, unknown>>(opts: TweenOptions<T>): Tween<T>;
 /**
  * {@see https://github.com/nombrekeff/cardboard-js/wiki/Tweening}
  */
-export declare const tweenTag: (tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void) => CTag;
+declare const tweenTag: (tag: CTag, tween: (tag: CTag) => Tween<any>, onComplete?: () => void) => CTag;
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Tweening
  */
-export declare const tweenTagAsync: (tag: CTag, tween: (tag: CTag) => Tween<any>) => Promise<CTag>;
+declare const tweenTagAsync: (tag: CTag, tween: (tag: CTag) => Tween<any>) => Promise<CTag>;
+
+export { type TweenOptions, makeTween, tweenTag, tweenTagAsync };

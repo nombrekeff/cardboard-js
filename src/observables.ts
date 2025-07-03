@@ -124,7 +124,11 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
   grab = <K extends keyof T>(key: K, defaultVal?: T[K]) => grab(this as any, key, defaultVal);
 }
 
-/** Check if a given object {@link obj} is a {@link Observable}  */
+/** 
+ * Check if a given object `obj` is a {@link Observable}  
+ * * @param obj - The object to check.
+ * @returns `true` if the object is an {@link Observable}, `false` otherwise
+ */
 export const isObservable = (obj: any) => {
   return obj instanceof Observable;
 };
@@ -133,6 +137,10 @@ export const isObservable = (obj: any) => {
  * Create a new {@link Observable}  
  * > Consider using `state(...)` instead.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
+ * 
+ * @param val - The initial value of the observable.
+ * @param destroyer - An optional function to call when the observable is destroyed.
+ * @returns A new {@link Observable} instance.
  */
 export const createObservable = <T>(val: T, destroyer?: () => void): IObservable<T> => {
   return new Observable<T>(val, destroyer);
@@ -142,6 +150,10 @@ export const createObservable = <T>(val: T, destroyer?: () => void): IObservable
  * Creates a new {@link Observable} whose value is derived from another {@link Observable}.
  * The new {@link Observable} automatically updates and notifies listeners whenever the source {@link Observable} changes.
  *
+ * @param other - The source {@link Observable} to derive the value from.
+ * @param transform - A function that takes the value of the source {@link Observable} and returns the derived value.
+ * @return A new {@link Observable} that will contain the derived value.
+ * 
  * @example
  * ```ts
  * const value = createObservable(2);
@@ -177,6 +189,14 @@ export const compute = <T, K>(
 export type ExtractValue<T extends Array<IObservable<any>>> =
   { [K in keyof T]: T[K] extends IObservable<infer V> ? V : never };
 
+/**
+ * Computes a new {@link Observable} from multiple observables.
+ * The new {@link Observable} will automatically update and notify listeners whenever any of the source observables change.
+ * 
+ * @param observables - An array of source {@link Observable}s to derive the value from.
+ * @param transform - A function that takes the values of the source observables and returns the derived value.
+ * @returns A new {@link Observable} that will contain the derived value. 
+ */
 export const computeMultiple = <T extends IObservable[], K>(
   observables: [...T],
   transform: (...v: [...ExtractValue<T>]) => K,
@@ -191,36 +211,37 @@ export const computeMultiple = <T extends IObservable[], K>(
   return cons as any;
 };
 
+/** Returns the value from an observable. Convenience method if you prefer it instead of `observable.value` */
 export const getValue = <T>(val: IObservableOr<T>): T => {
   return isObservable(val) ? (val as IObservable<T>).value : val as T;
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than `val` */
 export const greaterThan = (observable: IObservable<number>, val: IObservable<number> | number = 0) => {
   return compute(observable, (newVal) => newVal > getValue(val));
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal `val` */
 export const greaterThanOr = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
   return compute(observable, (newVal) => newVal >= getValue(val));
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than `val` */
 export const lessThan = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
   return compute(observable, (newVal) => newVal < getValue(val));
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal `val` */
 export const lessThanOr = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
   return compute(observable, (newVal) => newVal <= getValue(val));
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to `val` */
 export const equalTo = <T>(observable: IObservable<T>, val: IObservableOr<T>) => {
   return compute(observable, (newVal) => newVal === getValue(val));
 };
 
-/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to {@link val} */
+/** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to `val` */
 export const notEqualTo = <T>(observable: IObservable<T>, val: IObservableOr<T>) => {
   return compute(observable, (newVal) => newVal !== getValue(val));
 };

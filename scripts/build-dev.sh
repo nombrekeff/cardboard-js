@@ -3,9 +3,8 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-"$SCRIPT_DIR/replace_version.sh"
 "$SCRIPT_DIR/../node_modules/.bin/rimraf" dist
 "$SCRIPT_DIR/../node_modules/.bin/tsup"
 
 npm run build:extensions
-npm run build:docs
+npm run build:example

@@ -3,27 +3,27 @@ import { CTag } from "./tag.js";
 import type { StyleManager } from "./types.js";
 
 export type CardboardContext = {
-    intersectionObserver?: IntersectionObserver;
+    intObs?: IntersectionObserver;
     styleManager?: StyleManager;
-    mountPoint?: CTag;
-    mountPointHistory: CTag[];
-    observer?: {
+    mp?: CTag;
+    mpHistory: CTag[];
+    obs?: {
         onAdded: CEvent<Node>;
         onRemoved: CEvent<Node>;
     };
-    initialized?: boolean;
+    init?: boolean;
 };
 
 export const context: CardboardContext = {
-    mountPoint: undefined,
-    mountPointHistory: [],
+    mp: undefined,
+    mpHistory: [],
     styleManager: undefined,
-    intersectionObserver: undefined,
-    observer: undefined,
-    initialized: false,
+    intObs: undefined,
+    obs: undefined,
+    init: false,
 };
 
-export const isInitialized = () => context.initialized === true;
+export const isInitialized = () => context.init === true;
 export const checkInitialized = () => {
     if (!isInitialized()) {
         throw new Error("Cardboard is not initialized. Please call `init()`, as some features will not work.");
@@ -33,7 +33,7 @@ export const checkInitialized = () => {
 /**
  * Returns the current mountPoint {@link CTag}. See {@link mountPoint} for more information.
  */
-export const getMountPoint = () => context.mountPoint;
+export const getMountPoint = () => context.mp;
 
 /**
  * Makes the given tag the mount point. This means that when other tags are created with "mountToParent" or  (using `<tag_name>.mount()`, `tag('<tag_name>', [], true)`),
@@ -57,10 +57,10 @@ export const getMountPoint = () => context.mountPoint;
  * ```
  */
 export const mountPoint = (tag: CTag) => {
-    if (context.mountPoint) {
-        context.mountPointHistory.push(context.mountPoint);
+    if (context.mp) {
+        context.mpHistory.push(context.mp);
     }
-    context.mountPoint = tag;
+    context.mp = tag;
     return tag;
 };
 
@@ -70,15 +70,15 @@ export const mountPoint = (tag: CTag) => {
  * If there is no previous mount point tag, it will not do anything.
  */
 export const restoreMountPoint = () => {
-    context.mountPoint = context.mountPointHistory.pop();
+    context.mp = context.mpHistory.pop();
 };
 
 /**
  * Restores all mount points. There will be no mount points tag after calling this function.
  */
 export const clearMountPoints = () => {
-    context.mountPoint = undefined;
-    context.mountPointHistory = [];
+    context.mp = undefined;
+    context.mpHistory = [];
 };
 
 /**
@@ -87,9 +87,9 @@ export const clearMountPoints = () => {
  * and all other mount points will be cleared.
  */
 export const resetMountPoints = () => {
-    let first = context.mountPointHistory.shift();
-    context.mountPoint = first;
-    context.mountPointHistory = [];
+    let first = context.mpHistory.shift();
+    context.mp = first;
+    context.mpHistory = [];
 };
 
 export type ScopedCallback = (tag: CTag) => void;

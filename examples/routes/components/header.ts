@@ -1,6 +1,6 @@
-import type { StyleMap } from '../../../dist/types';
 import {
   allTags,
+  type StyleMap,
 } from '../../../dist/cardboard.js';
 import { Link, router } from '../../../dist/ext/routing';
 

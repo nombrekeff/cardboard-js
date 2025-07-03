@@ -4,6 +4,12 @@ import type { CTag } from './tag.js';
 import type { ValidTagName } from './tag-names.js';
 import type { CommonAttributes } from './attributes.js';
 
+export type * from './css-property-values.js';
+export type * from './css-property-values.js';
+export type * from './tag-names.js';
+export type * from './colors.js';
+export type * from './attributes.js';
+
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
 export type NoOp = () => void;
 // eslint-disable-next-line @typescript-eslint/array-type, @typescript-eslint/ban-types

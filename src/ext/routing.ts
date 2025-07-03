@@ -1,6 +1,5 @@
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
-import { onLifecycle, withLifecycle } from '../lifecycle.js';
-import { allTags, CTag } from '../cardboard.js';
+import { allTags, type CTag, onLifecycle, withLifecycle } from '../cardboard.js';
 
 const { div, a } = allTags;
 
@@ -209,6 +208,7 @@ export class Router<T extends Record<string, Route> = Record<string, Route>> {
   }
 }
 
+// TODO(nombrekeff): Should we export this like this? Maybe add to cardboard context?
 export let router: Router<any> | undefined;
 
 export const makeRouter = <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => {

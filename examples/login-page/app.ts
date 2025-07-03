@@ -7,7 +7,6 @@ import {
   getMountPoint,
   withMountPoint,
 } from '../../dist/cardboard.js';
-import { BaseStyle } from '../../dist/ext/base_style.js';
 import { LoginForm } from './components/login_form.js';
 import { baseStyleSheet, rootStyles } from './styles.js';
 
@@ -15,13 +14,12 @@ const { div, style } = allTags;
 
 
 function setup() {
-  tag('(html)').setStyle({ overflow: 'hidden' });
   init()
     .append(
-      BaseStyle(),
       style(baseStyleSheet)
     )
     .setStyle(rootStyles);
+  tag('(html)').setStyle({ overflow: 'hidden' });
 }
 
 function main() {
@@ -38,7 +36,7 @@ function main() {
   });
 
   withMountPoint(loginBox, () => {
-    LoginForm(formData)
+    LoginForm(formData);
   });
 }
 

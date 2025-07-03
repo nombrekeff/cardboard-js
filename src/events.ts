@@ -12,22 +12,22 @@ import { removeFromList } from './util.js';
  * ```
  */
 export class CEvent<T> {
-  protected _listeners: Array<(data: T | undefined) => void> = [];
+  protected _lstrs: Array<(data: T | undefined) => void> = [];
 
   listen(fn: (data?: T) => void) {
-    this._listeners.push(fn);
+    this._lstrs.push(fn);
   }
 
   remove(fn: (data?: T) => void) {
-    removeFromList(fn, this._listeners);
+    removeFromList(fn, this._lstrs);
   }
 
   dispatch(data?: T) {
-    this._listeners.forEach((el) => el(data));
+    this._lstrs.forEach((el) => el(data));
   }
 
   destroy() {
-    this._listeners = [];
+    this._lstrs = [];
   }
 }
 
@@ -44,29 +44,29 @@ export class CEvent<T> {
  */
 
 export class CMappedEvent<T> {
-  private _listeners: Record<string, Array<(data?: T) => void>> = {};
+  private _lstrs: Record<string, Array<(data?: T) => void>> = {};
 
   listen(evt: string, fn: (data?: T) => void) {
-    if (!(evt in this._listeners)) {
-      this._listeners[evt] = [fn];
+    if (!(evt in this._lstrs)) {
+      this._lstrs[evt] = [fn];
     }
-    else if (this._listeners[evt]) {
-      this._listeners[evt].push(fn);
+    else if (this._lstrs[evt]) {
+      this._lstrs[evt].push(fn);
     }
   }
 
   remove(evt: string, fn: (data?: T) => void) {
-    removeFromList(fn, this._listeners[evt]);
+    removeFromList(fn, this._lstrs[evt]);
   }
 
   dispatch(evt: string, data?: T) {
-    if (evt in this._listeners) {
-      this._listeners[evt].forEach((el) => el(data));
+    if (evt in this._lstrs) {
+      this._lstrs[evt].forEach((el) => el(data));
     }
   }
 
   destroy() {
-    this._listeners = {};
+    this._lstrs = {};
   }
 }
 

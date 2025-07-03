@@ -1,7 +1,8 @@
 import { CTag } from '../cardboard.js';
-export type RouteBuilder = (router: Router<any>) => CTag;
-export type Route = RouteBuilder | string;
-export interface RouterOptions<T extends Record<string, Route> = Record<string, Route>> {
+
+type RouteBuilder = (router: Router<any>) => CTag;
+type Route = RouteBuilder | string;
+interface RouterOptions<T extends Record<string, Route> = Record<string, Route>> {
     rootParent: CTag;
     routes: T;
     initialRoute: string;
@@ -15,7 +16,7 @@ export interface RouterOptions<T extends Record<string, Route> = Record<string, 
 /**
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Routing
  */
-export declare class Router<T extends Record<string, Route> = Record<string, Route>> {
+declare class Router<T extends Record<string, Route> = Record<string, Route>> {
     private readonly _options;
     private _routes;
     private readonly _window;
@@ -43,6 +44,8 @@ export declare class Router<T extends Record<string, Route> = Record<string, Rou
     private _modifyPushState;
     private _initRouteMatchers;
 }
-export declare let router: Router<any> | undefined;
-export declare const makeRouter: <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => Router<T>;
-export declare const Link: (child: string | CTag, path: any, query?: Record<string, string>) => CTag;
+declare let router: Router<any> | undefined;
+declare const makeRouter: <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => Router<T>;
+declare const Link: (child: string | CTag, path: any, query?: Record<string, string>) => CTag;
+
+export { Link, type Route, type RouteBuilder, Router, type RouterOptions, makeRouter, router };

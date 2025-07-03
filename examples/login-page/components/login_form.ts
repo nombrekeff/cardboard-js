@@ -3,10 +3,12 @@ import {
     getMountPoint,
     computeMultiple,
     State,
+    state,
 } from '../../../dist/cardboard.js';
+import { loginUser } from '../api/api.js';
 import { InputField } from './../components/input_field.js';
 
-const { h3, br, button } = allTags;
+const { h3, br, button, form } = allTags;
 
 export type LoginFormData = {
     username: State<string>;
@@ -26,17 +28,39 @@ export function LoginForm(formData: State<LoginFormData>) {
         textTransform: 'uppercase',
     });
 
-    getMountPoint().append(
+    const loading = state(false);
+    const onSubmit = async () => {
+        loading.value = true;
+        var result = (await loginUser(formData.value.username.value, formData.value.password.value));
+        console.log('result:', result);
+        if (result.status !== 200) {
+            const errorMessage = await result.json();
+            console.error('Login failed:', errorMessage);
+            formData.value.usernameError.value = errorMessage.message || 'Invalid username';
+            formData.value.passwordError.value = errorMessage.message || 'Invalid password';
+        } else {
+            formData.value.usernameError.value = '';
+            formData.value.passwordError.value = '';
+        }
+
+        formData.value.username.value = '';
+        formData.value.password.value = '';
+        loading.value = false;
+    }
+
+    const loginForm = form(
         InputField({
             id: 'username',
             labelText: 'Username',
             placeholder: 'Enter your username',
+            type: 'text',
             error: formData.value.usernameError,
             value: formData.value.username,
             validators: [
                 (value) => value.length < 6 ? 'Username must be at least 6 characters long' : null,
                 (value) => !/^[a-zA-Z0-9]+$/.test(value) ? 'Username can only contain letters and numbers' : null,
-            ]
+            ],
+            onSubmit: onSubmit
         }),
         InputField({
             id: 'password',
@@ -48,16 +72,28 @@ export function LoginForm(formData: State<LoginFormData>) {
             validators: [
                 (value) => value.length < 6 ? 'Password must be at least 6 characters long' : null,
                 (value) => !/^[^\s]+$/.test(value) ? 'Password can only contain letters and numbers' : null,
-            ]
+            ],
+            onSubmit: onSubmit
         }),
         br(),
-        button.mount('Login')
+
+        button.mount()
+            .disableIf(loading)
             .setId('login-button')
+            .textIf(loading, 'Logging in...', 'Login')
             .attrIf(inputNotFilled, 'disabled', 'true')
-            .on('click', () => {
-                formData.value.usernameError.value = 'Invalid username';
-                formData.value.passwordError.value = 'Invalid password';
-            })
-    );
+            .addAttr('type', 'submit'),
+
+    ).addAttr('action', '#').on('submit', (_, e) => {
+        e.preventDefault();
+        onSubmit();
+    });
+
+    getMountPoint()
+        .append(loginForm);
+}
+
+function ErrorMessage(error: any): any {
+    throw new Error('Function not implemented.');
 }
 

@@ -1,4 +1,4 @@
-import { NestedStyleMap } from "../../dist/types";
+import type { NestedStyleMap } from "../../dist/cardboard.js";
 
 export const styles = {
     styledThing: <NestedStyleMap>{

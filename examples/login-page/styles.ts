@@ -1,10 +1,15 @@
 export const baseStyleSheet = {
+    ':root': {
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
     '#login-button': {
         transition: 'background-color 0.2s ease, color 0.2s ease',
         backgroundColor: '#007bff',
         color: '#fff',
         border: 'none',
-        borderRadius: '16px',
+        borderRadius: '32px',
+        padding: '12px 24px',
+        width: '100%',
         ':disabled': {
             transition: 'background-color 0.2s ease, color 0.2s ease',
             backgroundColor: '#eeeeee!important',

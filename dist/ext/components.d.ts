@@ -1,12 +1,12 @@
-import { CTag } from '../cardboard.js';
-import type { EventCallback, IObservable, NestedStyleMap } from '../types';
+import { NestedStyleMap, CTag, IObservable, EventCallback } from '../cardboard.js';
+
+type AnyFn = (...args: any[]) => CTag;
+type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
 type Component<T extends Function> = T & {
     styled: (styles: NestedStyleMap, name?: string) => Component<T>;
 };
-type AnyFn = (...args: any[]) => CTag;
-type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
-export declare function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>>;
-export interface HInputOptions<T = string> {
+declare function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>>;
+interface HInputOptions<T = string> {
     value?: T | IObservable<T>;
     placeholder?: string;
     tooltip?: string;
@@ -14,8 +14,10 @@ export interface HInputOptions<T = string> {
     attr?: Record<string, string | undefined>;
     type?: string;
     input?: EventCallback<'input'>;
+    change?: EventCallback<'change'>;
     submit?: (tag: CTag, evt: Event) => void;
 }
-export declare const Input: <T>(options?: HInputOptions<T>) => CTag;
-export declare const Checkbox: (options?: HInputOptions<boolean>) => CTag;
-export {};
+declare const Input: Component<ThatFn<(<T>(options?: HInputOptions<T>) => CTag)>>;
+declare const Checkbox: (options?: HInputOptions<boolean>) => CTag;
+
+export { type AnyFn, Checkbox, Component, type HInputOptions, Input, type ThatFn };

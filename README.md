@@ -5,12 +5,15 @@
 
 [![Tests Main](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml/badge.svg?branch=main&event=push)](https://github.com/nombrekeff/cardboard-js/actions/workflows/test_main.yml)
 [![Project Status](https://img.shields.io/badge/Project_Status-WIP-orange)](https://github.com/nombrekeff/cardboard-js/milestone/1)
+[![SonarQube Status](https://sonarcloud.io/api/project_badges/measure?project=nombrekeff_cardboard-js&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nombrekeff_cardboard-js)
+[![Bundle Size](https://img.shields.io/badge/Bundle_Size-16.6kb-blue)](https://github.com/nombrekeff/cardboard-js/milestone/1)
 
-**Cardboard.js: Build web apps without HTML, CSS, or JSX!** This lightweight (_around 18kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
+
+**Cardboard.js: Build web apps without HTML, CSS, or JSX!** This lightweight (_around 16kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), but with many more features and a more extensive API.
 
-> **!NOTE!**: Cardboard is [in development]((https://github.com/nombrekeff/cardboard-js/wiki/Project-Status)), use it with caution.  
+> **!NOTE!**: Cardboard is [in development](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status), use it with caution.  
 > You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!**
 
 ```ts
@@ -39,12 +42,13 @@ tag('(body)').append(Counter());
 ```
 npm install @nkeff/cardboard-js
 ```
+
 #### Setup
 
 ```ts
 import { tag, init, allTags } from '@nkeff/cardboard-js';
 // Or
-import { tag, init, allTags } from 'node_modules/cardboard-js/dist/cardboard.js';
+import { tag, init, allTags } from 'node_modules/@nkeff/cardboard-js/dist/cardboard.js';
 
 const { div, p, span, b, script, button, style, a, hr } = allTags;
 
@@ -63,15 +67,24 @@ body.append(
 
 If you want to add it to your site and start using Cardboard, you can import the bundle file:
 
-
+**Global import:**
 ```html
-<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.js"></script>
-<!-- OR the minified version -->
-<script src="node_modules/cardboard-js/dist/bundle/cardboard.bundle.min.js"></script>
+<script src="node_modules/@nkeff/cardboard-js/dist/cardboard.global.js"></script>
+<!-- Or using a CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@nkeff/cardboard-js/dist/cardboard.global.js"></script>
 <script>
 const { div, p } = Carboard.allTags;
 </script>
 ```
+
+**ESM import:**
+```html
+<script>
+  import { tag, init, allTags, p } from 'https://cdn.jsdelivr.net/npm/@nkeff/cardboard-js/dist/cardboard.js';
+  const { div, p } = allTags;
+</script>
+```
+
 
 ### What does it do?
 

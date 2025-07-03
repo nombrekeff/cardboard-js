@@ -5,8 +5,9 @@ import {
     State,
     state,
     withLifecycle,
+    type PickPropertyValues,
 } from '../../../dist/cardboard.js';
-import { PickPropertyValues } from '../../../dist/css-property-values.js';
+import { Component, Input } from '../../../dist/ext/components.js';
 import { makeTween, tween, tweenTag } from '../../../dist/ext/tween.js';
 
 const { div, p, input, label } = allTags;
@@ -34,7 +35,7 @@ export type InputFieldProps = {
     validators?: ((value: string) => string | null)[];
 };
 
-export function InputField({
+export const InputField = Component(({
     id,
     labelText = 'Username',
     placeholder,
@@ -45,7 +46,7 @@ export function InputField({
     onChange = () => { },
     onSubmit = () => { },
     validators = [],
-}: InputFieldProps) {
+}: InputFieldProps) => {
     const _id = id ?? makeid(8);
 
     const _validate = (value: string) => {
@@ -65,57 +66,49 @@ export function InputField({
         error.value = '';
     };
 
-    const fieldDiv = div()
-        .setStyle({
-            display: 'flex',
-            flexDirection: 'column',
-            marginBottom: '16px',
-        })
+    return div()
         .append(
             label(labelText)
-                .setStyle({
+                .styled({
                     padding: '8px 8px',
                     fontSize: '12px',
                     fontWeight: 'bold',
-                })
+                }, 'input_label') // By adding a class, we ensure that the style is only added once
                 .addAttr('for', _id),
-            input()
-                .setValue(value.value)
-                .addStyle('zIndex', '99')
-                .setId(_id)
-                .stylesIfNot(isEmpty(error), { 'border': '1px solid #ff0000', background: '#fff0f0' })
-                .addAttr('placeholder', placeholder)
-                .addAttr('type', type)
-                .on('input', (event) => {
-                    value.value = event.value;
-                    onInput(event.value);
-                })
-                .on('change', (event) => {
+            Input({
+                value: value.value,
+                placeholder: placeholder,
+                type: type,
+                input: (_) => {
+                    error.value = '';
+                },
+                change: (event) => {
                     value.value = event.value;
                     onChange(event.value);
-                    _validate(value.value);
-                })
-                .on('submit', (event) => {
+                    _validate(event.value);
+                    console.log('Input changed:', event.value);
+                },
+                submit: (event) => {
                     value.value = event.value;
                     onSubmit(event.value);
-                }),
-            div(ErrorMessage(error)).setStyle({ 'height': '12px' }),
+                },
+            })
+                .stylesIfNot(isEmpty(error), { 'border': '1px solid #ff0000', background: '#fff0f0' })
+                .setId(_id),
+            div(ErrorMessage(error)).styled({ 'height': '12px', zIndex: '0' }, 'c_error'),
         );
-    return fieldDiv;
-}
+}).styled({
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '16px',
+    ' .c_input': {
+        zIndex: '1',
+    }
+}, 'input_field');
 
-function ErrorMessage(error = state('')) {
+const ErrorMessage = Component((error = state('')) => {
     let errorTag = p(error)
-        .setStyle({
-            padding: '0 8px',
-            fontSize: '12px',
-            fontWeight: 'normal',
-            color: '#ff0000',
-            zIndex: '0',
-        })
-        .addClass('error-message')
         .hideIf(isEmpty(error));
-
     return withLifecycle(errorTag, {
         mounted(tag) {
             tweenTag(tag, slideOut);
@@ -127,7 +120,14 @@ function ErrorMessage(error = state('')) {
             );
         },
     });
-}
+}).styled({
+    padding: '0 8px',
+    fontSize: '12px',
+    fontWeight: 'normal',
+    color: '#ff0000',
+    zIndex: '0',
+    height: '12px',
+}, 'error_message');
 
 const sizeEnd = { y: -15 };
 const sizeStart = { y: 8 };
