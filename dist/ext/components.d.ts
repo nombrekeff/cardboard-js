@@ -14,6 +14,7 @@ interface HInputOptions<T = string> {
     attr?: Record<string, string | undefined>;
     type?: string;
     input?: EventCallback<'input'>;
+    change?: EventCallback<'change'>;
     submit?: (tag: CTag, evt: Event) => void;
 }
 declare const Input: Component<ThatFn<(<T>(options?: HInputOptions<T>) => CTag)>>;

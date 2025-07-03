@@ -3,7 +3,9 @@ import {
     getMountPoint,
     computeMultiple,
     State,
+    state,
 } from '../../../dist/cardboard.js';
+import { loginUser } from '../api/api.js';
 import { InputField } from './../components/input_field.js';
 
 const { h3, br, button, form } = allTags;
@@ -26,10 +28,24 @@ export function LoginForm(formData: State<LoginFormData>) {
         textTransform: 'uppercase',
     });
 
-    const onSubmit = () => {
-        console.log('submitted:', formData);
-        formData.value.usernameError.value = 'Invalid username';
-        formData.value.passwordError.value = 'Invalid password';
+    const loading = state(false);
+    const onSubmit = async () => {
+        loading.value = true;
+        var result = (await loginUser(formData.value.username.value, formData.value.password.value));
+        console.log('result:', result);
+        if (result.status !== 200) {
+            const errorMessage = await result.json();
+            console.error('Login failed:', errorMessage);
+            formData.value.usernameError.value = errorMessage.message || 'Invalid username';
+            formData.value.passwordError.value = errorMessage.message || 'Invalid password';
+        } else {
+            formData.value.usernameError.value = '';
+            formData.value.passwordError.value = '';
+        }
+
+        formData.value.username.value = '';
+        formData.value.password.value = '';
+        loading.value = false;
     }
 
     const loginForm = form(
@@ -60,13 +76,24 @@ export function LoginForm(formData: State<LoginFormData>) {
             onSubmit: onSubmit
         }),
         br(),
-        button.mount('Login')
+
+        button.mount()
+            .disableIf(loading)
             .setId('login-button')
+            .textIf(loading, 'Logging in...', 'Login')
             .attrIf(inputNotFilled, 'disabled', 'true')
-            .on('click', onSubmit)
-    ).addAttr('action', '#');
+            .addAttr('type', 'submit'),
+
+    ).addAttr('action', '#').on('submit', (_, e) => {
+        e.preventDefault();
+        onSubmit();
+    });
 
     getMountPoint()
         .append(loginForm);
+}
+
+function ErrorMessage(error: any): any {
+    throw new Error('Function not implemented.');
 }
 

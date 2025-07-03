@@ -42,6 +42,7 @@ export interface HInputOptions<T = string> {
   attr?: Record<string, string | undefined>;
   type?: string;
   input?: EventCallback<'input'>;
+  change?: EventCallback<'change'>;
   submit?: (tag: CTag, evt: Event) => void;
 }
 
@@ -57,6 +58,12 @@ export const Input = Component(<T>(options: HInputOptions<T> = {}): CTag => {
     on: {
       input: (self, evt) => {
         if (options.input) options.input(self, evt);
+        if (options.value && isObservable(options.value)) {
+          (options.value as IObservable).dispatch(el.value);
+        }
+      },
+      change: (self, evt) => {
+        if (options.change) options.change(self, evt);
         if (options.value && isObservable(options.value)) {
           (options.value as IObservable).dispatch(el.value);
         }

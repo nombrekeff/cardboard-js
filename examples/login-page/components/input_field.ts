@@ -79,10 +79,14 @@ export const InputField = Component(({
                 value: value.value,
                 placeholder: placeholder,
                 type: type,
-                input: (event) => {
+                input: (_) => {
+                    error.value = '';
+                },
+                change: (event) => {
                     value.value = event.value;
+                    onChange(event.value);
                     _validate(event.value);
-                    onInput(event.value);
+                    console.log('Input changed:', event.value);
                 },
                 submit: (event) => {
                     value.value = event.value;
@@ -91,12 +95,15 @@ export const InputField = Component(({
             })
                 .stylesIfNot(isEmpty(error), { 'border': '1px solid #ff0000', background: '#fff0f0' })
                 .setId(_id),
-            div(ErrorMessage(error)).styled({ 'height': '12px' }, 'c_error'),
+            div(ErrorMessage(error)).styled({ 'height': '12px', zIndex: '0' }, 'c_error'),
         );
 }).styled({
     display: 'flex',
     flexDirection: 'column',
     marginBottom: '16px',
+    ' .c_input': {
+        zIndex: '1',
+    }
 }, 'input_field');
 
 const ErrorMessage = Component((error = state('')) => {

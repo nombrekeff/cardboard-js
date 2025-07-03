@@ -36,7 +36,7 @@ function main() {
   });
 
   withMountPoint(loginBox, () => {
-    LoginForm(formData)
+    LoginForm(formData);
   });
 }
 
