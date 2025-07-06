@@ -50,10 +50,8 @@ npm install @nkeff/cardboard-js
 
 ```ts
 import { tag, init, allTags } from '@nkeff/cardboard-js';
-// Or
-import { tag, init, allTags } from 'node_modules/@nkeff/cardboard-js/dist/cardboard.js';
 
-const { div, p, span, b, script, button, style, a, hr } = allTags;
+const { div, p, span, ul } = allTags;
 
 // Initialize and get access to the root tag ('body' by default)
 const body = init();
