@@ -9,11 +9,11 @@
 [![Bundle Size](https://img.shields.io/badge/Bundle_Size-16.6kb-blue)](https://github.com/nombrekeff/cardboard-js/milestone/1)
 
 
-**Cardboard.js: Build web apps without HTML, CSS, or JSX!** This lightweight (_around 16kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
+**Cardboard.js: The lo-fi of UI libraries -- _build web apps without HTML, or JSX!_** This lightweight (_around 16kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
 
 It's similar in philosophy to [VanJS](https://vanjs.org/), but with many more features and a more extensive API.
 
-> **!NOTE!**: Cardboard is [in development](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status), use it with caution.  
+> **!NOTE!**: Cardboard is [in development](https://github.com/nombrekeff/cardboard-js/wiki/Project-Status), it is stable, but use with caution.  
 > You can check the [v1.0.0 milestone](https://github.com/nombrekeff/cardboard-js/milestone/1) for a view on the development state - **help is much appreciated!**
 
 ```ts
