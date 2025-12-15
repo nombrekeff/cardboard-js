@@ -93,7 +93,7 @@ describe('diff string array', () => {
         const diff = diffList(newData, oldData);
 
         expect(diff).toEqual([
-            { entry: 'c', index: 2, state: DiffState.swap, targetIndex: 0, targetEntry: 'a' },
+            { entrys: 'c', index: 2, state: DiffState.swap, targetIndex: 0, targetEntry: 'a' },
         ]);
     });
 

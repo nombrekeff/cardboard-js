@@ -1711,7 +1711,7 @@ interface DiffEntry<T = unknown> {
  *  );
  * ```
  */
-declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T) => CTag, key?: (val: T) => any): Node;
+declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T, index: number) => CTag, key?: (val: T, index: number) => any): Node;
 /**
  * Compares 2 lists, returns an array of {@link DiffEntry} with the operations needed to make in the `oldData` to create the new list.
  * It only returns the actions that are needed, if an element does not need to move, then it's not returned
@@ -1721,7 +1721,7 @@ declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T) => CT
  * @param key - A function that returns a unique key for each item in the list. This is used to optimize the rendering process.
  * @returns An array of {@link DiffEntry} objects that describe the differences between the two lists.
  */
-declare function diffList<T>(newData: T[], oldData: T[], key?: (item: T) => any): Array<DiffEntry<T>>;
+declare function diffList<T>(newData: T[], oldData: T[], key?: (item: T, index: number) => any): Array<DiffEntry<T>>;
 
 /**
  * Will call {mounted} when the element is added to the DOM.
