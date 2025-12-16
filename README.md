@@ -8,6 +8,8 @@
 [![SonarQube Status](https://sonarcloud.io/api/project_badges/measure?project=nombrekeff_cardboard-js&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nombrekeff_cardboard-js)
 [![Bundle Size](https://img.shields.io/badge/Bundle_Size-16.6kb-blue)](https://github.com/nombrekeff/cardboard-js/milestone/1)
 
+<a href="https://www.producthunt.com/products/cardboard-beta?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-cardboard&#0045;js&#0045;web&#0045;apps&#0045;flat&#0045;packed" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=985873&theme=light&t=1765897584695" alt="Cardboard&#0046;js&#0058;&#0032;Web&#0032;apps&#0044;&#0032;flat&#0045;packed - Web&#0032;UIs&#0044;&#0032;unboxed&#0046;&#0032;The&#0032;library&#0032;for&#0032;when&#0032;you&#0039;ve&#0032;had&#0032;enough&#0046;&#0032; | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 
 **Cardboard.js: The lo-fi of UI libraries -- _build web apps without HTML, or JSX!_** This lightweight (_around 16kb_), performant library lets you manage state, components, and logic using just JavaScript/TypeScript. Ideal for projects where simplicity and speed are key.
 
