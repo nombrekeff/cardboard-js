@@ -393,8 +393,6 @@ export class CTag {
     const handleHide = (_: any, value: any) => {
       const shouldHide = invert ? !value : !!value;
 
-      if (!this.parent) return;
-
       // Let the methods handle their own state mutation!
       if (shouldHide) {
         void this.hide();
