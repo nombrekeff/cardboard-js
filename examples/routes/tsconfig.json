@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
         "outDir": "./",
-        "module": "ES2015",
+        "module": "NodeNext",
         "target": "ES2017",
         "sourceMap": true,
         "allowJs": true,
-        "moduleResolution": "Node",
+        "moduleResolution": "NodeNext",
         "lib": [
             "dom",
             "es5",
@@ -15,7 +15,6 @@
             "DOM"
         ],
         "types": [
-            "@tweenjs/tween.js",
             // "./node_modules/cardboard-js/dist/cardboard.d.ts",
         ]
     },

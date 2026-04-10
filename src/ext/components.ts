@@ -10,20 +10,21 @@ import {
 
 const { input } = allTags;
 
-export type Component<T extends Function> = T & {
-  styled: (styles: NestedStyleMap, name?: string) => Component<T>
-};
 export type AnyFn = (...args: any[]) => CTag;
+
+export type ComponentFactory<T extends AnyFn> = T & {
+  styled: (styles: NestedStyleMap, name?: string) => ComponentFactory<T>
+};
 export type ThatFn<F extends AnyFn> = (...args: Parameters<F>) => ReturnType<F>;
 
-export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
+export function Component<F extends AnyFn>(fn: F): ComponentFactory<ThatFn<F>> {
   let className = uuidv4();
   let stylesheet: NestedStyleMap | undefined;
 
   const builder = function (...args) {
     if (!stylesheet) return fn(...args);
     return fn(...args).styled(stylesheet, className);
-  }
+  };
 
   builder.styled = (styles: NestedStyleMap, name?: string): typeof builder => {
     stylesheet = styles || {};
@@ -31,7 +32,7 @@ export function Component<F extends AnyFn>(fn: F): Component<ThatFn<F>> {
     return builder;
   };
 
-  return builder as Component<ThatFn<F>>;
+  return builder as ComponentFactory<ThatFn<F>>;
 }
 
 export interface HInputOptions<T = string> {

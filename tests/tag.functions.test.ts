@@ -12,6 +12,7 @@ import {
   restoreMountPoint,
 } from '../src/cardboard.js';
 import { createDomMock } from './__mocks__/client';
+import { beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 
 const allKnownTags = [
   'area',

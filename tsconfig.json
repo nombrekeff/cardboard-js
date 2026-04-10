@@ -1,28 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "ES6",
-        "module": "esnext",
-        "outDir": "dist",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "declaration": true,
-        "esModuleInterop": true,
-        "strictNullChecks": true,
-        "lib": [
-            "dom",
-            "ES2016"
-        ],
-        "types": [
-            "node",
-            "@tweenjs/tween.js",
-        ]
-    },
-    "include": [
-        "./src/**/*.ts"
-    ],
-    "exclude": [
-        "./dist",
-        "./examples",
-        "./tests"
-    ]
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "lib": ["dom", "ES2016"],
+    "types": ["node"]
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./dist", "./examples", "./tests"]
 }

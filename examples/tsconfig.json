@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
-        "module": "ES2015",
+        "module": "NodeNext",
         "target": "ES2017",
         "sourceMap": true,
         "allowJs": true,
-        "moduleResolution": "Node",
+        "moduleResolution": "NodeNext",
         "lib": [
             "dom",
             "es5",
@@ -12,10 +12,6 @@
             "ES2016",
             "ES2017",
             "DOM"
-        ],
-        "types": [
-            "@tweenjs/tween.js",
-            "../dist/cardboard.d.ts"
         ]
     },
     "include": [
