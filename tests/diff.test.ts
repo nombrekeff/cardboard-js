@@ -4,7 +4,7 @@ import { DiffState, diffList } from '../src/cardboard.js';
 
 describe('diff string array', () => {
     it('adds all if no old data', async () => {
-        const oldData = [];
+        const oldData: any[] = [];
         const newData = ['a', 'b', 'c'];
         const diff = diffList(newData, oldData);
 
@@ -17,7 +17,7 @@ describe('diff string array', () => {
 
     it('removes all if no new data', async () => {
         const oldData = ['a', 'b', 'c'];
-        const newData = [];
+        const newData: any[] = [];
         const diff = diffList(newData, oldData);
 
         expect(diff).toEqual([
@@ -157,7 +157,7 @@ describe('diff string array', () => {
 
 describe('diff int array', () => {
     it('adds all if no old data', async () => {
-        const oldData = [];
+        const oldData: any[] = [];
         const newData = [1, 2, 3];
         const diff = diffList(newData, oldData);
 
@@ -170,7 +170,7 @@ describe('diff int array', () => {
 
     it('removes all if no new data', async () => {
         const oldData = [1, 2, 3];
-        const newData = [];
+        const newData: any[] = [];
         const diff = diffList(newData, oldData);
 
         expect(diff).toEqual([

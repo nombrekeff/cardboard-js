@@ -74,8 +74,8 @@ export interface DiffEntry<T = unknown> {
  */
 export function each<T>(
   observable: IObservableOr<T[]>,
-  builder: (val: T) => CTag,
-  key?: (val: T) => any,
+  builder: (val: T, index: number) => CTag,
+  key?: (val: T, index: number) => any,
 ): Node {
   const node = document.createTextNode(''), elements: CTag[] = [];
   let oldData: T[] = [],
@@ -86,7 +86,7 @@ export function each<T>(
   // Uses the transform function to create the element and places it before the next sibling or anchor node.
   const actionAdd = (entry: DiffEntry<T>) => {
     if (entry.index >= 0) {
-      const el = builder(entry.entry);
+      const el = builder(entry.entry, entry.index);
       const elAt = elements[entry.index];
       elements.splice(entry.index, 0, el);
       node.parentElement?.insertBefore(el.el, elAt ? elAt.el : node);
@@ -159,6 +159,7 @@ export function each<T>(
   // It calculates the differences between the old and new data using `diffList`,
   // and applies the necessary actions to the DOM.
   const updateList = (newData: T[], tries = 0) => {
+    console.debug(`[each]: Updating list with ${newData.length} items`);
     // If the node has no parent element, it means it has not been mounted yet,
     // so we wait a bit and try again.
     if (!node.parentElement) {
@@ -168,6 +169,7 @@ export function each<T>(
       } else {
         console.warn(`[each]: parentElement not found after max retries`);
       }
+      console.debug(`[each]: max tries reached, not updating list`);
       return;
     }
 
@@ -178,9 +180,12 @@ export function each<T>(
 
     // Create the diff between the new data and the old data
     const diff = diffList(newData, oldData, key);
+    console.debug(`[each]: diff`, diff);
 
     // If the diff is empty, it means the data has not changed, so we do nothing
-    if (diff.length <= 0) return;
+    if (diff.length <= 0) {
+      return;
+    }
 
     // Process the diff and apply the actions
     for (let index = 0; index < diff.length; index++) {
@@ -220,14 +225,15 @@ export function each<T>(
  */
 export function diffList<T>(
   newData: T[], oldData: T[],
-  key: (item: T) => any = (item: T) => item
+  key: (item: T, index: number) => any = (item: T) => item
 ): Array<DiffEntry<T>> {
   const diff: Array<DiffEntry<T>> = [],
     newLength = newData.length,
     oldLength = oldData.length;
 
   // If the data is the same, don't do anything
-  if (newLength === oldLength && (newData == oldData || deepEquals(oldData, newData))) {
+  if (newLength === oldLength && (newData == oldData)) {
+    console.debug(`[diffList]: No changes detected, returning empty diff`);
     return diff;
   }
 
@@ -240,6 +246,7 @@ export function diffList<T>(
         index: i,
       };
     }
+    console.debug(`[diffList]: All items removed, returning diff with removed items`);
     return diff;
   }
 
@@ -252,6 +259,7 @@ export function diffList<T>(
         index: i,
       };
     }
+    console.debug(`[diffList]: No old data, adding all new items`);
     return diff;
   }
 
@@ -259,20 +267,23 @@ export function diffList<T>(
   let removedCount = 0;
 
   // diff the old data with the new one
+  console.debug(`[diffList]: Comparing old data with new data`, { oldData, newData });
   for (let oi = 0; oi < oldLength; oi++) {
     const newEntry = newData[oi - removedCount],
       oldEntry = oldData[oi],
-      areEqual = key(oldEntry) == key(newEntry);
+      areEqual = key(oldEntry, oi) == key(newEntry, oi - removedCount);
 
-    if (areEqual || deepEquals(oldEntry, newEntry)) {
+    if (areEqual) {
+      console.debug(`[diffList]: Entry at index ${oi} is unchanged`, { oldEntry, newEntry });
       continue;
     }
 
-    const existsNew = !!newData.find(item => key(oldEntry) == key(item)),
-      existsOld = !!oldData.find(item => key(newEntry) == key(item));
+    const existsNew = !!newData.find(item => key(oldEntry, oi) == key(item, oi)),
+      existsOld = !!oldData.find(item => key(newEntry, oi - removedCount) == key(item, oi - removedCount));
 
     // If the new entry does not exist in the old data, it means it was added
     if (!existsOld && existsNew) {
+      console.debug(`[diffList]: New entry at index ${oi - removedCount} added`, { newEntry });
       diff.push({
         entry: newEntry,
         state: DiffState.added,
@@ -286,6 +297,7 @@ export function diffList<T>(
     // `newEntry` can be undefined if the newData is shorter than the oldData
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if ((existsOld && !existsNew) || newEntry == null) {
+      console.debug(`[diffList]: Old entry at index ${oi} removed`, { oldEntry });
       diff.push({
         entry: oldEntry,
         state: DiffState.removed,
@@ -297,6 +309,7 @@ export function diffList<T>(
 
     // If the new entry exists in the old data, it means it was swapped
     if (newData.indexOf(oldEntry) >= 0) {
+      console.debug(`[diffList]: Entry at index ${oi} swapped`, { newEntry, oldEntry });
       diff.push({
         entry: newEntry,
         targetEntry: oldEntry,
