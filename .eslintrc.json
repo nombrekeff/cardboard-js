@@ -45,6 +45,7 @@
             "stroustrup"
         ],
         "one-var": "off",
-        "no-fallthrough": "off"
+        "no-fallthrough": "off",
+        ""
     }
 }

@@ -214,6 +214,6 @@ describe('Tag functions', () => {
   it('interceptor.ul', async () => {
     const list = allTags['ul']('test');
     expect(list).toBeInstanceOf(CTag);
-    expect((list.children[0] as HTMLElement).tagName).toBe('LI');
+    expect((list.children[0] as CTag).el.tagName).toBe('LI');
   });
 });

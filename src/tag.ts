@@ -1,22 +1,27 @@
 import type {
   IObservable,
   NestedStyleMap,
-  NoOp,
   Primitive,
   StyleMap,
   TagChild,
   TagChildren,
   TagConfig,
   TextObj,
-} from './types';
-import { CssProperty } from './css-properties.js';
-import { PickPropertyValues } from './css-property-values.js';
-import { TagName } from './tag-names.js';
-import { val, camelToDash, uuidv4 } from './util.js';
-import { text } from './text.js';
-import { createObservable, isObservable } from './observables.js';
-import { CommonAttributes } from './attributes.js';
-import { checkInitialized, context } from './context.js';
+} from './types.js';
+import { CssProperty } from "./css-properties.js";
+import { PickPropertyValues } from "./css-property-values.js";
+import { TagName } from "./tag-names.js";
+import { val, camelToDash, uuidv4 } from "./util.js";
+import { text } from "./text.js";
+import { createObservable, isObservable } from "./observables.js";
+import { CommonAttributes } from "./attributes.js";
+import { checkInitialized, context } from "./context.js";
+import {
+  onLifecycle,
+  triggerAttached,
+  triggerDetached,
+  triggerTeardown,
+} from "./lifecycle.js";
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -25,7 +30,8 @@ import { checkInitialized, context } from './context.js';
  */
 export class CTag {
   /** Reference to the HTMLElement that this @type {CTag} represents */
-  el: HTMLElement & { remove: () => Promise<boolean> | any };
+  public el: HTMLElement & { remove: () => Promise<boolean> | any };
+  public parent: CTag | null = null;
 
   private _visible = false;
   get visible() {
@@ -35,7 +41,7 @@ export class CTag {
   set visible(newValue: boolean) {
     this._visible = newValue;
     this.el.dispatchEvent(
-      new CustomEvent('visible', {
+      new CustomEvent("visible", {
         detail: {
           visible: newValue,
           tag: this,
@@ -46,35 +52,15 @@ export class CTag {
     );
   }
 
-  /**
-   * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
-   * Used to remove HTML Event Listeners and Observable listeners
-   * @hidden
-   */
-  private readonly _destroyers: NoOp[] = [];
-
-  /** @param parent Reference to the parent @type {CTag} of this element. */
-  private _parent?: CTag;
-
-  get parent(): CTag | undefined {
-    return this._parent;
-  }
-
-  set parent(newParent: CTag) {
-    this._parent = newParent;
-  }
-
   /** Holds the list of all children, the ones that are currently in the DOM and those that are not. */
   private _children: TagChild[] = [];
 
-  private _cachedChildren: Node[] = [];
   get children() {
-    return this._getChildren(this.el);
+    return this._children;
   }
 
   private readonly _meta = {
     isHidden: false,
-    nextSiblingID: null,
     anchorNode: null as Comment | null,
   };
 
@@ -157,7 +143,7 @@ export class CTag {
     children: TagChildren = [],
     mountToParent: boolean = false,
   ) {
-    const isSelector = typeof arg0 === 'string' && arg0.match(/\(.+\)/);
+    const isSelector = typeof arg0 === "string" && arg0.match(/\(.+\)/);
 
     if (isSelector) {
       const match = arg0.match(/\(([.#]?[a-zA-Z][a-zA-Z0-9_$]+)\)/);
@@ -173,20 +159,17 @@ export class CTag {
       }
 
       this.el = element as HTMLElement;
-    }
- else if (typeof arg0 === 'string') {
+    } else if (typeof arg0 === "string") {
       this.el = document.createElement(arg0);
 
       if (context.mp && mountToParent) {
         context.mp.append(this);
       }
-    }
- else if (arg0 instanceof HTMLElement) {
+    } else if (arg0 instanceof HTMLElement) {
       this.el = arg0;
-    }
- else {
+    } else {
       const invalidArg = arg0 as unknown;
-      throw new Error('Invalid argument: ' + String(invalidArg));
+      throw new Error("Invalid argument: " + String(invalidArg));
     }
 
     if (children.length > 0) this.setChildren(children);
@@ -219,9 +202,22 @@ export class CTag {
    * );
    * ```
    */
-  append(...children: TagChildren) {
-    this.el.append(...this._mapChildren(children));
-    this._children.push(...children);
+  append(...children: TagChildren): this {
+    for (const child of children) {
+      if (!child) continue;
+
+      this._children.push(child);
+      const node = this._getElementForChild(child);
+
+      if (node) {
+        this.el.appendChild(node);
+        if (child instanceof CTag) {
+          child.parent = this;
+          triggerAttached(child.el);
+        }
+      }
+    }
+
     return this;
   }
 
@@ -240,48 +236,58 @@ export class CTag {
    * ```
    */
   prepend(...children: TagChildren) {
-    this.el.prepend(...this._mapChildren(children));
-    this._children.unshift(...children);
+    for (const child of children) {
+      if (!child) continue;
+
+      this._children.unshift(child);
+      const node = this._getElementForChild(child);
+
+      if (node) {
+        this.el.prepend(node);
+        if (child instanceof CTag) {
+          child.parent = this;
+          triggerAttached(child.el);
+        }
+      }
+    }
+
     return this;
   }
 
   /**
    * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
    * I will be placed exactly in the correct position, even if there are other elements hidden.
-   * **USE WITH CAUTION**: Not intended to be used in most cases.
-   * @hidden
    */
-  async show() {
-    // Guard clauses
-    if (!this._meta.isHidden || !this._meta.anchorNode) return;
+  hide(): this {
+    if (this._meta.isHidden) return this;
 
-    // O(1) Replacement: Swap the anchor back out for the real element
-    this._meta.anchorNode.replaceWith(this.el);
+    this._meta.isHidden = true;
+    // Always create the anchor so the layout engine knows what to use during append()
+    this._meta.anchorNode = document.createComment(
+      `cardboard-hidden:${this.el.tagName.toLowerCase()}`,
+    );
 
-    // Crucial: Sever the reference to allow Garbage Collection
-    this._meta.anchorNode = null;
-    this._meta.isHidden = false;
+    if (this.el.parentNode) {
+      this.el.replaceWith(this._meta.anchorNode);
+      triggerDetached(this.el);
+    }
+    return this;
   }
 
   /**
-   * Hide this element (removed from DOM)
-   * **USE WITH CAUTION**: Not intended to be used in most cases.
-   * @hidden
+   * Shows a hidden element. Can be called even if the element is not yet in the DOM.
    */
-  async hide() {
-    // 1. Only guard against already being hidden
-    if (this._meta.isHidden) return;
+  show(): this {
+    if (!this._meta.isHidden) return this;
 
-    // 2. Always create the anchor and mutate state
-    this._meta.anchorNode = document.createComment(
-      `cardboard-hidden:${this.id || 'tag'}`,
-    );
-    this._meta.isHidden = true;
-
-    // 3. ONLY execute the DOM swap if it is actually attached to the DOM right now
-    if (this.el.parentNode) {
-      this.el.replaceWith(this._meta.anchorNode);
+    if (this._meta.anchorNode && this._meta.anchorNode.parentNode) {
+      this._meta.anchorNode.replaceWith(this.el);
+      triggerAttached(this.el);
     }
+
+    this._meta.anchorNode = null;
+    this._meta.isHidden = false;
+    return this;
   }
 
   /**
@@ -311,18 +317,19 @@ export class CTag {
     if (observable.changed) {
       const listener = (newValue: T) => onChange(this, newValue);
       observable.changed(listener);
+      listener(observable.value);
 
-      this._destroyers.push(() => {
+      this.onTeardown(() => {
         // Destroy reference to the observable, we don't need it anymore
-        observable.remove(listener);
-        (observable as any) = null;
+        if (observable) {
+          observable.remove(listener);
+          (observable as any) = null;
+        }
       });
-    }
- else {
-      console.warn('An invalid Observable was supplied to `tag.consume`');
+    } else {
+      console.warn("An invalid Observable was supplied to `tag.consume`");
     }
 
-    onChange(this, observable.value);
     return this;
   }
 
@@ -391,13 +398,13 @@ export class CTag {
    */
   hideIf<T>(observable: IObservable<T>, invert = false) {
     const handleHide = (_: any, value: any) => {
-      const shouldHide = invert ? !value : !!value;
+      const hide = !!value;
+      const shouldHide = invert ? !hide : hide;
 
       // Let the methods handle their own state mutation!
       if (shouldHide) {
         void this.hide();
-      }
- else {
+      } else {
         void this.show();
       }
     };
@@ -495,7 +502,7 @@ export class CTag {
   textIf<T>(
     observable: IObservable<T>,
     text: string | ((self: CTag) => string),
-    elseText: string | ((self: CTag) => string) = '',
+    elseText: string | ((self: CTag) => string) = "",
     invert = false,
   ) {
     return this.doIf(
@@ -514,7 +521,7 @@ export class CTag {
   textIfNot<T>(
     observable: IObservable<T>,
     text: string | ((self: CTag) => string),
-    elseText: string | ((self: CTag) => string) = '',
+    elseText: string | ((self: CTag) => string) = "",
   ) {
     return this.textIf(observable, text, elseText, true);
   }
@@ -527,7 +534,7 @@ export class CTag {
   attrIf<T>(
     observable: IObservable<T>,
     attr: CommonAttributes,
-    value: string | ((self: CTag) => string) = '',
+    value: string | ((self: CTag) => string) = "",
     invert = false,
   ) {
     return this.doIf(
@@ -546,7 +553,7 @@ export class CTag {
   attrIfNot<T>(
     observable: IObservable<T>,
     attr: CommonAttributes,
-    value: string | ((self: CTag) => string) = '',
+    value: string | ((self: CTag) => string) = "",
   ) {
     return this.attrIf(observable, attr, value, true);
   }
@@ -556,7 +563,7 @@ export class CTag {
    * If `invert` is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
    */
   disableIf<T>(observable: IObservable<T>, invert = false) {
-    return this.attrIf(observable, 'disabled', '', invert);
+    return this.attrIf(observable, "disabled", "", invert);
   }
 
   /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
@@ -572,7 +579,7 @@ export class CTag {
   styleIf<T>(
     observable: IObservable<T>,
     style: string,
-    value: string | ((self: CTag) => string) = '',
+    value: string | ((self: CTag) => string) = "",
     invert = false,
   ) {
     return this.doIf(
@@ -590,7 +597,7 @@ export class CTag {
   styleIfNot<T>(
     observable: IObservable<T>,
     style: string,
-    value: string | ((self: CTag) => string) = '',
+    value: string | ((self: CTag) => string) = "",
   ) {
     return this.styleIf(observable, style, value, true);
   }
@@ -785,7 +792,7 @@ export class CTag {
   /** Set multiple styles at once */
   setStyle(styles: StyleMap) {
     for (const key in styles) {
-      this.addStyle(key, styles[key] ?? '');
+      this.addStyle(key, styles[key] ?? "");
     }
     return this;
   }
@@ -817,7 +824,7 @@ export class CTag {
   }
 
   /** Adds a single attribute to the element */
-  addAttr(key: CommonAttributes, value: string = '') {
+  addAttr(key: CommonAttributes, value: string = "") {
     this.el.setAttribute(key, value);
     return this;
   }
@@ -890,13 +897,9 @@ export class CTag {
     evtName: K | string,
     fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void,
   ): CTag {
-    if (fn) {
-      const cb = (evt: any) => fn(this, evt);
-      this.el.addEventListener(evtName, cb);
-      this._destroyers.push(() => {
-        this.el.removeEventListener(evtName, cb);
-      });
-    }
+    const cb = (evt: Event) => fn(this, evt as HTMLElementEventMap[K]);
+    this.el.addEventListener(evtName, cb);
+    this.onTeardown(() => this.el.removeEventListener(evtName, cb));
     return this;
   }
 
@@ -918,78 +921,104 @@ export class CTag {
     return this;
   }
 
-  // TODO: nombrekeff: maybe remove these convenience methods. Would free some space in the bundle
+  /**
+   * Lifecycle Convenience Methods
+   */
+
+  onAttached(fn: () => void): this {
+    onLifecycle(this, "attached", fn);
+    return this;
+  }
+
+  onDetached(fn: () => void): this {
+    onLifecycle(this, "detached", fn);
+    return this;
+  }
+
+  /**
+   * Registers a hook that runs before removal.
+   * Returning a Promise will defer the physical removal until it resolves.
+   * Returning false will cancel the removal operation.
+   */
+  onBeforeRemove(fn: () => boolean | Promise<boolean>): this {
+    onLifecycle(this, "beforeRemove", fn);
+    return this;
+  }
+
+  /**
+   * Registers a teardown function (e.g., for clearing observables or event listeners).
+   * These are fired during `destroy()`.
+   */
+  onTeardown(fn: () => void): this {
+    onLifecycle(this, "teardowns", fn);
+    return this;
+  }
+
   /** Add a **click** event listener */
   clicked(fn: (tag: CTag, evt: MouseEvent) => void): CTag {
-    return this.on('click', fn);
+    return this.on("click", fn);
   }
 
   /** Add a **keypress** event listener */
   keyPressed(fn: (tag: CTag, evt: KeyboardEvent) => void, key?: string): CTag {
     if (key) {
-      return this.on('keypress', (_, evt) => {
+      return this.on("keypress", (_, evt) => {
         if (evt.code === key || evt.key === key) {
           fn(this, evt);
         }
       });
     }
 
-    return this.on('keypress', fn);
+    return this.on("keypress", fn);
   }
 
   /** Add a **change** event listener */
   changed(fn: (tag: CTag, evt: Event) => void): CTag {
-    return this.on('change', fn);
+    return this.on("change", fn);
   }
 
   /** Add a **submit** event listener */
   submited(fn: (tag: CTag, evt: SubmitEvent) => void): CTag {
-    return this.on('submit', fn);
+    return this.on("submit", fn);
   }
 
   /**
    * Remove element from the DOM, but keep data as is. Can then be added again.
    * To fully remove the element use {@link destroy}
-   *
-   * **USE WITH CAUTION!** Not intended to be used in most cases.
    */
-  async remove(): Promise<CTag> {
-    // Might be a promise (it's overriden by `withLifecycle`)
-    const result: any = this.el.remove();
-    if (result instanceof Promise) {
-      await result;
-    }
-
-    await (this.el as any).remove();
+  remove() {
+    this.el.remove();
     return this;
   }
 
   /**
-   * Destroy the element, should not be used afterwards
-   *
-   * **USE WITH CAUTION!** Not intended to be used in most cases.
+   * Performs a full recursive destruction of the component and its logical children.
+   * This calls remove() to handle DOM detachment and then severs all internal
+   * references to ensure memory is reclaimed.
    */
   destroy(): void {
-    context.intObs?.unobserve(this.el);
-    this._children.forEach((cl) => {
-      if (cl instanceof CTag) {
-        cl.destroy();
-      }
-    });
+    this.remove();
+    triggerTeardown(this.el);
 
-    this._destroyers.forEach((listener) => listener());
+    // Recursively destroy all logical children in the tree
+    for (const child of this._children) {
+      if (child instanceof CTag) {
+        child.destroy();
+      }
+    }
+
+    // Sever internal references
     this._children = [];
-    this._cachedChildren = [];
-    void this.remove();
+    this.parent = null;
   }
 
   /**
    * Clears the `value` of the element. If you are getting the value and then clearing, consider using {@link consumeValue}
    */
   clear(): CTag {
-    (this.el as any).value = '';
+    (this.el as any).value = "";
     // Trigger input event, so clearing is treated as input!
-    this.el.dispatchEvent(new InputEvent('input'));
+    this.el.dispatchEvent(new InputEvent("input"));
     return this;
   }
 
@@ -1007,7 +1036,7 @@ export class CTag {
    * Set whether the element should be disabled or not. It sets the `disabled` attribute.
    */
   setDisabled(disabled: boolean): CTag {
-    return disabled ? this.addAttr('disabled') : this.rmAttr('disabled');
+    return disabled ? this.addAttr("disabled") : this.rmAttr("disabled");
   }
 
   /**
@@ -1053,9 +1082,9 @@ export class CTag {
   }
 
   private _getElementForChild(cl: TagChild): Node | null {
-    if (typeof cl === 'string') return document.createTextNode(cl);
+    if (typeof cl === "string") return document.createTextNode(cl);
     if (isObservable(cl)) {
-      return text('$val', { val: cl as IObservable });
+      return text("$val", { val: cl as IObservable });
     }
 
     if (cl instanceof CTag) {
@@ -1067,37 +1096,6 @@ export class CTag {
 
     if (cl instanceof Node) return cl;
     return null;
-  }
-
-  // Update cached child nodes whenever this elements childs change
-  // This makes it a lot faster to get children.
-  // If the children have not changed, there's no need to set the children, use the previous ones
-
-  private _observer?: MutationObserver;
-
-  private _getChildren(element: HTMLElement) {
-    if (!this._observer) {
-      this._observer = new window.MutationObserver(() => {
-        this._cacheChildren(element);
-      });
-      this._observer.observe(this.el, { childList: true });
-      this._cacheChildren(element);
-    }
-    return this._cachedChildren;
-  }
-
-  private _cacheChildren(element: HTMLElement) {
-    const nodes = element.childNodes,
-      children: Node[] = [];
-    let i = nodes.length;
-
-    while (i--) {
-      if (nodes[i].nodeType === 1) {
-        children.unshift(nodes[i]);
-      }
-    }
-
-    this._cachedChildren = children;
   }
 
   private _mapChildren(children: TagChildren): Node[] {

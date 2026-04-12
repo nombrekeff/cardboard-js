@@ -1,5 +1,5 @@
 import { RouteMatcher, routeMatcher } from './route-matcher.js';
-import { allTags, type CTag, onLifecycle, withLifecycle } from '../cardboard.js';
+import { allTags, type CTag, onLifecycle } from '../cardboard.js';
 
 const { div, a } = allTags;
 
@@ -98,16 +98,10 @@ export class Router<T extends Record<string, Route> = Record<string, Route>> {
   private _hookLifecycle(route: CTag) {
     const options = this._options;
     if (!options.unmounted && !options.mounted) return;
-    withLifecycle(
-      route,
-      {
-        mounted: options.mounted,
-        unmounted: options.unmounted,
-        beforeUnmounted: options.beforeUnmounted,
-      }
-    );
 
-    onLifecycle(route, options.mounted, options.unmounted, options.beforeUnmounted);
+    onLifecycle(route, "attached", options.mounted);
+    onLifecycle(route, "detached", options.unmounted);
+    onLifecycle(route, "beforeRemove", options.beforeUnmounted);
   }
 
   // Follow aliases until a valid route is found
@@ -217,7 +211,7 @@ export const makeRouter = <T extends Record<string, Route> = Record<string, Rout
 
 export const Link = (
   child: string | CTag,
-  path,
+  path: string,
   query?: Record<string, string>,
 ) => {
   return a(child)

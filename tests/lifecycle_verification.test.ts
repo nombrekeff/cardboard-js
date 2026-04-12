@@ -1,5 +1,5 @@
 import { tag } from '../src/tag.js';
-import { withLifecycle } from '../src/lifecycle.js';
+import { onLifecycle } from '../src/lifecycle.js';
 import { init } from '../src/cardboard.js';
 
 describe('Lifecycle Verification', () => {
@@ -9,7 +9,7 @@ describe('Lifecycle Verification', () => {
     it('should call mounted when added to DOM', async () => {
         const mountedMock = jest.fn();
         const div = tag('div');
-        withLifecycle(div, { mounted: mountedMock });
+        onLifecycle(div, 'attached', mountedMock);
 
         // Ensure global observer is active (it is initialized in cardboard.init usually, but we can access context)
         // context.obs is likely lazy loaded in onLifecycle
@@ -25,7 +25,7 @@ describe('Lifecycle Verification', () => {
     it('should call unmounted when removed from DOM', async () => {
         const unmountedMock = jest.fn();
         const div = tag('div');
-        withLifecycle(div, { unmounted: unmountedMock });
+        onLifecycle(div, 'detached', unmountedMock);
 
         document.body.appendChild(div.el);
         await new Promise(resolve => setTimeout(resolve, 50));

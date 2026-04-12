@@ -36,7 +36,7 @@ describe("Conditional show/hide", () => {
     hide.value = true;
 
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(["cardboard-hidden:tag"]);
+    expect(getChildStr()).toEqual(["cardboard-hidden:p"]);
 
     hide.value = false;
     await new Promise((r) => setTimeout(r, 20));
@@ -61,31 +61,31 @@ describe("Conditional show/hide", () => {
     expect(getChildStr()).toEqual(["0", "1", "2"]);
     hide1.value = true;
     await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(getChildStr()).toEqual(["0", "cardboard-hidden:tag", "2"]);
+    expect(getChildStr()).toEqual(["0", "cardboard-hidden:p", "2"]);
     hide0.value = true;
     await new Promise((r) => setTimeout(r, 20));
     expect(getChildStr()).toEqual([
-      "cardboard-hidden:tag",
-      "cardboard-hidden:tag",
+      "cardboard-hidden:p",
+      "cardboard-hidden:p",
       "2",
     ]);
     hide2.value = true;
     await new Promise((r) => setTimeout(r, 20));
     expect(getChildStr()).toEqual([
-      "cardboard-hidden:tag",
-      "cardboard-hidden:tag",
-      "cardboard-hidden:tag",
+      "cardboard-hidden:p",
+      "cardboard-hidden:p",
+      "cardboard-hidden:p",
     ]);
     hide2.value = false;
     await new Promise((r) => setTimeout(r, 20));
     expect(getChildStr()).toEqual([
-      "cardboard-hidden:tag",
-      "cardboard-hidden:tag",
+      "cardboard-hidden:p",
+      "cardboard-hidden:p",
       "2",
     ]);
     hide0.value = false;
     await new Promise((r) => setTimeout(r, 20));
-    expect(getChildStr()).toEqual(["0", "cardboard-hidden:tag", "2"]);
+    expect(getChildStr()).toEqual(["0", "cardboard-hidden:p", "2"]);
     hide1.value = false;
     await new Promise((r) => setTimeout(r, 20));
     expect(getChildStr()).toEqual(["0", "1", "2"]);

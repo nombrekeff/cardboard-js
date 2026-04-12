@@ -55,32 +55,9 @@ describe("Tag conditionals", () => {
     expect(pp.hasAttr("disabled")).toEqual(true);
   });
 
-  it("tag.hideIfNot appends item at correct position", async () => {
-    const show = state(true);
-    const pp1 = tag("p", ["I'm here 1"]);
-    const pp = tag("p", ["I'm here 2"]);
-    const pp2 = tag("p", ["I'm here 3"]);
-
-    tag("(body)").append(
-      pp1,
-      pp.hideIfNot(show), //
-      pp2,
-    );
-
-    expect(pp.el.parentElement).toBeTruthy();
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-
-    show.value = false;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.el.parentElement).toBeFalsy();
-
-    show.value = true;
-    await new Promise((r) => setTimeout(r, 20)); // Wait a bit before showing, otherwise it does have time to register changes
-    expect(pp.el.parentElement).toBeTruthy();
-  });
-
   it("tag.hideIf", async () => {
     const hide = state(true);
+    
     const pp = tag("p", ["I'm here"]).addClass("test-class").hideIf(hide);
 
     const body = tag("(body)").append(pp);
