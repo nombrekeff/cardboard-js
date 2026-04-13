@@ -17,11 +17,11 @@ import {
   stylesIfNot,
   textIf,
   textIfNot,
-  when,
 } from './reactivity.js';
 import { CTag } from '../../tag.js';
-import type { IObservable, StyleMap } from '../../types.js';
+import type { IObservable, Primitive, StyleMap, TextObj } from '../../types.js';
 import { Blueprint, observe } from '../../observables.js';
+import { text as createTextTag } from '../../text.js';
 
 /**
  * Chaining Extensions for CTag
@@ -116,6 +116,14 @@ declare module '../../tag.js' {
       observable: IObservable<T>,
       styles: StyleMap | ((self: CTag) => StyleMap),
     ): this;
+    text<
+      T extends Record<string, Primitive>,
+      K extends TextObj,
+      J extends string
+    >(
+      textTemplate?: string,
+      obj?: IObservable<T> | K
+    ): J extends string ? this : string;
   }
 }
 
@@ -213,4 +221,14 @@ CTag.prototype.stylesIf = function (observable, styles, invert = false) {
 
 CTag.prototype.stylesIfNot = function (observable, styles) {
   return this.use(stylesIfNot(observable, styles));
+};
+
+const originalText = CTag.prototype.text as Function;
+
+CTag.prototype.text = function (textTemplate?: string, obj?: any) {
+  if (obj && textTemplate) {
+    return this.setChildren([createTextTag(textTemplate, obj)]);
+  }
+
+  return originalText.call(this, textTemplate);
 };

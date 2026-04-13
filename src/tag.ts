@@ -298,32 +298,16 @@ export class CTag {
   }
 
   /**
-   * If {textTemplate} is provided, it sets the `textContent` of the element.
-   * If {textTemplate} is provided, and a state is provided. It will use the {textTemplate} as a template,
-   * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
-   *
-   * If no argument is provided, it returns the `textContent` of the element.
-   * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
+   * If no argument is provided, returns the `textContent` of the element.
+   * If a string is provided, sets the `textContent`.
    */
-  text<
-    T extends Record<string, Primitive>,
-    K extends TextObj,
-    J extends string,
-  >(
-    textTemplate?: string,
-    obj?: IObservable<T> | K,
-  ): J extends string ? CTag : string {
-    if (textTemplate == null) {
-      return this.el.textContent as any;
+  text(text?: string): string | this {
+    if (text == null) {
+      return this.el.textContent || "";
     }
 
-    if (obj && textTemplate) {
-      return this.setChildren([text(textTemplate, obj)]) as any;
-    }
-
-    this.el.textContent = textTemplate;
-
-    return this as any;
+    this.el.textContent = text;
+    return this;
   }
 
   /**

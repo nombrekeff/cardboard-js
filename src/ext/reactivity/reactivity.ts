@@ -1,8 +1,12 @@
 import type { CommonAttributes } from "../../attributes.js";
-import { Blueprint, createObservable, isObservable } from "../../observables.js";
+import {
+  Blueprint,
+  createObservable,
+  isObservable,
+} from "../../observables.js";
 import { CTag } from "../../tag.js";
-import { text } from "../../text.js";
-import type { IObservable, StyleMap } from "../../types.js";
+import { text as createTextTag } from "../../text.js";
+import type { IObservable, Primitive, StyleMap, TextObj } from "../../types.js";
 import { val } from "../../util.js";
 
 /*
@@ -27,7 +31,7 @@ declare module "../../types.js" {
 // Runtime Augmentation: Teach CTag how to handle Observables as children
 CTag.childTransformers.push((child) => {
   if (isObservable(child)) {
-    return text("$val", { val: child as IObservable<any> });
+    return createTextTag("$val", { val: child as IObservable<any> });
   }
   return undefined;
 });
@@ -103,27 +107,6 @@ export const consume = <T>(
     }
 
     console.warn("An invalid Observable was supplied to `tag.consume`");
-  };
-};
-
-/**
- * Returns a {@link IObservable} that fires when the Event `evtName` is fired in this element
- * The return value of `fn` will be passed to the listeners of the {@link IObservable}
- *
- * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
- * @param {fn} fn - The callback function to execute when the event is triggered.
- * @returns {IObservable<any>} - An observable that emits the return value of the callback function when the event is triggered.
- */
-export const when = <K extends keyof HTMLElementEventMap>(
-  evtName: K | string,
-  fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
-) => {
-  return (tag: CTag) => {
-    const cons = createObservable<any>({});
-    tag.on(evtName, (t, evt) => {
-      cons.dispatch(fn(t, evt));
-    });
-    return cons;
   };
 };
 
@@ -330,5 +313,22 @@ export const stylesIfNot = <T>(
 ) => {
   return (tag: CTag) => {
     tag.use(stylesIf(observable, styles, true));
+  };
+};
+
+/**
+ * Binds a reactive text template to the tag.
+ * Overwrites all current children/text in the tag.
+ */
+export const template = <
+  T extends Record<string, Primitive>,
+  K extends TextObj,
+>(
+  textTemplate: string,
+  obj: IObservable<T> | K,
+) => {
+  return (tag: CTag) => {
+    // Generate the reactive text node and set it as the only child
+    tag.setChildren([createTextTag(textTemplate, obj)]);
   };
 };
