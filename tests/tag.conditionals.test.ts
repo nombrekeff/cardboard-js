@@ -41,6 +41,48 @@ describe("Tag conditionals", () => {
     show.value = !show.value;
     expect(done).toEqual(true);
   });
+
+  it("tag.doIf", async () => {
+    let done = false;
+    const show = state(false);
+    const pp = tag("p", ["I'm here"]);
+
+    tag("(body)").append(
+      pp.doIf(
+        show,
+        () => (done = true),
+        () => (done = false),
+      ),
+    );
+
+    expect(done).toEqual(false);
+    show.value = true;
+    expect(done).toEqual(true);
+  });
+
+  it("tag.doIf unsubscribes on destroy", async () => {
+    let truthyRuns = 0;
+    let falsyRuns = 0;
+    const enabled = state(false);
+    const pp = tag("p").doIf(
+      enabled,
+      () => (truthyRuns += 1),
+      () => (falsyRuns += 1),
+    );
+
+    tag("(body)").append(pp);
+
+    expect(truthyRuns).toEqual(0);
+    expect(falsyRuns).toEqual(1);
+
+    pp.destroy();
+    enabled.value = true;
+    enabled.value = false;
+
+    expect(truthyRuns).toEqual(0);
+    expect(falsyRuns).toEqual(1);
+  });
+
   it("tag.attrIfNot", async () => {
     let done = false;
     const show = state(true);
