@@ -1,14 +1,10 @@
 import type {
   ChildTransformer,
-  IObservable,
-  Primitive,
   TagChild,
   TagChildren,
   TagConfig,
-  TextObj,
 } from "./types.js";
 import { TagName } from "./tag-names.js";
-import { text } from "./text.js";
 import { CommonAttributes } from "./attributes.js";
 import { checkInitialized, context } from "./context.js";
 import {
