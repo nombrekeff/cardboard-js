@@ -5,22 +5,25 @@ import { NestedStyleMap } from "./types.js";
 const STYLE_TAG_ID = 'cardboard-styles';
 
 export class StyleManager {
-    styleTag: CTag;
-    rules: Set<string>;
+    private _styleTag?: CTag;
+    rules: Set<string> = new Set();
 
-    constructor() {
-        this.rules = new Set();
-        let styleTag: CTag | null = null;
-
-        try {
-            styleTag = tag(`(#${STYLE_TAG_ID})`);
-        } catch (error) {
-            styleTag = tag('style').setId(STYLE_TAG_ID);
+    // Lazy load the style tag ONLY when needed
+    private get styleTag(): CTag {
+        if (!this._styleTag) {
+            try {
+                this._styleTag = tag(`(#${STYLE_TAG_ID})`);
+            } catch (error) {
+                this._styleTag = tag('style').setId(STYLE_TAG_ID);
+                // Safe appending: Ensure document.head exists before appending
+                if (document.head) {
+                    tag(document.head).append(this._styleTag);
+                } else {
+                    console.warn("Cardboard-JS: document.head not found. Styles may not apply correctly.");
+                }
+            }
         }
-
-        tag('(head)').append(styleTag);
-
-        this.styleTag = styleTag;
+        return this._styleTag;
     }
 
     public add(styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) {
@@ -28,7 +31,8 @@ export class StyleManager {
 
         if (!this.rules.has(css)) {
             this.rules.add(css);
-            this.styleTag.append(css);
+            // Uses the getter, creating and mounting the tag just-in-time
+            this.styleTag.append(css); 
         }
     }
 }
