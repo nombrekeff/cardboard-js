@@ -838,7 +838,6 @@ type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | NestedStyleMap | StyleMap;
 };
 type StyleSet = Record<string, NestedStyleMap>;
-type TagChildren = TagChild[];
 type EventCallback<T extends EventName> = (
   tag: CTag,
   evt: HTMLElementEventMap[T],
@@ -849,8 +848,8 @@ type EventMap = {
 };
 type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
 interface IObservable<T = any> {
-  changed: (callback: (newValue: T) => void) => IObservable<T>;
-  remove: (callback: (newValue: T) => void) => IObservable<T>;
+  changed: (callback: (newValue: T | undefined) => void) => IObservable<T>;
+  remove: (callback: (newValue: T | undefined) => void) => IObservable<T>;
   dispatch: (newValue: T) => IObservable<T>;
   destroy: () => void;
   computed: <K>(transform: (val: T) => K) => IObservable<K>;
@@ -872,7 +871,32 @@ interface WithLength {
   length: number;
 }
 type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
-type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
+
+/**
+ * The Global Registry for Tag Children.
+ * Plugins can use module augmentation on this interface to add new supported types.
+ */
+interface TagChildRegistry {
+  string: string;
+  number: number;
+  node: Node;
+  ctag: CTag;
+  // NOTE: IObservable is explicitly removed from core!
+}
+
+/**
+ * Evaluates to: string | number | Node | CTag | ...anything injected later
+ */
+type TagChild = TagChildRegistry[keyof TagChildRegistry];
+
+/**
+ * If you support nested arrays like tag('div', [[child1], child2])
+ * you can define it recursively, otherwise just:
+ */
+type TagChildren = TagChild[];
+
+type ChildTransformer = (child: any) => TagChild | Node | null | undefined;
+
 interface TagConfig {
   style?: StyleMap;
   attr?: Record<CommonAttributes & {}, string | undefined>;
@@ -884,7 +908,7 @@ interface TagConfig {
   className?: string;
 }
 
-type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
+type PickArgType<T> = T extends "style" ? StyleSet[] : TagChildren;
 type AllTags = {
   [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
     /**
@@ -895,12 +919,16 @@ type AllTags = {
 };
 
 type AtLeastOne<T> = {
-  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
-}[keyof T]
+  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>;
+}[keyof T];
 
 type StyleManager = {
-  add: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => void;
-}
+  add: (
+    styleSheet:
+      | Record<string, NestedStyleMap>
+      | Array<Record<string, NestedStyleMap>>,
+  ) => void;
+};
 
 /**
  * This is the main class in Cardboard. Even though Cardboard is designed to not need to use this class directly, you can if you want.
@@ -908,27 +936,18 @@ type StyleManager = {
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
 declare class CTag {
+    static childTransformers: ChildTransformer[];
     /** Reference to the HTMLElement that this @type {CTag} represents */
     el: HTMLElement & {
-        remove: () => (Promise<boolean> | any);
+        remove: () => Promise<boolean> | any;
     };
+    parent: CTag | null;
     private _visible;
     get visible(): boolean;
     set visible(newValue: boolean);
-    /**
-     * Any function inside this array, will be called whenever the CTag is {@link destroy}ed
-     * Used to remove HTML Event Listeners and Observable listeners
-     * @hidden
-     */
-    private readonly _destroyers;
-    /** @param parent Reference to the parent @type {CTag} of this element. */
-    private _parent?;
-    get parent(): CTag | undefined;
-    set parent(newParent: CTag);
     /** Holds the list of all children, the ones that are currently in the DOM and those that are not. */
     private _children;
-    private _cachedChildren;
-    get children(): Node[];
+    get children(): TagChild[];
     private readonly _meta;
     /**
      * Gets the value of the `HTMLElement` that this CTag represents, if it has a value.
@@ -952,8 +971,8 @@ declare class CTag {
      */
     get style(): CSSStyleDeclaration;
     /**
-    * Gets the classname of the `HTMLElement` that this CTag represents.
-    */
+     * Gets the classname of the `HTMLElement` that this CTag represents.
+     */
     get className(): string;
     /**
      * Gets the classlist of the `HTMLElement` that this CTag represents.
@@ -1007,210 +1026,16 @@ declare class CTag {
     /**
      * If the element is currently hidden it will add this element to the page wherever it's supposed to be.
      * I will be placed exactly in the correct position, even if there are other elements hidden.
-     * **USE WITH CAUTION**: Not intended to be used in most cases.
-     * @hidden
      */
-    show(): Promise<boolean>;
+    hide(): this;
     /**
-     * Hide this element (removed from DOM)
-     * **USE WITH CAUTION**: Not intended to be used in most cases.
-     * @hidden
+     * Shows a hidden element. Can be called even if the element is not yet in the DOM.
      */
-    hide(): Promise<void>;
+    show(): this;
     /**
-     * Whenever the `observable` changes, it will call the `callback`.
-     * This is helpful to react to changes in observables and update the tag accordingly.
-     *
-     * You can also do it directly, although you need to keep a reference to the tag yourself.
-     *
-     * @param observable - The observable to listen to.
-     * @param callback - The callback to call when the observable changes.
-     * @returns {CTag} - The current CTag instance, allowing for method chaining.
-     *
-     * @example
-     * ```ts
-     * const disabled = createObservable(false);
-     * const tag = new CTag('div');
-     * tag.consume(disabled, (self, isDisabled) => {
-     *   console.log('New value:', isDisabled);
-     *   self.setDisabled(isDisabled);
-     * });
-     * ```
+     * Applies a plugin function to this tag and continues the chain.
      */
-    consume<T>(observable: IObservable<T>, callback: (self: CTag, newValue?: T) => void): this;
-    /**
-     * When the observable changes, it will call `ifTrue` when the observable is true. Or `ifFalse` when the observable is false.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link doIfNot}
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {function} ifTrue - The function to call when the observable is truey.
-     * @param {function} ifFalse - The function to call when the observable is falsey.
-     * @param {boolean} [invert=false] - If true, the condition will be inversed.
-     * @returns {CTag} - The current CTag instance, allowing for method chaining.
-     */
-    doIf<T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
-    /**
-     * The oposite of {@link doIf}
-     * When the observable changes, it will call `ifTrue` if the observable is false. Or `ifFalse` if the observable is true.
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {function} ifTrue - The function to call when the observable is falsy.
-     * @param {function} ifFalse - The function to call when the observable is truthy.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     */
-    doIfNot<T>(observable: IObservable<T>, ifTrue: (value: T) => void, ifFalse: (value: T) => void): this;
-    /**
-     * Hide this element when the consumer is truthy. Updates whenever the observable changes.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link hideIfNot}
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {boolean} [invert=false] - If true, the condition will be inversed.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     *
-     * @example
-     * ```ts
-     * const isHidden = createObservable(false);
-     * const tag = new CTag('div');
-     * tag.hideIf(isHidden); // Hides the tag when isHidden is true
-     * ```
-     */
-    hideIf<T>(observable: IObservable<T>, invert?: boolean): this;
-    /**
-     * Hide this element when the `observable` is falsy. Updates whenever the `observable` changes.
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     *
-     * @example
-     * ```ts
-     * const isVisible = createObservable(false);
-     * const tag = new CTag('div');
-     * tag.hideIfNot(isVisible); // Hides the tag when isVisible is false
-     * ```
-     */
-    hideIfNot<T>(observable: IObservable<T>): this;
-    /**
-     * Adds classes to the element when the `observable` is truthy, and removes them when it is falsy.
-     * Updates whenever the `observable` changes.
-     * You can pass in an array of classes, or a function that returns a list of classes.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link classIfNot}
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
-     * @param {boolean} [invert=false] - If true, the condition will be inversed.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     *
-     * @example
-     * ```ts
-     * const isActive = createObservable(true);
-     * const tag = new CTag('div');
-     *
-     * // Adds 'active' and 'highlighted' classes when isActive is true
-     * tag.classIf(isActive, ['active', 'highlighted']);
-     * ```
-     */
-    classIf<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
-    /**
-     * Adds classes to the element when the `observable` is falsy, and removes them when it is truthy.
-     * Updates whenever the `observable` changes.
-     * You can pass in an array of classes, or a function that returns a list of classes.
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     *
-     * @example
-     * ```ts
-     * const isActive = createObservable(true);
-     * const tag = new CTag('div');
-     *
-     * // Adds 'inactive' classes when isActive is false
-     * tag.classIfNot(isActive, ['inactive']);
-     * ```
-     */
-    classIfNot<T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[])): this;
-    /**
-     * Sets `text` when the consumer is true, and sets `elseText (default='')` when the consumer is false.
-     * Both `text` and `elseText` can be a string or a function that returns a string.
-     * Updates whenever the observable changes.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link textIfNot}
-     *
-     * @param {IObservable} observable - The observable to listen to.
-     * @param {string | ((self: CTag) => string)} text - The text to set when the observable is truthy. Can be a string or a function that returns a string.
-     * @param {string | ((self: CTag) => string)} [elseText=''] - The text to set when the observable is falsy. Can be a string or a function that returns a string. Defaults to an empty string.
-     * @param {boolean} [invert=false] - If true, the condition will be inversed.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     */
-    textIf<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
-    /**
-     * Sets text when the consumer is falsy, and sets `elseText (default='')` when the consumer is truthy.
-     * Both text and `elseText` can be a string or a function that returns a string.
-     * Updates whenever the observable changes.
-     */
-    textIfNot<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
-    /**
-     * Add attribute to the element when the consumer is truthy. Updates whenever the observable changes.
-     * `value` can be a string or a function that returns a string.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link attrIfNot}
-     */
-    attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string), invert?: boolean): this;
-    /**
-     * Add attribute to the element when the consumer is falsy. Updates whenever the observable changes.
-     * `value` can be a string or a function that returns a string.
-     * If `invert` is set to true, the condition will be inversed
-     */
-    attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string)): this;
-    /**
-     * Disable this element when the consumer is truthy. Updates whenever the observable changes.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link disableIfNot}
-     */
-    disableIf<T>(observable: IObservable<T>, invert?: boolean): this;
-    /** Disable this element when the consumer is falsy. Updates whenever the observable changes. */
-    disableIfNot<T>(observable: IObservable<T>): this;
-    /**
-     * Add style to the element when the consumer is truthy. Updates whenever the observable changes.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link styleIfNot}
-     * `value` can be a string or a function that returns a string.
-     */
-    styleIf<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
-    /**
-     * Add style to the element when the consumer is falsy. Updates whenever the observable changes.
-     * `value` can be a string or a function that returns a string.
-     */
-    styleIfNot<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)): this;
-    /**
-     * Add multiple styles to the element when the consumer is truthy. Updates whenever the observable changes.
-     * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-     * If `invert` is set to true, the condition will be inversed, but you can also use {@link stylesIfNot}
-     */
-    stylesIf<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
-    /**
-     * Add multiple styles to the element when the consumer is falsy. Updates whenever the observable changes.
-     * `styles` can be a {@link StyleMap} or a function that returns a {@link StyleMap}.
-     * For the oposite use  {@link stylesIf}
-     */
-    stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
-    /**
-     * Adds a `stylesheet` to main style manager, and adds the `className` to the element.
-     * This is useful for adding styles to the element that are not inline styles.
-     * By doing this we can have just one style definition for tags that will have the same styles.
-     *
-     * @see https://github.com/nombrekeff/cardboard-js/wiki/Styling#6-advanced-styling-child-elements
-     *
-     * @param {NestedStyleMap} stylesheet - The stylesheet to add to the style manager.
-     * @param {string} [className] - The class name to add to the element. If not provided, a random UUID will be generated.
-     * @return {CTag} - The current CTag instance, allowing for method chaining.
-     */
-    styled(stylesheet: NestedStyleMap | undefined, className?: string): this;
-    /**
-     * If {textTemplate} is provided, it sets the `textContent` of the element.
-     * If {textTemplate} is provided, and a state is provided. It will use the {textTemplate} as a template,
-     * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
-     *
-     * If no argument is provided, it returns the `textContent` of the element.
-     * @see https://github.com/nombrekeff/cardboard-js/wiki/Managing-Text
-     */
-    text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IObservable<T> | K): J extends string ? CTag : string;
+    use<T extends CTag>(this: T, plugin: (tag: T) => void): T;
     /**
      * Configure the element in a single call by passing @param {TagConfig} c
      * instead of having to call a method for each property you want to change
@@ -1236,37 +1061,6 @@ declare class CTag {
      * ```
      */
     config(c: TagConfig): this;
-    /**
-     * Add classes to the elements class list.
-     *
-     * @param {...string} classes - The classes to add to the element's class list.
-     * @returns {CTag} - The current CTag instance, allowing for method chaining
-     *
-     * @example
-     * ```ts
-     * const tag = new CTag('div');
-     * tag.addClass('class1', 'class2');
-     * ```
-     */
-    addClass(...classes: string[]): this;
-    /** Set the elements class name */
-    setClassName(className: string): this;
-    /** Remove classes from class list */
-    rmClass(...classes: string[]): this;
-    /** Check if classes are present in this element */
-    hasClass(...classes: string[]): boolean;
-    /** Replace a class with another */
-    replaceClass(targetClass: string, replaceClass: string): this;
-    /** Toggle a class. If it's present it's removed, if it's not present its added. */
-    toggleClass(targetClass: string): CTag;
-    /** Add a single style */
-    addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>): this;
-    /** Set multiple styles at once */
-    setStyle(styles: StyleMap): this;
-    /** Remove styles */
-    rmStyle(...styleNames: string[]): this;
-    /** Check if this element has styles */
-    hasStyle(...styles: CssProperty[]): boolean;
     /** Adds a set of attributes to the element */
     setAttrs(attrs: Record<string, string | undefined>): this;
     /** Adds a single attribute to the element */
@@ -1276,20 +1070,11 @@ declare class CTag {
     /** Check if this element has attributes */
     hasAttr(...attr: CommonAttributes[]): boolean;
     /** Get an attributes value */
-    getAttr(attr: CommonAttributes): any;
+    getAttr(attr: CommonAttributes): string | null;
     /**
      * Listen to an event on the element. Like addEventListener.
      */
     listen<K extends keyof HTMLElementEventMap>(tag: CTag, evt: K, consumer: (self: CTag, other: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
-    /**
-     * Returns a {@link IObservable} that fires when the Event `evtName` is fired in this element
-     * The return value of `fn` will be passed to the listeners of the {@link IObservable}
-     *
-     * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
-     * @param {fn} fn - The callback function to execute when the event is triggered.
-     * @returns {IObservable<any>} - An observable that emits the return value of the callback function when the event is triggered.
-     */
-    when<K extends keyof HTMLElementEventMap>(evtName: K | string, fn: (self: CTag, evt: HTMLElementEventMap[K]) => any): IObservable<any>;
     /**
      * Add an event listener for a particular HTMLElement event
      *
@@ -1305,6 +1090,27 @@ declare class CTag {
      * @returns {CTag} - The current CTag instance, allowing for method chaining
      */
     once<K extends keyof HTMLElementEventMap>(evtName: K & string, fn: (tag: CTag, evt: HTMLElementEventMap[K]) => void): CTag;
+    /**
+     * Registers a hook that runs when the element is attached to the DOM.
+     * This is useful for running code that depends on the element being in the document, such as measuring its size or position.
+     */
+    onAttached(fn: () => void): this;
+    /**
+     * Registers a hook that runs when the element is detached from the DOM.
+     * This is useful for running cleanup code that depends on the element being in the document, such as clearing timers or intervals.
+     * Note that this is not the same as `destroy()`, which is a more comprehensive teardown method. `onDetached` is specifically for handling DOM detachment events.
+     */
+    onDetached(fn: () => void): this;
+    /**
+     * Registers a hook that runs before the element is removed from the DOM.
+     * This is useful for running cleanup code or preventing removal by returning false.
+     */
+    onBeforeRemove(fn: () => boolean | Promise<boolean>): this;
+    /**
+     * Registers a teardown function (e.g., for clearing observables or event listeners).
+     * These are fired during `destroy()`.
+     */
+    onTeardown(fn: () => void): this;
     /** Add a **click** event listener */
     clicked(fn: (tag: CTag, evt: MouseEvent) => void): CTag;
     /** Add a **keypress** event listener */
@@ -1314,16 +1120,15 @@ declare class CTag {
     /** Add a **submit** event listener */
     submited(fn: (tag: CTag, evt: SubmitEvent) => void): CTag;
     /**
-     * Remove element from the DOM, but keep data as is. Can then be added again.
-     * To fully remove the element use {@link destroy}
-     *
-     * **USE WITH CAUTION!** Not intended to be used in most cases.
+     * Remove this tag from the DOM and unlink it from its parent children list.
+     * The tag instance remains reusable and can be appended again later.
+     * To fully teardown the element use {@link destroy}.
      */
-    remove(): Promise<CTag>;
+    remove(): this;
     /**
-     * Destroy the element, should not be used afterwards
-     *
-     * **USE WITH CAUTION!** Not intended to be used in most cases.
+     * Performs a full recursive destruction of the component and its logical children.
+     * This calls remove() to handle DOM detachment and then severs all internal
+     * references to ensure memory is reclaimed.
      */
     destroy(): void;
     /**
@@ -1362,11 +1167,8 @@ declare class CTag {
      * @returns {CTag | undefined} - Returns the first CTag that matches the predicate, or undefined if no match is found.
      */
     findTag(predicate: (el: CTag) => boolean): CTag | undefined;
-    private _childrenFilterPredicate;
+    private _resolveChild;
     private _getElementForChild;
-    private _observer;
-    private _getChildren;
-    private _cacheChildren;
     private _mapChildren;
 }
 /**
@@ -1549,8 +1351,8 @@ declare const listState: <T>(initialData: T[]) => {
     readonly listValue: State<T>[];
     add: (item: T) => void;
     addAt: (item: T, index: number) => void;
-    remove: any;
-    removeWhere: any;
+    remove: (item: IObservableOr<T>) => void;
+    removeWhere: (cb: (item: T, index: number) => boolean) => void;
     length: IObservable<number>;
 };
 /**
@@ -1723,44 +1525,50 @@ declare function each<T>(observable: IObservableOr<T[]>, builder: (val: T, index
  */
 declare function diffList<T>(newData: T[], oldData: T[], key?: (item: T, index: number) => any): Array<DiffEntry<T>>;
 
+interface LifecycleHooks {
+    attached?: Set<() => void>;
+    /**
+     * Returning a Promise defers physical removal until it resolves.
+     * Returning false cancels the removal.
+     */
+    beforeRemove?: Set<() => boolean | Promise<boolean>>;
+    detached?: Set<() => void>;
+    teardowns?: Set<() => void>;
+    _fired?: {
+        attached: boolean;
+        detached: boolean;
+    };
+}
 /**
- * Will call {mounted} when the element is added to the DOM.
- * And will call {beforeUnmounted} before the element is removed from the DOM.
- * Finally will call {onUnmounted} when the element is removed from the DOM.
+ * Registers a hook for a specific tag.
+ * Automatically "upgrades" the tag instance if an interception hook (beforeRemove) is added.
  */
-declare function onLifecycle(tag: CTag, onMounted?: (tag: CTag) => Promise<boolean> | boolean, onUnmounted?: (tag: CTag) => void, beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean): void;
+declare function onLifecycle(tag: CTag, type: keyof LifecycleHooks, fn: any): void;
 /**
- * `withLifecycle` is a utility function that adds lifecycle hooks to a Cardboard tag.
- *
- * Will call `handler.mounted` when the element is added to the DOM.
- * Then call `handler.beforeUnmount` **before** the element is removed from the DOM.
- * Finally call `handler.unmounted` **when** the element is removed from the DOM.
- *
- * @example
- * ```typescript
- * const myTag = withLifecycle(
- *   div('Hello World'),
- *   {
- *     mounted: (tag) => {
- *       console.log('Mounted:', tag);
- *       return true; // or false to prevent mounting
- *     },
- *     unmounted: (tag) => {
- *       console.log('Unmounted:', tag);
- *     },
- *     beforeUnmount: (tag) => {
- *       console.log('Before Unmount:', tag);
- *       return true; // or false to prevent unmounting
- *     },
- *    }
- *  );
+ * Orchestrates the removal process, awaiting any promises returned by beforeRemove hooks.
  */
-declare const withLifecycle: (tag: CTag, handler: AtLeastOne<{
-    mounted?: (tag: CTag) => Promise<boolean> | boolean;
-    unmounted?: (tag: CTag) => void;
-    beforeUnmounted?: (tag: CTag) => Promise<boolean> | boolean;
-}>) => CTag;
+declare function orchestrateRemoval(tag: CTag, physicalRemoval: () => void): void;
+/**
+ * Synchronously triggers attached events. Resets detached state for re-attachment.
+ */
+declare function triggerAttached(el: HTMLElement): void;
+/**
+ * Synchronously triggers detached events. Resets attached state for re-attachment.
+ */
+declare function triggerDetached(el: HTMLElement): void;
+/**
+ * Triggers teardown hooks for final cleanup (for example during destroy).
+ */
+declare function triggerTeardown(el: HTMLElement): void;
 
+type ExtractValue<T extends Array<IObservable<any>>> = {
+    [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
+};
+interface ObserveContext {
+    tag?: CTag;
+}
+type ObservationSetup<T> = (dispatch: (newValue: T) => void) => () => void;
+type Blueprint<T> = (ctx: ObserveContext) => ObservationSetup<T>;
 /**
  * A class that holds a value and notifies whenever the value changes.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
@@ -1777,11 +1585,11 @@ declare class Observable<T = any> extends CEvent<T> implements IObservable<T> {
     /**
      * Add a listener for when this Observable changes.
      */
-    changed(callback: (val: T) => void): this;
+    changed(callback: (val: T | undefined) => void): this;
     /**
-    * Remove a listener for when this Observable changes.
-    */
-    remove(callback: (val: T) => void): this;
+     * Remove a listener for when this Observable changes.
+     */
+    remove(callback: (val: T | undefined) => void): this;
     /**
      * Set's the new value, and calls all the listeners.
      * You can additionaly set the {@link value} directly.
@@ -1801,7 +1609,7 @@ declare class Observable<T = any> extends CEvent<T> implements IObservable<T> {
      * // > isGreater == true;
      * ```
      */
-    computed: <K>(transform: (val: T) => K) => any;
+    computed: <K>(transform: (val: T) => K) => IObservable<K>;
     /** @see {@link greaterThan} */
     greaterThan: (val?: IObservableOr<number> | number) => IObservable<boolean>;
     /** @see {@link greaterThanOr} */
@@ -1856,9 +1664,6 @@ declare const createObservable: <T>(val: T, destroyer?: () => void) => IObservab
  * ```
  */
 declare const compute: <T, K>(other: IObservable<T>, transform: (val: T) => K) => IObservable<K>;
-type ExtractValue<T extends Array<IObservable<any>>> = {
-    [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
-};
 /**
  * Computes a new {@link Observable} from multiple observables.
  * The new {@link Observable} will automatically update and notify listeners whenever any of the source observables change.
@@ -1868,6 +1673,10 @@ type ExtractValue<T extends Array<IObservable<any>>> = {
  * @returns A new {@link Observable} that will contain the derived value.
  */
 declare const computeMultiple: <T extends IObservable[], K>(observables: [...T], transform: (...v: [...ExtractValue<T>]) => K) => IObservable<K>;
+/**
+ * Creates an IObservable from any observation blueprint (events, timers, etc.)
+ */
+declare const observe: <T>(blueprint: Blueprint<T>, initialValue?: T, context?: ObserveContext) => IObservable<T>;
 /** Returns the value from an observable. Convenience method if you prefer it instead of `observable.value` */
 declare const getValue: <T>(val: IObservableOr<T>) => T;
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than `val` */
@@ -1910,4 +1719,115 @@ declare const init: (options?: {
 }) => CTag;
 declare const version = "0.1.0";
 
-export { type AlignContentOptions, type AlignItemsOptions, type AllTags, type AtLeastOne, type BackgroundImageOptions, CEvent, CMappedEvent, CTag, type CardboardContext, type ColorOptions, type CommonAttributes, type CommonOptions, type DiffEntry, DiffState, type DisplayOptions, type EventCallback, type EventMap, type EventName, type ExtractValue, type FlexDirectionOptions, type FontStyleOptions, type FontWeightOptions, type IObservable, type IObservableOr, type KeysOf, type NamedColor, type NestedStyleMap, type NoOp, Observable, type PPositionOptions, type PickArgType, type PickPropertyValues, type Primitive, type ScopedCallback, type State, type StyleManager, type StyleMap, type StyleSet, type Suffix, type Suffixer, type TagBuilder, type TagChild, type TagChildren, type TagConfig, type TagName, type TextObj, type TransformOptions, type ValidTagName, type WithLength, allTags, arraysEqual, camelToDash, checkInitialized, clearMountPoints, compute, computeMultiple, context, createGlobalObserver, createObservable, deepEquals, diffList, each, equalTo, genBlock, genBlockContent, genCss, generateUID, getMountPoint, getValue, grab, greaterThan, greaterThanOr, init, isArray, isEmpty, isInitialized, isObject, isObservable, lessThan, lessThanOr, listState, mappedEvent, mountPoint, notEmpty, notEqualTo, onLifecycle, removeFromList, resetMountPoints, restoreMountPoint, singleEvent, state, stateAdd, stateAddAt, stateRemove, stateRemoveWhere, swapItems, tag, text, uuidv4, val, version, withLifecycle, withMountPoint };
+/**
+ * Chaining Extensions for CTag
+ *
+ * This module adds methods to CTag's prototype to enable chaining of reactive utilities.
+ * Each method is implemented as a wrapper around the core logic defined in ext/reactivity.ts.
+ *
+ * The process involves:
+ * 1. Module Augmentation: We declare new methods on the CTag interface so that TypeScript recognizes them.
+ * 2. Prototype Injection: We assign the actual implementations to CTag's prototype, allowing for chaining.
+ * 3. Core Logic Extraction: The core logic for each method is defined in ext/reactivity.ts, and we simply call those functions here.
+ *
+ * This separation of concerns allows us to keep the core logic of our reactive utilities in one place (ext/reactivity.ts) while still providing a clean and intuitive API for users through method chaining on CTag instances.
+ */
+declare module '../../tag.js' {
+    interface CTag {
+        /** Observes changes on the CTag using the provided Blueprint and returns an IObservable. */
+        observe<T>(setup: Blueprint<T>, initialValue?: T): IObservable<T>;
+        /** Consumes an observable and executes the provided callback on changes. */
+        consume<T>(observable: IObservable<T>, onChange: (self: CTag, val?: T) => void): this;
+        /** Conditionally applies CSS classes to the CTag based on the value of an observable. */
+        classIf<T>(obs: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean): this;
+        /** Conditionally removes CSS classes from the CTag based on the value of an observable. */
+        classIfNot<T>(obs: IObservable<T>, classes: string[] | ((self: CTag) => string[])): this;
+        /** Executes callbacks based on the value of an observable. */
+        doIf<T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean): this;
+        doIfNot<T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void): this;
+        hideIf<T>(observable: IObservable<T>, invert?: boolean): this;
+        hideIfNot<T>(observable: IObservable<T>): this;
+        textIf<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean): this;
+        textIfNot<T>(observable: IObservable<T>, text: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)): this;
+        attrIf<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string), invert?: boolean): this;
+        attrIfNot<T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string)): this;
+        disableIf<T>(observable: IObservable<T>, invert?: boolean): this;
+        disableIfNot<T>(observable: IObservable<T>): this;
+        styleIf<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean): this;
+        styleIfNot<T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)): this;
+        stylesIf<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean): this;
+        stylesIfNot<T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)): this;
+        text<T extends Record<string, Primitive>, K extends TextObj, J extends string>(textTemplate?: string, obj?: IObservable<T> | K): J extends string ? this : string;
+    }
+}
+
+declare module "../../types.js" {
+    interface TagChildRegistry {
+        observable: IObservable<any>;
+    }
+}
+/**
+ * Contextual Event Blueprint
+ */
+declare const event: <K extends keyof HTMLElementEventMap, R>(evtName: K | string, mapFn: (evt: HTMLElementEventMap[K]) => R) => Blueprint<R>;
+/**
+ * Standard Timer Blueprint
+ */
+declare const timer: (ms: number, mapFn?: (tick: number) => any) => Blueprint<number>;
+/**
+ * Creates a TagObservationSetup that uses the IntersectionObserver API to observe the visibility of the CTag and dispatches a boolean indicating whether it's intersecting or not.
+ * The `options` parameter allows you to customize the IntersectionObserver behavior (e.g., root, rootMargin, threshold).
+ */
+declare const intersection: (options?: IntersectionObserverInit) => Blueprint<boolean>;
+declare const consume: <T>(observable: IObservable<T>, onChange: (self: CTag, newValue?: T) => void) => (tag: CTag) => void;
+declare const classIf: <T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[]), invert?: boolean) => (tag: CTag) => void;
+declare const classIfNot: <T>(observable: IObservable<T>, classes: string[] | ((self: CTag) => string[])) => (tag: CTag) => void;
+declare const doIf: <T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void, invert?: boolean) => (tag: CTag) => void;
+declare const doIfNot: <T>(observable: IObservable<T>, ifTrue: (value?: T) => void, ifFalse: (value?: T) => void) => (tag: CTag) => void;
+declare const hideIf: <T>(observable: IObservable<T>, invert?: boolean) => (tag: CTag) => void;
+declare const hideIfNot: <T>(observable: IObservable<T>) => (tag: CTag) => void;
+declare const textIf: <T>(observable: IObservable<T>, textValue: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string), invert?: boolean) => (tag: CTag) => void;
+declare const textIfNot: <T>(observable: IObservable<T>, textValue: string | ((self: CTag) => string), elseText?: string | ((self: CTag) => string)) => (tag: CTag) => void;
+declare const attrIf: <T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string), invert?: boolean) => (tag: CTag) => void;
+declare const attrIfNot: <T>(observable: IObservable<T>, attr: CommonAttributes, value?: string | ((self: CTag) => string)) => (tag: CTag) => void;
+declare const disableIf: <T>(observable: IObservable<T>, invert?: boolean) => (tag: CTag) => void;
+declare const disableIfNot: <T>(observable: IObservable<T>) => (tag: CTag) => void;
+declare const styleIf: <T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string), invert?: boolean) => (tag: CTag) => void;
+declare const styleIfNot: <T>(observable: IObservable<T>, style: string, value?: string | ((self: CTag) => string)) => (tag: CTag) => void;
+declare const stylesIf: <T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap), invert?: boolean) => (tag: CTag) => void;
+declare const stylesIfNot: <T>(observable: IObservable<T>, styles: StyleMap | ((self: CTag) => StyleMap)) => (tag: CTag) => void;
+/**
+ * Binds a reactive text template to the tag.
+ * Overwrites all current children/text in the tag.
+ */
+declare const template: <T extends Record<string, Primitive>, K extends TextObj>(textTemplate: string, obj: IObservable<T> | K) => (tag: CTag) => void;
+
+declare function addClass(this: CTag, ...classes: string[]): CTag;
+declare function setClassName(this: CTag, className: string): CTag;
+declare function rmClass(this: CTag, ...classes: string[]): CTag;
+declare function hasClass(this: CTag, ...classes: string[]): boolean;
+declare function replaceClass(this: CTag, targetClass: string, replaceClass: string): CTag;
+declare function toggleClass(this: CTag, targetClass: string): CTag;
+declare function addStyle(this: CTag, styleName: string, value: string): CTag;
+declare function rmStyle(this: CTag, ...styleNames: string[]): CTag;
+declare function hasStyle(this: CTag, styleName: string): boolean;
+declare function setStyle(this: CTag, styles: StyleMap): CTag;
+declare function styled(this: CTag, stylesheet: NestedStyleMap | undefined, className?: string): CTag;
+
+declare module "../../tag.js" {
+    interface CTag {
+        addClass: typeof addClass;
+        setClassName: typeof setClassName;
+        rmClass: typeof rmClass;
+        toggleClass: typeof toggleClass;
+        hasClass: typeof hasClass;
+        replaceClass: typeof replaceClass;
+        addStyle: typeof addStyle;
+        rmStyle: typeof rmStyle;
+        setStyle: typeof setStyle;
+        styled: typeof styled;
+        hasStyle: typeof hasStyle;
+    }
+}
+
+export { type AlignContentOptions, type AlignItemsOptions, type AllTags, type AtLeastOne, type BackgroundImageOptions, type Blueprint, CEvent, CMappedEvent, CTag, type CardboardContext, type ChildTransformer, type ColorOptions, type CommonAttributes, type CommonOptions, type DiffEntry, DiffState, type DisplayOptions, type EventCallback, type EventMap, type EventName, type ExtractValue, type FlexDirectionOptions, type FontStyleOptions, type FontWeightOptions, type IObservable, type IObservableOr, type KeysOf, type LifecycleHooks, type NamedColor, type NestedStyleMap, type NoOp, Observable, type ObservationSetup, type ObserveContext, type PPositionOptions, type PickArgType, type PickPropertyValues, type Primitive, type ScopedCallback, type State, type StyleManager, type StyleMap, type StyleSet, type Suffix, type Suffixer, type TagBuilder, type TagChild, type TagChildRegistry, type TagChildren, type TagConfig, type TagName, type TextObj, type TransformOptions, type ValidTagName, type WithLength, addClass, addStyle, allTags, arraysEqual, attrIf, attrIfNot, camelToDash, checkInitialized, classIf, classIfNot, clearMountPoints, compute, computeMultiple, consume, context, createGlobalObserver, createObservable, deepEquals, diffList, disableIf, disableIfNot, doIf, doIfNot, each, equalTo, event, genBlock, genBlockContent, genCss, generateUID, getMountPoint, getValue, grab, greaterThan, greaterThanOr, hasClass, hasStyle, hideIf, hideIfNot, init, intersection, isArray, isEmpty, isInitialized, isObject, isObservable, lessThan, lessThanOr, listState, mappedEvent, mountPoint, notEmpty, notEqualTo, observe, onLifecycle, orchestrateRemoval, removeFromList, replaceClass, resetMountPoints, restoreMountPoint, rmClass, rmStyle, setClassName, setStyle, singleEvent, state, stateAdd, stateAddAt, stateRemove, stateRemoveWhere, styleIf, styleIfNot, styled, stylesIf, stylesIfNot, swapItems, tag, template, text, textIf, textIfNot, timer, toggleClass, triggerAttached, triggerDetached, triggerTeardown, uuidv4, val, version, withMountPoint };

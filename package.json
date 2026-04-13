@@ -25,7 +25,9 @@
     "build:example:login": "tsc --p examples/login-page/tsconfig.json",
     "build:example:watch": "tsc --watch --p examples/tsconfig.json",
     "build:docs": "typedoc --out docs src/*.ts",
+    "build:bundle": "npm run build:bundle:main && npm run build:bundle:main:core && npm run build:bundle:main:nomin",
     "build:bundle:main": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.min.js --minify src/cardboard.ts",
+    "build:bundle:main:core": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/core.bundle.min.js --minify src/core.ts",
     "build:bundle:main:nomin": "esbuild --bundle --global-name=Cardboard --outfile=dist/bundle/cardboard.bundle.js src/cardboard.ts",
     "copy:definitions": "./scripts/copy_definitions.sh"
   },

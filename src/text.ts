@@ -27,32 +27,37 @@ export const text = <T extends Record<string, Primitive>, K extends TextObj>(tex
   const node = document.createTextNode(''),
     interpolatePattern = /\B\$([0-9]+|[a-z][a-z0-9_$]*)/gi;
 
+  type InterpolationData = Record<string, Primitive | IObservable<Primitive>>;
+
   if (!obj) {
     node.nodeValue = textTemplate;
     return node;
   }
 
-  const updateNode = (data: Record<string, Primitive>) => {
+  const updateNode = (data: InterpolationData | undefined) => {
     node.nodeValue = !data
       ? textTemplate
       : textTemplate.replace(interpolatePattern, (m, g1) =>
-        (data[g1] ?? m).toString(),
+        (data?.[g1] ?? m).toString(),
       );
   };
 
   if (isObservable(obj)) {
-    (obj as IObservable<Record<string, any>>).changed((val) => updateNode(val));
-    updateNode((obj as IObservable).value);
+    const observableObj = obj as IObservable<T>;
+    observableObj.changed((val) => updateNode(val));
+    updateNode(observableObj.value);
   }
   else if (isObject(obj)) {
-    for (const key of Object.getOwnPropertyNames(obj)) {
+    const textObj = obj as TextObj;
+
+    for (const key of Object.getOwnPropertyNames(textObj)) {
       // We're just interested in listening to the obj that are references in the text.
-      if (textTemplate.includes(`$${key}`) && isObservable(obj[key])) {
-        obj[key].changed(() => updateNode(obj as any));
+      if (textTemplate.includes(`$${key}`) && isObservable(textObj[key])) {
+        textObj[key].changed(() => updateNode(textObj));
       }
     }
 
-    updateNode(obj as any);
+    updateNode(textObj);
   }
 
   return node;

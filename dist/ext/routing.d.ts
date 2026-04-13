@@ -46,6 +46,6 @@ declare class Router<T extends Record<string, Route> = Record<string, Route>> {
 }
 declare let router: Router<any> | undefined;
 declare const makeRouter: <T extends Record<string, Route> = Record<string, Route>>(opts: RouterOptions<T>) => Router<T>;
-declare const Link: (child: string | CTag, path: any, query?: Record<string, string>) => CTag;
+declare const Link: (child: string | CTag, path: string, query?: Record<string, string>) => CTag;
 
 export { Link, type Route, type RouteBuilder, Router, type RouterOptions, makeRouter, router };

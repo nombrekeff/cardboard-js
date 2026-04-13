@@ -24,11 +24,13 @@ const lifecycleRegistry = new WeakMap<HTMLElement, LifecycleHooks>();
 const observer = new window.MutationObserver((mutations) => {
   for (const mut of mutations) {
     // Handle Removals (Detached + Teardown)
-    for (const node of mut.removedNodes) {
+    for (let i = 0; i < mut.removedNodes.length; i++) {
+      const node = mut.removedNodes[i];
       if (node.nodeType === Node.ELEMENT_NODE) traverse(node, "detached");
     }
     // Handle External Injections (Attached)
-    for (const node of mut.addedNodes) {
+    for (let i = 0; i < mut.addedNodes.length; i++) {
+      const node = mut.addedNodes[i];
       if (node.nodeType === Node.ELEMENT_NODE) traverse(node, "attached");
     }
   }
