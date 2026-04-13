@@ -1,8 +1,8 @@
 // --- tests/reactivity.test.ts ---
 
-import { tag } from "../src/tag";
-import { createObservable, observe } from "../src/observables";
-import { event, timer, classIf } from "../src/ext/reactivity";
+import { tag } from "../src/tag.js";
+import { createObservable, observe } from "../src/observables.js";
+import { event, timer, classIf } from "../src/ext/reactivity/reactivity.js";
 import {
   jest,
   describe,

@@ -1,4 +1,4 @@
-import type { CommonAttributes } from '../attributes.js';
+import type { CommonAttributes } from '../../attributes.js';
 import {
   attrIf,
   attrIfNot,
@@ -19,9 +19,9 @@ import {
   textIfNot,
   when,
 } from './reactivity.js';
-import { CTag } from '../tag.js';
-import type { IObservable, StyleMap } from '../types.js';
-import { Blueprint, observe } from '../observables.js';
+import { CTag } from '../../tag.js';
+import type { IObservable, StyleMap } from '../../types.js';
+import { Blueprint, observe } from '../../observables.js';
 
 /**
  * Chaining Extensions for CTag
@@ -38,7 +38,7 @@ import { Blueprint, observe } from '../observables.js';
  */
 
 // Tell TypeScript about the chained methods
-declare module '../tag.js' {
+declare module '../../tag.js' {
   interface CTag {
     /** Observes changes on the CTag using the provided Blueprint and returns an IObservable. */
     observe<T>(setup: Blueprint<T>, initialValue?: T): IObservable<T>;

@@ -14,11 +14,7 @@ export * from './lifecycle.js';
 export * from './observables.js';
 export * from './all-tags.js';
 
-export * from './ext/reactivity/chaining.js';
-export * from './ext/reactivity/reactivity.js';
-
-export * from './ext/css/chaining.js';
-export * from './ext/css/styling.js';
+// No extensions imported here. Must import extensions manually
 
 export type * from './types';
 

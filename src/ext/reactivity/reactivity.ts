@@ -1,11 +1,11 @@
-import type { CommonAttributes } from "../attributes.js";
-import { Blueprint, createObservable, isObservable } from "../observables.js";
-import { CTag } from "../tag.js";
-import { text } from "../text.js";
-import type { IObservable, StyleMap } from "../types.js";
-import { val } from "../util.js";
+import type { CommonAttributes } from "../../attributes.js";
+import { Blueprint, createObservable, isObservable } from "../../observables.js";
+import { CTag } from "../../tag.js";
+import { text } from "../../text.js";
+import type { IObservable, StyleMap } from "../../types.js";
+import { val } from "../../util.js";
 
-/**
+/*
  * Reactivity Extensions for CTag
  *
  * This module provides utility functions that can be used to create reactive behaviors on CTag instances.
@@ -18,7 +18,7 @@ import { val } from "../util.js";
  */
 
 // Module Augmentation: Tell TS that Observables are valid children!
-declare module "../types.js" {
+declare module "../../types.js" {
   export interface TagChildRegistry {
     observable: IObservable<any>;
   }

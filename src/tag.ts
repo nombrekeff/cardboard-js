@@ -1,18 +1,13 @@
 import type {
   ChildTransformer,
   IObservable,
-  NestedStyleMap,
   Primitive,
-  StyleMap,
   TagChild,
   TagChildren,
   TagConfig,
   TextObj,
 } from "./types.js";
-import { CssProperty } from "./css-properties.js";
-import { PickPropertyValues } from "./css-property-values.js";
 import { TagName } from "./tag-names.js";
-import { camelToDash, uuidv4 } from "./util.js";
 import { text } from "./text.js";
 import { CommonAttributes } from "./attributes.js";
 import { checkInitialized, context } from "./context.js";
@@ -303,30 +298,6 @@ export class CTag {
   }
 
   /**
-   * Adds a `stylesheet` to main style manager, and adds the `className` to the element.
-   * This is useful for adding styles to the element that are not inline styles.
-   * By doing this we can have just one style definition for tags that will have the same styles.
-   *
-   * @see https://github.com/nombrekeff/cardboard-js/wiki/Styling#6-advanced-styling-child-elements
-   *
-   * @param {NestedStyleMap} stylesheet - The stylesheet to add to the style manager.
-   * @param {string} [className] - The class name to add to the element. If not provided, a random UUID will be generated.
-   * @return {CTag} - The current CTag instance, allowing for method chaining.
-   */
-  styled(stylesheet: NestedStyleMap | undefined, className?: string): this {
-    // TODO(nombrekeff): sanitizing className might be a good idea
-    className ??= uuidv4();
-
-    if (stylesheet) {
-      context.styleManager?.add({
-        [`.${className}`]: stylesheet,
-      });
-    }
-
-    return this.addClass(className);
-  }
-
-  /**
    * If {textTemplate} is provided, it sets the `textContent` of the element.
    * If {textTemplate} is provided, and a state is provided. It will use the {textTemplate} as a template,
    * that will be interpolated with the values in the state, each time the state changes. It acts like {@link text}
@@ -397,92 +368,6 @@ export class CTag {
     }
 
     return this;
-  }
-
-  /**
-   * Add classes to the elements class list.
-   *
-   * @param {...string} classes - The classes to add to the element's class list.
-   * @returns {CTag} - The current CTag instance, allowing for method chaining
-   *
-   * @example
-   * ```ts
-   * const tag = new CTag('div');
-   * tag.addClass('class1', 'class2');
-   * ```
-   */
-  addClass(...classes: string[]) {
-    this.classList.add(...classes);
-    return this;
-  }
-
-  /** Set the elements class name */
-  setClassName(className: string) {
-    this.el.className = className;
-    return this;
-  }
-
-  /** Remove classes from class list */
-  rmClass(...classes: string[]) {
-    for (const key of classes) {
-      this.classList.remove(key);
-    }
-    return this;
-  }
-
-  /** Check if classes are present in this element */
-  hasClass(...classes: string[]) {
-    for (const key of classes) {
-      if (!this.classList.contains(key)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /** Replace a class with another */
-  replaceClass(targetClass: string, replaceClass: string) {
-    this.classList.replace(targetClass, replaceClass);
-    return this;
-  }
-
-  /** Toggle a class. If it's present it's removed, if it's not present its added. */
-  toggleClass(targetClass: string): CTag {
-    return this.hasClass(targetClass)
-      ? this.rmClass(targetClass)
-      : this.addClass(targetClass);
-  }
-
-  /** Add a single style */
-  addStyle<K extends CssProperty>(property: K, value: PickPropertyValues<K>) {
-    this.el.style.setProperty(camelToDash(property as string), String(value));
-    return this;
-  }
-
-  /** Set multiple styles at once */
-  setStyle(styles: StyleMap) {
-    for (const key in styles) {
-      this.addStyle(key, styles[key] ?? "");
-    }
-    return this;
-  }
-
-  /** Remove styles */
-  rmStyle(...styleNames: string[]) {
-    for (const key of styleNames) {
-      this.style.removeProperty(camelToDash(key));
-    }
-    return this;
-  }
-
-  /** Check if this element has styles */
-  hasStyle(...styles: CssProperty[]) {
-    for (const key of styles) {
-      if (!this.style.getPropertyValue(camelToDash(key))) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /** Adds a set of attributes to the element */

@@ -21,7 +21,7 @@ export function Component<F extends AnyFn>(fn: F): ComponentFactory<ThatFn<F>> {
   let className = uuidv4();
   let stylesheet: NestedStyleMap | undefined;
 
-  const builder = function (...args) {
+  const builder = function (...args: any[]) {
     if (!stylesheet) return fn(...args);
     return fn(...args).styled(stylesheet, className);
   };
