@@ -1,14 +1,14 @@
-import type { CssProperty } from './css-properties.js';
-import type { PickPropertyValues } from './css-property-values.js';
-import type { CTag } from './tag.js';
-import type { ValidTagName } from './tag-names.js';
-import type { CommonAttributes } from './attributes.js';
+import type { CssProperty } from "./css-properties.js";
+import type { PickPropertyValues } from "./css-property-values.js";
+import type { CTag } from "./tag.js";
+import type { ValidTagName } from "./tag-names.js";
+import type { CommonAttributes } from "./attributes.js";
 
-export type * from './css-property-values.js';
-export type * from './css-property-values.js';
-export type * from './tag-names.js';
-export type * from './colors.js';
-export type * from './attributes.js';
+export type * from "./css-property-values.js";
+export type * from "./css-property-values.js";
+export type * from "./tag-names.js";
+export type * from "./colors.js";
+export type * from "./attributes.js";
 
 export type StyleMap = { [key in CssProperty]?: PickPropertyValues<key> };
 export type NoOp = () => void;
@@ -24,7 +24,6 @@ export type NestedStyleMap = {
   [key in CssProperty]?: PickPropertyValues<key> | NestedStyleMap | StyleMap;
 };
 export type StyleSet = Record<string, NestedStyleMap>;
-export type TagChildren = TagChild[];
 export type EventCallback<T extends EventName> = (
   tag: CTag,
   evt: HTMLElementEventMap[T],
@@ -58,7 +57,32 @@ export interface WithLength {
   length: number;
 }
 export type TextObj<T extends IObservable<Primitive> = any> = Record<string, T>;
-export type TagChild = string | CTag | HTMLElement | Node | IObservable<any>;
+
+/**
+ * The Global Registry for Tag Children.
+ * Plugins can use module augmentation on this interface to add new supported types.
+ */
+export interface TagChildRegistry {
+  string: string;
+  number: number;
+  node: Node;
+  ctag: CTag;
+  // NOTE: IObservable is explicitly removed from core!
+}
+
+/**
+ * Evaluates to: string | number | Node | CTag | ...anything injected later
+ */
+export type TagChild = TagChildRegistry[keyof TagChildRegistry];
+
+/**
+ * If you support nested arrays like tag('div', [[child1], child2])
+ * you can define it recursively, otherwise just:
+ */
+export type TagChildren = TagChild[];
+
+export type ChildTransformer = (child: any) => TagChild | Node | null | undefined;
+
 export interface TagConfig {
   style?: StyleMap;
   attr?: Record<CommonAttributes & {}, string | undefined>;
@@ -70,7 +94,7 @@ export interface TagConfig {
   className?: string;
 }
 
-export type PickArgType<T> = T extends 'style' ? StyleSet[] : TagChildren;
+export type PickArgType<T> = T extends "style" ? StyleSet[] : TagChildren;
 export type AllTags = {
   [key in ValidTagName]: ((...children: PickArgType<key>) => CTag) & {
     /**
@@ -81,9 +105,13 @@ export type AllTags = {
 };
 
 export type AtLeastOne<T> = {
-  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>
-}[keyof T]
+  [K in keyof T]-?: Partial<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>;
+}[keyof T];
 
 export type StyleManager = {
-  add: (styleSheet: Record<string, NestedStyleMap> | Array<Record<string, NestedStyleMap>>) => void;
-}
+  add: (
+    styleSheet:
+      | Record<string, NestedStyleMap>
+      | Array<Record<string, NestedStyleMap>>,
+  ) => void;
+};

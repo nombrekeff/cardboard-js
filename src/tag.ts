@@ -1,4 +1,5 @@
 import type {
+  ChildTransformer,
   IObservable,
   NestedStyleMap,
   Primitive,
@@ -29,6 +30,8 @@ import {
  * CTag contains a reference to an HTMLElement, its parent, and provides a set of methods to interact with it.
  */
 export class CTag {
+  public static childTransformers: ChildTransformer[] = [];
+ 
   /** Reference to the HTMLElement that this @type {CTag} represents */
   public el: HTMLElement & { remove: () => Promise<boolean> | any };
   public parent: CTag | null = null;
@@ -291,45 +294,10 @@ export class CTag {
   }
 
   /**
-   * Whenever the `observable` changes, it will call the `callback`.
-   * This is helpful to react to changes in observables and update the tag accordingly.
-   *
-   * You can also do it directly, although you need to keep a reference to the tag yourself.
-   *
-   * @param observable - The observable to listen to.
-   * @param callback - The callback to call when the observable changes.
-   * @returns {CTag} - The current CTag instance, allowing for method chaining.
-   *
-   * @example
-   * ```ts
-   * const disabled = createObservable(false);
-   * const tag = new CTag('div');
-   * tag.consume(disabled, (self, isDisabled) => {
-   *   console.log('New value:', isDisabled);
-   *   self.setDisabled(isDisabled);
-   * });
-   * ```
+   * Applies a plugin function to this tag and continues the chain.
    */
-  consume<T>(
-    observable: IObservable<T>,
-    onChange: (self: CTag, newValue?: T) => void,
-  ) {
-    if (observable.changed) {
-      const listener = (newValue: T) => onChange(this, newValue);
-      observable.changed(listener);
-      listener(observable.value);
-
-      this.onTeardown(() => {
-        // Destroy reference to the observable, we don't need it anymore
-        if (observable) {
-          observable.remove(listener);
-          (observable as any) = null;
-        }
-      });
-    } else {
-      console.warn("An invalid Observable was supplied to `tag.consume`");
-    }
-
+  use<T extends CTag>(this: T, plugin: (tag: T) => void): T {
+    plugin(this);
     return this;
   }
 
@@ -427,39 +395,6 @@ export class CTag {
    */
   hideIfNot<T>(observable: IObservable<T>) {
     return this.hideIf(observable, true);
-  }
-
-  /**
-   * Adds classes to the element when the `observable` is truthy, and removes them when it is falsy.
-   * Updates whenever the `observable` changes.
-   * You can pass in an array of classes, or a function that returns a list of classes.
-   * If `invert` is set to true, the condition will be inversed, but you can also use {@link classIfNot}
-   *
-   * @param {IObservable} observable - The observable to listen to.
-   * @param {string[] | ((self: CTag) => string[])} classes - The classes to add to the element. Can be an array of strings or a function that returns an array of strings.
-   * @param {boolean} [invert=false] - If true, the condition will be inversed.
-   * @return {CTag} - The current CTag instance, allowing for method chaining.
-   *
-   * @example
-   * ```ts
-   * const isActive = createObservable(true);
-   * const tag = new CTag('div');
-   *
-   * // Adds 'active' and 'highlighted' classes when isActive is true
-   * tag.classIf(isActive, ['active', 'highlighted']);
-   * ```
-   */
-  classIf<T>(
-    observable: IObservable<T>,
-    classes: string[] | ((self: CTag) => string[]),
-    invert = false,
-  ) {
-    return this.doIf(
-      observable,
-      () => this.addClass(...val(classes, this)),
-      () => this.rmClass(...val(classes, this)),
-      invert,
-    );
   }
 
   /**

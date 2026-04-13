@@ -8,8 +8,6 @@ export class StyleManager {
     styleTag: CTag;
     rules: Set<string>;
 
-    generatedIdsCount: number = 0;
-
     constructor() {
         this.rules = new Set();
         let styleTag: CTag | null = null;

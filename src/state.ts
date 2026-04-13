@@ -106,7 +106,6 @@ export const stateAddAt = <T>(state: State<T[]>, item: T, index: number) => {
   let newData: any = [...state.value];
   newData.splice(index, 0, item);
   state.value = newData;
-  newData = [];
 };
 
 /**
