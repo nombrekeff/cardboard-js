@@ -1,4 +1,4 @@
-import { init, state } from '../src/cardboard';
+import { event, init, state } from '../src/cardboard';
 import { CTag, tag } from '../src/tag';
 import { jest, describe, beforeAll, beforeEach, expect, it } from '@jest/globals';
 
@@ -62,22 +62,6 @@ describe('Tags', () => {
     const t = tag('custom').text('$a', { a: state('123') });
     expect(t).toBeInstanceOf(CTag);
     expect(t.el.textContent).toEqual('123');
-  });
-
-
-  it('tag.when', async () => {
-    const clickCallback = jest.fn();
-    const clickChange = jest.fn();
-
-    const t = tag('custom');
-    const tw = t.when('click', clickCallback);
-    tw.changed!(clickChange);
-
-    expect('changed' in tw).toEqual(true);
-
-    expect(clickChange).not.toHaveBeenCalled();
-    t.el.dispatchEvent(new window.Event('click'));
-    expect(clickChange).toHaveBeenCalled();
   });
 
   it('tag.config works correctly', async () => {

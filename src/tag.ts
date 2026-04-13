@@ -8,13 +8,12 @@ import type {
   TagChildren,
   TagConfig,
   TextObj,
-} from './types.js';
+} from "./types.js";
 import { CssProperty } from "./css-properties.js";
 import { PickPropertyValues } from "./css-property-values.js";
 import { TagName } from "./tag-names.js";
 import { camelToDash, uuidv4 } from "./util.js";
 import { text } from "./text.js";
-import { createObservable, isObservable } from "./observables.js";
 import { CommonAttributes } from "./attributes.js";
 import { checkInitialized, context } from "./context.js";
 import {
@@ -31,7 +30,7 @@ import {
  */
 export class CTag {
   public static childTransformers: ChildTransformer[] = [];
- 
+
   /** Reference to the HTMLElement that this @type {CTag} represents */
   public el: HTMLElement & { remove: () => Promise<boolean> | any };
   public parent: CTag | null = null;
@@ -206,9 +205,10 @@ export class CTag {
    * ```
    */
   append(...children: TagChildren): this {
-    for (const child of children) {
+    for (let child of children) {
       if (!child) continue;
 
+      child = this._resolveChild(child);
       this._children.push(child);
       const node = this._getElementForChild(child);
 
@@ -239,9 +239,10 @@ export class CTag {
    * ```
    */
   prepend(...children: TagChildren) {
-    for (const child of children) {
+    for (let child of children) {
       if (!child) continue;
 
+      child = this._resolveChild(child);
       this._children.unshift(child);
       const node = this._getElementForChild(child);
 
@@ -535,25 +536,6 @@ export class CTag {
     });
   }
 
-  /**
-   * Returns a {@link IObservable} that fires when the Event `evtName` is fired in this element
-   * The return value of `fn` will be passed to the listeners of the {@link IObservable}
-   *
-   * @param {K} evtName - The name of the event to listen for. For a list of valid event names, see {@link HTMLElementEventMap "available event names"}.
-   * @param {fn} fn - The callback function to execute when the event is triggered.
-   * @returns {IObservable<any>} - An observable that emits the return value of the callback function when the event is triggered.
-   */
-  when<K extends keyof HTMLElementEventMap>(
-    evtName: K | string,
-    fn: (self: CTag, evt: HTMLElementEventMap[K]) => any,
-  ): IObservable<any> {
-    const cons = createObservable<any>({});
-    this.on(evtName, (t, evt) => {
-      cons.dispatch(fn(t, evt));
-    });
-    return cons;
-  }
-
   // TODO: Might be a good idea to return the listener so it can be removed later
   /**
    * Add an event listener for a particular HTMLElement event
@@ -591,23 +573,27 @@ export class CTag {
   }
 
   /**
-   * Lifecycle Convenience Methods
+   * Registers a hook that runs when the element is attached to the DOM.
+   * This is useful for running code that depends on the element being in the document, such as measuring its size or position.
    */
-
   onAttached(fn: () => void): this {
     onLifecycle(this, "attached", fn);
     return this;
   }
 
+  /**
+   * Registers a hook that runs when the element is detached from the DOM.
+   * This is useful for running cleanup code that depends on the element being in the document, such as clearing timers or intervals.
+   * Note that this is not the same as `destroy()`, which is a more comprehensive teardown method. `onDetached` is specifically for handling DOM detachment events.
+   */
   onDetached(fn: () => void): this {
     onLifecycle(this, "detached", fn);
     return this;
   }
 
   /**
-   * Registers a hook that runs before removal.
-   * Returning a Promise will defer the physical removal until it resolves.
-   * Returning false will cancel the removal operation.
+   * Registers a hook that runs before the element is removed from the DOM.
+   * This is useful for running cleanup code or preventing removal by returning false.
    */
   onBeforeRemove(fn: () => boolean | Promise<boolean>): this {
     onLifecycle(this, "beforeRemove", fn);
@@ -768,20 +754,28 @@ export class CTag {
     }
   }
 
-  private _getElementForChild(cl: TagChild): Node | null {
-    if (typeof cl === "string") return document.createTextNode(cl);
-    if (isObservable(cl)) {
-      return text("$val", { val: cl as IObservable });
+  private _resolveChild(cl: any): any {
+    let resolved = cl;
+    for (const transformer of CTag.childTransformers) {
+      const transformed = transformer(resolved);
+      if (transformed !== undefined) {
+        resolved = transformed;
+      }
+    }
+    return resolved;
+  }
+
+  private _getElementForChild(resolvedChild: any): Node | null {
+    if (typeof resolvedChild === "string")
+      return document.createTextNode(resolvedChild);
+
+    if (resolvedChild instanceof CTag) {
+      return resolvedChild._meta.isHidden && resolvedChild._meta.anchorNode
+        ? resolvedChild._meta.anchorNode
+        : resolvedChild.el;
     }
 
-    if (cl instanceof CTag) {
-      // IF HIDDEN: Return the tracked anchor. IF VISIBLE: Return the element.
-      return cl._meta.isHidden && cl._meta.anchorNode
-        ? cl._meta.anchorNode
-        : cl.el;
-    }
-
-    if (cl instanceof Node) return cl;
+    if (resolvedChild instanceof Node) return resolvedChild;
     return null;
   }
 
@@ -789,7 +783,11 @@ export class CTag {
     const mapped: Node[] = [];
 
     for (let i = 0; i < children.length; i++) {
-      const child = children[i];
+      let child = children[i];
+      if (!child) continue;
+
+      child = this._resolveChild(child);
+      children[i] = child;
 
       if (child instanceof CTag) {
         child.parent = this;

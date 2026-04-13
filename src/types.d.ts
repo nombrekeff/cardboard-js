@@ -34,8 +34,8 @@ export type EventMap = {
 };
 export type TagBuilder = (children: TagChildren, silent: boolean) => CTag;
 export interface IObservable<T = any> {
-  changed: (callback: (newValue: T) => void) => IObservable<T>;
-  remove: (callback: (newValue: T) => void) => IObservable<T>;
+  changed: (callback: (newValue: T | undefined) => void) => IObservable<T>;
+  remove: (callback: (newValue: T | undefined) => void) => IObservable<T>;
   dispatch: (newValue: T) => IObservable<T>;
   destroy: () => void;
   computed: <K>(transform: (val: T) => K) => IObservable<K>;

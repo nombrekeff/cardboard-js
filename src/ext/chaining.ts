@@ -1,4 +1,4 @@
-import type { CommonAttributes } from './attributes.js';
+import type { CommonAttributes } from '../attributes.js';
 import {
   attrIf,
   attrIfNot,
@@ -17,9 +17,11 @@ import {
   stylesIfNot,
   textIf,
   textIfNot,
-} from './ext/reactivity.js';
-import { CTag } from './tag.js';
-import type { IObservable, StyleMap } from './types.js';
+  when,
+} from './reactivity.js';
+import { CTag } from '../tag.js';
+import type { IObservable, StyleMap } from '../types.js';
+import { Blueprint, observe } from '../observables.js';
 
 /**
  * Chaining Extensions for CTag
@@ -36,21 +38,27 @@ import type { IObservable, StyleMap } from './types.js';
  */
 
 // Tell TypeScript about the chained methods
-declare module './tag.js' {
+declare module '../tag.js' {
   interface CTag {
+    /** Observes changes on the CTag using the provided Blueprint and returns an IObservable. */
+    observe<T>(setup: Blueprint<T>, initialValue?: T): IObservable<T>;
+    /** Consumes an observable and executes the provided callback on changes. */
     consume<T>(
       observable: IObservable<T>,
       onChange: (self: CTag, val?: T) => void,
     ): this;
+    /** Conditionally applies CSS classes to the CTag based on the value of an observable. */
     classIf<T>(
       obs: IObservable<T>,
       classes: string[] | ((self: CTag) => string[]),
       invert?: boolean,
     ): this;
+    /** Conditionally removes CSS classes from the CTag based on the value of an observable. */
     classIfNot<T>(
       obs: IObservable<T>,
       classes: string[] | ((self: CTag) => string[]),
     ): this;
+    /** Executes callbacks based on the value of an observable. */
     doIf<T>(
       observable: IObservable<T>,
       ifTrue: (value?: T) => void,
@@ -112,6 +120,18 @@ declare module './tag.js' {
 }
 
 // Prototype Injection
+CTag.prototype.observe = function <T>(blueprint: Blueprint<T>, initialValue?: T) {
+  // Pass this CTag instance safely into the context object
+  const stream = observe(blueprint, initialValue, { tag: this });
+  
+  // CRITICAL: Memory Safety! 
+  // If myDiv is destroyed, we automatically destroy the stream, 
+  // which runs the teardown() logic (clearing the timer or event listeners).
+  this.onTeardown(() => stream.destroy());
+  
+  return stream;
+};
+
 CTag.prototype.consume = function (observable, onChange) {
   return this.use(consume(observable, onChange));
 };

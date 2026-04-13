@@ -1,4 +1,4 @@
-import type { IObservable, State } from './types';
+import type { IObservable, IObservableOr, State } from './types.js';
 import { createObservable, getValue } from './observables.js';
 
 /**
@@ -57,6 +57,20 @@ export const listState = <T>(initialData: T[]) => {
     stateAddAt(_list, createObservable(item), index);
   };
 
+  const remove = (item: IObservableOr<T>) => {
+    const itemIndex = _list.value.findIndex((listItem) => {
+      return getValue(listItem) === getValue(item);
+    });
+
+    stateRemoveWhere(_list, (_, index) => {
+      return itemIndex === index;
+    });
+  };
+
+  const removeWhere = (cb: (item: T, index: number) => boolean) => {
+    stateRemoveWhere(_list, (listItem, index) => cb(getValue(listItem), index));
+  };
+
   return {
     /**
      * The reactive list of items.
@@ -73,8 +87,8 @@ export const listState = <T>(initialData: T[]) => {
     },
     add,
     addAt,
-    remove: stateRemove.bind({}, _list),
-    removeWhere: stateRemoveWhere.bind({}, _list),
+    remove,
+    removeWhere,
     length: _list.computed((_list) => _list.length),
   };
 };

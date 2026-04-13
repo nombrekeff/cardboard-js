@@ -1,6 +1,20 @@
-import { CEvent } from './events.js';
-import { isArray, isObject } from './util.js';
-import type { IObservable, IObservableOr, WithLength } from './types.js';
+import { CEvent } from "./events.js";
+import { isArray, isObject } from "./util.js";
+import type { IObservable, IObservableOr, WithLength } from "./types.js";
+import { CTag } from "./tag.js";
+
+export type ExtractValue<T extends Array<IObservable<any>>> = {
+  [K in keyof T]: T[K] extends IObservable<infer V> ? V : never;
+};
+
+export interface ObserveContext {
+  tag?: CTag; // The tag is optional in the global context
+}
+
+export type ObservationSetup<T> = (dispatch: (newValue: T) => void) => () => void;
+
+// A Universal Blueprint now takes the context object
+export type Blueprint<T> = (ctx: ObserveContext) => ObservationSetup<T>;
 
 /**
  * A class that holds a value and notifies whenever the value changes.
@@ -23,7 +37,7 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
     super();
 
     if (val && (isObject(val) || isArray(val))) {
-      val = new Proxy((val as any), {
+      val = new Proxy(val as any, {
         get(target, p, receiver) {
           return target[p];
         },
@@ -57,15 +71,15 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
   /**
    * Add a listener for when this Observable changes.
    */
-  changed(callback: (val: T) => void) {
+  changed(callback: (val: T | undefined) => void) {
     this.listen(callback);
     return this;
   }
 
   /**
-  * Remove a listener for when this Observable changes.
-  */
-  remove(callback: (val: T) => void) {
+   * Remove a listener for when this Observable changes.
+   */
+  remove(callback: (val: T | undefined) => void) {
     super.remove(callback);
     return this;
   }
@@ -102,12 +116,15 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
    * // > isGreater == true;
    * ```
    */
-  computed = <K>(transform: (val: T) => K) => compute(this, transform);
+  computed = <K>(transform: (val: T) => K): IObservable<K> =>
+    compute(this, transform);
 
   /** @see {@link greaterThan} */
-  greaterThan = (val: IObservableOr<number> | number = 0) => greaterThan(this as any, val);
+  greaterThan = (val: IObservableOr<number> | number = 0) =>
+    greaterThan(this as any, val);
   /** @see {@link greaterThanOr} */
-  greaterThanOr = (val: IObservableOr<number> = 0) => greaterThanOr(this as any, val);
+  greaterThanOr = (val: IObservableOr<number> = 0) =>
+    greaterThanOr(this as any, val);
   /** @see {@link lessThan} */
   lessThan = (val: IObservableOr<number> = 0) => lessThan(this as any, val);
   /** @see {@link lessThanOr} */
@@ -119,13 +136,15 @@ export class Observable<T = any> extends CEvent<T> implements IObservable<T> {
   /** @see {@link isEmpty} */
   isEmpty = <K extends WithLength>() => isEmpty(this as any as IObservable<K>);
   /** @see {@link notEmpty} */
-  notEmpty = <K extends WithLength>() => notEmpty(this as any as IObservable<K>);
+  notEmpty = <K extends WithLength>() =>
+    notEmpty(this as any as IObservable<K>);
   /** @see {@link grab} */
-  grab = <K extends keyof T>(key: K, defaultVal?: T[K]) => grab(this as any, key, defaultVal);
+  grab = <K extends keyof T>(key: K, defaultVal?: T[K]) =>
+    grab(this as any, key, defaultVal);
 }
 
-/** 
- * Check if a given object `obj` is a {@link Observable}  
+/**
+ * Check if a given object `obj` is a {@link Observable}
  * * @param obj - The object to check.
  * @returns `true` if the object is an {@link Observable}, `false` otherwise
  */
@@ -134,15 +153,18 @@ export const isObservable = (obj: any) => {
 };
 
 /**
- * Create a new {@link Observable}  
+ * Create a new {@link Observable}
  * > Consider using `state(...)` instead.
  * @see https://github.com/nombrekeff/cardboard-js/wiki/Observers
- * 
+ *
  * @param val - The initial value of the observable.
  * @param destroyer - An optional function to call when the observable is destroyed.
  * @returns A new {@link Observable} instance.
  */
-export const createObservable = <T>(val: T, destroyer?: () => void): IObservable<T> => {
+export const createObservable = <T>(
+  val: T,
+  destroyer?: () => void,
+): IObservable<T> => {
   return new Observable<T>(val, destroyer);
 };
 
@@ -153,7 +175,7 @@ export const createObservable = <T>(val: T, destroyer?: () => void): IObservable
  * @param other - The source {@link Observable} to derive the value from.
  * @param transform - A function that takes the value of the source {@link Observable} and returns the derived value.
  * @return A new {@link Observable} that will contain the derived value.
- * 
+ *
  * @example
  * ```ts
  * const value = createObservable(2);
@@ -171,7 +193,7 @@ export const compute = <T, K>(
   // eslint-disable-next-line prefer-const
   let observable: IObservable<K> | null;
 
-  const cb = (val) => observable?.dispatch(transform(val));
+  const cb = (val: T | undefined) => observable?.dispatch(transform(val as T));
 
   observable = createObservable<K>(transform(other.value), () => {
     // remove callback in other observable when destroyed
@@ -186,63 +208,103 @@ export const compute = <T, K>(
   return observable as any;
 };
 
-export type ExtractValue<T extends Array<IObservable<any>>> =
-  { [K in keyof T]: T[K] extends IObservable<infer V> ? V : never };
-
 /**
  * Computes a new {@link Observable} from multiple observables.
  * The new {@link Observable} will automatically update and notify listeners whenever any of the source observables change.
- * 
+ *
  * @param observables - An array of source {@link Observable}s to derive the value from.
  * @param transform - A function that takes the values of the source observables and returns the derived value.
- * @returns A new {@link Observable} that will contain the derived value. 
+ * @returns A new {@link Observable} that will contain the derived value.
  */
 export const computeMultiple = <T extends IObservable[], K>(
   observables: [...T],
   transform: (...v: [...ExtractValue<T>]) => K,
 ): IObservable<K> => {
-  const cons = createObservable<K>(transform(...(observables.map(c => c.value) as any)));
+  const cons = createObservable<K>(
+    transform(...(observables.map((c) => c.value) as any)),
+  );
 
   for (const other of observables) {
-    other.changed(() => cons.dispatch(
-      transform(...(observables.map(c => c.value) as any))
-    ));
+    other.changed(() =>
+      cons.dispatch(transform(...(observables.map((c) => c.value) as any))),
+    );
   }
   return cons as any;
 };
 
+/**
+ * Creates an IObservable from any observation blueprint (events, timers, etc.)
+ */
+export const observe = <T>(
+  blueprint: Blueprint<T>, 
+  initialValue?: T,
+  context: ObserveContext = {} // Defaults to empty for standalone use
+): IObservable<T> => {
+  const stream = createObservable<T>(initialValue as T);
+  
+  // Initialize the blueprint with the context
+  const setup = blueprint(context);
+  const teardown = setup((val) => stream.dispatch(val));
+  
+  const originalDestroy = stream.destroy;
+  stream.destroy = () => {
+    teardown();
+    if (originalDestroy) originalDestroy.call(stream);
+  };
+  
+  return stream;
+};
+
 /** Returns the value from an observable. Convenience method if you prefer it instead of `observable.value` */
 export const getValue = <T>(val: IObservableOr<T>): T => {
-  return isObservable(val) ? (val as IObservable<T>).value : val as T;
+  return isObservable(val) ? (val as IObservable<T>).value : (val as T);
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than `val` */
-export const greaterThan = (observable: IObservable<number>, val: IObservable<number> | number = 0) => {
+export const greaterThan = (
+  observable: IObservable<number>,
+  val: IObservable<number> | number = 0,
+) => {
   return compute(observable, (newVal) => newVal > getValue(val));
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is greater than or equal `val` */
-export const greaterThanOr = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
+export const greaterThanOr = (
+  observable: IObservable<number>,
+  val: IObservableOr<number> = 0,
+) => {
   return compute(observable, (newVal) => newVal >= getValue(val));
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than `val` */
-export const lessThan = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
+export const lessThan = (
+  observable: IObservable<number>,
+  val: IObservableOr<number> = 0,
+) => {
   return compute(observable, (newVal) => newVal < getValue(val));
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is less than or equal `val` */
-export const lessThanOr = (observable: IObservable<number>, val: IObservableOr<number> = 0) => {
+export const lessThanOr = (
+  observable: IObservable<number>,
+  val: IObservableOr<number> = 0,
+) => {
   return compute(observable, (newVal) => newVal <= getValue(val));
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is equal to `val` */
-export const equalTo = <T>(observable: IObservable<T>, val: IObservableOr<T>) => {
+export const equalTo = <T>(
+  observable: IObservable<T>,
+  val: IObservableOr<T>,
+) => {
   return compute(observable, (newVal) => newVal === getValue(val));
 };
 
 /** {@link compute} an observable and return a new {@link Observable} indicating if the value is NOT equal to `val` */
-export const notEqualTo = <T>(observable: IObservable<T>, val: IObservableOr<T>) => {
+export const notEqualTo = <T>(
+  observable: IObservable<T>,
+  val: IObservableOr<T>,
+) => {
   return compute(observable, (newVal) => newVal !== getValue(val));
 };
 
@@ -257,7 +319,12 @@ export const notEmpty = <T extends WithLength>(observable: IObservable<T>) => {
 };
 
 /** {@link compute} an observable and return a new {@link Observable} that is equal to some property of the original {@link Observable} */
-export const grab = <T, K extends keyof T>(observable: IObservable<T>, key: K, defaultVal?: T[K]) => {
-  return compute(observable, (newVal) => newVal ? (newVal[key] ? newVal[key] : defaultVal) : defaultVal);
+export const grab = <T, K extends keyof T>(
+  observable: IObservable<T>,
+  key: K,
+  defaultVal?: T[K],
+) => {
+  return compute(observable, (newVal) =>
+    newVal ? (newVal[key] ? newVal[key] : defaultVal) : defaultVal,
+  );
 };
-

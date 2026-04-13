@@ -13,7 +13,7 @@ export * from './each.js';
 export * from './lifecycle.js';
 export * from './observables.js';
 export * from './all-tags.js';
-export * from './chaining.js';
+export * from './ext/chaining.js';
 export * from './ext/reactivity.js';
 
 export type * from './types';
