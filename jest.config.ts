@@ -5,8 +5,17 @@ const config: Config = {
   verbose: true,
   transform: {
     '^.+\\.[tj]sx?$': [
-      'ts-jest',
-      { tsconfig: './tsconfig.jest.json', useESM: true },
+      '@swc/jest',
+      {
+        module: { type: 'es6' },
+        jsc: {
+          target: 'es2022',
+          parser: {
+            syntax: 'typescript',
+            tsx: true,
+          },
+        },
+      },
     ],
   },
   extensionsToTreatAsEsm: ['.ts'],

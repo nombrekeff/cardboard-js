@@ -983,10 +983,28 @@ export class CTag {
   }
 
   /**
-   * Remove element from the DOM, but keep data as is. Can then be added again.
-   * To fully remove the element use {@link destroy}
+   * Remove this tag from the DOM and unlink it from its parent children list.
+   * The tag instance remains reusable and can be appended again later.
+   * To fully teardown the element use {@link destroy}.
    */
   remove() {
+    // Unlink this instance from its parent's logical children list.
+    if (this.parent) {
+      let index = this.parent._children.indexOf(this);
+      while (index >= 0) {
+        this.parent._children.splice(index, 1);
+        index = this.parent._children.indexOf(this);
+      }
+      this.parent = null;
+    }
+
+    // If this tag is currently hidden, remove the anchor as well.
+    if (this._meta.anchorNode?.parentNode) {
+      this._meta.anchorNode.parentNode.removeChild(this._meta.anchorNode);
+    }
+
+    this._meta.anchorNode = null;
+    this._meta.isHidden = false;
     this.el.remove();
     return this;
   }

@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "lib": ["dom", "ES2016"],
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["./dist", "./examples", "./tests"]

@@ -3,6 +3,8 @@
 import { Link, makeRouter } from '../src/ext/routing';
 import { tag } from '../src/tag';
 import { allTags, init } from '../src/cardboard';
+import { jest, describe, beforeAll, beforeEach, expect, it } from '@jest/globals';
+
 const { div } = allTags;
 
 describe('Routing', () => {
@@ -38,7 +40,7 @@ describe('Routing', () => {
     await new Promise((r) => setTimeout(r, 100)); // Wait a bit before showing, otherwise it does have time to register changes
     expect(Array.from(document.body.children)).toContain(home.el);
     expect(Array.from(document.body.children)).not.toContain(about.el);
-    expect(HomeRoute).toBeCalledTimes(1);
+    expect(HomeRoute).toHaveBeenCalledTimes(1);
   });
 
   it('router basic shows correct route for alias', async () => {

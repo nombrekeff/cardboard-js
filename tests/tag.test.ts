@@ -1,5 +1,6 @@
 import { init, state } from '../src/cardboard';
 import { CTag, tag } from '../src/tag';
+import { jest, describe, beforeAll, beforeEach, expect, it } from '@jest/globals';
 
 describe('Tags', () => {
   beforeAll(() => {
@@ -39,7 +40,7 @@ describe('Tags', () => {
     const p = tag('p');
     d.append(p);
 
-    expect(d.children).toEqual([s.el, p.el]);
+    expect(d.children).toEqual([s, p]);
   });
 
   it('tag prepends correctly', async () => {
@@ -48,7 +49,7 @@ describe('Tags', () => {
     const p = tag('p');
     d.prepend(p);
 
-    expect(d.children).toEqual([p.el, s.el]);
+    expect(d.children).toEqual([p, s]);
   });
 
   it('tag.text works correctly', async () => {
@@ -104,7 +105,7 @@ describe('Tags', () => {
       children: [c],
     });
 
-    expect(t.children).toEqual([c.el]);
+    expect(t.children).toEqual([c]);
   });
 
   it('tag.config value', async () => {
@@ -267,9 +268,9 @@ describe('Tags', () => {
     let count = state(0);
 
     tag('div').consume(count, callback);
-    count.value++;
+    count.value+=1;
 
-    expect(callback).toBeCalled();
+    expect(callback).toHaveBeenCalled();
   });
 
   it('tag.hide & tag.show', async () => {
@@ -287,16 +288,16 @@ describe('Tags', () => {
 
   it('tag throws if bad selector', async () => {
     const t = () => tag('(123123sad)', ['child']);
-    expect(t).toThrowError("'(123123sad)' is not a valid selector");
+    expect(t).toThrow("'(123123sad)' is not a valid selector");
   });
 
   it('tag throws if tag does not exists for selector', async () => {
     const t = () => tag('(#test)', ['child']);
-    expect(t).toThrowError("Can't find element for selector: (#test)");
+    expect(t).toThrow("Can't find element for selector: (#test)");
   });
 
   it('tag throws if bad argument passed', async () => {
     const t = () => tag(null as any, ['child']);
-    expect(t).toThrowError("Invalid argument: null");
+    expect(t).toThrow("Invalid argument: null");
   });
 });
